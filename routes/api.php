@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ConceptoController;
 use App\Http\Controllers\Api\ConvenioController;
+use App\Http\Controllers\Api\Dato_fiscalController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -88,4 +89,13 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
+    
+});
+// Gestion de contribuyentes
+Route::controller(Dato_fiscalController::class)->group(function () { 
+    Route::get("/Datos_fiscales", "index");
+    Route::post("/Datos_fiscales/create","store");
+    Route::put("/Datos_fiscales/update/{id}", "update");
+    Route::put("/Datos_fiscales/log_delete/{id}", "destroy");
+    Route::get("/Datos_fiscales/show/{id}", "show");
 });
