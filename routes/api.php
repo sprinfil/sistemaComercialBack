@@ -30,14 +30,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/AnomaliasCatalogo/log_delete/{id}", "destroy");
     });
 
-    //DESCUENTOS
+    // Descuento catalogo
     Route::controller(DescuentoCatalogoController::class)->group(function () {
-        Route::get("/descuentos", "index");
-        Route::post("/descuentos/create", "store");
-        Route::put("/descuentos/update/{id}", "update");
-
-        //log delete significa borrado logico
-        Route::put("/descuentos/log_delete/{id}", "destroy");
+        Route::get("/descuentos-catalogos", "index");
+        Route::post("/descuentos-catalogos", "store");
+        Route::get("/descuentos-catalogos/{id}", "show");
+        Route::put("/descuentos-catalogos/{id}", "update");
+        Route::delete("/descuentos-catalogos/{id}", "destroy");
     });
 
     Route::get('/user', function (Request $request) {
