@@ -44,12 +44,13 @@ class UsuarioController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Usuario $usuario)
+    public function show(string $usuario)
     {
-        $data=Usuario::where('nombre', 'like', '%'.$usuario->nombre.'%')->get();
+        $data = Usuario::whereRaw("CONCAT(nombre, ' ', apellido_paterno, ' ',apellido_materno) LIKE ?", ['%'.$usuario.'%'])->get();
         return UsuarioResource::collection(
             $data
         );
+        
     }
 
     /**
