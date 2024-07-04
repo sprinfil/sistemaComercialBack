@@ -88,4 +88,13 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
+
+    // Giros comerciales
+    Route::controller(GiroComercialCatalogoController::class)->group(function () {
+        Route::get("/giros-catalogos", "index");
+        Route::post("/giros-catalogos", "store");
+        Route::get("/giros-catalogos/{id}", "show");
+        Route::put("/giros-catalogos/{id}", "update");
+        Route::delete("/giros-catalogos/{id}", "destroy");
+    });
 });
