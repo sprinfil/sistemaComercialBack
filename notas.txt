@@ -1,0 +1,146 @@
+crear un proyecto react dentro de laravel
+    npm create vite
+    cd [nombre del proyecto]
+    npm install
+    npm run dev
+
+agregar el router al proyecto react
+    npm install react-router-dom -S
+
+para hacer peticiones al backend se usara axios
+    cd [nombre del proyecto]
+    npm install -S axios
+
+instalar scss en el proyecto
+    npm install node-sass --save-dev
+    npm install -D sass
+
+cambiar de idioma laravel
+    composer require --dev laravel-lang/common
+    php artisan lang:add es
+    php artisan lang update
+
+instalar iconos para react
+    npm i --save @fortawesome/fontawesome-svg-core  @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome @fortawesome/free-brands-svg-icons
+    agregar esos imports
+    import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+    import {faBars} from "@fortawesome/free-solid-svg-icons";
+    <FontAwesomeIcon icon={faBars}/>
+
+hace un controlador
+    php artisan make:controller Api/UserController --model=User --requests --resource --api
+    php artisan make:resource UserResource
+
+validar formularios
+    npm install formik yup
+    import { useFormik } from 'formik';
+    import * as Yup from 'yup';
+
+validar formularios con zod
+    npm install zod
+    npm install @hookform/resolvers
+
+Crear CRUDS
+    hacer la migracion de la entidad
+    php artisan make:model Ajuste -m
+    php artisan migrate
+     php artisan make:seeder AjusteSeeder
+     metes el seeder en databse seeder
+     php artisan migrate:fresh
+     php artisan db:seed
+
+     el archivo views/configuraciones/catalogos es el menu principal de los catalogos
+     crear componente ajustes.tsx en views/configuraciones/catalogos
+     ponerlo el menu de catalogos.tsx (lo importas y lo metes en el array)
+
+     despues se tiene que crear el context provider en src/contexts/ContextAjuste.tsx
+     despues se tiene que crear la AjusteTable.tsx en src/components/tables/components/AjusteTable.tsx
+     despues se tiene que crear el formulario en src/components/Forms/AjusteForm.tsx
+     copiar el esqueleto del catalogo y pegar en views/configuraciones/catalogos/Ajustes.tsx
+     importar los componentes que hiciste, tabla y formulario
+
+     configuracion de la tabla
+     crear en src/components/tables/columns/AjusteColumns.tsx
+     Modificar objeto de la entidad numero de linea 20
+     cambias el nombre de las demas variables
+
+    hacer el endpoint para recuperar datos
+
+    hay que hacer el primero el back para probar la tabla
+    hace un controlador
+    php artisan make:controller Api/AjusteController --model=Ajuste --requests --resource --api
+    php artisan make:resource AjusteResource
+
+    modificar el resource
+
+    hacer la ruta en api.php
+
+    Modificar el controlador para obtener los datos de los ajustes
+
+    En AjusteTable.tsx modificar la endpoint para extraer los datos
+    importar el contextProvider en AjusteTable.tsx
+    importar las columnas en AjusteTable.tsx
+    cambiar el nombre de las variables en el ContextAjuste.tsx
+    cambiar el nombre de las variables en las importaciones del contexto en AjusteTable.tsx const { anomalias, setAnomalias, loadingTable, setLoadingTable, setAccion } = useStateContext();
+
+    Cambiar importacion del AjusteColumns.tsx
+    en la linea 69 cambiar el nombre de las variables del contexto
+
+    Formulario (AjusteForm.tsx)
+    cambiar el contextprovider en ajusteforms
+    y cambiar tambien las variables
+
+    crear el schema del formulario en src/components/forms/validaciones.ts
+    import el shcema en AjusteForm.tsx
+    cambiar las variables del schema y de todo el doc
+
+    crear el endpoint para crear ajuste
+    en api.php crear la ruta post para nuevo ajuste
+    modificar StoreAjusteRequest
+    crear el metodo store
+    checar el fillable en el modelo de la entidad Ajuste.php
+    probar endpoint
+
+    ir a AjusteTable y modificar la endpoint para crear Ajuste
+
+    /*manejar input de combobox */
+    <FormField
+        control={form.control}
+        name="estado"
+        render={({ field }) => (
+            <FormItem>
+                <FormLabel>Estado</FormLabel>
+                <FormControl>
+                    <ComboBoxActivoInactivo
+                        readOnly={!abrirInput}
+                        placeholder={"Estado"}
+                        form={form}
+                        name={"estado"}
+                        currentValue={ajuste.estado} />
+                </FormControl>
+                <FormDescription>
+                    El estado de la anomalia
+                </FormDescription>
+                <FormMessage />
+            </FormItem>
+        )}
+    />
+
+    //Crear permisos para modelos//
+    crear el policy: php artisan make:policy AnomaliaCatalogoPolicy
+    registralo en AuthServiceProvider.php
+
+
+    dar permisos
+
+    //usuarios
+    $user->givePermissionTo('Ver Anomalias');
+    $user->revokePermissionTo('Ver Anomalias');
+
+    //roles
+    $role = Role::findByName('your-role-name', 'web');
+    $role->givePermissionTo('Ver Anomalias');
+    $role->revokePermissionTo($permission);
+
+    pasos para los permisos 
+    crear permisos en el seeder de permisos (PermissionsSeeder.php)
