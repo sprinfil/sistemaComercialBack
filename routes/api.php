@@ -22,12 +22,13 @@ Route::middleware('auth:sanctum')->group(function () {
     //AQUI VAN TODAS LAS RUTAS
     Route::post("/logout", [AuthController::class, "logout"]);
 
-    //ANOMALIAS
+    //ANOMALIAS     
     Route::controller(AnomaliaCatalagoController::class)->group(function () {
         Route::get("/AnomaliasCatalogo", "index");
         Route::post("/AnomaliasCatalogo/create", "store");
         Route::put("/AnomaliasCatalogo/update/{id}", "update");
-        Route::put("/AnomaliasCatalogo/log_delete/{id}", "destroy");
+        Route::get("/AnomaliasCatalogo/show/{id}", "show");
+        Route::delete("/AnomaliasCatalogo/log_delete/{id}", "destroy");
     });
 
     //DESCUENTOS
@@ -95,6 +96,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/giros-catalogos", "store");
         Route::get("/giros-catalogos/{id}", "show");
         Route::put("/giros-catalogos/{id}", "update");
-        Route::delete("/giros-catalogos/{id}", "destroy");
+        Route::delete("/giros-catalogos/{id}", "destroy"); 
     });
 });
