@@ -94,11 +94,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Giros comerciales
     Route::controller(GiroComercialCatalogoController::class)->group(function () {
-        Route::get("/giros-catalogos", "index");
-        Route::post("/giros-catalogos", "store");
-        Route::get("/giros-catalogos/{id}", "show");
-        Route::put("/giros-catalogos/{id}", "update");
-        Route::delete("/giros-catalogos/{id}", "destroy");
+        Route::get("/Giros", "index");
+        Route::post("/Giros/create", "store");
+        Route::put("/Giros/update/{id}", "update");
+        Route::put("/Giros/log_delete/{id}", "destroy");
     });
         //BONIFICACIONES
 
