@@ -84,26 +84,32 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
      //CONCEPTOS
- Route::controller(ConceptoController::class)->group(function () {
-    Route::get("/Concepto", "index");
-    Route::post("/Concepto/create", "store");
-    Route::put("/Concepto/update/{id}", "update");
-    Route::put("/Concepto/restaurar/{id}", "restaurarDato");
-    //log delete significa borrado logico
-    Route::put("/Concepto/log_delete/{id}", "destroy");
-});
+    Route::controller(ConceptoController::class)->group(function () {
+        Route::get("/Concepto", "index");
+        Route::post("/Concepto/create", "store");
+        Route::put("/Concepto/update/{id}", "update");
+        Route::put("/Concepto/restaurar/{id}", "restaurarDato");
+        //log delete significa borrado logico
+        Route::put("/Concepto/log_delete/{id}", "destroy");
+    });
+    // Giros comerciales
+    Route::controller(GiroComercialCatalogoController::class)->group(function () {
+        Route::get("/giros-catalogos", "index");
+        Route::post("/giros-catalogos", "store");
+        Route::get("/giros-catalogos/{id}", "show");
+        Route::put("/giros-catalogos/{id}", "update");
+        Route::delete("/giros-catalogos/{id}", "destroy");
+    });
+        //BONIFICACIONES
 
-//BONIFICACIONES
+    Route::controller(CatalogoBonificacionController::class)->group(function(){
+        Route::get("/BonificacionesCatalogo", "index");
+        Route::post("/BonificacionesCatalogo/create", "store");
+        Route::put("/BonificacionesCatalogo/update/{id}", "update");
 
-Route::controller(CatalogoBonificacionController::class)->group(function(){
-    Route::get("/BonificacionesCatalogo", "index");
-    Route::post("/BonificacionesCatalogo/create", "store");
-    Route::put("/BonificacionesCatalogo/update/{id}", "update");
-
-    //log delete significa borrado logico
-    Route::put("BonificacionesCatalogo/log_delete/{id}", "destroy");
-});
-
+        //log delete significa borrado logico
+        Route::put("BonificacionesCatalogo/log_delete/{id}", "destroy");
+    });
 
 
 });
