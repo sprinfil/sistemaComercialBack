@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ConceptoController;
 use App\Http\Controllers\Api\ConvenioController;
+use App\Http\Controllers\Api\UsuarioController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -88,4 +89,17 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
+    // USUARIOS (morales y físicos)
+Route::controller(UsuarioController::class)->group(function () {
+    Route::get("/usuarios", "index");
+    Route::post("/usuarios/create", "store");
+    Route::post("/usuarios/createmoral", "storemoral");
+    Route::put("/usuarios/update/{id}", "update");
+    Route::put("/usuarios/updateMoral/{id}", "updateMoral");
+    Route::get("/usuarios/consulta/{nombre}", "show");
+
+    
+    //log delete significa borrado logico
+    Route::put("/usuarios/log_delete/{id}", "destroy");
+});
 });
