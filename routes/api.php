@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+use App\Http\Controllers\Api\RolController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -109,5 +110,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("BonificacionesCatalogo/log_delete/{id}", "destroy");
     });
 
+    Route::controller(RolController::class)->group(function(){
+        Route::get("/Rol", "index");
+        Route::post("/Rol/create", "store");
+        Route::put("/Rol/update/{id}", "update");
+
+        //log delete significa borrado logico
+        Route::put("Rol/log_delete/{id}", "destroy");
+    });
 });
 
