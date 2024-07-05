@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DescuentoCatalogoResource extends JsonResource
+class TipoTomaResource extends JsonResource
 {
     public static $wrap = false;
     /**
@@ -19,7 +19,6 @@ class DescuentoCatalogoResource extends JsonResource
             "id" => $this->id,
             "nombre" => $this->nombre,
             "descripcion" => $this->descripcion,
-            "estado" => $this->estado,
         ];
     }
 }
