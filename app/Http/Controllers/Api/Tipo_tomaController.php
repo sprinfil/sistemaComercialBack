@@ -7,6 +7,7 @@ use App\Models\TipoToma;
 use App\Http\Requests\StoreTipoTomaRequest;
 use App\Http\Requests\UpdateTipoTomaRequest;
 use App\Http\Resources\TipoTomaResource;
+use Exception;
 use Illuminate\Http\Request;
 
 class Tipo_tomaController extends Controller
@@ -16,9 +17,15 @@ class Tipo_tomaController extends Controller
      */
     public function index()
     {
-        return TipoTomaResource::collection(
-            TipoToma::all()
-        );
+        try{
+            return TipoTomaResource::collection(
+                TipoToma::all()
+            );
+        }
+        catch(Exception $ex){
+            return response()->json(['message' => 'No se encontro el tipo de toma'], 200);
+        }
+        
     }
 
     /**
@@ -34,9 +41,19 @@ class Tipo_tomaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TipoToma $tipoToma)
+    public function show(string $tipoToma)
     {
-        //
+        try{
+            $data = TipoToma::whereRaw("nombre LIKE ?", ['%'.$tipoToma.'%'])->get();
+            return TipoTomaResource::collection(
+                $data
+            );
+        }
+        catch(Exception $Ex){
+            return response()->json(['message' => 'No se encontro el tipo de toma'], 200);
+
+        }
+        
     }
 
     /**
@@ -44,11 +61,17 @@ class Tipo_tomaController extends Controller
      */
     public function update(UpdateTipoTomaRequest $request, TipoToma $tipoToma)
     {
-        $data=$request->validated();
-        $usuario=TipoToma::find($request['id']);
-        $usuario->update($data);
-        $usuario->save();
-        return new TipoTomaResource($usuario);
+        try{
+            $data=$request->validated();
+            $usuario=TipoToma::findorFail($request['id']);
+            $usuario->update($data);
+            $usuario->save();
+            return new TipoTomaResource($usuario);
+        }
+        catch(Exception $ex){
+            throw new Exception($ex);
+        }
+       
     }
 
     /**
@@ -66,5 +89,18 @@ class Tipo_tomaController extends Controller
 
             return response()->json(['message' => 'Algo fallo'], 500);
         }
+    }
+    public function restaurarDato(TipoToma $TipoToma, Request $request)
+    {
+
+        $TipoToma = TipoToma::withTrashed()->findOrFail($request->id);
+
+           // Verifica si el registro está eliminado
+        if ($TipoToma->trashed()) {
+            // Restaura el registro
+            $TipoToma->restore();
+            return response()->json(['message' => 'El tipo de toma ha sido restaurado.'], 200);
+        }
+
     }
 }

@@ -22,10 +22,10 @@ class UpdateUsuarioMoralRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'apellido_paterno' => 'nullable|string|max:255',
-            'apellido_materno' => 'nullable|string|max:255',
-            'nombre_contacto' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255|alpha:ascii',
+            'apellido_paterno' => 'nullable|string|max:255|alpha:ascii',
+            'apellido_materno' => 'nullable|string|max:255|alpha:ascii',
+            'nombre_contacto' => 'required|string|max:255|alpha:ascii',
             'telefono' => 'required|string|size:10',
             'curp' => 'nullable|string|size:18|unique:usuarios,curp,',
             'rfc' => 'required|string|size:13|unique:usuarios,rfc,'.$this->id,

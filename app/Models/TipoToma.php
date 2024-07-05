@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TipoToma extends Model
 {
     use HasFactory, SoftDeletes;
-
     protected $fillable = [
         "nombre",
         "descripcion",
