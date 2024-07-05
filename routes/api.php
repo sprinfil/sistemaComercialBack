@@ -26,12 +26,13 @@ Route::middleware('auth:sanctum')->group(function () {
     //AQUI VAN TODAS LAS RUTAS
     Route::post("/logout", [AuthController::class, "logout"]);
 
-    //ANOMALIAS
+    //ANOMALIAS     
     Route::controller(AnomaliaCatalagoController::class)->group(function () {
         Route::get("/AnomaliasCatalogo", "index");
         Route::post("/AnomaliasCatalogo/create", "store");
         Route::put("/AnomaliasCatalogo/update/{id}", "update");
-        Route::put("/AnomaliasCatalogo/log_delete/{id}", "destroy");
+        Route::get("/AnomaliasCatalogo/show/{id}", "show");
+        Route::delete("/AnomaliasCatalogo/log_delete/{id}", "destroy");
     });
 
     // Descuento catalogo
@@ -117,10 +118,11 @@ Route::controller(Dato_fiscalController::class)->group(function () {
     });
     // Giros comerciales
     Route::controller(GiroComercialCatalogoController::class)->group(function () {
-        Route::get("/Giros", "index");
-        Route::post("/Giros/create", "store");
-        Route::put("/Giros/update/{id}", "update");
-        Route::put("/Giros/log_delete/{id}", "destroy");
+        Route::get("/giros-catalogos", "index");
+        Route::post("/giros-catalogos", "store");
+        Route::get("/giros-catalogos/{id}", "show");
+        Route::put("/giros-catalogos/{id}", "update");
+        Route::delete("/giros-catalogos/{id}", "destroy"); 
     });
   
       Route::controller(CatalogoBonificacionController::class)->group(function(){
