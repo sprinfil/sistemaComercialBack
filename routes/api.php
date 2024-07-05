@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
-
+use App\Http\Controllers\Api\Tipo_tomaController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -83,20 +83,39 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
+
     // USUARIOS (morales y físicos)
-Route::controller(UsuarioController::class)->group(function () {
-    Route::get("/usuarios", "index");
-    Route::post("/usuarios/create", "store");
-    Route::post("/usuarios/createmoral", "storemoral");
-    Route::put("/usuarios/update/{id}", "update");
-    Route::put("/usuarios/updateMoral/{id}", "updateMoral");
-    Route::get("/usuarios/consulta/{nombre}", "show");
+    Route::controller(UsuarioController::class)->group(function () {
+        Route::get("/usuarios", "index");
+        Route::post("/usuarios/create", "store");
+        Route::post("/usuarios/createmoral", "storemoral");
+        Route::put("/usuarios/update/{id}", "update");
+        Route::put("/usuarios/updateMoral/{id}", "updateMoral");
+        Route::put("/usuarios/restore/{id}", "restaurarDato");
+        //Consultas
+        //nombres
+        Route::get("/usuarios/consulta/{nombre}", "show");
+        //CURP
+        Route::get("/usuarios/consultaCURP/{curp}", "showCURP");
+        //RFC
+        Route::get("/usuarios/consultaRFC/{rfc}", "showRFC");
+        //CORREO
+        Route::get("/usuarios/consultaCorreo/{correo}", "showCorreo");
 
-    
-    //log delete significa borrado logico
-    Route::put("/usuarios/log_delete/{id}", "destroy");
+        //log delete significa borrado logico
+        Route::delete("/usuarios/log_delete/{id}", "destroy");
 });
+  //Tipo Toma
+    Route::controller(Tipo_tomaController::class)->group(function () {
+        Route::get("/TipoToma", "index");
+        Route::post("/TipoToma/create", "store");
+        Route::put("/TipoToma/update/{id}", "update");
+        Route::get("/TipoToma/consulta/{nombre}", "show");
+        Route::put("/TipoToma/restore/{id}", "restaurarDato");
 
+        //log delete significa borrado logico
+        Route::put("/TipoToma/log_delete/{id}", "destroy");
+    });
 
      //CONCEPTOS
     Route::controller(ConceptoController::class)->group(function () {
@@ -106,6 +125,7 @@ Route::controller(UsuarioController::class)->group(function () {
         Route::put("/Concepto/restaurar/{id}", "restaurarDato");
         //log delete significa borrado logico
         Route::put("/Concepto/log_delete/{id}", "destroy");
+        
     });
     // Giros comerciales
     Route::controller(GiroComercialCatalogoController::class)->group(function () {
