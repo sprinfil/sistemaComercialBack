@@ -22,7 +22,7 @@ class StoreTipoTomaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:tipo_toma,nombre",
+            "nombre"=>"required|string|max:55|unique:tipo_tomas,nombre",
             "descripcion"=>"required|string",
         ];
     }

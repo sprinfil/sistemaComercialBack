@@ -17,10 +17,10 @@ use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+use App\Http\Controllers\Api\Tipo_tomaController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
-
 
 Route::middleware('auth:sanctum')->group(function () {
     //AQUI VAN TODAS LAS RUTAS
@@ -72,7 +72,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/AjustesCatalogo/log_delete/{id}", "destroy");
     });
 
-
     //CONVENIOS
     Route::controller(ConvenioController::class)->group(function () {
         Route::get("/Convenio", "index");
@@ -93,6 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
+
     // USUARIOS (morales y físicos)
     Route::controller(UsuarioController::class)->group(function () {
         Route::get("/usuarios", "index");
@@ -100,9 +100,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/usuarios/createmoral", "storemoral");
         Route::put("/usuarios/update/{id}", "update");
         Route::put("/usuarios/updateMoral/{id}", "updateMoral");
-        Route::get("/usuarios/consulta/{nombre}", "show");
         //log delete significa borrado logico
         Route::put("/usuarios/log_delete/{id}", "destroy");
+        Route::put("/usuarios/restore/{id}", "restaurarDato");
+        //Consultas
+        //nombres
+        Route::get("/usuarios/consulta/{nombre}", "show");
+        //CURP
+        Route::get("/usuarios/consultaCURP/{curp}", "showCURP");
+        //RFC
+        Route::get("/usuarios/consultaRFC/{rfc}", "showRFC");
+        //CORREO
+        Route::get("/usuarios/consultaCorreo/{correo}", "showCorreo");
+        //log delete significa borrado logico
+        Route::delete("/usuarios/log_delete/{id}", "destroy");
     });
 
     // Gestion de contribuyentes
@@ -113,6 +124,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/Datos_fiscales/log_delete/{id}", "destroy");
         Route::get("/Datos_fiscales/show/{id}", "show");
     });
+  //Tipo Toma
+    Route::controller(Tipo_tomaController::class)->group(function () {
+        Route::get("/TipoToma", "index");
+        Route::post("/TipoToma/create", "store");
+        Route::put("/TipoToma/update/{id}", "update");
+        Route::get("/TipoToma/consulta/{nombre}", "show");
+        Route::put("/TipoToma/restore/{id}", "restaurarDato");
+        Route::delete("/TipoToma/log_delete/{id}", "destroy");
+    });
 
      //CONCEPTOS
     Route::controller(ConceptoController::class)->group(function () {
@@ -122,6 +142,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/Concepto/restaurar/{id}", "restaurarDato");
         //log delete significa borrado logico
         Route::put("/Concepto/log_delete/{id}", "destroy");
+        
     });
     // Giros comerciales
     Route::controller(GiroComercialCatalogoController::class)->group(function () {

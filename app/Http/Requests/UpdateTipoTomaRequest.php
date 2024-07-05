@@ -22,7 +22,7 @@ class UpdateTipoTomaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:tipo_toma,nombre,".$this->id,
+            "nombre"=>"required|string|max:55|alpha:ascii|unique:tipo_tomas,nombre,",
             "descripcion"=>"required|string",
         ];
     }
