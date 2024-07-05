@@ -124,14 +124,15 @@ Route::controller(Dato_fiscalController::class)->group(function () {
         Route::put("/giros-catalogos/{id}", "update");
         Route::delete("/giros-catalogos/{id}", "destroy"); 
     });
-  
-      Route::controller(CatalogoBonificacionController::class)->group(function(){
-        Route::get("/BonificacionesCatalogo", "index");
-        Route::post("/BonificacionesCatalogo/create", "store");
-        Route::put("/BonificacionesCatalogo/update/{id}", "update");
-
+    
+    Route::controller(CatalogoBonificacionController::class)->group(function(){
+        Route::get("/bonificacionesCatalogo", "index");
+        Route::post("/bonificacionesCatalogo/create", "store");
+        Route::put("/bonificacionesCatalogo/update/{id}", "update");
+        Route::get("/bonificacionesCatalogo/show/{id}", "show");
+        Route::put("/bonificacionesCatalogo/restaurar/{id}", "restaurarDato");
         //log delete significa borrado logico
-        Route::put("BonificacionesCatalogo/log_delete/{id}", "destroy");
+        Route::delete("BonificacionesCatalogo/log_delete/{id}", "destroy");
     });
 
 });
