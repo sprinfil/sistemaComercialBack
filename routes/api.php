@@ -15,8 +15,8 @@ use App\Http\Controllers\Api\AnomaliaCatalagoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
+use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
-
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -42,6 +42,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/descuentos-catalogos/{id}", "show");
         Route::put("/descuentos-catalogos/{id}", "update");
         Route::delete("/descuentos-catalogos/{id}", "destroy");
+    });
+
+    // Descuento asociado
+    Route::controller(DescuentoAsociadoController::class)->group(function () {
+        Route::get("/descuentos-asociado", "index");
+        Route::post("/descuentos-asociado", "store");
+        Route::get("/descuentos-asociado/{id}", "show");
+        Route::put("/descuentos-asociado/{id}", "update");
+        Route::delete("/descuentos-asociado/{id}", "destroy");
     });
 
     Route::get('/user', function (Request $request) {
@@ -85,27 +94,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
     // USUARIOS (morales y físicos)
-Route::controller(UsuarioController::class)->group(function () {
-    Route::get("/usuarios", "index");
-    Route::post("/usuarios/create", "store");
-    Route::post("/usuarios/createmoral", "storemoral");
-    Route::put("/usuarios/update/{id}", "update");
-    Route::put("/usuarios/updateMoral/{id}", "updateMoral");
-    Route::get("/usuarios/consulta/{nombre}", "show");
-
-    
-    //log delete significa borrado logico
-    Route::put("/usuarios/log_delete/{id}", "destroy");
-});
+    Route::controller(UsuarioController::class)->group(function () {
+        Route::get("/usuarios", "index");
+        Route::post("/usuarios/create", "store");
+        Route::post("/usuarios/createmoral", "storemoral");
+        Route::put("/usuarios/update/{id}", "update");
+        Route::put("/usuarios/updateMoral/{id}", "updateMoral");
+        Route::get("/usuarios/consulta/{nombre}", "show");
+        //log delete significa borrado logico
+        Route::put("/usuarios/log_delete/{id}", "destroy");
+    });
 
     // Gestion de contribuyentes
-Route::controller(Dato_fiscalController::class)->group(function () { 
-    Route::get("/Datos_fiscales", "index");
-    Route::post("/Datos_fiscales/create","store");
-    Route::put("/Datos_fiscales/update/{id}", "update");
-    Route::put("/Datos_fiscales/log_delete/{id}", "destroy");
-    Route::get("/Datos_fiscales/show/{id}", "show");
-
+    Route::controller(Dato_fiscalController::class)->group(function () { 
+        Route::get("/Datos_fiscales", "index");
+        Route::post("/Datos_fiscales/create","store");
+        Route::put("/Datos_fiscales/update/{id}", "update");
+        Route::put("/Datos_fiscales/log_delete/{id}", "destroy");
+        Route::get("/Datos_fiscales/show/{id}", "show");
+    });
 
      //CONCEPTOS
     Route::controller(ConceptoController::class)->group(function () {
@@ -125,7 +132,7 @@ Route::controller(Dato_fiscalController::class)->group(function () {
         Route::delete("/giros-catalogos/{id}", "destroy"); 
     });
   
-      Route::controller(CatalogoBonificacionController::class)->group(function(){
+    Route::controller(CatalogoBonificacionController::class)->group(function(){
         Route::get("/BonificacionesCatalogo", "index");
         Route::post("/BonificacionesCatalogo/create", "store");
         Route::put("/BonificacionesCatalogo/update/{id}", "update");
@@ -133,9 +140,5 @@ Route::controller(Dato_fiscalController::class)->group(function () {
         //log delete significa borrado logico
         Route::put("BonificacionesCatalogo/log_delete/{id}", "destroy");
     });
-
+ 
 });
-
-    
-});
-
