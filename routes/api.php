@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AjusteController;
 use App\Http\Controllers\Api\AnomaliaController;
 use App\Http\Controllers\Api\ConceptoController;
 use App\Http\Controllers\Api\ConvenioController;
+use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
@@ -81,6 +82,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
 
+    // Gestion de contribuyentes
+Route::controller(Dato_fiscalController::class)->group(function () { 
+    Route::get("/Datos_fiscales", "index");
+    Route::post("/Datos_fiscales/create","store");
+    Route::put("/Datos_fiscales/update/{id}", "update");
+    Route::put("/Datos_fiscales/log_delete/{id}", "destroy");
+    Route::get("/Datos_fiscales/show/{id}", "show");
+
 
      //CONCEPTOS
     Route::controller(ConceptoController::class)->group(function () {
@@ -109,5 +118,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("BonificacionesCatalogo/log_delete/{id}", "destroy");
     });
 
+});
+
+    
 });
 
