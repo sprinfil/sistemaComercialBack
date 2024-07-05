@@ -22,10 +22,9 @@ class UpdateUsuarioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'apellido_paterno' => 'required|string|max:25',
-            'apellido_materno' => 'nullable|string|max:255',
-            'nombre_contacto' => 'nullable|string|max:255',
+            'nombre' => 'required|string|max:255|alpha:ascii',
+            'apellido_paterno' => 'required|string|max:25|alpha:ascii',
+            'apellido_materno' => 'nullable|string|max:255|alpha:ascii',
             'telefono' => 'required|string|max:15',
             'curp' => 'required|string|size:18|unique:usuarios,curp,'.$this->id,
             'rfc' => 'required|string|size:13|unique:usuarios,rfc,'.$this->id,

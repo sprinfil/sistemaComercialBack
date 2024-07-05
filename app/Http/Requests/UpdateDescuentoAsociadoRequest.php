@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTipoTomaRequest extends FormRequest
+class UpdateDescuentoAsociadoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,11 @@ class UpdateTipoTomaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|alpha:ascii|unique:tipo_tomas,nombre,",
-            "descripcion"=>"required|string",
+            "id_usuario"=>"required|int",
+            "id_toma"=>"required|int",
+            "id_descuento"=>"required|int",
+            "folio"=>"nullable|string",
+            "evidencia"=>"nullable|string",
         ];
     }
 }
