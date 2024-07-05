@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AjusteController;
 use App\Http\Controllers\Api\AnomaliaController;
 use App\Http\Controllers\Api\ConceptoController;
 use App\Http\Controllers\Api\ConvenioController;
+use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -81,6 +83,19 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
     });
+    // USUARIOS (morales y físicos)
+Route::controller(UsuarioController::class)->group(function () {
+    Route::get("/usuarios", "index");
+    Route::post("/usuarios/create", "store");
+    Route::post("/usuarios/createmoral", "storemoral");
+    Route::put("/usuarios/update/{id}", "update");
+    Route::put("/usuarios/updateMoral/{id}", "updateMoral");
+    Route::get("/usuarios/consulta/{nombre}", "show");
+
+    
+    //log delete significa borrado logico
+    Route::put("/usuarios/log_delete/{id}", "destroy");
+});
 
     // Gestion de contribuyentes
 Route::controller(Dato_fiscalController::class)->group(function () { 
