@@ -115,7 +115,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/TipoToma/restore/{id}", "restaurarDato");
 
         //log delete significa borrado logico
-        Route::put("/TipoToma/log_delete/{id}", "destroy");
+        Route::delete("/TipoToma/log_delete/{id}", "destroy");
     });
 
      //CONCEPTOS
