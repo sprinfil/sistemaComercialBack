@@ -114,7 +114,12 @@ class UsuarioController extends Controller
     public function show(string $usuario)
     {
         try{
-            $data = Usuario::whereRaw("CONCAT(nombre, ' ', apellido_paterno, ' ',apellido_materno) LIKE ?", ['%'.$usuario.'%'])->get();
+            $data = Usuario::whereRaw("
+                CONCAT(
+                    COALESCE(nombre, ''), ' ', 
+                    COALESCE(apellido_paterno, ''), ' ', 
+                    COALESCE(apellido_materno, '')
+                )  LIKE ?", ['%'.$usuario.'%'])->get();
         return UsuarioResource::collection(
             $data
         );
