@@ -156,13 +156,14 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/Concepto/log_delete/{id}", "destroy");
     });
+    
     // Giros comerciales
     Route::controller(GiroComercialCatalogoController::class)->group(function () {
-        Route::get("/Giros", "index");
-        Route::post("/Giros/create", "store");
-        Route::get("/Giros/show/{id}", "show");
-        Route::put("/Giros/update/{id}", "update");
-        Route::delete("/Giros/log_delete/{id}", "destroy");
+        Route::get("/giros-catalogos", "index");
+        Route::post("/giros-catalogos", "store");
+        Route::get("/giros-catalogos/{id}", "show");
+        Route::put("/giros-catalogos/{id}", "update");
+        Route::delete("/giros-catalogos/{id}", "destroy");
     });
 
     Route::controller(CatalogoBonificacionController::class)->group(function () {
