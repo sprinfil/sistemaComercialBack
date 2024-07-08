@@ -35,8 +35,8 @@ class ServicioController extends Controller
     {
         try{
             $data = $request->validated();
-            $descuento = Servicio::create($data);
-            return response(new ServicioResource($descuento), 201);
+            $servicio = Servicio::create($data);
+            return response(new ServicioResource($servicio), 201);
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el servicio'
@@ -50,8 +50,8 @@ class ServicioController extends Controller
     public function show($id)
     {
         try {
-            $descuento = Servicio::findOrFail($id);
-            return response(new ServicioResource($descuento), 200);
+            $servicio = Servicio::findOrFail($id);
+            return response(new ServicioResource($servicio), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar el servicio'
@@ -66,10 +66,10 @@ class ServicioController extends Controller
     {
         try {
             $data = $request->validated();
-            $descuento = Servicio::findOrFail($id);
-            $descuento->update($data);
-            $descuento->save();
-            return response(new ServicioResource($descuento), 200);
+            $servicio = Servicio::findOrFail($id);
+            $servicio->update($data);
+            $servicio->save();
+            return response(new ServicioResource($servicio), 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo editar el servicio'
@@ -83,8 +83,8 @@ class ServicioController extends Controller
     public function destroy($id)
     {
         try {
-            $descuento = Servicio::findOrFail($id);
-            $descuento->delete();
+            $servicio = Servicio::findOrFail($id);
+            $servicio->delete();
             return response("Servicio eliminado con exito",200);
         } catch (ModelNotFoundException $e) {
             return response()->json([

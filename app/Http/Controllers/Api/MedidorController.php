@@ -35,8 +35,8 @@ class MedidorController extends Controller
     {
         try{
             $data = $request->validated();
-            $descuento = Medidor::create($data);
-            return response(new MedidorResource($descuento), 201);
+            $medidor = Medidor::create($data);
+            return response(new MedidorResource($medidor), 201);
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el medidor'
@@ -50,8 +50,8 @@ class MedidorController extends Controller
     public function show($id)
     {
         try {
-            $descuento = Medidor::findOrFail($id);
-            return response(new MedidorResource($descuento), 200);
+            $medidor = Medidor::findOrFail($id);
+            return response(new MedidorResource($medidor), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar el medidor'
@@ -66,10 +66,10 @@ class MedidorController extends Controller
     {
         try {
             $data = $request->validated();
-            $descuento = Medidor::findOrFail($id);
-            $descuento->update($data);
-            $descuento->save();
-            return response(new MedidorResource($descuento), 200);
+            $medidor = Medidor::findOrFail($id);
+            $medidor->update($data);
+            $medidor->save();
+            return response(new MedidorResource($medidor), 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo editar el medidor'
@@ -83,8 +83,8 @@ class MedidorController extends Controller
     public function destroy($id)
     {
         try {
-            $descuento = Medidor::findOrFail($id);
-            $descuento->delete();
+            $medidor = Medidor::findOrFail($id);
+            $medidor->delete();
             return response("Medidor eliminado con exito",200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
