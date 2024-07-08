@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\AnomaliaCatalagoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
+use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\MedidorController;
@@ -174,6 +175,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/giros-catalogos/{id}", "show");
         Route::put("/giros-catalogos/{id}", "update");
         Route::delete("/giros-catalogos/{id}", "destroy");
+    });
+
+    // Datos domiciliados
+    Route::controller(DatosDomiciliacionController::class)->group(function () {
+        Route::get("/datos-domiciliados", "index");
+        Route::post("/datos-domiciliados", "store");
+        Route::get("/datos-domiciliados/{id}", "show");
+        Route::put("/datos-domiciliados/{id}", "update");
+        Route::delete("/datos-domiciliados/{id}", "destroy");
     });
 
     Route::controller(CatalogoBonificacionController::class)->group(function () {
