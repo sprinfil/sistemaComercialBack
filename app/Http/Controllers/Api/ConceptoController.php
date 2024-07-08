@@ -26,12 +26,12 @@ class ConceptoController extends Controller
      */
     public function store(ConceptoCatalogo $conceptoCatalogo, StoreConceptoCatalogoRequest $request)
     {
-        //VALIDA EL STORE
+        //Valida el store
         $data = $request->validated();
-        //Busca por nombre a los eliminados
+        //Busca por nombre a los operadores eliminados
         $conceptoCatalogo = ConceptoCatalogo::withTrashed()->where('nombre', $request->input('nombre'))->first();
 
-        //VALIDACION POR SI EXISTE
+        //Validacion en caso de que el operador ya este registrado en le base de datos
         if ($conceptoCatalogo) {
             if ($conceptoCatalogo->trashed()) {
                 return response()->json([
@@ -46,7 +46,7 @@ class ConceptoController extends Controller
             ], 200);
         }
 
-        //si no existe el concepto lo crea
+        //Si el operador no existe, lo crea
         if(!$conceptoCatalogo)
         {
             $conceptoCatalogo = ConceptoCatalogo::create($data);
