@@ -27,6 +27,7 @@ class RolController extends Controller
     public function store(StoreRolRequest $request)
     {
         $data = $request->validated();
+        $data["guard_name"] = "web";
         $rol = Rol::create($data);
         return response(new RolResource($rol), 201);
     }
