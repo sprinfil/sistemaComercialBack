@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\Tipo_tomaController;
@@ -145,6 +146,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/servicios/{id}", "show");
         Route::put("/servicios/{id}", "update");
         Route::delete("/servicios/{id}", "destroy");
+    });
+
+    // Medidores
+    Route::controller(MedidorController::class)->group(function () {
+        Route::get("/medidores", "index");
+        Route::post("/medidores", "store");
+        Route::get("/medidores/{id}", "show");
+        Route::put("/medidores/{id}", "update");
+        Route::delete("/medidores/{id}", "destroy");
     });
 
     //CONCEPTOS
