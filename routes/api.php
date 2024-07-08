@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\OperadorController;
+use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\Tipo_tomaController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
@@ -137,6 +138,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/TipoToma/log_delete/{id}", "destroy");
     });
 
+    // Servicios
+    Route::controller(ServicioController::class)->group(function () {
+        Route::get("/servicios", "index");
+        Route::post("/servicios", "store");
+        Route::get("/servicios/{id}", "show");
+        Route::put("/servicios/{id}", "update");
+        Route::delete("/servicios/{id}", "destroy");
+    });
+
     //CONCEPTOS
     Route::controller(ConceptoController::class)->group(function () {
         Route::get("/Concepto", "index");
@@ -164,7 +174,6 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::delete("BonificacionesCatalogo/log_delete/{id}", "destroy");
     });
-
 
     Route::controller(OperadorController::class)->group(function () {
         Route::get("/Operador", "index");
