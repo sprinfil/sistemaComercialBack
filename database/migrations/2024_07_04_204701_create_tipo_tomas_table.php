@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('catalogo_bonificaciones', function (Blueprint $table) {
+        Schema::create('tipo_tomas', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre")->nullable();
-            $table->string("descripcion")->nullable();
+            $table->string("nombre");
+            $table->string("descripcion");
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('catalogo_bonificaciones');
+        Schema::dropIfExists('tipo_tomas');
     }
 };
