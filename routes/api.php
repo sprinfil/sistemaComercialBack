@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+use App\Http\Controllers\Api\OperadorController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -111,3 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::controller(OperadorController::class)->group(function(){
+    Route::get("/Operador","index");
+    Route::post("/Operador/create","store");
+    Route::put("/Operador/update/{id}","update");
+    Route::get("/Operador/show/{id}","show");
+    Route::delete("/Operador/log_delete/{id}","destroy");
+    Route::put("/Operador/restaurar/{id}", "restaurarOperador");
+});
