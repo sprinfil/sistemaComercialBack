@@ -74,7 +74,7 @@ class Tipo_tomaController extends Controller
     public function show(string $tipoToma)
     {
         try{
-           
+            $data = TipoToma::ConsultarPorNombres($tipoToma);
             return TipoTomaResource::collection(
                 $data
             );
