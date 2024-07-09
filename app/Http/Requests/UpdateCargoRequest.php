@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDescuentoAsociadoRequest extends FormRequest
+class UpdateCargoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,14 @@ class UpdateDescuentoAsociadoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_usuario"=>"required|integer",
-            "id_toma"=>"required|integer",
-            "id_descuento"=>"required|integer",
-            "folio"=>"nullable|string",
-            "evidencia"=>"nullable|string",
+            "id_origen"=>"required|integer|max:55",
+            "modelo_origen"=>"required|string|max:55",
+            "id_dueño"=>"required|integer|max:55",
+            "modelo_dueño"=>"required|string|max:55",
+            "monto"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "estado"=>"required|string|max:55",
+            "fecha_cargo"=>"required|date|max:55",
+            "fecha_liquidacion"=>"required|date|max:55",
         ];
     }
 }

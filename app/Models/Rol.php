@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DescuentoAsociado extends Model
+class Rol extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = "roles";
+    use HasFactory;
+
     protected $fillable = [
-        "id_usuario",
-        "id_toma",
-        "id_descuento",
-        "folio",
-        "evidencia"
+        "name",
+        "guard_name"
     ];
 }

@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('descuento_asociados', function (Blueprint $table) {
+        Schema::create('datos_domiciliados', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_usuario')->unsigned()->default('1'); 
             $table->bigInteger('id_toma')->unsigned()->default('1'); 
-            $table->bigInteger('id_descuento')->unsigned()->default('1'); 
-            $table->string('folio');
-            $table->string('evidencia')->nullable();;
+            $table->string('numero_cuenta');
+            $table->string('fecha_vencimiento');
+            $table->enum('tipo_tarjeta', ['credito', 'debito']);
+            $table->decimal('limite_cobro', 8, 2);
+            $table->string('domicilio_tarjeta');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('descuento_asociados');
+        Schema::dropIfExists('datos_domiciliados');
     }
 };

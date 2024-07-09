@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDescuentoAsociadoRequest extends FormRequest
+class UpdateDatosDomiciliacionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,12 @@ class UpdateDescuentoAsociadoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_usuario"=>"required|integer",
             "id_toma"=>"required|integer",
-            "id_descuento"=>"required|integer",
-            "folio"=>"nullable|string",
-            "evidencia"=>"nullable|string",
+            "numero_cuenta"=>"required|string",
+            "fecha_vencimiento"=>"required|string",
+            "tipo_tarjeta"=>"required|string",
+            "limite_cobro"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "domicilio_tarjeta"=>"required|string",
         ];
     }
 }
