@@ -35,12 +35,27 @@ class Usuario extends Model
         )  LIKE ?", ['%'.$usuario.'%'])->get();
           return $data;
     }
-   
-    public static function ConsultarContratoPorNombre(string $usuario){
-        $data = Usuario::ConsultarPorNombres($usuario);
-        $data=$data->load(['contratos' => function (Builder $query) {
-            $query->where('estatus', '!=','cancelado');
-        }])->all();
+    public static function ConsultarPorCurp(string $usuario){
+        $data = Usuario::whereRaw("curp LIKE ?", ['%'.$usuario.'%'])->get();
           return $data;
+    }
+    public static function ConsultarPorRfc(string $usuario){
+        $data = Usuario::whereRaw("rfc LIKE ?", ['%'.$usuario.'%'])->get();
+          return $data;
+    }
+    public static function ConsultarPorCorreo(string $usuario){
+        $data = Usuario::whereRaw("correo LIKE ?", ['%'.$usuario.'%'])->get();
+          return $data;
+    }
+   
+    public static function ConsultarContratoPorNombre(string $id_usuario){
+        
+        $data=Usuario::findOrFail($id_usuario);
+        $data=$data->withWhereHas('contratos' , function (Builder $query) {
+            $query->where('estatus', '!=','cancelado');
+            
+        })->get();
+        return $data;
+        
     }
 }
