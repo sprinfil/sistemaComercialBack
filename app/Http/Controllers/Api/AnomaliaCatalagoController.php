@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\AnomaliaCatalogoResource;
 use App\Http\Requests\StoreAnomaliaCatalogoRequest;
 use App\Http\Requests\UpdateAnomaliaCatalogoRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AnomaliaCatalagoController extends Controller
 {
@@ -41,9 +42,16 @@ class AnomaliaCatalagoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AnomaliaCatalogo $anomaliaCatalogo)
+    public function show(string $id)
     {
-        //
+        try {
+            $anomalia = AnomaliaCatalogo::findOrFail($id);
+            return response(new AnomaliaCatalogoResource($anomalia), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar la anomalia'
+            ], 500);
+        }
     }
 
     /**

@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUserRequest extends FormRequest
+class UpdateOperadorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -20,9 +20,12 @@ class StoreUserRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
+    { 
         return [
-            
+            "nombre"=>"required|string|max:55",
+            "apellido_paterno"=>"required|string|max:55",
+            "apellido_materno"=>"required|string|max:55",
+            "fecha_nacimiento"=>"required|date|max:55",
         ];
     }
 }

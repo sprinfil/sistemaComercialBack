@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('catalogo_bonificaciones', function (Blueprint $table) {
+        Schema::create('descuento_asociados', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre")->nullable();
-            $table->string("descripcion")->nullable();
+            $table->bigInteger('id_usuario')->unsigned()->default('1'); 
+            $table->bigInteger('id_toma')->unsigned()->default('1'); 
+            $table->bigInteger('id_descuento')->unsigned()->default('1'); 
+            $table->string('folio');
+            $table->string('evidencia')->nullable();;
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('catalogo_bonificaciones');
+        Schema::dropIfExists('descuento_asociados');
     }
 };

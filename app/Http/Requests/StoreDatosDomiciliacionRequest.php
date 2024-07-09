@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUserRequest extends FormRequest
+class StoreDatosDomiciliacionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+            "id_toma"=>"required|int",
+            "numero_cuenta"=>"required|string",
+            "fecha_vencimiento"=>"required|string",
+            "tipo_tarjeta"=>"required|string",
+            "limite_cobro"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "domicilio_tarjeta"=>"required|string",
         ];
     }
 }

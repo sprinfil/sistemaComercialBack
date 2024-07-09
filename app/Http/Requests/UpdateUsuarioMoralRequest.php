@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUserRequest extends FormRequest
+class UpdateUsuarioMoralRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+            'nombre' => 'required|string|max:255|alpha:ascii',
+            'nombre_contacto' => 'required|string|max:255|alpha:ascii',
+            'telefono' => 'required|string|size:10',
+            'rfc' => 'required|string|size:13|unique:usuarios,rfc,'.$this->id,
+            'correo' => 'required|string|email|max:255|unique:usuarios,correo,'.$this->id,
         ];
     }
 }

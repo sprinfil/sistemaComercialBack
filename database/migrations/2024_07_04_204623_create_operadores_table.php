@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('catalogo_bonificaciones', function (Blueprint $table) {
+        Schema::create('operadores', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre")->nullable();
-            $table->string("descripcion")->nullable();
+            $table->string("codigo_empleado")->nullable();
+            $table->string("nombre");
+            $table->string("apellido_paterno");
+            $table->string("apellido_materno");
+            $table->string("CURP",18);
+            $table->date("fecha_nacimiento");
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('catalogo_bonificaciones');
+        Schema::dropIfExists('operadores');
     }
 };

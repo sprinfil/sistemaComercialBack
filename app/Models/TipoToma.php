@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class GiroComercialCatalogo extends Model
+class TipoToma extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
         "nombre",
         "descripcion",
+        "estado"
     ];
 }

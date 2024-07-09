@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class GiroComercialCatalogo extends Model
+class Medidor extends Model
 {
     use HasFactory, SoftDeletes;
+    protected $table = "medidores";
     protected $fillable = [
-        "nombre",
-        "descripcion",
+        "id_toma",
+        "numero_serie",
+        "marca",
+        "diametro",
+        "tipo",
     ];
 }

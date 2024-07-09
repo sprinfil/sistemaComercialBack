@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUserRequest extends FormRequest
+class UpdateMedidorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
-        ];
+            "id_toma"=>"required|int",
+            "numero_serie"=>"required|string|max:55|alpha:ascii",
+            "marca" => "required|string|max:55|alpha:ascii",
+            "diametro" => "required|string|max:55|alpha:ascii",
+            "tipo" => "required|string|max:55|alpha:ascii",
+        ]; 
     }
 }
