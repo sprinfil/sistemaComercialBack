@@ -22,7 +22,7 @@ class StoreDatosDomiciliacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_toma"=>"required|int",
+            "id_toma"=>"required|integer",
             "numero_cuenta"=>"required|string",
             "fecha_vencimiento"=>"required|string",
             "tipo_tarjeta"=>"required|string",

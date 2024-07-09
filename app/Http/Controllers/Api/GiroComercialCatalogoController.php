@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Models\ConstanciaCatalogo;
 use App\Http\Controllers\Controller;
 use App\Models\GiroComercialCatalogo;
 use App\Http\Resources\GiroComercialCatalogoResource;
@@ -29,6 +28,7 @@ class GiroComercialCatalogoController extends Controller
      */
     public function store(StoreGiroComercialCatalogoRequest $request)
     {
+        /*
         try{
             $data = $request->validated();
             $girocomercial = GiroComercialCatalogo::create($data);
@@ -37,6 +37,27 @@ class GiroComercialCatalogoController extends Controller
             return response()->json([
                 'error' => 'No se pudo guardar el giro comercial'
             ], 500);
+        }*/
+        $data = $request->validated();
+        //Busca por nombre los eliminados
+        $giro = GiroComercialCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
+        if ($giro) {
+            if ($giro->trashed()) {
+                return response()->json([
+                    'message' => 'El giro ya existe pero ha sido eliminada, ¿Desea restaurarla?',
+                    'restore' => true,
+                    'giro_comercial_id' => $giro->id
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'El giro comercial ya existe',
+                'restore' => false
+            ], 200);
+        }
+        //Si no existe la constancia, la crea
+        if (!$giro) {
+            $giro = GiroComercialCatalogo::create($data);
+            return response(new GiroComercialCatalogo($giro), 201);
         }
     }
 
@@ -86,6 +107,17 @@ class GiroComercialCatalogoController extends Controller
             return response()->json([
                 'error' => 'No se pudo borrar el giro comercial'
             ], 500);
+        }
+    }
+
+    public function restaurarDato (GiroComercialCatalogo $catalogoGiros, Request $request)
+    {
+        $catalogoGiros = GiroComercialCatalogo::withTrashed()->findOrFail($request->id);
+        //Condicion para verificar si el registro esta eliminado
+        if ($catalogoGiros->trashed()) {
+            //Restaura el registro
+            $catalogoGiros->restore();
+            return response()->json(['message' => 'El giro comercial ha sido restaurado' , 200]);
         }
     }
 }

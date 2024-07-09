@@ -22,7 +22,7 @@ class StoreMedidorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_toma"=>"required|int",
+            "id_toma"=>"required|integer",
             "numero_serie"=>"required|string|max:55|alpha:ascii",
             "marca" => "required|string|max:55|alpha:ascii",
             "diametro" => "required|string|max:55|alpha:ascii",
