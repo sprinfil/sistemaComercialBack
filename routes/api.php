@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\Tipo_tomaController;
+use App\Http\Controllers\Api\TomaController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -252,5 +253,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/Operador/log_delete/{id}", "destroy");
         Route::put("/Operador/restaurar/{id}", "restaurarOperador");
     });
-
+    //Toma
+    Route::controller(TomaController::class)->group(function() {
+        Route::post("/Toma/create","store");
+        Route::get("/Toma","index");
+        Route::put("/Toma/update/{id}","update");
+        Route::delete("/Toma/log_delete/{id}","destroy");
+        Route::get("/Toma/show/{id}","show");
+    });
 });
+
+
