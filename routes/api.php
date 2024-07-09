@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\ServicioController;
@@ -194,6 +195,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/cargos/{id}", "show");
         Route::put("/cargos/{id}", "update");
         Route::delete("/cargos/{id}", "destroy");
+    Route::controller(RolController::class)->group(function(){
+        Route::get("/Rol", "index");
+        Route::post("/Rol/create", "store");
+        Route::put("/Rol/update/{id}", "update");
+
+        //log delete significa borrado logico
+        Route::put("Rol/log_delete/{id}", "destroy");
     });
 
     Route::controller(CatalogoBonificacionController::class)->group(function () {
