@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
+use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
@@ -184,6 +185,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/datos-domiciliados/{id}", "show");
         Route::put("/datos-domiciliados/{id}", "update");
         Route::delete("/datos-domiciliados/{id}", "destroy");
+    });
+
+     // Cargos
+     Route::controller(CargoController::class)->group(function () {
+        Route::get("/cargos", "index");
+        Route::post("/cargos", "store");
+        Route::get("/cargos/{id}", "show");
+        Route::put("/cargos/{id}", "update");
+        Route::delete("/cargos/{id}", "destroy");
     });
 
     Route::controller(CatalogoBonificacionController::class)->group(function () {
