@@ -57,7 +57,7 @@ class AnomaliaCatalagoController extends Controller
         //Si no existe la anomalia, la crea
         if (!$anomalia) {
             $anomalia = AnomaliaCatalogo::create($data);
-            return response(new AnomaliaCatalogo($anomalia), 201);
+            return response($anomalia, 201);
         }
         //$data = $request->validated();
     }
