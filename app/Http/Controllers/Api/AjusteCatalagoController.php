@@ -52,7 +52,7 @@ class AjusteCatalagoController extends Controller
         //Si no existe el ajuste, la crea
         if (!$ajuste) {
             $ajuste = AjusteCatalogo::create($data);
-            return response(new AjusteCatalogo($ajuste), 201);
+            return response($ajuste, 201);
         }
         //$data = $request->validated();
     }

@@ -57,7 +57,7 @@ class GiroComercialCatalogoController extends Controller
         //Si no existe la constancia, la crea
         if (!$giro) {
             $giro = GiroComercialCatalogo::create($data);
-            return response(new GiroComercialCatalogo($giro), 201);
+            return response($giro, 201);
         }
     }
 
