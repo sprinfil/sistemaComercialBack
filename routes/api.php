@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
+use App\Http\Controllers\Api\ContratoController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\RolController;
@@ -120,6 +121,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/usuarios/consultaCorreo/{correo}", "showCorreo");
         //log delete significa borrado logico
         Route::delete("/usuarios/log_delete/{id}", "destroy");
+    });
+    // CONTRATOS 
+    Route::controller(ContratoController::class)->group(function () {
+        Route::get("/contratos", "index");
+        Route::post("/contratos/create", "store");
+        Route::put("/contratos/update/{id}", "update");
+        Route::put("/contratos/restore/{id}", "restaurarDato");
+        Route::get("/contratos/consulta/{nombre}", "showPorNombre");
+        //log delete significa borrado logico
+        Route::delete("/contratos/log_delete/{id}", "destroy");
     });
 
     // Gestion de contribuyentes
