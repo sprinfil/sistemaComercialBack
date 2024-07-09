@@ -127,48 +127,39 @@ class UsuarioController extends Controller
     }
     public function showCURP(string $usuario)
     {
-        
         try{
-            $data = Usuario::whereRaw("curp LIKE ?", ['%'.$usuario.'%'])->get();
-        return UsuarioResource::collection(
-            $data
-        );
+            $data = Usuario::ConsultarPorCurp($usuario);
+            return UsuarioResource::collection(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
-        }
-            
-            
-        
-        
+        }   
     }
     public function showRFC(string $usuario)
     {
         try{
-            $data = Usuario::whereRaw("rfc LIKE ?", ['%'.$usuario.'%'])->get();
-        return UsuarioResource::collection(
-            $data
-        );
+            $data = Usuario::ConsultarPorRfc($usuario);
+            return UsuarioResource::collection(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
-        }
-        
-        
+        } 
     }
     public function showCorreo(string $usuario)
     {
         try{
-            $data = Usuario::whereRaw("correo LIKE ?", ['%'.$usuario.'%'])->get();
-        return UsuarioResource::collection(
-            $data
-        );
+            $data = Usuario::ConsultarPorCorreo($usuario);
+            return UsuarioResource::collection(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         }
-        
-        
     }
     /**
      * Update the specified resource in storage.

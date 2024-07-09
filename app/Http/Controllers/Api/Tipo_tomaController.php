@@ -74,7 +74,7 @@ class Tipo_tomaController extends Controller
     public function show(string $tipoToma)
     {
         try{
-            $data = TipoToma::whereRaw("nombre LIKE ?", ['%'.$tipoToma.'%'])->get();
+           
             return TipoTomaResource::collection(
                 $data
             );
