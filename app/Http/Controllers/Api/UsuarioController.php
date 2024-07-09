@@ -63,7 +63,7 @@ class UsuarioController extends Controller
         }
         catch(Exception $ex){
             return response()->json([
-                'error' => 'El usuario ya existe.',
+                'error' => 'El usuario no se pudo modificar.',
                 'restore' => false
             ], 200);
         }
@@ -114,12 +114,7 @@ class UsuarioController extends Controller
     public function show(string $usuario)
     {
         try{
-            $data = Usuario::whereRaw("
-                CONCAT(
-                    COALESCE(nombre, ''), ' ', 
-                    COALESCE(apellido_paterno, ''), ' ', 
-                    COALESCE(apellido_materno, '')
-                )  LIKE ?", ['%'.$usuario.'%'])->get();
+            $data = Usuario::ConsultarPorNombres($usuario);
         return UsuarioResource::collection(
             $data
         );
