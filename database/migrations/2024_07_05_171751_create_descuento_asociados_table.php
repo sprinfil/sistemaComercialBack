@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('id_descuento')->unsigned()->default('1'); 
             $table->string('folio');
             $table->string('evidencia')->nullable();;
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,6 +26,9 @@ class UsuarioResource extends JsonResource
             "curp" => $this->curp,
             "rfc" => $this->rfc,
             "correo" => $this->correo,
+            'contratos' => ContratoResource::collection($this->whenLoaded('contratos')),
+
         ];
     }
+  
 }
