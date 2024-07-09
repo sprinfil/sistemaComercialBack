@@ -195,6 +195,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/cargos/{id}", "show");
         Route::put("/cargos/{id}", "update");
         Route::delete("/cargos/{id}", "destroy");
+    });
+
     Route::controller(RolController::class)->group(function(){
         Route::get("/Rol", "index");
         Route::post("/Rol/create", "store");
@@ -222,4 +224,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/Operador/log_delete/{id}", "destroy");
         Route::put("/Operador/restaurar/{id}", "restaurarOperador");
     });
+
 });
