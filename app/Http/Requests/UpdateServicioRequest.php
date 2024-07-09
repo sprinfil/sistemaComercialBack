@@ -22,7 +22,7 @@ class UpdateServicioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_contrato"=>"required|int",
+            "id_contrato"=>"required|integer",
             "nombre"=>"required|string|max:55|alpha:ascii",
         ];
     }
