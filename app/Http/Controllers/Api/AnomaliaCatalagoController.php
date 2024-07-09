@@ -32,11 +32,34 @@ class AnomaliaCatalagoController extends Controller
      */
     public function store(StoreAnomaliaCatalogoRequest $request)
     {
-       // $this->authorize('create', AnomaliaCatalogo::class);
+        //$this->authorize('create', AnomaliaCatalogo::class);
+        //$data = $request->validated();
+        //$anomalia = AnomaliaCatalogo::create($data);
+        //return response(new AnomaliaCatalogoResource($anomalia), 201);
 
+        //Se valida el store
         $data = $request->validated();
-        $anomalia = AnomaliaCatalogo::create($data);
-        return response(new AnomaliaCatalogoResource($anomalia), 201);
+        //Busca por nombre los eliminados
+        $anomalia = AnomaliaCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
+        if ($anomalia) {
+            if ($anomalia->trashed()) {
+                return response()->json([
+                    'message' => 'La anomalia ya existe pero ha sido eliminada, ¿Desea restaurarla?',
+                    'restore' => true,
+                    'anomalia_id' => $anomalia->id
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'La anomalia ya existe',
+                'restore' => false
+            ], 200);
+        }
+        //Si no existe la anomalia, la crea
+        if (!$anomalia) {
+            $anomalia = AnomaliaCatalogo::create($data);
+            return response(new AnomaliaCatalogo($anomalia), 201);
+        }
+        //$data = $request->validated();
     }
 
     /**
@@ -73,5 +96,16 @@ class AnomaliaCatalagoController extends Controller
     {
         $anomalia = AnomaliaCatalogo::find($request["id"]);
         $anomalia->delete();
+    }
+
+    public function restaurarDato (AnomaliaCatalogo $catalogoAnomalia, Request $request)
+    {
+        $catalogoAnomalia = AnomaliaCatalogo::withTrashed()->findOrFail($request->id);
+        //Condicion para verificar si el registro esta eliminado
+        if ($catalogoAnomalia->trashed()) {
+            //Restaura el registro
+            $catalogoAnomalia->restore();
+            return response()->json(['message' => 'La anomalia ha sido restaurada' , 200]);
+        }
     }
 }

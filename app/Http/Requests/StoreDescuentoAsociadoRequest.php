@@ -22,9 +22,9 @@ class StoreDescuentoAsociadoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_usuario"=>"required|int",
-            "id_toma"=>"required|int",
-            "id_descuento"=>"required|int",
+            "id_usuario"=>"required|integer",
+            "id_toma"=>"required|integer",
+            "id_descuento"=>"required|integer",
             "folio"=>"nullable|string",
             "evidencia"=>"nullable|string",
         ];
