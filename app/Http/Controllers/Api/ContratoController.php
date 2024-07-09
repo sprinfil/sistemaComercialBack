@@ -19,9 +19,18 @@ class ContratoController extends Controller
      */
     public function index()
     {
-        return ContratoResource::collection(
-            Contrato::all()
-        );
+        try{
+            return ContratoResource::collection(
+                Contrato::all()
+            );
+        }
+        catch(Exception $ex){
+            return response()->json([
+                'error' => 'No hay contratos.',
+                'restore' => false
+            ], 200);
+        }
+       
     }
 
     /**
@@ -29,6 +38,9 @@ class ContratoController extends Controller
      */
     public function store(Contrato $contrato,StoreContratoRequest $request)
     {
+        try{
+
+        
         $data=$request->validated();
         
         $contrato = Contrato::withTrashed()->where('id_usuario', $request['id_usuario'])->first();
@@ -54,15 +66,15 @@ class ContratoController extends Controller
                 $contrato = Contrato::create($data);
             return response(new ContratoResource($contrato), 201);
             }
-        /*
+        }
         catch(Exception $ex){
             return response()->json([
-                'error' => 'El Contrato no se pudo.',
+                'error' => 'El Contrato no se pudo crear.',
                 'restore' => false
             ], 200);
         }
        
-        */
+        
         
     }
 
@@ -71,22 +83,19 @@ class ContratoController extends Controller
      */
     public function showPorNombre($nombres)
     {
-        $usuario = Usuario::ConsultarContratoPorNombre($nombres);
+        try{
+            $usuario = Usuario::ConsultarContratoPorNombre($nombres);
         //return json_encode($usuario);
             
         return UsuarioResource::collection(
             $usuario
         );
         
-
-        /*
-        try{
-            
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 200);
         }
-            */
+            
     }
 
     /**
