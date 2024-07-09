@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\AnomaliaCatalagoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
+use App\Http\Controllers\Api\factibilidadController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
@@ -110,5 +111,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("BonificacionesCatalogo/log_delete/{id}", "destroy");
     });
 
+
+
+});
+Route::controller(factibilidadController::class)->group(function(){
+    Route::get("/factibilidad" , "index");
+    Route::post("/factibilidad/create" , "store");
+    Route::get("/factibilidad/show/{id}" , "show");
+    Route::put("/factibilidad/update/{id}" , "update");
+    Route::delete("/factiblidad/delete/{id}" , "destroy");
+    Route::put("/factibilidad/restaurar/{id}" , "restaurar");
 });
 
