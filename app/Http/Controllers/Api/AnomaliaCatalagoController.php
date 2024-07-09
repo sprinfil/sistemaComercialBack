@@ -19,8 +19,7 @@ class AnomaliaCatalagoController extends Controller
      */
     public function index()
     {
-
-        //$this->authorize('viewAny', AnomaliaCatalogo::class);
+       // $this->authorize('viewAny', AnomaliaCatalogo::class);
          
         return AnomaliaCatalogoResource::collection(
             AnomaliaCatalogo::all()

@@ -18,8 +18,10 @@ use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
+use App\Http\Controllers\Api\ContratoController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\ServicioController;
@@ -126,6 +128,16 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::delete("/usuarios/log_delete/{id}", "destroy");
     });
+    // CONTRATOS 
+    Route::controller(ContratoController::class)->group(function () {
+        Route::get("/contratos", "index");
+        Route::post("/contratos/create", "store");
+        Route::put("/contratos/update/{id}", "update");
+        Route::put("/contratos/restore/{id}", "restaurarDato");
+        Route::get("/contratos/consulta/{nombre}", "showPorNombre");
+        //log delete significa borrado logico
+        Route::delete("/contratos/log_delete/{id}", "destroy");
+    });
 
     // Gestion de contribuyentes
     Route::controller(Dato_fiscalController::class)->group(function () {
@@ -213,6 +225,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // bonificaciones
+    Route::controller(RolController::class)->group(function(){
+        Route::get("/Rol", "index");
+        Route::post("/Rol/create", "store");
+        Route::put("/Rol/update/{id}", "update");
+
+        //log delete significa borrado logico
+        Route::put("Rol/log_delete/{id}", "destroy");
+    });
+
     Route::controller(CatalogoBonificacionController::class)->group(function () {
         Route::get("/bonificacionesCatalogo", "index");
         Route::post("/bonificacionesCatalogo/create", "store");
@@ -231,4 +252,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/Operador/log_delete/{id}", "destroy");
         Route::put("/Operador/restaurar/{id}", "restaurarOperador");
     });
+
 });
