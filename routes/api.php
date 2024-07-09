@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
+use App\Http\Controllers\Api\factibilidadController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\ContratoController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
@@ -235,6 +236,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("Rol/log_delete/{id}", "destroy");
     });
 
+    Route::controller(factibilidadController::class)->group(function(){
+        Route::get("/factibilidad" , "index");
+        Route::post("/factibilidad/create" , "store");
+        Route::get("/factibilidad/show/{id}" , "show");
+        Route::put("/factibilidad/update/{id}" , "update");
+        Route::delete("/factiblidad/delete/{id}" , "destroy");
+        Route::put("/factibilidad/restaurar/{id}" , "restaurar");
+    });
+    
     Route::controller(CatalogoBonificacionController::class)->group(function () {
         Route::get("/bonificacionesCatalogo", "index");
         Route::post("/bonificacionesCatalogo/create", "store");
