@@ -22,7 +22,7 @@ class StoreConvenioCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:convenio_catalogos,nombre",
+            "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string",
         ];
     }

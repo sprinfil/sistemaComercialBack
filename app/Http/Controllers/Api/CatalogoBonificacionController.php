@@ -30,7 +30,7 @@ class CatalogoBonificacionController extends Controller
         //Se valida el store
         $data = $request->validated();
         //Busca por nombre los eliminados
-        $catalogoBonificacion = CatalogoBonificacion::withoutTrashed()->where('nombre' , $request->input('nombre'))->first();
+        $catalogoBonificacion = CatalogoBonificacion::withTrashed()->where('nombre' , $request->input('nombre'))->first();
         if ($catalogoBonificacion) {
             if ($catalogoBonificacion->trashed()) {
                 return response()->json([

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AbonoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/AnomaliasCatalogo/update/{id}", "update");
         Route::get("/AnomaliasCatalogo/show/{id}", "show");
         Route::delete("/AnomaliasCatalogo/log_delete/{id}", "destroy");
+        Route::put("/AnomaliasCatalogo/restaurar/{id}", "restaurarDato");
     });
 
     // Descuento catalogo
@@ -49,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/descuentos-catalogos/{id}", "show");
         Route::put("/descuentos-catalogos/{id}", "update");
         Route::delete("/descuentos-catalogos/{id}", "destroy");
+        Route::put("/descuentos-catalogos/restaurar/{id}", "restaurarDato");
     });
 
     // Descuento asociado
@@ -76,7 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/AjustesCatalogo/update/{id}", "update");
 
         //log delete significa borrado logico
-        Route::put("/AjustesCatalogo/log_delete/{id}", "destroy");
+        Route::delete("/AjustesCatalogo/log_delete/{id}", "destroy");
+        Route::put("/AjustesCatalogo/restaurar/{id}", "restaurarDato");
     });
 
     //CONVENIOS
@@ -87,7 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/Concepto/restaurar/{id}", "update");
 
         //log delete significa borrado logico
-        Route::put("/Convenio/log_delete/{id}", "destroy");
+        Route::delete("/Convenio/log_delete/{id}", "destroy");
+        Route::put("/Convenio/restaurar/{id}", "restaurarDato");
     });
 
     //Constancia
@@ -97,7 +102,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/ConstanciasCatalogo/update/{id}", "update");
 
         //log delete significa borrado logico
-        Route::put("/ConstanciasCatalogo/log_delete/{id}", "destroy");
+        Route::delete("/ConstanciasCatalogo/log_delete/{id}", "destroy");
+        Route::put("/ConstanciasCatalogo/restaurar/{id}", "restaurarDato");
     });
 
     // USUARIOS (morales y físicos)
@@ -188,6 +194,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/giros-catalogos/{id}", "show");
         Route::put("/giros-catalogos/{id}", "update");
         Route::delete("/giros-catalogos/{id}", "destroy");
+        Route::put("/giros-catalogos/restaurar/{id}", "restaurarDato");
     });
 
     // Datos domiciliados
@@ -208,6 +215,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/cargos/{id}", "destroy");
     });
 
+    // Abonos
+    Route::controller(AbonoController::class)->group(function () {
+        Route::get("/abonos", "index");
+        Route::post("/abonos", "store");
+        Route::get("/abonos/{id}", "show");
+        Route::put("/abonos/{id}", "update");
+        Route::delete("/abonos/{id}", "destroy");
+    });
+
+    // bonificaciones
     Route::controller(RolController::class)->group(function(){
         Route::get("/Rol", "index");
         Route::post("/Rol/create", "store");
