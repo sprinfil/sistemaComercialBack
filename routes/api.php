@@ -202,6 +202,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/Rol/create", "store");
         Route::put("/Rol/update/{id}", "update");
 
+        Route::post("Rol/give_permissions/{id}", "give_permissions");
+
         //log delete significa borrado logico
         Route::put("Rol/log_delete/{id}", "destroy");
     });
