@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('catalogo_bonificaciones', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre");
-            $table->string("descripcion");
+            $table->string("nombre")->nullable();
+            $table->string("descripcion")->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -22,7 +22,7 @@ class StoreAnomaliaCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:anomalia_catalogos,nombre",
+            "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string|max:55",
         ];
     }
