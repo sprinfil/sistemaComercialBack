@@ -58,4 +58,10 @@ class Usuario extends Model
         return $data;
         
     }
+
+    // Tomas asociadas al usuario
+    public function tomas() : HasMany
+    {
+        return $this->hasMany(Toma::class, 'id_usuario');
+    }
 }

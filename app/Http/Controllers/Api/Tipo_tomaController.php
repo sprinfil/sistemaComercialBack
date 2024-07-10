@@ -56,7 +56,7 @@ class Tipo_tomaController extends Controller
             {
                 $data=$request->validated();
                 $Tipotoma=TipoToma::create($data);
-                return response(new TipoTomaResource($Tipotoma),201);
+                return response($Tipotoma,201);
             }
         }
         catch(Exception $ex){
