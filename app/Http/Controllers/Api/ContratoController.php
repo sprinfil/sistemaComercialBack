@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateContratoRequest;
 use App\Http\Resources\ContratoResource;
 use App\Http\Resources\UsuarioResource;
 use App\Models\Usuario;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -39,33 +40,36 @@ class ContratoController extends Controller
     public function store(Contrato $contrato,StoreContratoRequest $request)
     {
         try{
-
-        
         $data=$request->validated();
-        
-        $contrato = Contrato::withTrashed()->where('id_usuario', $request['id_usuario'])->first();
+        $folio = Contrato::withTrashed()->max('folio_solicitud');
 
-            //VALIDACION POR SI EXISTE
-            if ($contrato) {
-                if ($contrato->trashed()) {
-                    return response()->json([
-                        'message' => 'El contrato ya existe pero ha sido eliminado. ¿Desea restaurarlo?',
-                        'restore' => true,
-                        'contrato_id' => $contrato->id
-                    ], 200);
-                }
-                else{
-                    return response()->json([
-                        'message' => 'El contrato ya existe.',
-                        'restore' => false
-                    ], 200);
-                }
-                
+        
+        if ($folio){
+            $num=substr($folio,0,5)+1;
+            switch(strlen(strval($num))){
+                case 1:
+                    $num="0000".$num;
+                     break;
+                case 2:
+                    $num="000".$num;
+                    break;
+                case 3:
+                    $num="00".$num;
+                    break;
+                case 4:
+                    $num="0".$num;
+                    break;
             }
-            else{
-                $contrato = Contrato::create($data);
-            return response(new ContratoResource($contrato), 201);
-            }
+            $folio=$num.substr($folio,5,5);
+        }
+        else{
+            $folio="00001/".Carbon::now()->format('Y');
+         
+        }
+        $data['folio_solicitud']=$folio;
+        //$contrato = Contrato::create($data);
+        //return response(new ContratoResource($contrato), 201);
+        return $data;
         }
         catch(Exception $ex){
             return response()->json([
@@ -106,7 +110,7 @@ class ContratoController extends Controller
        
         
         try{
-            $data=$request->validated();
+        $data=$request->validated();
         $contrato=Contrato::find($request->id);
         $contrato->update($data);
         $contrato->save();
