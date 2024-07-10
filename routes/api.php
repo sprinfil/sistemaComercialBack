@@ -202,7 +202,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/Rol/create", "store");
         Route::put("/Rol/update/{id}", "update");
 
-        Route::post("Rol/give_permissions/{id}", "give_permissions");
+        Route::post("Rol/give_rol_permissions/{id}", "give_rol_permissions");
+        Route::get("Rol/get_all_permissions_by_rol_id/{id}", "get_all_permissions_by_rol_id");
 
         //log delete significa borrado logico
         Route::put("Rol/log_delete/{id}", "destroy");

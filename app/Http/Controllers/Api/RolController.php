@@ -63,23 +63,24 @@ class RolController extends Controller
         $anomalia = Rol::find($request["id"]);
         $anomalia->delete();
     }
-    
-    public function give_permissions(Request $request, string $id){
-            $rol = ModelsRole::find($id);
-            $data = $request->all();
-            
 
-            foreach($data as $permission => $value){
+    public function give_rol_permissions(Request $request, string $id)
+    {
+        $rol = ModelsRole::find($id);
+        $data = json_decode($request->getContent(), true);
 
-                $permission_temp = Permission::where("name", $permission)->first();
+        foreach ($data as $permission => $value) {
+            $permission_temp = Permission::where("name", $permission)->first();
+            $value === true ?
+                $rol->givePermissionTo($permission_temp->name) :
+                $rol->revokePermissionTo($permission_temp->name);
+        }
+        return json_encode($rol->getPermissionNames());
+    }
 
-                if($value == true){
-                    $rol->givePermissionTo($permission_temp);
-                }else{
-                    $rol->revokePermissionTo($permission_temp);
-                }
-            }
-
-            return $rol->getPermissionNames();
+    public function get_all_permissions_by_rol_id(string $id)
+    {
+        $rol = ModelsRole::find($id);
+        return json_encode($rol->getPermissionNames());
     }
 }

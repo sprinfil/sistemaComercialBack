@@ -4,7 +4,9 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use App\Models\AnomaliaCatalogo;
+use App\Models\ConceptoCatalogo;
 use App\Policies\AnomaliaCatalogoPolicy;
+use App\Policies\ConpcetoCatalogoPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -16,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         AnomaliaCatalogo::class => AnomaliaCatalogoPolicy::class,
+        ConceptoCatalogo::class => ConpcetoCatalogoPolicy::class
     ];
 
     /**

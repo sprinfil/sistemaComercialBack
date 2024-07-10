@@ -27,9 +27,9 @@ class DatabaseSeeder extends Seeder
          $this->call(AjusteSeeder::class);
          $this->call(ConceptoCatalogoSeeder::class);
          $this->call(ConvenioSeeder::class);
-        $this->call(PermissionsSeeder::class);
         $this->call(ConstanciaSeeder::class);
         $this->call(GiroComercialSeeder::class);
         $this->call(RolSeeder::class);
+        $this->call(PermissionsSeeder::class);
     }
 }

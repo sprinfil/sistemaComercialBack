@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -13,21 +14,58 @@ class PermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        $user = User::find(1);
+        $user->assignRole('Admin');
         DB::table('permissions')->insert([
+            //ANOMALIAS
             [
-                'name' => 'Ver Anomalias',
+                'name' => 'VerAnomalias',
                 'guard_name' => 'web',
             ],
             [
-                'name' => 'Crear Anomalia',
+                'name' => 'CrearAnomalia',
                 'guard_name' => 'web',
             ],
             [
-                'name' => 'Editar Anomalia',
+                'name' => 'EditarAnomalia',
                 'guard_name' => 'web',
             ],
             [
-                'name' => 'Eliminar Anomalia',
+                'name' => 'EliminarAnomalia',
+                'guard_name' => 'web',
+            ],
+            //GIROS COMERCIALES
+            [
+                'name' => 'VerGirosComerciales',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearGiroComercial',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarGiroComercial',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarGircoComercial',
+                'guard_name' => 'web',
+            ],
+            //GIROS CONCEPTOS
+            [
+                'name' => 'VerConceptos',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearConcepto',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarConcepto',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarConcepto',
                 'guard_name' => 'web',
             ],
         ]);
