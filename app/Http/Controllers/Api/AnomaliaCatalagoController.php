@@ -19,7 +19,7 @@ class AnomaliaCatalagoController extends Controller
      */
     public function index()
     {
-       // $this->authorize('viewAny', AnomaliaCatalogo::class);
+       $this->authorize('viewAny', AnomaliaCatalogo::class);
          
         return AnomaliaCatalogoResource::collection(
             AnomaliaCatalogo::all()
@@ -32,6 +32,7 @@ class AnomaliaCatalagoController extends Controller
      */
     public function store(StoreAnomaliaCatalogoRequest $request)
     {
+       $this->authorize('create', AnomaliaCatalogo::class);
         //$this->authorize('create', AnomaliaCatalogo::class);
         //$data = $request->validated();
         //$anomalia = AnomaliaCatalogo::create($data);
@@ -57,7 +58,7 @@ class AnomaliaCatalagoController extends Controller
         //Si no existe la anomalia, la crea
         if (!$anomalia) {
             $anomalia = AnomaliaCatalogo::create($data);
-            return response(new AnomaliaCatalogo($anomalia), 201);
+            return response($anomalia, 201);
         }
         //$data = $request->validated();
     }
@@ -82,6 +83,8 @@ class AnomaliaCatalagoController extends Controller
      */
     public function update(UpdateAnomaliaCatalogoRequest $request)
     {
+        $this->authorize('update', AnomaliaCatalogo::class);
+        
         $data = $request->validated();
         $anomalia = AnomaliaCatalogo::find($request["id"]);
         $anomalia->update($data);
@@ -94,6 +97,7 @@ class AnomaliaCatalagoController extends Controller
      */
     public function destroy(Request $request)
     {
+        $this->authorize('delete', AnomaliaCatalogo::class);
         $anomalia = AnomaliaCatalogo::find($request["id"]);
         $anomalia->delete();
     }

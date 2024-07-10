@@ -50,7 +50,7 @@ class ConvenioController extends Controller
        //Si no existe el convenio, lo crea
        if (!$convenio) {
            $convenio = ConvenioCatalogo::create($data);
-           return response(new ConvenioCatalogo($convenio), 201);
+           return response($convenio, 201);
        }
        //$data = $request->validated();
     }

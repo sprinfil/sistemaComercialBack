@@ -19,6 +19,7 @@ class ServicioResource extends JsonResource
             "id" => $this->id,
             "id_contrato" => $this->id_contrato,
             "nombre" => $this->nombre,
+            "id_toma" => $this->id_toma,
         ];
     }
 }

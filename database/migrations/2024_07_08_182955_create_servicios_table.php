@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_contrato')->unsigned()->default('1'); 
             $table->enum('nombre', ['agua', 'alcantarillado', 'saneamiento']);
+            $table->bigInteger('id_toma')->unsigned()->default('1'); 
             $table->softDeletes();
             $table->timestamps();
         });

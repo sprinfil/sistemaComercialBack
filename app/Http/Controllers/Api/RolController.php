@@ -8,6 +8,9 @@ use App\Http\Resources\RolResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRolRequest;
 use App\Http\Requests\UpdateRolRequest;
+use App\Models\Permission;
+use Spatie\Permission\Contracts\Role;
+use Spatie\Permission\Models\Role as ModelsRole;
 
 class RolController extends Controller
 {
@@ -59,5 +62,25 @@ class RolController extends Controller
     {
         $anomalia = Rol::find($request["id"]);
         $anomalia->delete();
+    }
+
+    public function give_rol_permissions(Request $request, string $id)
+    {
+        $rol = ModelsRole::find($id);
+        $data = json_decode($request->getContent(), true);
+
+        foreach ($data as $permission => $value) {
+            $permission_temp = Permission::where("name", $permission)->first();
+            $value === true ?
+                $rol->givePermissionTo($permission_temp->name) :
+                $rol->revokePermissionTo($permission_temp->name);
+        }
+        return json_encode($rol->getPermissionNames());
+    }
+
+    public function get_all_permissions_by_rol_id(string $id)
+    {
+        $rol = ModelsRole::find($id);
+        return json_encode($rol->getPermissionNames());
     }
 }

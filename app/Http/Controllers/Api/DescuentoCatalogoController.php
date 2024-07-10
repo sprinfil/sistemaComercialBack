@@ -63,7 +63,7 @@ class DescuentoCatalogoController extends Controller
         //Si no existe el descuento, lo crea
         if (!$descuento) {
             $descuento = DescuentoCatalogo::create($data);
-            return response(new DescuentoCatalogo($descuento), 201);
+            return response($descuento, 201);
         }
         //$data = $request->validated();
     }

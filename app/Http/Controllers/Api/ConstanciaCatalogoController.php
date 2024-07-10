@@ -50,7 +50,7 @@ class ConstanciaCatalogoController extends Controller
         //Si no existe la constancia, la crea
         if (!$constancia) {
             $constancia = ConstanciaCatalogo::create($data);
-            return response(new ConstanciaCatalogo($constancia), 201);
+            return response($constancia, 201);
         }
         //$data = $request->validated();
     }
