@@ -7,7 +7,9 @@ use App\Models\Contrato;
 use App\Http\Requests\StoreContratoRequest;
 use App\Http\Requests\UpdateContratoRequest;
 use App\Http\Resources\ContratoResource;
+use App\Http\Resources\CotizacionResource;
 use App\Http\Resources\UsuarioResource;
+use App\Models\Cotizacion;
 use App\Models\Usuario;
 use Carbon\Carbon;
 use Exception;
@@ -37,39 +39,24 @@ class ContratoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Contrato $contrato,StoreContratoRequest $request)
+    public function store($id_usuario, Contrato $contrato,StoreContratoRequest $request)
     {
+        
         try{
         $data=$request->validated();
-        $folio = Contrato::withTrashed()->max('folio_solicitud');
-
-        
-        if ($folio){
-            $num=substr($folio,0,5)+1;
-            switch(strlen(strval($num))){
-                case 1:
-                    $num="0000".$num;
-                     break;
-                case 2:
-                    $num="000".$num;
-                    break;
-                case 3:
-                    $num="00".$num;
-                    break;
-                case 4:
-                    $num="0".$num;
-                    break;
-            }
-            $folio=$num.substr($folio,5,5);
+        $Existe=Usuario::ConsultarContratoPorUsuario($id_usuario);
+        $data['folio_solicitud']=Contrato::darFolio();
+        if ($Existe) {
+            return response()->json([
+                'message' => 'El usuario ya tiene un contrato',
+                'restore' => false
+            ], 200);
         }
         else{
-            $folio="00001/".Carbon::now()->format('Y');
-         
+            $contrato = Contrato::create($data);
+            return response(new ContratoResource($contrato), 201);
         }
-        $data['folio_solicitud']=$folio;
-        //$contrato = Contrato::create($data);
-        //return response(new ContratoResource($contrato), 201);
-        return $data;
+
         }
         catch(Exception $ex){
             return response()->json([
@@ -85,10 +72,10 @@ class ContratoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function showPorNombre($nombres)
+    public function showPorUsuario($nombres)
     {
         try{
-            $usuario = Usuario::ConsultarContratoPorNombre($nombres);
+            $usuario = Usuario::ConsultarContratoPorUsuario($nombres);
         //return json_encode($usuario);
             
         return UsuarioResource::collection(
@@ -101,7 +88,21 @@ class ContratoController extends Controller
         }
             
     }
-
+    #TODO
+    public function showPorFolio($folio) ///falta moverle
+    {
+        try{
+            $usuario = Contrato::ConsultarPorFolio($folio);
+        return UsuarioResource::collection(
+            $usuario
+        );
+        
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 200);
+        }
+            
+    }
     /**
      * Update the specified resource in storage.
      */
@@ -148,5 +149,25 @@ class ContratoController extends Controller
          $contrato->restore();
          return response()->json(['message' => 'El contrato ha sido restaurado.'], 200);
      }
+    }
+    //// COTIZACION
+    public function indexCotizacion()
+    {
+        try{
+            return Cotizacion::collection(
+                Cotizacion::all()
+            );
+        }
+        catch(Exception $ex){
+            return response()->json([
+                'error' => 'No hay cotizaciones.',
+                'restore' => false
+            ], 200);
+        }
+       
+    }
+    public function storeCotizacion(Cotizacion $cotizacion){
+        //$cotizacion = Cotizacion::create($data);
+        return new CotizacionResource($cotizacion);
     }
 }

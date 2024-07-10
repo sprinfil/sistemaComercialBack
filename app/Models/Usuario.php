@@ -7,6 +7,7 @@ use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Usuario extends Model
@@ -25,6 +26,10 @@ class Usuario extends Model
     public function contratos(): HasMany
     {
         return $this->hasMany(Contrato::class, 'id_usuario');
+    }
+    public function contratoVigente(): HasOne
+    {
+        return $this->hasOne(Contrato::class, 'id_usuario')->whereNotIn('estatus','cancelado');
     }
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("
@@ -48,7 +53,7 @@ class Usuario extends Model
           return $data;
     }
    
-    public static function ConsultarContratoPorNombre(string $id_usuario){
+    public static function ConsultarContratoPorUsuario(string $id_usuario){
         
         $data=Usuario::findOrFail($id_usuario);
         $data=$data->withWhereHas('contratos' , function (Builder $query) {

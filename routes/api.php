@@ -129,16 +129,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/usuarios/consultaCorreo/{correo}", "showCorreo");
         //log delete significa borrado logico
         Route::delete("/usuarios/log_delete/{id}", "destroy");
+        
     });
     // CONTRATOS 
     Route::controller(ContratoController::class)->group(function () {
         Route::get("/contratos", "index");
-        Route::post("/contratos/create", "store");
+        Route::post("/contratos/create/{id}", "store");
         Route::put("/contratos/update/{id}", "update");
         Route::put("/contratos/restore/{id}", "restaurarDato");
-        Route::get("/contratos/consulta/{nombre}", "showPorNombre");
+        Route::get("/contratos/consulta/{nombre}", "showPorUsuario");
+        Route::get("/contratos/consultaFolio/{folio}", "showPorFolio");
         //log delete significa borrado logico
         Route::delete("/contratos/log_delete/{id}", "destroy");
+        Route::prefix('contratos')->group(function (){
+            Route::get("/cotizacion", "indexCotizacion");
+        });
     });
 
     // Gestion de contribuyentes

@@ -24,9 +24,9 @@ class StoreContratoRequest extends FormRequest
         return [
             'id_usuario' => 'required|exists:usuarios,id',
             'id_toma' => 'sometimes|required|exists:toma,id',
-            'estatus' => 'sometimes|in:pendiente de inspeccion,contrato no factible,inspeccionado,pendiente de pago,contratado,terminado,cancelado',
+            'estatus' => 'sometimes|in:pendiente de inspeccion,contrato no factible,inspeccionado,pendiente de pago,contratado,terminado',
             'nombre_contrato' => 'sometimes|string',
-            'clave_catastral' => 'nullable|string|unique:contratos,clave_catastral',
+            'clave_catastral' => 'nullable|string|min:9|max:12|unique:contratos,clave_catastral',
             'tipo_toma' => 'sometimes|string',
             'colonia' => 'sometimes|string',
             'calle' => 'sometimes|string',
