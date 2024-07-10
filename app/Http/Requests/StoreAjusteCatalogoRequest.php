@@ -25,6 +25,7 @@ class StoreAjusteCatalogoRequest extends FormRequest
             "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string|max:55",
             "estado"=>"nullable|string|max:55",
+            "vigencia"=>"required|date",
         ];
     }
 }
