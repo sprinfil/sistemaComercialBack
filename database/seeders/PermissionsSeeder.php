@@ -51,7 +51,7 @@ class PermissionsSeeder extends Seeder
                 'name' => 'EliminarGircoComercial',
                 'guard_name' => 'web',
             ],
-            //GIROS CONCEPTOS
+            //CONCEPTOS
             [
                 'name' => 'VerConceptos',
                 'guard_name' => 'web',
@@ -66,6 +66,57 @@ class PermissionsSeeder extends Seeder
             ],
             [
                 'name' => 'EliminarConcepto',
+                'guard_name' => 'web',
+            ],
+            //DESCUENTOS
+            [
+                'name' => 'VerDescuentos',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearDescuento',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarDescuento',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarDescuento',
+                'guard_name' => 'web',
+            ],
+            //CONVENIOS
+            [
+                'name' => 'VerConvenios',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearConvenio',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarConvenio',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarConvenio',
+                'guard_name' => 'web',
+            ],
+            //AJUSTES
+            [
+                'name' => 'VerAjustes',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearAjuste',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarAjuste',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarAjuste',
                 'guard_name' => 'web',
             ],
         ]);

@@ -18,6 +18,7 @@ class DescuentoCatalogoController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', DescuentoCatalogo::class);
         try{
             return response(DescuentoCatalogoResource::collection(
                 DescuentoCatalogo::all()
@@ -34,6 +35,7 @@ class DescuentoCatalogoController extends Controller
      */
     public function store(StoreDescuentoCatalogoRequest $request)
     {
+        $this->authorize('create', DescuentoCatalogo::class);
         /*try{
             $data = $request->validated();
             $descuento = DescuentoCatalogo::create($data);
@@ -88,6 +90,7 @@ class DescuentoCatalogoController extends Controller
      */
     public function update(UpdateDescuentoCatalogoRequest $request, string $id)
     {
+        $this->authorize('update', DescuentoCatalogo::class);
         try {
             $data = $request->validated();
             $descuento = DescuentoCatalogo::findOrFail($id);
@@ -106,6 +109,7 @@ class DescuentoCatalogoController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete', DescuentoCatalogo::class);
         try {
             $descuento = DescuentoCatalogo::findOrFail($id);
             $descuento->delete();
