@@ -46,4 +46,6 @@ class Contrato extends Model
     {
         return $this->belongsTo(TipoToma::class, 'tipo_toma', 'nombre');
     }
+
+    
 }
