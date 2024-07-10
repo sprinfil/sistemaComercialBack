@@ -19,7 +19,7 @@ class AnomaliaSeeder extends Seeder
                 'descripcion' => 'Descripción de la anomalia 1',
             ],
             [
-                'nombre' => 'Medidro opaco',
+                'nombre' => 'Medidor opaco',
                 'descripcion' => 'Descripción de la anomalia 2',
             ],
         ]);
