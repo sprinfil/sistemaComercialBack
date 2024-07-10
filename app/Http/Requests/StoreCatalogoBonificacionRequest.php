@@ -22,7 +22,7 @@ class StoreCatalogoBonificacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:catalogo_bonificaciones,nombre",
+            "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string",
         ];
     }

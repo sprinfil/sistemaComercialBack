@@ -49,8 +49,8 @@ class CatalogoBonificacionController extends Controller
         //Si no existe la bonificación, la crea
 
         if (!$catalogoBonificacion) {
-            $bonificacion = CatalogoBonificacion::create($data);
-            return response(new CatalogoBonificacionResource($bonificacion), 201);
+            $catalogoBonificacion = CatalogoBonificacion::create($data);
+            return response($catalogoBonificacion, 201);
         }
 
         //$data = $request->validated();

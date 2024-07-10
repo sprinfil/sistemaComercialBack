@@ -24,6 +24,7 @@ class StoreServicioRequest extends FormRequest
         return [
             "id_contrato"=>"required|integer",
             "nombre"=>"required|string|max:55|alpha:ascii",
+            "id_toma"=>"required|integer",
         ];
     }
 }

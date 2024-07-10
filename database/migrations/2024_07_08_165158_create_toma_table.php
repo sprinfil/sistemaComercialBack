@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('entre_calle_notificaciones_1')->nullable();
             $table->string('entre_calle_notificaciones_2')->nullable();
             $table->string('tipo_servicio');
-            $table->string('tipo_toma');
+            $table->enum('tipo_toma', ['domestica', 'comercial', 'industrial']);
             $table->string('tipo_contratacion');
             $table->softDeletes();
             $table->timestamps();
