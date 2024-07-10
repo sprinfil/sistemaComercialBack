@@ -22,9 +22,9 @@ class UpdateContratoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_toma' => 'nullable',
+            //'id_toma' => 'nullable',
+            'id_toma' => 'required|exists:toma,id',
             'id_usuario' => 'sometimes|exists:usuarios,id',
-            //'id_toma' => 'nullable|required|exists:toma,id',
             'folio_solicitud' => 'sometimes|string|unique:contratos,folio_solicitud,'.$this->id,
             'estatus' => 'sometimes|in:pendiente de inspeccion,contrato no factible,inspeccionado,pendiente de pago,contratado,terminado,cancelado',
             'nombre_contrato' => 'sometimes|string',

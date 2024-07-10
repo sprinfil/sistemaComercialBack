@@ -36,8 +36,12 @@ class UsuarioController extends Controller
     public function store(Usuario $usuario,StoreUsuarioRequest $request)
     {
         
+        
         try{
             $data=$request->validated();
+            $usuario=Usuario::create($data);
+            return response(new UsuarioResource($usuario),201);
+            /*
             $usuario = Usuario::withTrashed()->where('curp', $request['curp'])->orWhere('rfc', $request['rfc'])->orWhere('correo', $request['correo'])->first();
 
             //VALIDACION POR SI EXISTE
@@ -60,14 +64,14 @@ class UsuarioController extends Controller
                 $usuario=Usuario::create($data);
                 return response(new UsuarioResource($usuario),201);
             }
+            */
         }
         catch(Exception $ex){
             return response()->json([
-                'error' => 'El usuario no se pudo modificar.',
+                'error' => 'El usuario no se pudo crear.',
                 'restore' => false
             ], 200);
         }
-      
    
         
         
