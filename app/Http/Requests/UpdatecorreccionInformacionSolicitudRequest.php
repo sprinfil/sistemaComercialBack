@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAnomaliaCatalogoRequest extends FormRequest
+class UpdatecorreccionInformacionSolicitudRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,12 @@ class StoreAnomaliaCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55",
-            "descripcion"=>"nullable|string|max:55",
+           
+            "tipo_correccion"=>"required|string|max:20|
+            in:Toma,Medidor,Informacion personal",
+            "fecha_solicitud"=>"required|date",
+            "fecha_correccion"=>"nullable|date",
+            "comentario"=>"nullable|string|max:100",            
         ];
     }
 }

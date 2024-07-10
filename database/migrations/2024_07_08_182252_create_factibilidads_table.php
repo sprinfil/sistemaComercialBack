@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('servicios', function (Blueprint $table) {
+        Schema::create('factibilidad', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_contrato')->unsigned()->default('1'); 
-            $table->enum('nombre', ['agua', 'alcantarillado', 'saneamiento']);
-            $table->bigInteger('id_toma')->unsigned()->default('1'); 
+            //$table->unsignedBigInteger('contrato_id');
+            $table->enum('estado_factible', ['no_factible', 'factible'])->default('no_factible');
+            $table->double('monto_derechos_conexion')->nullable(); //Puede que cambie a double.
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('servicios');
+        Schema::dropIfExists('factibilidad');
     }
 };

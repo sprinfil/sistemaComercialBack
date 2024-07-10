@@ -36,8 +36,12 @@ class UsuarioController extends Controller
     public function store(Usuario $usuario,StoreUsuarioRequest $request)
     {
         
+        
         try{
             $data=$request->validated();
+            $usuario=Usuario::create($data);
+            return response(new UsuarioResource($usuario),201);
+            /*
             $usuario = Usuario::withTrashed()->where('curp', $request['curp'])->orWhere('rfc', $request['rfc'])->orWhere('correo', $request['correo'])->first();
 
             //VALIDACION POR SI EXISTE
@@ -60,14 +64,14 @@ class UsuarioController extends Controller
                 $usuario=Usuario::create($data);
                 return response(new UsuarioResource($usuario),201);
             }
+            */
         }
         catch(Exception $ex){
             return response()->json([
-                'error' => 'El usuario ya existe.',
+                'error' => 'El usuario no se pudo crear.',
                 'restore' => false
             ], 200);
         }
-      
    
         
         
@@ -114,12 +118,7 @@ class UsuarioController extends Controller
     public function show(string $usuario)
     {
         try{
-            $data = Usuario::whereRaw("
-                CONCAT(
-                    COALESCE(nombre, ''), ' ', 
-                    COALESCE(apellido_paterno, ''), ' ', 
-                    COALESCE(apellido_materno, '')
-                )  LIKE ?", ['%'.$usuario.'%'])->get();
+            $data = Usuario::ConsultarPorNombres($usuario);
         return UsuarioResource::collection(
             $data
         );
@@ -132,48 +131,39 @@ class UsuarioController extends Controller
     }
     public function showCURP(string $usuario)
     {
-        
         try{
-            $data = Usuario::whereRaw("curp LIKE ?", ['%'.$usuario.'%'])->get();
-        return UsuarioResource::collection(
-            $data
-        );
+            $data = Usuario::ConsultarPorCurp($usuario);
+            return UsuarioResource::collection(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
-        }
-            
-            
-        
-        
+        }   
     }
     public function showRFC(string $usuario)
     {
         try{
-            $data = Usuario::whereRaw("rfc LIKE ?", ['%'.$usuario.'%'])->get();
-        return UsuarioResource::collection(
-            $data
-        );
+            $data = Usuario::ConsultarPorRfc($usuario);
+            return UsuarioResource::collection(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
-        }
-        
-        
+        } 
     }
     public function showCorreo(string $usuario)
     {
         try{
-            $data = Usuario::whereRaw("correo LIKE ?", ['%'.$usuario.'%'])->get();
-        return UsuarioResource::collection(
-            $data
-        );
+            $data = Usuario::ConsultarPorCorreo($usuario);
+            return UsuarioResource::collection(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         }
-        
-        
     }
     /**
      * Update the specified resource in storage.

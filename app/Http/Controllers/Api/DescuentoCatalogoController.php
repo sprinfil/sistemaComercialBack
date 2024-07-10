@@ -34,7 +34,7 @@ class DescuentoCatalogoController extends Controller
      */
     public function store(StoreDescuentoCatalogoRequest $request)
     {
-        try{
+        /*try{
             $data = $request->validated();
             $descuento = DescuentoCatalogo::create($data);
             return response(new DescuentoCatalogoResource($descuento), 201);
@@ -42,7 +42,30 @@ class DescuentoCatalogoController extends Controller
             return response()->json([
                 'error' => 'No se pudo guardar el descuento'
             ], 500);
+        }*/
+        //Se valida el store
+        $data = $request->validated();
+        //Busca por nombre los eliminados
+        $descuento = DescuentoCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
+        if ($descuento) {
+            if ($descuento->trashed()) {
+                return response()->json([
+                    'message' => 'El descuento ya existe pero ha sido eliminada, ¿Desea restaurarla?',
+                    'restore' => true,
+                    'descuento_id' => $descuento->id
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'El descuento ya existe',
+                'restore' => false
+            ], 200);
         }
+        //Si no existe el descuento, lo crea
+        if (!$descuento) {
+            $descuento = DescuentoCatalogo::create($data);
+            return response($descuento, 201);
+        }
+        //$data = $request->validated();
     }
 
     /**
@@ -91,6 +114,17 @@ class DescuentoCatalogoController extends Controller
             return response()->json([
                 'error' => 'No se pudo borrar el descuento'
             ], 500);
+        }
+    }
+
+    public function restaurarDato (DescuentoCatalogo $catalogoDescuento, Request $request)
+    {
+        $catalogoDescuento = DescuentoCatalogo::withTrashed()->findOrFail($request->id);
+        //Condicion para verificar si el registro esta eliminado
+        if ($catalogoDescuento->trashed()) {
+            //Restaura el registro
+            $catalogoDescuento->restore();
+            return response()->json(['message' => 'El descuento ha sido restaurado' , 200]);
         }
     }
 }

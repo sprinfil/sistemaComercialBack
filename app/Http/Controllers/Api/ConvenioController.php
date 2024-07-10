@@ -27,9 +27,32 @@ class ConvenioController extends Controller
      */
     public function store(StoreConvenioCatalogoRequest $request)
     {
-       $data = $request->validated();
+       /*$data = $request->validated();
        $convenio = ConvenioCatalogo::create($data);
-       return response(new ConvenioResource($convenio), 201);
+       return response(new ConvenioResource($convenio), 201);*/
+       //Se valida el store
+       $data = $request->validated();
+       //Busca por nombre los eliminados
+       $convenio = ConvenioCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
+       if ($convenio) {
+           if ($convenio->trashed()) {
+               return response()->json([
+                   'message' => 'El convenio ya existe pero ha sido eliminada, ¿Desea restaurarla?',
+                   'restore' => true,
+                   'convenio_id' => $convenio->id
+               ], 200);
+           }
+           return response()->json([
+               'message' => 'El convenio ya existe',
+               'restore' => false
+           ], 200);
+       }
+       //Si no existe el convenio, lo crea
+       if (!$convenio) {
+           $convenio = ConvenioCatalogo::create($data);
+           return response($convenio, 201);
+       }
+       //$data = $request->validated();
     }
 
     /**
@@ -69,5 +92,16 @@ class ConvenioController extends Controller
             return response()->json(['message' => 'Algo fallo'], 500);
         }
 
+    }
+
+    public function restaurarDato (ConvenioCatalogo $convenioCatalogo, Request $request)
+    {
+        $convenioCatalogo = ConvenioCatalogo::withTrashed()->findOrFail($request->id);
+        //Condicion para verificar si el registro esta eliminado
+        if ($convenioCatalogo->trashed()) {
+            //Restaura el registro
+            $convenioCatalogo->restore();
+            return response()->json(['message' => 'El convenio ha sido restaurado' , 200]);
+        }
     }
 }

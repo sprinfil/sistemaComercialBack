@@ -22,7 +22,7 @@ class StoreAjusteCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:ajuste_catalogos,nombre",
+            "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string|max:55",
             "estado"=>"nullable|string|max:55",
         ];

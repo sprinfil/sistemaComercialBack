@@ -30,7 +30,7 @@ class CatalogoBonificacionController extends Controller
         //Se valida el store
         $data = $request->validated();
         //Busca por nombre los eliminados
-        $catalogoBonificacion = CatalogoBonificacion::withoutTrashed()->where('nombre' , $request->input('nombre'))->first();
+        $catalogoBonificacion = CatalogoBonificacion::withTrashed()->where('nombre' , $request->input('nombre'))->first();
         if ($catalogoBonificacion) {
             if ($catalogoBonificacion->trashed()) {
                 return response()->json([
@@ -49,8 +49,8 @@ class CatalogoBonificacionController extends Controller
         //Si no existe la bonificación, la crea
 
         if (!$catalogoBonificacion) {
-            $bonificacion = CatalogoBonificacion::create($data);
-            return response(new CatalogoBonificacionResource($bonificacion), 201);
+            $catalogoBonificacion = CatalogoBonificacion::create($data);
+            return response($catalogoBonificacion, 201);
         }
 
         //$data = $request->validated();

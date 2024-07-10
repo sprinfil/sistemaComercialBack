@@ -26,9 +26,33 @@ class ConstanciaCatalogoController extends Controller
      */
     public function store(StoreCosntanciaCatalogoRequest $request)
     {
+        /*
         $data = $request->validated();
         $cosntancia = ConstanciaCatalogo::create($data);
         return response(new ConstanciaCatalogoResource($cosntancia), 201);
+        */
+        $data = $request->validated();
+        //Busca por nombre los eliminados
+        $constancia = ConstanciaCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
+        if ($constancia) {
+            if ($constancia->trashed()) {
+                return response()->json([
+                    'message' => 'La constancia ya existe pero ha sido eliminada, ¿Desea restaurarla?',
+                    'restore' => true,
+                    'constancia_id' => $constancia->id
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'La constancia ya existe',
+                'restore' => false
+            ], 200);
+        }
+        //Si no existe la constancia, la crea
+        if (!$constancia) {
+            $constancia = ConstanciaCatalogo::create($data);
+            return response($constancia, 201);
+        }
+        //$data = $request->validated();
     }
 
     /**
@@ -58,5 +82,16 @@ class ConstanciaCatalogoController extends Controller
     {
         $constancia = ConstanciaCatalogo::find($request["id"]);
         $constancia->delete();
+    }
+
+    public function restaurarDato (ConstanciaCatalogo $constanciaCatalogo, Request $request)
+    {
+        $constanciaCatalogo = ConstanciaCatalogo::withTrashed()->findOrFail($request->id);
+        //Condicion para verificar si el registro esta eliminado
+        if ($constanciaCatalogo->trashed()) {
+            //Restaura el registro
+            $constanciaCatalogo->restore();
+            return response()->json(['message' => 'La constancia ha sido restaurado' , 200]);
+        }
     }
 }

@@ -33,9 +33,41 @@ class Tipo_tomaController extends Controller
      */
     public function store(StoreTipoTomaRequest $request)
     {
-        $data=$request->validated();
-        $Tipotoma=TipoToma::create($data);
-        return response(new TipoTomaResource($Tipotoma),201);
+        
+            
+        try{
+            $data=$request->validated();
+            $Tipotoma = TipoToma::withTrashed()->where('nombre',$request['nombre'])->first();
+
+            //VALIDACION POR SI EXISTE
+            if ($Tipotoma) {
+                if ($Tipotoma->trashed()) {
+                    return response()->json([
+                        'message' => 'El el tipo de toma ya existe pero ha sido eliminado. ¿Desea restaurarlo?',
+                        'restore' => true,
+                        'tipoToma_id' => $Tipotoma->id
+                    ], 200);
+                }
+                return response()->json([
+                    'message' => 'El tipo de toma ya existe.',
+                    'restore' => false
+                ], 200);
+            }
+            //si no existe el usuario lo crea
+            if(!$Tipotoma)
+            {
+                $Tipotoma=TipoToma::create($data);
+                return response($Tipotoma,201);
+            }
+        }
+        catch(Exception $ex){
+            return response()->json([
+                'error' => 'El tipo de toma no se pudo crear.',
+                'restore' => false
+            ], 200);
+        }
+            
+        
     }
 
     /**
@@ -44,7 +76,7 @@ class Tipo_tomaController extends Controller
     public function show(string $tipoToma)
     {
         try{
-            $data = TipoToma::whereRaw("nombre LIKE ?", ['%'.$tipoToma.'%'])->get();
+            $data = TipoToma::ConsultarPorNombres($tipoToma);
             return TipoTomaResource::collection(
                 $data
             );
