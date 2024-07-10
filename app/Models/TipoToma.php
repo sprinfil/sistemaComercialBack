@@ -27,6 +27,7 @@ class TipoToma extends Model
           return $data;
     }
 
+    // Tomas asociadas a tipo de toma
     public function tomas() : HasMany
     {
         return $this->hasMany(Toma::class, 'tipo_toma', 'nombre');

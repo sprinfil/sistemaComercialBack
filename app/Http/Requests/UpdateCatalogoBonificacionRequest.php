@@ -24,6 +24,8 @@ class UpdateCatalogoBonificacionRequest extends FormRequest
         return [
             "nombre"=>"required|string|max:55|unique:catalogo_bonificaciones,nombre,".$this->id,
             "descripcion"=>"nullable|string",
+            "estado"=>"nullable|string|max:55",
+            "vigencia"=>"required|date",
         ];
     }
 }

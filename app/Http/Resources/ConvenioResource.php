@@ -20,6 +20,8 @@ class ConvenioResource extends JsonResource
             "id" => $this->id,
             "nombre" => $this->nombre,
             "descripcion" => $this->descripcion,
+            "estado" => $this->estado,
+            "vigencia" =>  $this->vigencia,
         ];
     }
 }

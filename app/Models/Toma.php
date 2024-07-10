@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Toma extends Model
@@ -64,5 +65,11 @@ class Toma extends Model
     public function contrato() : HasMany
     {
         return $this->hasMany(Contrato::class, 'id_toma');
+    }
+
+     // Medidor asociado a la toma
+    public function medidor() : HasOne
+    {
+        return $this->hasOne(Medidor::class, 'id_toma');
     }
 }
