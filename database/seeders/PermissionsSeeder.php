@@ -34,23 +34,6 @@ class PermissionsSeeder extends Seeder
                 'name' => 'EliminarAnomalia',
                 'guard_name' => 'web',
             ],
-            //GIROS COMERCIALES
-            [
-                'name' => 'VerGirosComerciales',
-                'guard_name' => 'web',
-            ],
-            [
-                'name' => 'CrearGiroComercial',
-                'guard_name' => 'web',
-            ],
-            [
-                'name' => 'EditarGiroComercial',
-                'guard_name' => 'web',
-            ],
-            [
-                'name' => 'EliminarGircoComercial',
-                'guard_name' => 'web',
-            ],
             //CONCEPTOS
             [
                 'name' => 'VerConceptos',
@@ -117,6 +100,74 @@ class PermissionsSeeder extends Seeder
             ],
             [
                 'name' => 'EliminarAjuste',
+                'guard_name' => 'web',
+            ],
+            //CONSTANCIA
+            [
+                'name' => 'VerConstancias',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearConstancia',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarConstancia',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarConstancia',
+                'guard_name' => 'web',
+            ],
+            //BONIFICACION
+            [
+                'name' => 'VerBonificaciones',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearBonificacion',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarBonificacion',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarBonificacion',
+                'guard_name' => 'web',
+            ],
+            //GIROS COMERCIALES
+            [
+                'name' => 'VerGirosComerciales',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearGiroComercial',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarGiroComercial',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarGircoComercial',
+                'guard_name' => 'web',
+            ],
+            //TIPO DE TOMA
+            [
+                'name' => 'VerTiposDeToma',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearTipoDeToma',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarTipoDeToma',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarTipoDeTomas',
                 'guard_name' => 'web',
             ],
         ]);
