@@ -23,5 +23,7 @@ class RolSeeder extends Seeder
                  "guard_name" => "web"
             ],
         ]);
+
+        
     }
 }
