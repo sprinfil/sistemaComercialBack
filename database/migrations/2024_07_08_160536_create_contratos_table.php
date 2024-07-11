@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('nombre_contrato');
             $table->string('clave_catastral')->nullable();
             $table->enum('tipo_toma', ['domestica', 'comercial', 'industrial']);
+            $table->enum('servicio_contratado', ['agua', 'alcantarillado y saneamiento']);
             $table->string('colonia');
             $table->string('calle');
             $table->string('entre_calle1')->nullable();

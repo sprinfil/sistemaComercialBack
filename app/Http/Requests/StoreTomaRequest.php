@@ -46,6 +46,8 @@ class StoreTomaRequest extends FormRequest
                in:domestico,comercial,industrial,publico,especial",
             "tipo_contratacion"=>"required|string|max:55|
                in:normal,condicionado,desarrollador,comercial,industrial,clandestina",
+               "c_agua"=>"nullable|int",
+               "c_alc_san"=>"nullable|int",
         ];
     }
 }

@@ -41,12 +41,11 @@ class ContratoController extends Controller
      */
     public function store($id_usuario, Contrato $contrato,StoreContratoRequest $request)
     {
-        
-        try{
         $data=$request->validated();
-        $Existe=Usuario::ConsultarContratoPorUsuario($id_usuario);
+        $usuario=usuario::find($id_usuario);
+        $contrato=$usuario->contratoVigente;
         $data['folio_solicitud']=Contrato::darFolio();
-        if ($Existe) {
+        if ($contrato) {
             return response()->json([
                 'message' => 'El usuario ya tiene un contrato',
                 'restore' => false
@@ -55,7 +54,11 @@ class ContratoController extends Controller
         else{
             $contrato = Contrato::create($data);
             return response(new ContratoResource($contrato), 201);
+            //return $contrato;
         }
+        /*
+        try{
+        
 
         }
         catch(Exception $ex){
@@ -64,6 +67,7 @@ class ContratoController extends Controller
                 'restore' => false
             ], 200);
         }
+            */
        
         
         
@@ -166,8 +170,9 @@ class ContratoController extends Controller
         }
        
     }
-    public function storeCotizacion(Cotizacion $cotizacion){
-        //$cotizacion = Cotizacion::create($data);
-        return new CotizacionResource($cotizacion);
+    public function crearCotizacion($id_usuario,Cotizacion $cotizacion){
+       $data=Usuario::ConsultarCotizacionPorUsuario($id_usuario);
+       return $data;
+        //return new CotizacionResource($cotizacion);
     }
 }

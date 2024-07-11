@@ -20,6 +20,7 @@ class Contrato extends Model
         'nombre_contrato',
         'clave_catastral',
         'tipo_toma',
+        'servicio_contratado',
         'colonia',
         'calle',
         'entre_calle1',
@@ -92,5 +93,6 @@ class Contrato extends Model
         return $data;
         
     }
+    
     
 }

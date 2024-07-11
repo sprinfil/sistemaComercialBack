@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('Vigencia');
             $table->date('fecha_inicio');
             $table->date('fecha_fin');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

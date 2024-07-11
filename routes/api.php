@@ -145,6 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/contratos/log_delete/{id}", "destroy");
         Route::prefix('contratos')->group(function (){
             Route::get("/cotizacion", "indexCotizacion");
+            Route::post("/cotizacion/create/{id}", "crearCotizacion");
         });
     });
 

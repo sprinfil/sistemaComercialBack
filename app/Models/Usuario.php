@@ -29,7 +29,7 @@ class Usuario extends Model
     }
     public function contratoVigente(): HasOne
     {
-        return $this->hasOne(Contrato::class, 'id_usuario')->whereNotIn('estatus','cancelado');
+        return $this->hasOne(Contrato::class, 'id_usuario')->where('estatus','!=','cancelado');
     }
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("
@@ -61,6 +61,14 @@ class Usuario extends Model
             
         })->get();
         return $data;
+        
+    }
+    public static function ConsultarCotizacionPorUsuario(string $id_usuario){
+        
+        $usuario=Usuario::findOrFail($id_usuario);
+        $contrato=$usuario->contratos;
+        //$data=$contrato->cotizacionesVigentes;
+        return $contrato;
         
     }
 
