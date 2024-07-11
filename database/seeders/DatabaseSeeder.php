@@ -31,5 +31,6 @@ class DatabaseSeeder extends Seeder
         $this->call(GiroComercialSeeder::class);
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
+        $this->call(BonificacionCatalogoSeeder::class);
     }
 }

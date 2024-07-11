@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Support\Facades\Gate;
 use App\Models\AjusteCatalogo;
 use App\Models\AnomaliaCatalogo;
 use App\Models\CatalogoBonificacion;
@@ -49,5 +49,9 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Admin') ? true : null;
+        });
     }
 }
