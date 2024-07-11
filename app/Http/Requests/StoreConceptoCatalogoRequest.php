@@ -24,6 +24,7 @@ class StoreConceptoCatalogoRequest extends FormRequest
         return [
             "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string",
+            "prioridad_abono"=>"required|int",
         ];
     }
 }

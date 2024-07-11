@@ -24,6 +24,7 @@ class UpdateConceptoCatalogoRequest extends FormRequest
         return [
             "nombre"=>"required|string|max:55|unique:concepto_catalogos,nombre,".$this->id,
             "descripcion"=>"nullable|string",
+            "prioridad_abono"=>"required|int",
         ];
     }
 }
