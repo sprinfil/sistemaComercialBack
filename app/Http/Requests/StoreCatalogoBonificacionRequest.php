@@ -25,7 +25,7 @@ class StoreCatalogoBonificacionRequest extends FormRequest
             "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string",
             "estado"=>"nullable|string|max:55",
-            "vigencia"=>"required|date",
+            "vigencia"=>"nullable|date",
         ];
     }
 }

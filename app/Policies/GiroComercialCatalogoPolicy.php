@@ -28,6 +28,6 @@ class GiroComercialCatalogoPolicy
 
     public function delete(User $user)
     {
-        return $user->hasPermissionTo('EliminarGircoComercialP');
+        return $user->hasPermissionTo('EliminarGircoComercial');
     }
 }

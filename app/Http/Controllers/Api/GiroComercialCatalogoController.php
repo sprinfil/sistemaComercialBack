@@ -21,7 +21,7 @@ class GiroComercialCatalogoController extends Controller
         $this->authorize('viewAny', GiroComercialCatalogo::class);
 
         return response(GiroComercialCatalogoResource::collection(
-            GiroComercialCatalogo::all()
+            GiroComercialCatalogo::orderby("id", "desc")->get()
         ),200);
     }
 

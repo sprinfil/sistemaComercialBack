@@ -25,7 +25,7 @@ class UpdateConvenioCatalogoRequest extends FormRequest
             "nombre"=>"required|string|max:55|unique:convenio_catalogos,nombre,".$this->id,
             "descripcion"=>"nullable|string",
             "estado"=>"nullable|string|max:55",
-            "vigencia"=>"required|date",
+            "vigencia"=>"nullable|date",
         ];
     }
 }
