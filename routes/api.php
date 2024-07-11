@@ -264,6 +264,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(OperadorController::class)->group(function () {
         Route::get("/Operador", "index");
         Route::post("/Operador/create", "store");
+        
+        Route::post("/Operador/create2", "store_2");
+
         Route::put("/Operador/update/{id}", "update");
         Route::get("/Operador/show/{id}", "show");
         Route::delete("/Operador/log_delete/{id}", "destroy");

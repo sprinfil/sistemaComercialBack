@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UpdateOperadorRequest extends FormRequest
 {
@@ -22,6 +23,14 @@ class UpdateOperadorRequest extends FormRequest
     public function rules(): array
     { 
         return [
+            "name"=>"required|string|max:55",
+            "email"=>"nullable|email|unique:users,email,".$this->id,
+            "password"=>[
+                "confirmed",
+                Password::min(8)
+                ->letters()
+                ->symbols()
+            ],
             "nombre"=>"required|string|max:55",
             "apellido_paterno"=>"required|string|max:55",
             "apellido_materno"=>"required|string|max:55",
