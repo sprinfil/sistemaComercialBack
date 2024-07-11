@@ -51,10 +51,6 @@ class ConceptoCatalogoSeeder extends Seeder
                 'descripcion' => 'Descripcion de no servicio',
             ],
             [
-                'nombre' => 'Constancia de no servicio',
-                'descripcion' => 'Descripcion de no servicio',
-            ],
-            [
                 'nombre' => 'Profundidad',
                 'descripcion' => 'Descripcion de la profundidad',
             ],
