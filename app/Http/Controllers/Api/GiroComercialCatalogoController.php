@@ -18,8 +18,10 @@ class GiroComercialCatalogoController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', GiroComercialCatalogo::class);
+
         return response(GiroComercialCatalogoResource::collection(
-            GiroComercialCatalogo::all()
+            GiroComercialCatalogo::orderby("id", "desc")->get()
         ),200);
     }
 
@@ -28,6 +30,7 @@ class GiroComercialCatalogoController extends Controller
      */
     public function store(StoreGiroComercialCatalogoRequest $request)
     {
+        $this->authorize('create', GiroComercialCatalogo::class);
         /*
         try{
             $data = $request->validated();
@@ -81,6 +84,7 @@ class GiroComercialCatalogoController extends Controller
      */
     public function update(UpdateGiroComercialCatalogoRequest $request, string $id)
     {
+        $this->authorize('update', GiroComercialCatalogo::class);
         try {
             $data = $request->validated();
             $girocomercial = GiroComercialCatalogo::findOrFail($id);
@@ -99,6 +103,7 @@ class GiroComercialCatalogoController extends Controller
      */
     public function destroy(string $id)
     {
+        $this->authorize('delete', GiroComercialCatalogo::class);
         try {
             $girocomercial = GiroComercialCatalogo::findOrFail($id);
             $girocomercial->delete();

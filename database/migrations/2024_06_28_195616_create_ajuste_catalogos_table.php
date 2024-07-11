@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string("nombre");
             $table->string("descripcion");
             $table->enum('estado', ['activo', 'inactivo'])->nullable();
-            $table->date("vigencia");
+            $table->date("vigencia")->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
