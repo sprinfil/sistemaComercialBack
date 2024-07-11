@@ -171,6 +171,23 @@ class PermissionsSeeder extends Seeder
                 'name' => 'EliminarTipoDeTomas',
                 'guard_name' => 'web',
             ],
+            //OPERADORES DEL SISTEMA
+            [
+                'name' => 'VerOperadores',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'CrearOperador',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EditarOperador',
+                'guard_name' => 'web',
+            ],
+            [
+                'name' => 'EliminarOperador',
+                'guard_name' => 'web',
+            ],
         ]);
     }
 }
