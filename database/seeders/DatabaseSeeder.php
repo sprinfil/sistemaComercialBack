@@ -23,6 +23,12 @@ class DatabaseSeeder extends Seeder
             'password' => '$2y$12$doEXdsTesrTif4re8ES2huh9rWGaUkBCkSupshDOdp1EdXElPYAmq',
         ]);
 
+        \App\Models\User::factory()->create([
+            'name' => 'dev',
+            'email' => 'dev@example.com',
+            'password' => '$2y$12$doEXdsTesrTif4re8ES2huh9rWGaUkBCkSupshDOdp1EdXElPYAmq',
+        ]);
+
          $this->call(AnomaliaSeeder::class);
          $this->call(AjusteSeeder::class);
          $this->call(ConceptoCatalogoSeeder::class);
