@@ -16,6 +16,7 @@ class ConstanciaCatalogoController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', ConstanciaCatalogo::class);
         return ConstanciaCatalogoResource::collection(
             ConstanciaCatalogo::all()
         );
@@ -26,6 +27,7 @@ class ConstanciaCatalogoController extends Controller
      */
     public function store(StoreCosntanciaCatalogoRequest $request)
     {
+        $this->authorize('create', ConstanciaCatalogo::class);
         /*
         $data = $request->validated();
         $cosntancia = ConstanciaCatalogo::create($data);
@@ -68,6 +70,7 @@ class ConstanciaCatalogoController extends Controller
      */
     public function update(UpdateCosntanciaCatalogoRequest $request, ConstanciaCatalogo $cosntanciaCatalogo)
     {
+        $this->authorize('update', ConstanciaCatalogo::class);
         $data = $request->validated();
         $constancia = ConstanciaCatalogo::find($request["id"]);
         $constancia->update($data);
@@ -80,6 +83,7 @@ class ConstanciaCatalogoController extends Controller
      */
     public function destroy(ConstanciaCatalogo $cosntanciaCatalogo, Request $request)
     {
+        $this->authorize('delete', ConstanciaCatalogo::class);
         $constancia = ConstanciaCatalogo::find($request["id"]);
         $constancia->delete();
     }
