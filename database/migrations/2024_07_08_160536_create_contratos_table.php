@@ -30,6 +30,8 @@ return new class extends Migration
             $table->enum('tipo_toma', ['domestica', 'comercial', 'industrial']);
             $table->enum('servicio_contratado', ['agua', 'alcantarillado y saneamiento']);
             $table->string('colonia');
+            $table->string('municipio');
+            $table->string('localidad');
             $table->string('calle');
             $table->string('entre_calle1')->nullable();
             $table->string('entre_calle2')->nullable();

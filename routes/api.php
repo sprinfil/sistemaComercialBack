@@ -136,7 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // CONTRATOS 
     Route::controller(ContratoController::class)->group(function () {
         Route::get("/contratos", "index");
-        Route::post("/contratos/create/{id}", "store");
+        Route::post("/contratos/create", "store");
         Route::put("/contratos/update/{id}", "update");
         Route::put("/contratos/restore/{id}", "restaurarDato");
         Route::get("/contratos/consulta/{nombre}", "showPorUsuario");

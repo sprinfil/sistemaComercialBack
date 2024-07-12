@@ -13,6 +13,7 @@ use App\Models\Cotizacion;
 use App\Models\Usuario;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ContratoController extends Controller
@@ -39,23 +40,34 @@ class ContratoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store($id_usuario, Contrato $contrato,StoreContratoRequest $request)
+    public function store(Contrato $contrato,StoreContratoRequest $request)
     {
         $data=$request->validated();
-        $usuario=usuario::find($id_usuario);
-        $contrato=$usuario->contratoVigente;
-        $data['folio_solicitud']=Contrato::darFolio();
-        if ($contrato) {
+        $id_usuario=$request->input('id_usuario');
+        $servicio=$request->input('servicio_contratados');
+        $contratos=Contrato::contratoRepetido($id_usuario, $servicio)->get();
+   
+      
+        //$data['folio_solicitud']=Contrato::darFolio();
+        if (count($contratos)!=0) {
             return response()->json([
                 'message' => 'El usuario ya tiene un contrato',
                 'restore' => false
             ], 200);
         }
         else{
-            $contrato = Contrato::create($data);
-            return response(new ContratoResource($contrato), 201);
-            //return $contrato;
+            $c=new Collection();
+            foreach ($servicio as $sev){
+                $CrearContrato=$data;
+                $CrearContrato['folio_solicitud']=Contrato::darFolio();
+                $CrearContrato['servicio_contratado']=$sev;
+                $c->push(Contrato::create($CrearContrato));
+            }
+            
+            return response(ContratoResource::collection($c), 201);
+            //return $c;
         }
+            
         /*
         try{
         

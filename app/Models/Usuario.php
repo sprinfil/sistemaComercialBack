@@ -27,9 +27,14 @@ class Usuario extends Model
     {
         return $this->hasMany(Contrato::class, 'id_usuario');
     }
-    public function contratoVigente(): HasOne
+    public function contratoVigente(): hasMany
     {
-        return $this->hasOne(Contrato::class, 'id_usuario')->where('estatus','!=','cancelado');
+        return $this->hasMany(Contrato::class, 'id_usuario')->where('estatus','!=','cancelado');
+    }
+      // Tomas asociadas al usuario
+    public function tomas() : HasMany
+    {
+        return $this->hasMany(Toma::class, 'id_usuario');
     }
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("
@@ -71,10 +76,10 @@ class Usuario extends Model
         return $contrato;
         
     }
-
-    // Tomas asociadas al usuario
-    public function tomas() : HasMany
-    {
-        return $this->hasMany(Toma::class, 'id_usuario');
+    public function contratoServicio($id_usuario){
+        $usuario=usuario::find($id_usuario);
+        $contrato=$usuario->contratoVigente;
     }
+
+  
 }

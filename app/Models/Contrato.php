@@ -23,6 +23,8 @@ class Contrato extends Model
         'servicio_contratado',
         'colonia',
         'calle',
+        //'municipio',
+        //'localidad',
         'entre_calle1',
         'entre_calle2',
         'domicilio',
@@ -56,6 +58,17 @@ class Contrato extends Model
     {
         $fecha=Carbon::now()->format('Y-m-d');
         return $this->hasMany(cotizacion::class, 'id_contrato')->where('vigencia','<=',$fecha);
+    }
+    public static function contratoRepetido($id_usuario, $servicios){
+        $contratos= Contrato::where('id_usuario', $id_usuario)
+        ->where('estatus', '!=', 'cancelado')
+        ->where(function ($query) use ($servicios) {
+            if (!empty($servicios)) {
+                $query->whereIn('servicio_contratado', $servicios);
+            }
+        });
+        return $contratos;
+        
     }
     //genera el folio de la solicitud
     public static function darFolio(){
