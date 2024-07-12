@@ -18,19 +18,19 @@ class ConvenioSeeder extends Seeder
                 'nombre' => 'Constancia no adeudo',
                 'descripcion' => 'Constancia que valida el no adeudo del usuario',
                 'estado' => 'activo',
-                'vigencia' => '2024/07/11',
+
             ],
             [
                 'nombre' => 'Cosntancia de contratacion reciente',
                 'descripcion' => 'Constancia que valida la antigüedad de un contrato',
                 'estado' => 'activo',
-                'vigencia' => '2024/07/12',
+ 
             ],
             [
                 'nombre' => 'Cosntancia de antigüedad',
                 'descripcion' => 'Constancia que valida la existancia de un contrato',
                 'estado' => 'inactivo',
-                'vigencia' => '2024/07/13',
+
             ],
         ]);
         

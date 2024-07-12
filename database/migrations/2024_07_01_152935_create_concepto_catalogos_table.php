@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("nombre");
             $table->text("descripcion")->nullable();
+            $table->enum('estado', ['activo', 'inactivo'])->nullable();
             $table->integer("prioridad_abono");
             $table->softDeletes();
             $table->timestamps();

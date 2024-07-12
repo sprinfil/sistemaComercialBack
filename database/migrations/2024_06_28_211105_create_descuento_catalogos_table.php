@@ -10,13 +10,12 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+    {  //eliminar los campos vigencia, verificar los estados en cada catalogo
         Schema::create('descuento_catalogos', function (Blueprint $table) {
             $table->id();
             $table->string("nombre")->nullable();
             $table->text("descripcion")->nullable();
             $table->enum('estado', ['activo', 'inactivo'])->nullable();
-            $table->date("vigencia")->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

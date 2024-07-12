@@ -17,26 +17,32 @@ class GiroComercialSeeder extends Seeder
             [
                 'nombre' => 'Escuelas',
                 'descripcion' => 'Escuelas',
+                'estado' => 'activo',
             ],
             [
                 'nombre' => 'Bancos',
                 'descripcion' => 'Bancos',
+                'estado' => 'activo',
             ],
             [
                 'nombre' => 'Empresas constructoras',
                 'descripcion' => 'Empresas constructoras',
+                'estado' => 'activo',
             ],
             [
                 'nombre' => 'Cines',
                 'descripcion' => 'Cines',
+                'estado' => 'activo',
             ],
             [
                 'nombre' => 'Concesionarios de automóviles',
                 'descripcion' => 'Concesionarios de automóviles',
+                'estado' => 'activo',
             ],
             [
                 'nombre' => 'Hoteles',
                 'descripcion' => 'Hoteles',
+                'estado' => 'activo',
             ],
         ]);
     }
