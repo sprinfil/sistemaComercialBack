@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\factibilidadController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\ContratoController;
+use App\Http\Controllers\Api\correccionInformacionSolicitudController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\RolController;
@@ -29,6 +30,7 @@ use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\Tipo_tomaController;
 use App\Http\Controllers\Api\TomaController;
+use App\Models\correccionInformacionSolicitud;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -227,14 +229,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/abonos/{id}", "destroy");
     });
 
-    // bonificaciones
+    // ROLES
     Route::controller(RolController::class)->group(function(){
         Route::get("/Rol", "index");
         Route::post("/Rol/create", "store");
         Route::put("/Rol/update/{id}", "update");
 
+        Route::post("Rol/give_rol_permissions/{id}", "give_rol_permissions");
+        Route::get("Rol/get_all_permissions_by_rol_id/{id}", "get_all_permissions_by_rol_id");
+
         //log delete significa borrado logico
-        Route::put("Rol/log_delete/{id}", "destroy");
+        Route::delete("Rol/log_delete/{id}", "destroy");
     });
 
     Route::controller(factibilidadController::class)->group(function(){
@@ -246,6 +251,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/factibilidad/restaurar/{id}" , "restaurar");
     });
     
+    //BONIFICACIONES
     Route::controller(CatalogoBonificacionController::class)->group(function () {
         Route::get("/bonificacionesCatalogo", "index");
         Route::post("/bonificacionesCatalogo/create", "store");
@@ -272,6 +278,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/Toma/log_delete/{id}","destroy");
         Route::get("/Toma/show/{id}","show");
     });
+    //Solicitud de correcciones
+    Route::controller(correccionInformacionSolicitudController::class)->group(function(){
+        Route::post("/correccionInformacionSolicitud/create","store");
+        Route::get("/correccionInformacionSolicitud","index");
+        Route::get("/correccionInformacionSolicitud/show/{id}","show");
+        Route::put("/correccionInformacionSolicitud/update/{id}","update");
+        Route::delete("/correccionInformacionSolicitud/log_delete/{id}","destroy");
+        
+    });
 });
 // Cargo directo
 Route::controller(cargoDirectoController::class)->group(function() {
@@ -281,4 +296,6 @@ Route::controller(cargoDirectoController::class)->group(function() {
     Route::put("/cargoDirecto/update/{id}" , "update");
     Route::delete("/cargoDirecto/delete/{id}", "destroy");
 });
+
+
 

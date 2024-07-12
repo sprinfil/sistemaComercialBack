@@ -14,5 +14,6 @@ class DescuentoCatalogo extends Model
         "nombre",
         "descripcion",
         "estado",
+        "vigencia",
     ];
 }

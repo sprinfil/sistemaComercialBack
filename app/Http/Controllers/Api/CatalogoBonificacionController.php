@@ -17,6 +17,7 @@ class CatalogoBonificacionController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', CatalogoBonificacion::class);
        return CatalogoBonificacionResource::collection(
         CatalogoBonificacion::all()
        );
@@ -27,6 +28,7 @@ class CatalogoBonificacionController extends Controller
      */
     public function store(CatalogoBonificacion $catalogoBonificacion , StoreCatalogoBonificacionRequest $request)
     {
+        $this->authorize('create', CatalogoBonificacion::class);
         //Se valida el store
         $data = $request->validated();
         //Busca por nombre los eliminados
@@ -43,14 +45,14 @@ class CatalogoBonificacionController extends Controller
                 'message' => 'La bonificación ya existe',
                 'restore' => false
             ], 200);
-            
+
         }
 
         //Si no existe la bonificación, la crea
 
         if (!$catalogoBonificacion) {
-            $bonificacion = CatalogoBonificacion::create($data);
-            return response(new CatalogoBonificacionResource($bonificacion), 201);
+            $catalogoBonificacion = CatalogoBonificacion::create($data);
+            return response($catalogoBonificacion, 201);
         }
 
         //$data = $request->validated();
@@ -76,7 +78,8 @@ class CatalogoBonificacionController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateCatalogoBonificacionRequest $request, CatalogoBonificacion $catalogoBonificacion)
-    {     
+    {
+            $this->authorize('update', CatalogoBonificacion::class);
             $data = $request->validated();
             $catalogoBonificacion = CatalogoBonificacion::find($request["id"]);
             //Condicion para buscar si existe la bonificación que se busco
@@ -97,9 +100,9 @@ class CatalogoBonificacionController extends Controller
                     'message' => 'Ocurrio un error'
                 ] , 500);
             }
-           
+
             return new CatalogoBonificacionResource($catalogoBonificacion);
-   
+
     }
 
     /**
@@ -107,6 +110,7 @@ class CatalogoBonificacionController extends Controller
      */
     public function destroy(CatalogoBonificacion $catalogoBonificacion, Request $request)
     {
+        $this->authorize('delete', CatalogoBonificacion::class);
         try {
         $catalogoBonificacion = CatalogoBonificacion::findOrFail($request->id);
         $catalogoBonificacion->delete();

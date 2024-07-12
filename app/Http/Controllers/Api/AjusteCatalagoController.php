@@ -16,6 +16,7 @@ class AjusteCatalagoController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', AjusteCatalogo::class);
         return AjusteCatalogoResource::collection(
             AjusteCatalogo::all()
         );
@@ -26,6 +27,7 @@ class AjusteCatalagoController extends Controller
      */
     public function store(StoreAjusteCatalogoRequest $request)
     {
+        $this->authorize('create', AjusteCatalogo::class);
         /*
         $data = $request->validated();
         $ajuste = AjusteCatalogo::create($data);
@@ -52,7 +54,7 @@ class AjusteCatalagoController extends Controller
         //Si no existe el ajuste, la crea
         if (!$ajuste) {
             $ajuste = AjusteCatalogo::create($data);
-            return response(new AjusteCatalogo($ajuste), 201);
+            return response($ajuste, 201);
         }
         //$data = $request->validated();
     }
@@ -70,6 +72,7 @@ class AjusteCatalagoController extends Controller
      */
     public function update(UpdateAjusteCatalogoRequest $request, AjusteCatalogo $ajusteCatalogo)
     {
+        $this->authorize('update', AjusteCatalogo::class);
         $data = $request->validated();
         $ajuste = AjusteCatalogo::find($request["id"]);
         $ajuste->update($data);
@@ -82,6 +85,7 @@ class AjusteCatalagoController extends Controller
      */
     public function destroy(AjusteCatalogo $ajusteCatalogo, Request $request)
     {
+        $this->authorize('delete', AjusteCatalogo::class);
         $ajuste = AjusteCatalogo::find($request["id"]);
         $ajuste->delete();
     }

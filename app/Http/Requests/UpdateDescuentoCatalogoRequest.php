@@ -24,7 +24,8 @@ class UpdateDescuentoCatalogoRequest extends FormRequest
         return [
             "nombre"=>"required|string|max:55|unique:descuento_catalogos,nombre,".$this->id,
             "descripcion"=>"nullable|string",
-            "estado"=>"nullable|string",
+            "estado"=>"nullable|string|max:55",
+            "vigencia"=>"nullable|date",
         ];
     }
 }

@@ -16,6 +16,7 @@ class ConceptoController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', ConceptoCatalogo::class);
         return ConceptoResource::collection(
             ConceptoCatalogo::orderby("id", "desc")->get()
         );
@@ -26,6 +27,7 @@ class ConceptoController extends Controller
      */
     public function store(ConceptoCatalogo $conceptoCatalogo, StoreConceptoCatalogoRequest $request)
     {
+        $this->authorize('create', ConceptoCatalogo::class);
         //Valida el store
         $data = $request->validated();
         //Busca por nombre a los operadores eliminados
@@ -67,6 +69,7 @@ class ConceptoController extends Controller
      */
     public function update(UpdateConceptoCatalogoRequest $request, ConceptoCatalogo $conceptoCatalogo)
     {
+        $this->authorize('update', ConceptoCatalogo::class);
         $data = $request->validated();
         $conceptoCatalogo = ConceptoCatalogo::find($request["id"]);
         $conceptoCatalogo->update($data);
@@ -80,6 +83,7 @@ class ConceptoController extends Controller
      */
     public function destroy(ConceptoCatalogo $conceptoCatalogo,Request $request)
     {
+        $this->authorize('delete', ConceptoCatalogo::class);
         try
         {
             $conceptoCatalogo = ConceptoCatalogo::findOrFail($request->id);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Medidor extends Model
@@ -17,4 +18,10 @@ class Medidor extends Model
         "diametro",
         "tipo",
     ];
+
+     // Toma asociada al medidor
+    public function toma() : BelongsTo
+    {
+        return $this->belongsTo(Toma::class, 'id_toma');
+    }
 }

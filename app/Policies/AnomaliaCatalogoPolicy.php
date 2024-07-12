@@ -10,26 +10,26 @@ class AnomaliaCatalogoPolicy
 {
     public function viewAny(User $user)
     {
-        return $user->hasPermissionTo('Ver Anomalias');
+        return $user->hasPermissionTo('VerAnomalias');
     }
 
-    public function view(User $user, AnomaliaCatalogo $post)
+    public function view(User $user)
     {
-        return $user->hasPermissionTo('Ver Anomalia');
+        return $user->hasPermissionTo('VerAnomalias');
     }
 
     public function create(User $user)
     {
-        return $user->hasPermissionTo('Crear Anomalia');
+        return $user->hasPermissionTo('CrearAnomalia');
     }
 
-    public function update(User $user, AnomaliaCatalogo $post)
+    public function update(User $user)
     {
-        return $user->hasPermissionTo('Editar Anomalia');
+        return $user->hasPermissionTo('EditarAnomalia');
     }
 
-    public function delete(User $user, AnomaliaCatalogo $post)
+    public function delete(User $user)
     {
-        return $user->hasPermissionTo('Eliminar Anomalia');
+        return $user->hasPermissionTo('EliminarAnomalia');
     }
 }
