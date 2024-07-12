@@ -29,7 +29,7 @@ class OperadorController extends Controller
 
     public function store_2(StoreOperadorRequest $request)
     {
-       
+        try {
             $data = $request->validated();
             $user = new User();
             $user->name = $data["name"];
@@ -48,8 +48,11 @@ class OperadorController extends Controller
             $operador->save();
 
             return response(new OperadorResource($operador), 201);
-           
-       
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo guardar el operador'
+            ], 500);
+        }
     }
 
     /**
@@ -117,7 +120,7 @@ class OperadorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
     public function update(UpdateOperadorRequest $request, string $id)
     {
         //Log::info("id");
@@ -132,8 +135,33 @@ class OperadorController extends Controller
                 'error' => 'No se pudo editar el operador'
             ], 500);
         }
-     
+    }
 
+    public function update_2(UpdateOperadorRequest $request, string $id_user, string $id_operador)
+    {
+        
+            $data = json_decode($request->getContent(), true);
+            $user = User::find($id_user);
+            $user->name = $data["name"];
+            $user->email = $data["email"];
+            if ($data["password"]) {
+                $user->password = bcrypt($data["password"]);
+            }
+            $user->save();
+
+            $operador = Operador::find($id_operador);
+            $operador->id_user = $user->id;
+            $operador->codigo_empleado = $data["codigo_empleado"];
+            $operador->nombre = $data["nombre"];
+            $operador->apellido_paterno = $data["apellido_paterno"];
+            $operador->apellido_materno = $data["apellido_materno"];
+            $operador->CURP = $data["CURP"];
+            $operador->fecha_nacimiento = $data["fecha_nacimiento"];
+            $operador->save();
+
+            return response(new OperadorResource($operador), 201);
+        
+        
     }
 
     /**

@@ -18,4 +18,15 @@ class Operador extends Model
         "CURP",
         "fecha_nacimiento",
     ];
+
+
+    public function getNombreCompletoAttribute()
+    {
+        return $this->nombre . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, "id_user", "id");
+    }
 }

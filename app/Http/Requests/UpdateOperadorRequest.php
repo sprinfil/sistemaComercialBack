@@ -21,20 +21,25 @@ class UpdateOperadorRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    { 
+    {
+        $operador_id = $this->route('id_operador');
+        $user_id = $this->route('id_user');
+
         return [
-            "name"=>"required|string|max:55",
-            "email"=>"nullable|email|unique:users,email,".$this->id,
-            "password"=>[
+            "name" => "required|string|max:55",
+            "email" => "nullable|email|unique:users,email," . $user_id,
+            "password" => [
+                "nullable",
                 "confirmed",
-                Password::min(8)
-                ->letters()
-                ->symbols()
+                Password::min(3)
+                //->letters()
+                //->symbols()
             ],
-            "nombre"=>"required|string|max:55",
-            "apellido_paterno"=>"required|string|max:55",
-            "apellido_materno"=>"required|string|max:55",
-            "fecha_nacimiento"=>"required|date|max:55",
+            "codigo_empleado" => "required|string|max:55|unique:operadores,codigo_empleado," . $operador_id,
+            "nombre" => "required|string|max:55",
+            "apellido_paterno" => "required|string|max:55",
+            "apellido_materno" => "required|string|max:55",
+            "fecha_nacimiento" => "required|date|max:55",
         ];
     }
 }

@@ -18,11 +18,13 @@ class OperadorResource extends JsonResource
         return [
             "id" => $this->id,
             "codigo_empleado" => $this->codigo_empleado,
+            "nombre_completo" => $this->nombre_completo,
             "nombre" => $this->nombre,
             "apellido_paterno" => $this->apellido_paterno,
             "apellido_materno" => $this->apellido_materno,
             "CURP" => $this->CURP,
             "fecha_nacimiento" => $this->fecha_nacimiento,
+            "user" => $this->user
         ];
         //return parent::toArray($request);
     }

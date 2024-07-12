@@ -239,6 +239,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //log delete significa borrado logico
         Route::delete("Rol/log_delete/{id}", "destroy");
+
+        //ROLES A USUARIOS
+        Route::post("Rol/assign_rol_to_user/{user_id}/{rol_id}", "assign_rol_to_user");
+        Route::post("Rol/remove_rol_to_user/{user_id}/{rol_id}", "remove_rol_to_user");
     });
 
     Route::controller(factibilidadController::class)->group(function(){
@@ -268,6 +272,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/Operador/create2", "store_2");
 
         Route::put("/Operador/update/{id}", "update");
+        Route::put("/Operador/update2/{id_user}/{id_operador}", "update_2");
+
         Route::get("/Operador/show/{id}", "show");
         Route::delete("/Operador/log_delete/{id}", "destroy");
         Route::put("/Operador/restaurar/{id}", "restaurarOperador");

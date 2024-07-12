@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Rol;
+use App\Models\User;
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Http\Resources\RolResource;
 use App\Http\Controllers\Controller;
+use Spatie\Permission\Contracts\Role;
 use App\Http\Requests\StoreRolRequest;
 use App\Http\Requests\UpdateRolRequest;
-use App\Models\Permission;
-use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Models\Role as ModelsRole;
 
 class RolController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    //OBTENER LOS ROLES
     public function index()
     {
         return RolResource::collection(
@@ -24,9 +23,7 @@ class RolController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    //GUARDAR
     public function store(StoreRolRequest $request)
     {
         $data = $request->validated();
@@ -43,9 +40,7 @@ class RolController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    //ACTUALIZAR ROL
     public function update(UpdateRolRequest $request, Rol $rol)
     {
         $data = $request->validated();
@@ -55,15 +50,14 @@ class RolController extends Controller
         return new RolResource($rol);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    //ELIMINAR ROL
     public function destroy(Request $request)
     {
-        $anomalia = Rol::find($request["id"]);
-        $anomalia->delete();
+        $rol = Rol::find($request["id"]);
+        $rol->delete();
     }
 
+    //DARLE PERMISOS A UN ROL
     public function give_rol_permissions(Request $request, string $id)
     {
         $rol = ModelsRole::find($id);
@@ -78,9 +72,26 @@ class RolController extends Controller
         return json_encode($rol->getPermissionNames());
     }
 
+    //OBTENER PERMISOS DE UN ROL
     public function get_all_permissions_by_rol_id(string $id)
     {
         $rol = ModelsRole::find($id);
         return json_encode($rol->getPermissionNames());
+    }
+
+    //ASIGNAR ROL A USUARIO
+    public function assign_rol_to_user(string $user_id, string $rol_id){
+        $rol = ModelsRole::find($rol_id);
+        $user = User::find($user_id);
+        $user->assignRole($rol->name);
+        return $user->getRoleNames();
+    }
+
+    //QUTIAR ROL A USUARIO
+    public function remove_rol_to_user(string $user_id, string $rol_id){
+        $rol = ModelsRole::find($rol_id);
+        $user = User::find($user_id);
+        $user->removeRole($rol->name);
+        return $user->getRoleNames();
     }
 }
