@@ -7,6 +7,7 @@ use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Usuario extends Model
@@ -25,6 +26,15 @@ class Usuario extends Model
     public function contratos(): HasMany
     {
         return $this->hasMany(Contrato::class, 'id_usuario');
+    }
+    public function contratoVigente(): hasMany
+    {
+        return $this->hasMany(Contrato::class, 'id_usuario')->where('estatus','!=','cancelado');
+    }
+      // Tomas asociadas al usuario
+    public function tomas() : HasMany
+    {
+        return $this->hasMany(Toma::class, 'id_usuario');
     }
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("
@@ -48,7 +58,7 @@ class Usuario extends Model
           return $data;
     }
    
-    public static function ConsultarContratoPorNombre(string $id_usuario){
+    public static function ConsultarContratoPorUsuario(string $id_usuario){
         
         $data=Usuario::findOrFail($id_usuario);
         $data=$data->withWhereHas('contratos' , function (Builder $query) {
@@ -58,10 +68,18 @@ class Usuario extends Model
         return $data;
         
     }
-
-    // Tomas asociadas al usuario
-    public function tomas() : HasMany
-    {
-        return $this->hasMany(Toma::class, 'id_usuario');
+    public static function ConsultarCotizacionPorUsuario(string $id_usuario){
+        
+        $usuario=Usuario::findOrFail($id_usuario);
+        $contrato=$usuario->contratos;
+        //$data=$contrato->cotizacionesVigentes;
+        return $contrato;
+        
     }
+    public function contratoServicio($id_usuario){
+        $usuario=usuario::find($id_usuario);
+        $contrato=$usuario->contratoVigente;
+    }
+
+  
 }

@@ -34,6 +34,8 @@ class Toma extends Model
         "tipo_servicio",
         "tipo_toma",
         "tipo_contratacion",
+        'c_agua',
+        'c_alc_san',
     ];
 
     

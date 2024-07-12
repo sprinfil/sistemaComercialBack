@@ -32,6 +32,8 @@ return new class extends Migration
             $table->string('entre_calle_notificaciones_2')->nullable();
             $table->string('tipo_servicio');
             $table->enum('tipo_toma', ['domestica', 'comercial', 'industrial']);
+            $table->unsignedBigInteger('c_agua')->nullable();
+            $table->unsignedBigInteger('c_alc_san')->nullable();
             $table->string('tipo_contratacion');
             $table->softDeletes();
             $table->timestamps();

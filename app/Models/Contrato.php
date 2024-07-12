@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,8 +20,11 @@ class Contrato extends Model
         'nombre_contrato',
         'clave_catastral',
         'tipo_toma',
+        'servicio_contratado',
         'colonia',
         'calle',
+        //'municipio',
+        //'localidad',
         'entre_calle1',
         'entre_calle2',
         'domicilio',
@@ -46,6 +50,62 @@ class Contrato extends Model
     {
         return $this->belongsTo(TipoToma::class, 'tipo_toma', 'nombre');
     }
+    public function cotizaciones(): HasMany
+    {
+        return $this->hasMany(cotizacion::class, 'id_contrato');
+    }
+    public function cotizacionesVigentes(): HasMany
+    {
+        $fecha=Carbon::now()->format('Y-m-d');
+        return $this->hasMany(cotizacion::class, 'id_contrato')->where('vigencia','<=',$fecha);
+    }
+    public static function contratoRepetido($id_usuario, $servicios,$toma_id){
+        $contratos= Contrato::where('id_usuario', $id_usuario)->where('id_toma',$toma_id)
+        ->where('estatus', '!=', 'cancelado')
+        ->where(function ($query) use ($servicios) {
+            if (!empty($servicios)) {
+                $query->whereIn('servicio_contratado', $servicios);
+            }
+        });
+        return $contratos;
+        
+    }
+    //genera el folio de la solicitud
+    public static function darFolio(){
+        $folio = Contrato::withTrashed()->max('folio_solicitud');
 
+        
+        if ($folio){
+            $num=substr($folio,0,5)+1;
+            switch(strlen(strval($num))){
+                case 1:
+                    $num="0000".$num;
+                     break;
+                case 2:
+                    $num="000".$num;
+                    break;
+                case 3:
+                    $num="00".$num;
+                    break;
+                case 4:
+                    $num="0".$num;
+                    break;
+            }
+            $folio=$num.substr($folio,5,5);
+        }
+        else{
+            $folio="00001/".Carbon::now()->format('Y');
+         
+        }
+        return $folio;
+    }
+
+    public static function ConsultarPorFolio(string $folio){
+        
+        $data=Contrato::where('folio_solicitud',$folio)->get();
+        return $data;
+        
+    }
+    
     
 }
