@@ -13,6 +13,7 @@ class AjusteCatalogo extends Model
     protected $fillable = [
         "nombre",
         "descripcion",
-        "estado"
+        "estado",
+        "vigencia",
     ];
 }

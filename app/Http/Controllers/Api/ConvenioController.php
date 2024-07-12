@@ -16,6 +16,7 @@ class ConvenioController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', ConvenioCatalogo::class);
         return ConvenioResource::collection(
             ConvenioCatalogo::orderby("id", "desc")->get()
         );
@@ -27,6 +28,7 @@ class ConvenioController extends Controller
      */
     public function store(StoreConvenioCatalogoRequest $request)
     {
+        $this->authorize('create', ConvenioCatalogo::class);
        /*$data = $request->validated();
        $convenio = ConvenioCatalogo::create($data);
        return response(new ConvenioResource($convenio), 201);*/
@@ -68,6 +70,7 @@ class ConvenioController extends Controller
      */
     public function update(UpdateConvenioCatalogoRequest $request, ConvenioCatalogo $convenioCatalogo)
     {
+        $this->authorize('update', ConvenioCatalogo::class);
         $data = $request->validated();
         $convenioCatalogo = ConvenioCatalogo::find($request["id"]);
         $convenioCatalogo->update($data);
@@ -80,6 +83,7 @@ class ConvenioController extends Controller
      */
     public function destroy(ConvenioCatalogo $convenioCatalogo, Request $request)
     {
+        $this->authorize('delete', ConvenioCatalogo::class);
         try
         {
 

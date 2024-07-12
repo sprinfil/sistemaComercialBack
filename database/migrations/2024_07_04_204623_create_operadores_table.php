@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('operadores', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger("id_user")->nullable();
             $table->string("codigo_empleado")->nullable();
             $table->string("nombre");
             $table->string("apellido_paterno");

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('cargos', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_origen')->unsigned()->default('1'); 
+            $table->bigInteger('id_origen')->unsigned()->default('1');
             $table->string('modelo_origen');
             $table->bigInteger('id_dueño')->unsigned()->default('1'); 
             $table->string('modelo_dueño');

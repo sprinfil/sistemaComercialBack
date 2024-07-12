@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAjusteCatalogoRequest extends FormRequest
+class UpdatecargoDirectoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,7 @@ class UpdateAjusteCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:ajuste_catalogos,nombre,".$this->id,
-            "descripcion"=>"nullable|string|max:55",
-            "estado"=>"nullable|string|max:55",
-            "vigencia"=>"nullable|date",
+           "id_cargo"=>"required|integer",
         ];
     }
 }

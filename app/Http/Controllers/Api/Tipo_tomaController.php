@@ -17,6 +17,7 @@ class Tipo_tomaController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', TipoToma::class);
         try{
             return TipoTomaResource::collection(
                 TipoToma::all()
@@ -25,7 +26,7 @@ class Tipo_tomaController extends Controller
         catch(Exception $ex){
             return response()->json(['message' => 'No se encontro el tipo de toma'], 200);
         }
-        
+
     }
 
     /**
@@ -33,8 +34,9 @@ class Tipo_tomaController extends Controller
      */
     public function store(StoreTipoTomaRequest $request)
     {
-        
-            
+        $this->authorize('create', TipoToma::class);
+
+
         try{
             $data=$request->validated();
             $Tipotoma = TipoToma::withTrashed()->where('nombre',$request['nombre'])->first();
@@ -66,8 +68,8 @@ class Tipo_tomaController extends Controller
                 'restore' => false
             ], 200);
         }
-            
-        
+
+
     }
 
     /**
@@ -85,7 +87,7 @@ class Tipo_tomaController extends Controller
             return response()->json(['message' => 'No se encontro el tipo de toma'], 200);
 
         }
-        
+
     }
 
     /**
@@ -93,6 +95,7 @@ class Tipo_tomaController extends Controller
      */
     public function update(UpdateTipoTomaRequest $request, TipoToma $tipoToma)
     {
+        $this->authorize('update', TipoToma::class);
         try{
             $data=$request->validated();
             $usuario=TipoToma::findorFail($request['id']);
@@ -103,7 +106,7 @@ class Tipo_tomaController extends Controller
         catch(Exception $ex){
             throw new Exception($ex);
         }
-       
+
     }
 
     /**
@@ -111,6 +114,7 @@ class Tipo_tomaController extends Controller
      */
     public function destroy(TipoToma $tipoToma,Request $request)
     {
+        $this->authorize('delete', TipoToma::class);
         try
         {
             $tipoToma = TipoToma::findOrFail($request["id"]);

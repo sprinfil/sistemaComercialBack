@@ -19,6 +19,7 @@ class OperadorController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Operador::class);
         return response( OperadorResource::collection(
             Operador::all()
         ),200);
@@ -30,7 +31,8 @@ class OperadorController extends Controller
      */
     public function store(Operador $operador, StoreOperadorRequest $request)
     {
-        
+        $this->authorize('create', Operador::class);
+
         try{
             //VALIDA EL STORE
         $data = $request->validated();
@@ -90,9 +92,10 @@ class OperadorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
     public function update(UpdateOperadorRequest $request, string $id)
     {
+        $this->authorize('update', Operador::class);
         //Log::info("id");
         try {
             $data = $request->validated();
@@ -105,7 +108,7 @@ class OperadorController extends Controller
                 'error' => 'No se pudo editar el operador'
             ], 500);
         }
-     
+
 
     }
 
@@ -114,6 +117,7 @@ class OperadorController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete', Operador::class);
         try {
             $operador = Operador::findOrFail($id);
             $operador->delete();

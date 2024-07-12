@@ -13,5 +13,6 @@ class ConceptoCatalogo extends Model
     protected $fillable = [
         "nombre",
         "descripcion",
+        "prioridad_abono",
     ];
 }

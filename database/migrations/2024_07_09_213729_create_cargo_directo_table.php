@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('descuento_catalogos', function (Blueprint $table) {
+        Schema::create('cargo_directo', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre")->nullable();
-            $table->text("descripcion")->nullable();
-            $table->enum('estado', ['activo', 'inactivo'])->nullable();
-            $table->date("vigencia")->nullable();
+            $table->unsignedBigInteger('id_cargo')->default('1');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('descuento_catalogos');
+        Schema::dropIfExists('cargo_directo');
     }
 };

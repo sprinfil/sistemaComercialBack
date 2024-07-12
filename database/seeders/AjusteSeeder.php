@@ -17,10 +17,15 @@ class AjusteSeeder extends Seeder
             [
                 'nombre' => 'Ajuste 1',
                 'descripcion' => 'Descripción del Ajuste 1',
+                'estado' => 'activo',
+                'vigencia' => '2024/07/11',
             ],
             [
                 'nombre' => 'Ajuste 2',
                 'descripcion' => 'Descripción del Ajuste 2',
+                'estado' => 'inactivo',
+                'vigencia' => '2024/07/11',
+                
             ],
         ]);
     }

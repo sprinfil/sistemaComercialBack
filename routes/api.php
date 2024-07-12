@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
 use App\Http\Controllers\Api\CargoController;
+use App\Http\Controllers\Api\cargoDirectoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
@@ -234,7 +235,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/abonos/{id}", "destroy");
     });
 
-    // bonificaciones
+    // ROLES
     Route::controller(RolController::class)->group(function(){
         Route::get("/Rol", "index");
         Route::post("/Rol/create", "store");
@@ -244,7 +245,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("Rol/get_all_permissions_by_rol_id/{id}", "get_all_permissions_by_rol_id");
 
         //log delete significa borrado logico
-        Route::put("Rol/log_delete/{id}", "destroy");
+        Route::delete("Rol/log_delete/{id}", "destroy");
     });
 
     Route::controller(factibilidadController::class)->group(function(){
@@ -256,6 +257,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/factibilidad/restaurar/{id}" , "restaurar");
     });
     
+    //BONIFICACIONES
     Route::controller(CatalogoBonificacionController::class)->group(function () {
         Route::get("/bonificacionesCatalogo", "index");
         Route::post("/bonificacionesCatalogo/create", "store");
@@ -292,7 +294,14 @@ Route::middleware('auth:sanctum')->group(function () {
         
     });
 });
-
+// Cargo directo
+Route::controller(cargoDirectoController::class)->group(function() {
+    Route::get("/cargoDirecto","index");
+    Route::post("/cargoDirecto/store","store");
+    Route::get("/cargoDirecto/show/{id}" , "show");
+    Route::put("/cargoDirecto/update/{id}" , "update");
+    Route::delete("/cargoDirecto/delete/{id}", "destroy");
+});
 
 
 
