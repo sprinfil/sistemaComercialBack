@@ -59,8 +59,8 @@ class Contrato extends Model
         $fecha=Carbon::now()->format('Y-m-d');
         return $this->hasMany(cotizacion::class, 'id_contrato')->where('vigencia','<=',$fecha);
     }
-    public static function contratoRepetido($id_usuario, $servicios){
-        $contratos= Contrato::where('id_usuario', $id_usuario)
+    public static function contratoRepetido($id_usuario, $servicios,$toma_id){
+        $contratos= Contrato::where('id_usuario', $id_usuario)->where('id_toma',$toma_id)
         ->where('estatus', '!=', 'cancelado')
         ->where(function ($query) use ($servicios) {
             if (!empty($servicios)) {

@@ -44,16 +44,20 @@ class ContratoController extends Controller
     {
         $data=$request->validated();
         $id_usuario=$request->input('id_usuario');
+        $id_toma=$request->input('id_toma');
         $servicio=$request->input('servicio_contratados');
-        $contratos=Contrato::contratoRepetido($id_usuario, $servicio)->get();
+        $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
    
       
         //$data['folio_solicitud']=Contrato::darFolio();
         if (count($contratos)!=0) {
+            
             return response()->json([
                 'message' => 'El usuario ya tiene un contrato',
                 'restore' => false
             ], 200);
+            
+            //return $contratos;
         }
         else{
             $c=new Collection();
