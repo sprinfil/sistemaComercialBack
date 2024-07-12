@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
 use App\Http\Controllers\Api\CargoController;
+use App\Http\Controllers\Api\cargoDirectoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
@@ -287,7 +288,14 @@ Route::middleware('auth:sanctum')->group(function () {
         
     });
 });
-
+// Cargo directo
+Route::controller(cargoDirectoController::class)->group(function() {
+    Route::get("/cargoDirecto","index");
+    Route::post("/cargoDirecto/store","store");
+    Route::get("/cargoDirecto/show/{id}" , "show");
+    Route::put("/cargoDirecto/update/{id}" , "update");
+    Route::delete("/cargoDirecto/delete/{id}", "destroy");
+});
 
 
 
