@@ -24,6 +24,8 @@ class UpdateCosntanciaCatalogoRequest extends FormRequest
         return [
             "nombre"=>"required|string|max:55|unique:constancia_catalogos,nombre,".$this->id,
             "descripcion"=>"nullable|string|max:100",
+            "estado"=>"nullable|string|max:10|
+            in:activo,inactivo",
         ];
     }
 }

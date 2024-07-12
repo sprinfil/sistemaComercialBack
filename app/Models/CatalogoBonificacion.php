@@ -16,6 +16,5 @@ class CatalogoBonificacion extends Model
         "nombre",
         "descripcion",
         "estado",
-        "vigencia",
     ];
 }

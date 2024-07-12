@@ -13,6 +13,5 @@ class ConvenioCatalogo extends Model
         "nombre",
         "descripcion",
         "estado",
-        "vigencia",
     ];
 }
