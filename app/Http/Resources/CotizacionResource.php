@@ -19,7 +19,7 @@ class CotizacionResource extends JsonResource
             "id_contrato" => $this->id_contrato,
             "vigencia" => $this->vigencia,
             "fecha_inicio" => $this->fecha_inicio,
-            "fecha_terminacion" => $this->fecha_terminacion,
+            "fecha_fin" => $this->fecha_fin,
         ];
 
     }
