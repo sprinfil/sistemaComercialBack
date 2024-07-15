@@ -293,14 +293,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/correccionInformacionSolicitud/log_delete/{id}","destroy");
         
     });
-});
-// Cargo directo
-Route::controller(cargoDirectoController::class)->group(function() {
-    Route::get("/cargoDirecto","index");
-    Route::post("/cargoDirecto/store","store");
-    Route::get("/cargoDirecto/show/{id}" , "show");
-    Route::put("/cargoDirecto/update/{id}" , "update");
-    Route::delete("/cargoDirecto/delete/{id}", "destroy");
+    // Cargo directo
+    Route::controller(cargoDirectoController::class)->group(function() {
+        Route::get("/cargoDirecto","index");
+        Route::post("/cargoDirecto/store","store");
+        Route::get("/cargoDirecto/show/{id}" , "show");
+        Route::put("/cargoDirecto/update/{id}" , "update");
+        Route::delete("/cargoDirecto/delete/{id}", "destroy");
+    });
 });
 
 
