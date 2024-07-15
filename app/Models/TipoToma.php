@@ -23,7 +23,7 @@ class TipoToma extends Model
     }
         */
     public static function ConsultarPorNombre(string $tipoToma){
-        $data = TipoToma::whereRaw("nombre LIKE ?", ['%'.$tipoToma.'%'])->get();
+        $data = TipoToma::where('nombre','like' ,'%'.$tipoToma.'%')->get();
           return $data;
     }
 
