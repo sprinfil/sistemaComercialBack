@@ -24,8 +24,8 @@ class OperadorResource extends JsonResource
             "apellido_materno" => $this->apellido_materno,
             "CURP" => $this->CURP,
             "fecha_nacimiento" => $this->fecha_nacimiento,
-            "user" => $this->user
+            "user" => $this->user,
+            "roles" => $this->roles,
         ];
-        //return parent::toArray($request);
     }
 }

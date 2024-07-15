@@ -29,4 +29,10 @@ class Operador extends Model
     {
         return $this->belongsTo(User::class, "id_user", "id");
     }
+
+    public function getRolesAttribute()
+    {
+        $user = $this->user;
+        return $user->getRoleNames();
+    }
 }

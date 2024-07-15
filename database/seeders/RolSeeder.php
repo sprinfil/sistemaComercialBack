@@ -19,7 +19,7 @@ class RolSeeder extends Seeder
                 "guard_name" => "web"
             ],
             [
-                'name' => 'Coordinador de Informatica',
+                'name' => 'Developer',
                  "guard_name" => "web"
             ],
         ]);

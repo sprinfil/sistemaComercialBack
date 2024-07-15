@@ -79,19 +79,19 @@ class RolController extends Controller
         return json_encode($rol->getPermissionNames());
     }
 
-    //ASIGNAR ROL A USUARIO
-    public function assign_rol_to_user(string $user_id, string $rol_id){
-        $rol = ModelsRole::find($rol_id);
+    //ASIGNAR ROL A USUARIO OPERADOR
+    public function assign_rol_to_user(Request $request, string $user_id)
+    {
+        $data = json_decode($request->getContent(), true);
         $user = User::find($user_id);
-        $user->assignRole($rol->name);
-        return $user->getRoleNames();
-    }
 
-    //QUTIAR ROL A USUARIO
-    public function remove_rol_to_user(string $user_id, string $rol_id){
-        $rol = ModelsRole::find($rol_id);
-        $user = User::find($user_id);
-        $user->removeRole($rol->name);
+        foreach ($data as $rol => $value) {
+            $rol = ModelsRole::where("name", $rol)->first();
+            $value === "true" ?
+                $user->assignRole($rol->name)
+                :
+                $user->removeRole($rol->name);
+        }
         return $user->getRoleNames();
     }
 }

@@ -241,8 +241,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("Rol/log_delete/{id}", "destroy");
 
         //ROLES A USUARIOS
-        Route::post("Rol/assign_rol_to_user/{user_id}/{rol_id}", "assign_rol_to_user");
-        Route::post("Rol/remove_rol_to_user/{user_id}/{rol_id}", "remove_rol_to_user");
+        Route::post("Rol/assign_rol_to_user/{user_id}", "assign_rol_to_user");
     });
 
     Route::controller(factibilidadController::class)->group(function(){
