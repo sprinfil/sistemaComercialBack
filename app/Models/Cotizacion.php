@@ -16,7 +16,7 @@ class Cotizacion extends Model
         'id_contrato',
         'vigencia',
         'fecha_inicio',
-        'fecha_terminacion',
+        'fecha_fin',
     ];
 
     public function contrato(): BelongsTo
@@ -27,4 +27,6 @@ class Cotizacion extends Model
     {
         return $this->hasMany(CotizacionDetalle::class, 'id_cotizacion');
     }
+
+ 
 }

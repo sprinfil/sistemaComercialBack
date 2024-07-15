@@ -141,12 +141,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/contratos/update/{id}", "update");
         Route::put("/contratos/restore/{id}", "restaurarDato");
         Route::get("/contratos/consulta/{nombre}", "showPorUsuario");
-        Route::get("/contratos/consultaFolio/{folio}", "showPorFolio");
+        Route::get("/contratos/consultaFolio/{folio}/{ano?}", "showPorFolio");
         //log delete significa borrado logico
         Route::delete("/contratos/log_delete/{id}", "destroy");
         Route::prefix('contratos')->group(function (){
             Route::get("/cotizacion", "indexCotizacion");
-            Route::post("/cotizacion/create/{id}", "crearCotizacion");
+            Route::get("/cotizacion/show/{id}", "showCotizacion");
+            Route::post("/cotizacion/create", "crearCotizacion");
+            Route::put("/cotizacion/update/{id}", "terminarCotizacion");
+            Route::delete("/cotizacion/log_delete/{id}", "destroyCot");
+            Route::put("/cotizacion/restore/{id}", "restaurarCot");
         });
     });
 
@@ -293,14 +297,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/correccionInformacionSolicitud/log_delete/{id}","destroy");
         
     });
-});
-// Cargo directo
-Route::controller(cargoDirectoController::class)->group(function() {
-    Route::get("/cargoDirecto","index");
-    Route::post("/cargoDirecto/store","store");
-    Route::get("/cargoDirecto/show/{id}" , "show");
-    Route::put("/cargoDirecto/update/{id}" , "update");
-    Route::delete("/cargoDirecto/delete/{id}", "destroy");
+    // Cargo directo
+    Route::controller(cargoDirectoController::class)->group(function() {
+        Route::get("/cargoDirecto","index");
+        Route::post("/cargoDirecto/store","store");
+        Route::get("/cargoDirecto/show/{id}" , "show");
+        Route::put("/cargoDirecto/update/{id}" , "update");
+        Route::delete("/cargoDirecto/delete/{id}", "destroy");
+    });
 });
 
 
