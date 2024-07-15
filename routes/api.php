@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\ServicioController;
+use App\Http\Controllers\Api\TarifaController;
 use App\Http\Controllers\Api\Tipo_tomaController;
 use App\Http\Controllers\Api\TomaController;
 use App\Models\correccionInformacionSolicitud;
@@ -297,6 +298,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/correccionInformacionSolicitud/log_delete/{id}","destroy");
         
     });
+    // Tarifa
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifa/create","store");
+        Route::get("/tarifa","index");
+        Route::get("/tarifa/show/{id}","show");
+        Route::put("/tarifa/update/{id}","update");
+        Route::delete("/tarifa/log_delete/{id}","destroy");
+        Route::put("tarifa/restaurar/{id}","restaurarTarifa");
+    });
+
     // Cargo directo
     Route::controller(cargoDirectoController::class)->group(function() {
         Route::get("/cargoDirecto","index");
