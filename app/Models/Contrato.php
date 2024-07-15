@@ -23,8 +23,8 @@ class Contrato extends Model
         'servicio_contratado',
         'colonia',
         'calle',
-        //'municipio',
-        //'localidad',
+        'municipio',
+        'localidad',
         'entre_calle1',
         'entre_calle2',
         'domicilio',
@@ -57,7 +57,7 @@ class Contrato extends Model
     public function cotizacionesVigentes(): HasMany
     {
         $fecha=Carbon::now()->format('Y-m-d');
-        return $this->hasMany(cotizacion::class, 'id_contrato')->where('vigencia','<=',$fecha);
+        return $this->hasMany(cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
     }
     public static function contratoRepetido($id_usuario, $servicios,$toma_id){
         $contratos= Contrato::where('id_usuario', $id_usuario)->where('id_toma',$toma_id)
@@ -100,12 +100,13 @@ class Contrato extends Model
         return $folio;
     }
 
-    public static function ConsultarPorFolio(string $folio){
+    public static function ConsultarPorFolio(string $folio, string $año){
         
-        $data=Contrato::where('folio_solicitud',$folio)->get();
+        $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$año)->get();
         return $data;
         
     }
+   
     
     
 }

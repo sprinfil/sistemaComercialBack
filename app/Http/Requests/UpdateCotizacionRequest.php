@@ -11,7 +11,7 @@ class UpdateCotizacionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateCotizacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "id_cotizacion"=>"sometimes",
+            "fecha_fin"=>"required|date",
         ];
     }
 }

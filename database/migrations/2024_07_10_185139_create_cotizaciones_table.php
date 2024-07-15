@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('cotizaciones', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_contrato');
-            $table->string('Vigencia');
+            $table->string('vigencia');
             $table->date('fecha_inicio');
-            $table->date('fecha_fin');
+            $table->date('fecha_fin')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
