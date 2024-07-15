@@ -23,7 +23,10 @@ class cargoDirectoController extends Controller
                 , 'cargo_directo.id_cargo'
                 , '=' ,
                 'cargos.id')
-                ->select('cargo_directo.id_cargo' , 'cargos.*')->get()
+                ->select('cargo_directo.id' , 'cargo_directo.id_cargo' , 'cargos.id_origen',
+                'cargos.modelo_origen' , 'cargos.id_dueño' , 'cargos.modelo_dueño',
+                'cargos.monto', 'cargos.estado' , 'cargos.fecha_cargo' ,
+                'cargos.fecha_liquidacion')->get()
             ),200);
         } catch(Exception $e) {
             return response()->json([
@@ -43,7 +46,7 @@ class cargoDirectoController extends Controller
             return response(new cargoDirectoResource($cargoDirecto), 201);
         } catch(Exception $e) {
             return response()->json([
-                'error' => 'No se pudo guardar el cargo'.$e
+                'error' => 'No se pudo guardar el cargo directo'.$e
             ], 500);
         }
     }
@@ -58,7 +61,7 @@ class cargoDirectoController extends Controller
             return response(new cargoDirectoResource($cargoDirecto), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'No se pudo encontrar el cargo'
+                'error' => 'No se pudo encontrar el cargo directo'
             ], 500);
         }
     }
@@ -77,7 +80,7 @@ class cargoDirectoController extends Controller
             return response(new cargoDirectoResource($cargoDirecto), 200);
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'No se pudo editar el cargo'
+                'error' => 'No se pudo editar el cargo directo'
             ], 500);
         }
     }
@@ -93,7 +96,7 @@ class cargoDirectoController extends Controller
             return response("Cargo eliminado con exito",200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'No se pudo borrar el cargo'
+                'error' => 'No se pudo borrar el cargo directo'
             ], 500);
         }
     }

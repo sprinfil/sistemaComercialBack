@@ -14,6 +14,5 @@ class AjusteCatalogo extends Model
         "nombre",
         "descripcion",
         "estado",
-        "vigencia",
     ];
 }
