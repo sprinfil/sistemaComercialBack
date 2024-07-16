@@ -316,6 +316,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/cargoDirecto/update/{id}" , "update");
         Route::delete("/cargoDirecto/delete/{id}", "destroy");
     });
+    //Tarifa concepto detalle
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifaConceptoDetalle/create","storeTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle","indexTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle/show/{id}","showTarifaConceptoDetalle");
+        Route::put("/tarifaConceptoDetalle/update/{id}","updateTarifaConceptoDetalle");
+    });
+
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifaServicioDetalle/create","storeTarifaServicioDetalle");
+        Route::get("/tarifaServicioDetalle","indexServicioDetalle");
+        Route::get("/tarifaServicioDetalle/show/{id}","showTarifaServicioDetalle");
+        Route::put("/tarifaServicioDetalle/update/{id}","updateTarifaServicioDetalle");
+    });
+
 });
 
 
