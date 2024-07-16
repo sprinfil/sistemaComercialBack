@@ -28,9 +28,11 @@ use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\ServicioController;
+use App\Http\Controllers\Api\TarifaController;
 use App\Http\Controllers\Api\Tipo_tomaController;
 use App\Http\Controllers\Api\TomaController;
 use App\Models\correccionInformacionSolicitud;
+use App\Http\Controllers\PrinterController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -39,8 +41,12 @@ Route::middleware('auth:sanctum')->group(function () {
     //AQUI VAN TODAS LAS RUTAS
     Route::post("/logout", [AuthController::class, "logout"]);
 
-    //ANOMALIAS     
+    Route::post('/print', [PrinterController::class, 'print']);
+
+    //ANOMALIAS
     Route::controller(AnomaliaCatalagoController::class)->group(function () {
+
+
         Route::get("/AnomaliasCatalogo", "index");
         Route::post("/AnomaliasCatalogo/create", "store");
         Route::put("/AnomaliasCatalogo/update/{id}", "update");
@@ -132,22 +138,38 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/usuarios/consultaCorreo/{correo}", "showCorreo");
         //log delete significa borrado logico
         Route::delete("/usuarios/log_delete/{id}", "destroy");
-        
+
     });
-    // CONTRATOS 
+    // CONTRATOS
     Route::controller(ContratoController::class)->group(function () {
         Route::get("/contratos", "index");
         Route::post("/contratos/create", "store");
         Route::put("/contratos/update/{id}", "update");
         Route::put("/contratos/restore/{id}", "restaurarDato");
-        Route::get("/contratos/consulta/{nombre}", "showPorUsuario");
-        Route::get("/contratos/consultaFolio/{folio}", "showPorFolio");
+        Route::get("/contratos/consulta/{id}", "showPorToma");
+        Route::get("/contratos/consultaFolio/{folio}/{ano?}", "showPorFolio");
         //log delete significa borrado logico
         Route::delete("/contratos/log_delete/{id}", "destroy");
+
+        //Cotizaciones
         Route::prefix('contratos')->group(function (){
             Route::get("/cotizacion", "indexCotizacion");
-            Route::post("/cotizacion/create/{id}", "crearCotizacion");
+            Route::get("/cotizacion/show", "showCotizacion");
+            Route::post("/cotizacion/create", "crearCotizacion");
+            Route::put("/cotizacion/update/{id}", "terminarCotizacion");
+            Route::delete("/cotizacion/log_delete/{id}", "destroyCot");
+            Route::put("/cotizacion/restore/{id}", "restaurarCot");
+
+            Route::prefix('cotizacion')->group(function (){
+                Route::get("/detalle", "indexCot");
+                Route::get("/detalle/show", "showCotDetalle");
+                Route::post("/detalle/create", "crearCotDetalle");
+                Route::delete("/detalle/log_delete/{id}", "destroyCotDetalle");
+                Route::put("/detalle/restore/{id}", "restaurarCotDetalle");
+            });
+            //Detalle de cotizacion 
         });
+     
     });
 
     // Gestion de contribuyentes
@@ -197,7 +219,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //log delete significa borrado logico
         Route::put("/Concepto/log_delete/{id}", "destroy");
     });
-    
+
     // Giros comerciales
     Route::controller(GiroComercialCatalogoController::class)->group(function () {
         Route::get("/giros-catalogos", "index");
@@ -257,7 +279,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/factiblidad/delete/{id}" , "destroy");
         Route::put("/factibilidad/restaurar/{id}" , "restaurar");
     });
-    
+
     //BONIFICACIONES
     Route::controller(CatalogoBonificacionController::class)->group(function () {
         Route::get("/bonificacionesCatalogo", "index");
@@ -292,8 +314,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/correccionInformacionSolicitud/show/{id}","show");
         Route::put("/correccionInformacionSolicitud/update/{id}","update");
         Route::delete("/correccionInformacionSolicitud/log_delete/{id}","destroy");
-        
+
     });
+    // Tarifa
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifa/create","store");
+        Route::get("/tarifa","index");
+        Route::get("/tarifa/show/{id}","show");
+        Route::put("/tarifa/update/{id}","update");
+        Route::delete("/tarifa/log_delete/{id}","destroy");
+        Route::put("tarifa/restaurar/{id}","restaurarTarifa");
+    });
+
     // Cargo directo
     Route::controller(cargoDirectoController::class)->group(function() {
         Route::get("/cargoDirecto","index");
@@ -303,6 +335,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/cargoDirecto/delete/{id}", "destroy");
     });
 });
+
 
 
 

@@ -11,7 +11,7 @@ class StoreCotizacionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreCotizacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "id_contrato"=>"required|exists:contratos,id",
+            "vigencia"=>"sometimes|string",
+            "fecha_inicio"=>"sometimes|date",
         ];
     }
 }

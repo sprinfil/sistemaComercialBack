@@ -57,28 +57,22 @@ class Usuario extends Model
         $data = Usuario::whereRaw("correo LIKE ?", ['%'.$usuario.'%'])->get();
           return $data;
     }
-   
+
+   /// puede que se borre, usar como prueba para consultas más complejas
     public static function ConsultarContratoPorUsuario(string $id_usuario){
         
         $data=Usuario::findOrFail($id_usuario);
-        $data=$data->withWhereHas('contratos' , function (Builder $query) {
+        $contratos=$data->withWhereHas('contratos' , function (Builder $query) {
             $query->where('estatus', '!=','cancelado');
             
         })->get();
-        return $data;
-        
-    }
-    public static function ConsultarCotizacionPorUsuario(string $id_usuario){
-        
-        $usuario=Usuario::findOrFail($id_usuario);
-        $contrato=$usuario->contratos;
-        //$data=$contrato->cotizacionesVigentes;
-        return $contrato;
+        return $contratos;
         
     }
     public function contratoServicio($id_usuario){
         $usuario=usuario::find($id_usuario);
         $contrato=$usuario->contratoVigente;
+        return $contrato;
     }
 
   

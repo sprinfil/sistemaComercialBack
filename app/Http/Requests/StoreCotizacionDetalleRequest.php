@@ -11,7 +11,7 @@ class StoreCotizacionDetalleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreCotizacionDetalleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "id_cotizacion"=>"required|exists:cotizaciones,id",
+            "id_sector"=>"sometimes", #todo
+            "nombre_concepto.*"=>"required|string",
+            "monto.*"=>"required|numeric",
         ];
     }
 }
