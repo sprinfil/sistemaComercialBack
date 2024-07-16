@@ -16,15 +16,25 @@ class TomaFactory extends Factory
 
     public function definition()
     {
-        static $codigoTomaId = 1;
+        static $codigoTomaId = 0;
+        static $usuarioId = 0;
+        $usuarioId++;
 
         return [
-            'id_usuario' => Usuario::inRandomOrder()->first()->id,
+            'id_usuario' => $usuarioId,
             'id_giro_comercial' => GiroComercialCatalogo::inRandomOrder()->first()->id,
             'id_libro' => 1,
             'id_codigo_toma' => $codigoTomaId++,
             'clave_catastral' => $this->faker->regexify('[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}'),
-            'estatus' => $this->faker->randomElement(['domestica', 'comercial', 'industrial']),
+            'estatus' => $this->faker->randomElement([
+                'pendiente confirmación inspección',
+                'pendiente de inspeccion',
+                'pendiente de instalacion',
+                'activa',
+                'baja definitiva',
+                'baja temporal',
+                'en proceso'
+            ]),
             'calle' => $this->faker->streetName,
             'entre_calle_1' => $this->faker->streetName,
             'entre_calle_2' => $this->faker->streetName,
@@ -36,17 +46,9 @@ class TomaFactory extends Factory
             'entre_calle_notificaciones_1' => $this->faker->streetName,
             'entre_calle_notificaciones_2' => $this->faker->streetName,
             'tipo_servicio' => $this->faker->word,
-            'tipo_toma' => $this->faker->randomElement([
-                'pendiente confirmación inspección',
-                'pendiente de inspeccion',
-                'pendiente de instalacion',
-                'activa',
-                'baja definitiva',
-                'baja temporal',
-                'en proceso'
-            ]),
-            'c_agua' => $this->faker->randomNumber(),
-            'c_alc_san' => $this->faker->randomNumber(),
+            'tipo_toma' => $this->faker->randomElement(['domestica', 'comercial', 'industrial']),
+            'c_agua' => null,
+            'c_alc_san' => null,
             'tipo_contratacion' => $this->faker->randomElement(['normal', 'condicionado', 'desarrollador']),
             'deleted_at' => null,
             'created_at' => now(),
