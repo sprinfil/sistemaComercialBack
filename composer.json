@@ -6,10 +6,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "bacon/bacon-qr-code": "^3.0",
+        "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "mike42/escpos-php": "^4.0",
         "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {

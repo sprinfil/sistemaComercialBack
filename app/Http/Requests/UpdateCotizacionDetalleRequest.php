@@ -11,7 +11,7 @@ class UpdateCotizacionDetalleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateCotizacionDetalleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "nombre_concepto"=>"required|numeric",
+            "monto"=>"required|numeric",
         ];
     }
 }

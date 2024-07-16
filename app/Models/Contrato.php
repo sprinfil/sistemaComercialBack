@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contrato extends Model
@@ -54,10 +55,10 @@ class Contrato extends Model
     {
         return $this->hasMany(cotizacion::class, 'id_contrato');
     }
-    public function cotizacionesVigentes(): HasMany
+    public function cotizacionesVigentes(): HasOne
     {
         $fecha=Carbon::now()->format('Y-m-d');
-        return $this->hasMany(cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
+        return $this->HasOne(cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
     }
     public static function contratoRepetido($id_usuario, $servicios,$toma_id){
         $contratos= Contrato::where('id_usuario', $id_usuario)->where('id_toma',$toma_id)
