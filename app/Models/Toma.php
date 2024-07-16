@@ -74,4 +74,10 @@ class Toma extends Model
     {
         return $this->hasOne(Medidor::class, 'id_toma');
     }
+
+    //Toma asociada a una factibilidad
+    public function factibilidad () : HasOne
+    {
+        return $this->hasOne(Factibilidad::class);
+    }
 }

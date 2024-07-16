@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contrato extends Model
@@ -37,6 +38,11 @@ class Contrato extends Model
     public function toma() : BelongsTo
     {
         return $this->belongsTo(Toma::class, 'id_toma');
+    }
+    // Factibilidad asociada a un contrato
+    public function factibilidad() : HasOne
+    {
+        return $this->hasOne(Factibilidad::class , 'id_contrato');
     }
 
     // Servicio asociado a la toma
