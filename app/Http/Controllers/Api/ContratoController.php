@@ -5,17 +5,21 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Contrato;
 use App\Http\Requests\StoreContratoRequest;
+use App\Http\Requests\StoreCotizacionDetalleRequest;
 use App\Http\Requests\StoreCotizacionRequest;
 use App\Http\Requests\UpdateContratoRequest;
 use App\Http\Requests\UpdateCotizacionRequest;
 use App\Http\Resources\ContratoResource;
+use App\Http\Resources\CotizacionDetalleResource;
 use App\Http\Resources\CotizacionResource;
 use App\Http\Resources\UsuarioResource;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
+use App\Models\Toma;
 use App\Models\Usuario;
 use Carbon\Carbon;
 use Exception;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -103,7 +107,23 @@ class ContratoController extends Controller
         }
             
     }
-    
+    public function showPorToma($id)
+    {
+        try{
+            $toma=Toma::find($id);
+            $contratos = $toma->contratovigente;
+        //return json_encode($usuario);
+            
+        return ContratoResource::collection(
+            $contratos
+        );
+        
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 200);
+        }
+            
+    }
     public function showPorFolio($folio,$ano) ///falta moverle
     {
         try{
@@ -168,39 +188,48 @@ class ContratoController extends Controller
     //// COTIZACION
     public function indexCotizacion()
     {
-        try{
-            return Cotizacion::collection(
-                Cotizacion::all()
-            );
-        }
-        catch(Exception $ex){
-            return response()->json([
-                'error' => 'No hay cotizaciones.',
-                'restore' => false
-            ], 200);
-        }
+       
+       try{
+        return $cotizacion=Cotizacion::all();
+    }
+    catch(Exception $ex){
+        return response()->json([
+            'error' => 'No hay cotizaciones.',
+            'restore' => false
+        ], 200);
+    }
+       
        
     }
-    public function showCotizacion($id_contrato) 
+    public function showCotizacion(Request $request) 
     {
+        
+       
+        
         try{
-            $cotizacion=Contrato::find($id_contrato)->first();
-        return ContratoResource::collection(
-            $cotizacion
-        );
+            $id_contratos=$request['id_contratos'];
+            $cotizacion=collect([]);
+        foreach ($id_contratos as $cont){
+            $cotizacion->push(Contrato::find($cont)->cotizacionesVigentes);
+        }
+        
+        return $cotizacion;
         
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
         }
             
+            
     }
     public function crearCotizacion(Cotizacion $cotizacion, StoreCotizacionRequest $request){
        
         try{
             $data=$request->validated();
+            $data['vigencia']=Carbon::now()->addMonths(1)->format('y-m-d');
+            $data['fecha_inicio']=Carbon::now()->format('y-m-d');
             $id_contrato=$request['id_contrato'];
-            $cotizacion=Contrato::find($id_contrato)->cotizacionesVigentes->all();
+            $cotizacion=Contrato::find($id_contrato)->cotizacionesVigentes;
             if ($cotizacion){
                 return response()->json(['message' => 'El contrato ya tiene una cotización vigente'], 200);
             }
@@ -270,10 +299,38 @@ class ContratoController extends Controller
         }
         catch(Exception $ex){
             return response()->json([
-                'error' => 'No hay comceptos de cotizacion.',
+                'error' => 'No hay conceptos de cotizacion.',
                 'restore' => false
             ], 200);
         }
+       
+    } 
+    public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
+    {
+        $data=$request->validated();
+        //$detallito=CotizacionDetalle::create($data[0]);
+        $detalleCot=$data['monto'];
+       $detalleCot=new Collection();
+       
+        
+        
+        $i=0;
+        while ($i<count($data['monto'])){
+            $detalleCot->push(CotizacionDetalle::create([
+                'id_cotizacion' => $data['id_cotizacion'][$i],
+                'id_sector' => $data['id_sector'][$i],
+                'nombre_concepto' => $data['nombre_concepto'][$i],
+                'monto' => $data['monto'][$i],
+            ]));
+            $i++;
+        }
+            
+        return  $detalleCot;
+        /*
+        return CotizacionDetalleResource::collection(
+            $data
+        );
+        */
        
     } 
 }

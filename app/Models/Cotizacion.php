@@ -28,5 +28,5 @@ class Cotizacion extends Model
         return $this->hasMany(CotizacionDetalle::class, 'id_cotizacion');
     }
 
- 
+   
 }
