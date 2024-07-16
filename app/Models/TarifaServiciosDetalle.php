@@ -19,6 +19,7 @@ class TarifaServiciosDetalle extends Model
         "saneamiento"
     ];
     
+    
     public function tarifa() : BelongsTo
      {
          return $this->belongsTo(tarifa::class, 'id_tarifa');
