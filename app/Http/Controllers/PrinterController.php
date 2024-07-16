@@ -8,6 +8,7 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\CapabilityProfile;
 use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class PrinterController extends Controller
 {
@@ -25,33 +26,36 @@ class PrinterController extends Controller
             $printer->initialize();
             $printer->setJustification(Printer::JUSTIFY_CENTER);
 
+            // Cargar e imprimir imagen (logo)
+            $img = EscposImage::load(public_path('images/logo.png'), false);
+            $printer->bitImage($img);
+
             // Texto formateado para el ticket
-            $text = "--------------------------------\n"
-                  . "          TICKET DE COMPRA       \n"
-                  . "--------------------------------\n"
-                  . "Padre nuestro que estás en el cielo,\n"
-                  . "santificado sea tu nombre; venga a\n"
-                  . "nosotros tu reino; hágase tu\n"
-                  . "voluntad, en la tierra como en el\n"
-                  . "cielo. Danos hoy nuestro pan de\n"
-                  . "cada día; perdona nuestras\n"
-                  . "ofensas como también nosotros\n"
-                  . "perdonamos a los que nos ofenden;\n"
-                  . "no nos dejes caer en la tentación,\n"
-                  . "y líbranos del mal. Amén.\n"
+            $printer->text("--------------------------------\n");
+            $printer->selectPrintMode(Printer::MODE_EMPHASIZED);
+            $printer->text("          TICKET DE COMPRA       \n");
+            $printer->selectPrintMode(); // Volver al modo normal
+            $printer->text("--------------------------------\n");
+            $text = "Padre nuestro que estás en el cielo,\n"
+                  . "santificado sea tu nombre; vengan \n"
                   . "--------------------------------\n";
 
             // Imprimir el texto
             $printer->text($text);
 
-            // Generar código QR
-            $qrText = "Texto que quieres en el QR";
-            $qrCode = new QrCode($qrText);
-            $qrCode->setSize(80); // Tamaño del QR en la impresión
-            $qrCodeImage = $qrCode->writeString();
+            // Generar código QR más pequeño
+            $qrText = "https://www.leagueofgraphs.com/es/summoner/lan/Killhatto-LAN";
+            $qrCode = QrCode::create($qrText)
+                ->setSize(100) // Tamaño del QR
+                ->setMargin(2); // Margen alrededor del QR
+
+            $writer = new PngWriter();
+            $qrResult = $writer->write($qrCode);
+            $qrImagePath = tempnam(sys_get_temp_dir(), 'qr') . '.png';
+            $qrResult->saveToFile($qrImagePath);
 
             // Convertir la imagen del QR a EscposImage
-            $escposQrImage = EscposImage::loadFromPngData($qrCodeImage);
+            $escposQrImage = EscposImage::load($qrImagePath);
 
             // Imprimir el código QR
             $printer->bitImage($escposQrImage);
@@ -70,6 +74,9 @@ class PrinterController extends Controller
         }
     }
 }
+
+
+
 
 
 
