@@ -337,13 +337,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/cargoDirecto/delete/{id}", "destroy");
     });
 
-    // Calle
-    Route::controller(CalleController::class)->group(function() {
-        Route::get("/calle","index");
-        Route::post("/calle/store","store");
-        Route::get("/calle/show/{id}" , "show");
-        Route::put("/calle/update/{id}" , "update");
-        Route::delete("/calle/delete/{id}", "destroy");
+    //Tarifa concepto detalle
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifaConceptoDetalle/create","storeTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle","indexTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle/show/{id}","showTarifaConceptoDetalle");
+        Route::put("/tarifaConceptoDetalle/update/{id}","updateTarifaConceptoDetalle");
+    });
+
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifaServicioDetalle/create","storeTarifaServicioDetalle");
+        Route::get("/tarifaServicioDetalle","indexServicioDetalle");
+        Route::get("/tarifaServicioDetalle/show/{id}","showTarifaServicioDetalle");
+        Route::put("/tarifaServicioDetalle/update/{id}","updateTarifaServicioDetalle");
     });
 
     // Calle
@@ -354,7 +360,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/calle/update/{id}" , "update");
         Route::delete("/calle/delete/{id}", "destroy");
     });
-
+  
      // Colonia
      Route::controller(ColoniaController::class)->group(function() {
         Route::get("/colonia","index");
