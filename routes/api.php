@@ -13,11 +13,13 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
+use App\Http\Controllers\Api\CalleController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\cargoDirectoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
+use App\Http\Controllers\Api\ColoniaController;
 use App\Http\Controllers\Api\factibilidadController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\ContratoController;
@@ -332,6 +334,33 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/cargoDirecto/show/{id}" , "show");
         Route::put("/cargoDirecto/update/{id}" , "update");
         Route::delete("/cargoDirecto/delete/{id}", "destroy");
+    });
+
+    // Calle
+    Route::controller(CalleController::class)->group(function() {
+        Route::get("/calle","index");
+        Route::post("/calle/store","store");
+        Route::get("/calle/show/{id}" , "show");
+        Route::put("/calle/update/{id}" , "update");
+        Route::delete("/calle/delete/{id}", "destroy");
+    });
+
+    // Calle
+    Route::controller(CalleController::class)->group(function() {
+        Route::get("/calle","index");
+        Route::post("/calle/store","store");
+        Route::get("/calle/show/{id}" , "show");
+        Route::put("/calle/update/{id}" , "update");
+        Route::delete("/calle/delete/{id}", "destroy");
+    });
+
+     // Colonia
+     Route::controller(ColoniaController::class)->group(function() {
+        Route::get("/colonia","index");
+        Route::post("/colonia/store","store");
+        Route::get("/colonia/show/{id}" , "show");
+        Route::put("/colonia/update/{id}" , "update");
+        Route::delete("/colonia/delete/{id}", "destroy");
     });
 });
 
