@@ -30,9 +30,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         //
-        $this->call(GiroComercialSeeder::class);
         $this->call(UsuarioSeeder::class);
+        $this->call(GiroComercialSeeder::class);
         $this->call(TomaSeeder::class);
+        //
+        $this->call(DescuentosSeeder::class);
         // 
         $this->call(AnomaliaSeeder::class);
         $this->call(AjusteSeeder::class);
