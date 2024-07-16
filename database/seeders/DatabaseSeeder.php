@@ -29,14 +29,19 @@ class DatabaseSeeder extends Seeder
             'password' => '$2y$12$doEXdsTesrTif4re8ES2huh9rWGaUkBCkSupshDOdp1EdXElPYAmq',
         ]);
 
-         $this->call(AnomaliaSeeder::class);
-         $this->call(AjusteSeeder::class);
-         $this->call(ConceptoCatalogoSeeder::class);
-         $this->call(ConvenioSeeder::class);
-        $this->call(ConstanciaSeeder::class);
+        //
         $this->call(GiroComercialSeeder::class);
+        $this->call(UsuarioSeeder::class);
+        $this->call(TomaSeeder::class);
+        // 
+        $this->call(AnomaliaSeeder::class);
+        $this->call(AjusteSeeder::class);
+        $this->call(ConceptoCatalogoSeeder::class);
+        $this->call(ConvenioSeeder::class);
+        $this->call(ConstanciaSeeder::class);
+        $this->call(BonificacionCatalogoSeeder::class);
+        //
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
-        $this->call(BonificacionCatalogoSeeder::class);
     }
 }
