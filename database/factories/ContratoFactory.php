@@ -45,7 +45,7 @@ class ContratoFactory extends Factory
         }
 
 
-        $nombrec = 'Juanito';
+        $nombrec = 'Juanito'; // default
         // Obtén la toma correspondiente
         $toma = Usuario::find($usuarioId);
         if ($toma) {
