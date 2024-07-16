@@ -272,6 +272,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::controller(factibilidadController::class)->group(function(){
         Route::get("/factibilidad" , "index");
+        Route::get("/factibilidadContrato" , "contratoFactible");
         Route::post("/factibilidad/create" , "store");
         Route::get("/factibilidad/show/{id}" , "show");
         Route::put("/factibilidad/update/{id}" , "update");
