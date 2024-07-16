@@ -28,7 +28,7 @@ class StoreContratoRequest extends FormRequest
             'nombre_contrato' => 'sometimes|string',
             'clave_catastral' => 'nullable|string|min:9|max:12',
             'tipo_toma' => 'sometimes|string',
-            'servicio_contratado' => 'sometimes|in:agua,alcantarillado y saneamiento',
+            'servicio_contratados.*' => 'sometimes|in:agua,alcantarillado y saneamiento',
             'colonia' => 'sometimes|string',
             'calle' => 'sometimes|string',
             'municipio' => 'sometimes|string',

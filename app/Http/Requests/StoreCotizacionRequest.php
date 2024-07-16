@@ -23,7 +23,7 @@ class StoreCotizacionRequest extends FormRequest
     {
         return [
             "id_contrato"=>"required|exists:contratos,id",
-            "vigencia"=>"required|string",
+            "vigencia"=>"sometimes|string",
             "fecha_inicio"=>"sometimes|date",
         ];
     }

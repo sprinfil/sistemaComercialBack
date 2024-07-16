@@ -68,10 +68,20 @@ class Toma extends Model
     {
         return $this->hasMany(Contrato::class, 'id_toma');
     }
+    public function contratoVigente() : HasMany
+    {
+        return $this->hasMany(Contrato::class, 'id_toma')->where('estatus','!=','cancelado');
+    }
 
      // Medidor asociado a la toma
     public function medidor() : HasOne
     {
         return $this->hasOne(Medidor::class, 'id_toma');
+    }
+
+    //Toma asociada a una factibilidad
+    public function factibilidad () : HasOne
+    {
+        return $this->hasOne(Factibilidad::class);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCotizacionDetalleRequest extends FormRequest
+class UpdateColoniaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class UpdateCotizacionDetalleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre_concepto"=>"required|numeric",
-            "monto"=>"required|numeric",
+            "nombre"=>"required|string|max:55"
         ];
     }
 }
