@@ -45,5 +45,6 @@ class DatabaseSeeder extends Seeder
         //
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
+        $this->call(TipoTomaSeeder::class);
     }
 }
