@@ -353,6 +353,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/tarifaConceptoDetalle/update/{id}","updateTarifaConceptoDetalle");
     });
 
+    //Tarifa Servicio detalle
     Route::controller(TarifaController::class)->group(function(){
         Route::post("/tarifaServicioDetalle/create","storeTarifaServicioDetalle");
         Route::get("/tarifaServicioDetalle","indexServicioDetalle");
