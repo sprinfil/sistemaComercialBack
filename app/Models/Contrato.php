@@ -39,6 +39,11 @@ class Contrato extends Model
     {
         return $this->belongsTo(Toma::class, 'id_toma');
     }
+    // Factibilidad asociada a un contrato
+    public function factibilidad() : HasOne
+    {
+        return $this->hasOne(Factibilidad::class , 'id_contrato');
+    }
 
     // Servicio asociado a la toma
     public function servicio() : HasMany

@@ -2,13 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\ConceptoCatalogo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ConceptoResource extends JsonResource
+class TarifaConceptoDetalleResource extends JsonResource
 {
     public static $wrap = false;
-
     /**
      * Transform the resource into an array.
      *
@@ -18,9 +18,11 @@ class ConceptoResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "nombre" => $this->nombre,
-            "descripcion" => $this->descripcion,
-            "prioridad_abono" => $this->prioridad_abono,
+            "id_tarifa" => $this->id_tarifa,
+            "id_tipo_toma" => $this->id_tipo_toma,
+            "id_concepto" => $this->id_concepto,
+            "nombre_concepto" => $this->concepto->nombre,
+            "monto" => $this->monto,
         ];
-     }
+    }
 }

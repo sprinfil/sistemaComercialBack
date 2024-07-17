@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Usuario;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -35,5 +36,7 @@ class UsuarioSeeder extends Seeder
                 'correo' => 'kou4_alan@gmail.com',
             ],
         ]);
+
+        Usuario::factory()->count(10)->create();
     }
 }

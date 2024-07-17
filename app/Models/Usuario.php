@@ -23,6 +23,8 @@ class Usuario extends Model
         'rfc',
         'correo',
     ];
+
+    // Contratos asociados al usuario
     public function contratos(): HasMany
     {
         return $this->hasMany(Contrato::class, 'id_usuario');

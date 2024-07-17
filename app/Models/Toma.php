@@ -80,6 +80,7 @@ class Toma extends Model
         return $this->hasOne(Medidor::class, 'id_toma');
     }
 
+<<<<<<< HEAD
     public static function ConsultarContratosPorToma(string $id_toma){
         
         $data=Toma::findOrFail($id_toma);
@@ -89,5 +90,11 @@ class Toma extends Model
         })->get();
         return $contratos;
         
+=======
+    //Toma asociada a una factibilidad
+    public function factibilidad () : HasOne
+    {
+        return $this->hasOne(Factibilidad::class);
+>>>>>>> Develop
     }
 }

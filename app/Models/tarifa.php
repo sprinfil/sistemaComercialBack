@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class tarifa extends Model
@@ -16,6 +17,13 @@ class tarifa extends Model
         "descripcion",
         "fecha",
         "estado"
-       
     ];
+    public function servicio() : HasMany
+    {
+        return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa');
+    }
+    public function conceptos() : HasMany
+    {
+        return $this->hasMany(TarifaConceptoDetalle::class, 'id_tarifa');
+    }
 }

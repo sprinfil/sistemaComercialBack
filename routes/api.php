@@ -13,11 +13,13 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
+use App\Http\Controllers\Api\CalleController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\cargoDirectoController;
 use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
+use App\Http\Controllers\Api\ColoniaController;
 use App\Http\Controllers\Api\factibilidadController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\ContratoController;
@@ -268,10 +270,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //log delete significa borrado logico
         Route::delete("Rol/log_delete/{id}", "destroy");
+
+        //ROLES A USUARIOS
+        Route::post("Rol/assign_rol_to_user/{user_id}", "assign_rol_to_user");
     });
 
     Route::controller(factibilidadController::class)->group(function(){
         Route::get("/factibilidad" , "index");
+        Route::get("/factibilidadContrato" , "contratoFactible");
         Route::post("/factibilidad/create" , "store");
         Route::get("/factibilidad/show/{id}" , "show");
         Route::put("/factibilidad/update/{id}" , "update");
@@ -293,7 +299,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(OperadorController::class)->group(function () {
         Route::get("/Operador", "index");
         Route::post("/Operador/create", "store");
+        
+        Route::post("/Operador/create2", "store_2");
+
         Route::put("/Operador/update/{id}", "update");
+        Route::put("/Operador/update2/{id_user}/{id_operador}", "update_2");
+
         Route::get("/Operador/show/{id}", "show");
         Route::delete("/Operador/log_delete/{id}", "destroy");
         Route::put("/Operador/restaurar/{id}", "restaurarOperador");
@@ -332,6 +343,41 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/cargoDirecto/show/{id}" , "show");
         Route::put("/cargoDirecto/update/{id}" , "update");
         Route::delete("/cargoDirecto/delete/{id}", "destroy");
+    });
+
+    //Tarifa concepto detalle
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifaConceptoDetalle/create","storeTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle","indexTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle/show/{id}","showTarifaConceptoDetalle");
+        Route::put("/tarifaConceptoDetalle/update/{id}","updateTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle/conceptoAsociado/{id}","tarifaPorConceptoAsociado");
+    });
+
+    //Tarifa Servicio detalle
+    Route::controller(TarifaController::class)->group(function(){
+        Route::post("/tarifaServicioDetalle/create","storeTarifaServicioDetalle");
+        Route::get("/tarifaServicioDetalle","indexServicioDetalle");
+        Route::get("/tarifaServicioDetalle/show/{id}","showTarifaServicioDetalle");
+        Route::put("/tarifaServicioDetalle/update/{id}","updateTarifaServicioDetalle");
+    });
+
+    // Calle
+    Route::controller(CalleController::class)->group(function() {
+        Route::get("/calle","index");
+        Route::post("/calle/store","store");
+        Route::get("/calle/show/{id}" , "show");
+        Route::put("/calle/update/{id}" , "update");
+        Route::delete("/calle/delete/{id}", "destroy");
+    });
+  
+     // Colonia
+     Route::controller(ColoniaController::class)->group(function() {
+        Route::get("/colonia","index");
+        Route::post("/colonia/store","store");
+        Route::get("/colonia/show/{id}" , "show");
+        Route::put("/colonia/update/{id}" , "update");
+        Route::delete("/colonia/delete/{id}", "destroy");
     });
 });
 

@@ -18,7 +18,7 @@ class factibilidadResource extends JsonResource
         return [
             "id" => $this->id,
             "estado_factible" => $this->estado_factible,
-            "monto_derechos_conexion" => $this->monto_derechos_conexion,
+            "derechos_conexion" => $this->derechos_conexion,
         ];
     }
 }

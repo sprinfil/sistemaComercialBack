@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatefactibilidadRequest extends FormRequest
+class StoreColoniaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class UpdatefactibilidadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "estado_factible"=>"required|in:factible,no_factible" ,
-            "derechos_conexion"=>"numeric|nullable|min:0", 
+            "nombre"=>"required|string|max:55"
         ];
     }
 }

@@ -5,10 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ConceptoResource extends JsonResource
+class TarifaServiciosDetalleResource extends JsonResource
 {
     public static $wrap = false;
-
     /**
      * Transform the resource into an array.
      *
@@ -18,9 +17,12 @@ class ConceptoResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "nombre" => $this->nombre,
-            "descripcion" => $this->descripcion,
-            "prioridad_abono" => $this->prioridad_abono,
+            "id_tarifa" => $this->id_tarifa,
+            "id_tipo_toma" => $this->id_tipo_toma,
+            "rango" => $this->rango,
+            "agua" => $this->agua,
+            "alcantarillado" => $this->alcantarillado,
+            "saneamiento" => $this->saneamiento,
         ];
-     }
+    }
 }
