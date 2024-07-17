@@ -244,7 +244,7 @@ class TarifaController extends Controller
         }
         
     }
-    public function updateTarifaServicioDetalle(UpdateTarifaServiciosDetalleRequest $request,  string $id)
+    public function TarifasPorConcepto(UpdateTarifaServiciosDetalleRequest $request,  string $id)
     {
         //$this->authorize('update', tarifa::class);
         //Log::info("id");

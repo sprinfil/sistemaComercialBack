@@ -351,6 +351,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/tarifaConceptoDetalle","indexTarifaConceptoDetalle");
         Route::get("/tarifaConceptoDetalle/show/{id}","showTarifaConceptoDetalle");
         Route::put("/tarifaConceptoDetalle/update/{id}","updateTarifaConceptoDetalle");
+        Route::get("/tarifaConceptoDetalle/conceptoAsociado/{id}","tarifaPorConceptoAsociado");
     });
 
     //Tarifa Servicio detalle
