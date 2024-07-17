@@ -37,6 +37,7 @@ class TomaResource extends JsonResource
             "tipo_servicio" => $this->tipo_servicio,
             "tipo_toma" => $this->tipo_toma,
             "tipo_contratacion" => $this->tipo_contratacion,
+            'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
             
         ];
         //return parent::toArray($request);

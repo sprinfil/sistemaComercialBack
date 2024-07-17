@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateCotizacionRequest;
 use App\Http\Resources\ContratoResource;
 use App\Http\Resources\CotizacionDetalleResource;
 use App\Http\Resources\CotizacionResource;
+use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
@@ -57,7 +58,7 @@ class ContratoController extends Controller
         $id_toma=$request->input('id_toma');
         $servicio=$request->input('servicio_contratados');
         $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
-   
+        
       
         //$data['folio_solicitud']=Contrato::darFolio();
         if (count($contratos)!=0) {
@@ -109,19 +110,23 @@ class ContratoController extends Controller
     }
     public function showPorToma($id)
     {
+
+    
         try{
             $toma=Toma::find($id);
+            //$toma=Toma::ConsultarContratosPorToma($id);
             $contratos = $toma->contratovigente;
-        //return json_encode($usuario);
-            
-        return ContratoResource::collection(
-            $contratos
-        );
+            //return json_encode($contratos);
+         
+            return ContratoResource::collection(
+               $contratos
+           );
         
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 200);
         }
+            
             
     }
     public function showPorFolio($folio,$ano) ///falta moverle
@@ -226,8 +231,8 @@ class ContratoController extends Controller
        
         try{
             $data=$request->validated();
-            $data['vigencia']=Carbon::now()->addMonths(1)->format('y-m-d');
-            $data['fecha_inicio']=Carbon::now()->format('y-m-d');
+            $data['vigencia']=Carbon::now()->addMonths(1)->format('Y-m-d');
+            $data['fecha_inicio']=Carbon::now()->format('Y-m-d');
             $id_contrato=$request['id_contrato'];
             $cotizacion=Contrato::find($id_contrato)->cotizacionesVigentes;
             if ($cotizacion){
@@ -285,7 +290,7 @@ class ContratoController extends Controller
      if ($cotizacion->trashed()) {
          // Restaura el registro
          $cotizacion->restore();
-         return response()->json(['message' => 'El contrato ha sido restaurado.'], 200);
+         return response()->json(['message' => 'La cotización ha sido restaurada.'], 200);
      }
     }
 
@@ -293,7 +298,7 @@ class ContratoController extends Controller
     public function indexCot()
     {
         try{
-            return CotizacionDetalle::collection(
+            return CotizacionDetalleResource::collection(
                 CotizacionDetalle::all()
             );
         }
@@ -325,12 +330,57 @@ class ContratoController extends Controller
             $i++;
         }
             
-        return  $detalleCot;
+        //return  $detalleCot;
+        
+        return CotizacionDetalleResource::collection(
+            $detalleCot
+        );
+        
+       
+    }
+    public function destroyCotDetalle(CotizacionDetalle $Cotizacion, Request $request)
+    {
+        try
+        {
+            $Cotizacion = CotizacionDetalle::findOrFail($request["id"]);
+            $Cotizacion->delete();
+            return response()->json(['message' => 'Eliminado correctamente'], 200);
+        }
+        catch (\Exception $e) {
+
+            return response()->json(['message' => 'error'], 500);
+        }
+    }
+    public function restaurarCotDetalle(CotizacionDetalle $cotizacion, Request $request)
+    {
+        $cotizacion = CotizacionDetalle::withTrashed()->findOrFail($request->id);
+
+        // Verifica si el registro está eliminado
+     if ($cotizacion->trashed()) {
+         // Restaura el registro
+         $cotizacion->restore();
+         return response()->json(['message' => 'El detalle ha sido restaurado.'], 200);
+     }
+    }
+    public function showCotDetalle(Request $request) 
+    {
+        try{
+            $id_cotizaciones=$request['id_cotizaciones'];
+            $cotizacion=new Collection();
+            foreach ($id_cotizaciones as $det){
+                $cotizacion->push(Cotizacion::find($det)->cotizacionesDetalles);
+            }
+        
+        return $cotizacion;
         /*
         return CotizacionDetalleResource::collection(
-            $data
+            $cotizacion
         );
         */
-       
-    } 
+
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
+        }  
+    }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class Toma extends Model
 {
@@ -68,7 +69,7 @@ class Toma extends Model
     {
         return $this->hasMany(Contrato::class, 'id_toma');
     }
-    public function contratoVigente() : HasMany
+    public function contratovigente() : HasMany
     {
         return $this->hasMany(Contrato::class, 'id_toma')->where('estatus','!=','cancelado');
     }
@@ -77,5 +78,16 @@ class Toma extends Model
     public function medidor() : HasOne
     {
         return $this->hasOne(Medidor::class, 'id_toma');
+    }
+
+    public static function ConsultarContratosPorToma(string $id_toma){
+        
+        $data=Toma::findOrFail($id_toma);
+        $contratos=$data->withWhereHas('contratovigente' , function (Builder $query) {
+            $query->where('estatus', '!=','cancelado');
+            
+        })->get();
+        return $contratos;
+        
     }
 }
