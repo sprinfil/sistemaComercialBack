@@ -263,13 +263,4 @@ class TarifaController extends Controller
         }
             
     }
-    public function tarifaPorConceptoAsociado(string $id)
-    {
-        //$data = $request->validated();
-        $tarifaConcepto = TarifaConceptoDetalle::find($id);
-        return $Resultado = TarifaConceptoDetalle::join('tarifas','tarifa_concepto_detalles.id_tarifa','=',
-        'tarifas.id')->get();
-    }
-
-
 }
