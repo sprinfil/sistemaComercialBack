@@ -123,6 +123,7 @@ class OperadorController extends Controller
 
     public function update(UpdateOperadorRequest $request, string $id)
     {
+        $this->authorize('update', Operador::class);
         //Log::info("id");
         try {
             $data = $request->validated();
@@ -169,6 +170,7 @@ class OperadorController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete', Operador::class);
         try {
             $operador = Operador::findOrFail($id);
             $operador->delete();

@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class factibilidadResource extends JsonResource
 {
+    public static $wrap = false;
     /**
      * Transform the resource into an array.
      *
@@ -17,7 +18,7 @@ class factibilidadResource extends JsonResource
         return [
             "id" => $this->id,
             "estado_factible" => $this->estado_factible,
-            "monto_derechos_conexion" => $this->monto_derechos_conexion,
+            "derechos_conexion" => $this->derechos_conexion,
         ];
     }
 }

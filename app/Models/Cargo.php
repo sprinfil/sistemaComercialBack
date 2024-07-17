@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Cargo extends Model
 {
     use HasFactory, SoftDeletes;
-
+    
     protected $fillable = [
         "id_origen",
         "modelo_origen",
@@ -20,4 +20,9 @@ class Cargo extends Model
         "fecha_cargo",
         "fecha_liquidacion",
     ];
+    
+    public function cargoDirecto ()
+    {
+        return $this->hasMany(cargoDirecto::class);
+    }
 }

@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('concepto_catalogos', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre")->nullable();
+            $table->string("nombre");
             $table->text("descripcion")->nullable();
+            $table->enum('estado', ['activo', 'inactivo'])->nullable();
+            $table->integer("prioridad_abono");
             $table->softDeletes();
             $table->timestamps();
         });

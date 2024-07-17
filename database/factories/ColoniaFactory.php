@@ -1,0 +1,33 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Colonia;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Colonia>
+ */
+class ColoniaFactory extends Factory
+{
+     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Colonia::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition()
+    {
+        return [
+            'nombre' => $this->faker->streetName,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+    }
+}

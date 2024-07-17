@@ -20,7 +20,6 @@ class CatalogoBonificacionResource extends JsonResource
             "nombre" => $this->nombre,
             "descripcion" => $this->descripcion,
             "estado" => $this->estado,
-            "vigencia" =>  $this->vigencia,
         ];
     }
 }

@@ -17,9 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_giro_comercial');
             $table->unsignedBigInteger('id_libro');
             $table->unsignedBigInteger('id_codigo_toma');
-
             $table->string('clave_catastral');
-            $table->string('estatus');
+            $table->enum('estatus', ['pendiente confirmación inspección', 'pendiente de inspeccion', 'pendiente de instalacion', 'activa', 'baja definitiva', 'baja temporal', 'en proceso']);
             $table->string('calle');
             $table->string('entre_calle_1')->nullable();
             $table->string('entre_calle_2')->nullable();
@@ -32,7 +31,9 @@ return new class extends Migration
             $table->string('entre_calle_notificaciones_2')->nullable();
             $table->string('tipo_servicio');
             $table->enum('tipo_toma', ['domestica', 'comercial', 'industrial']);
-            $table->string('tipo_contratacion');
+            $table->unsignedBigInteger('c_agua')->nullable();
+            $table->unsignedBigInteger('c_alc_san')->nullable();
+            $table->enum('tipo_contratacion', ['normal', 'condicionado', 'desarrollador']);
             $table->softDeletes();
             $table->timestamps();
         });
