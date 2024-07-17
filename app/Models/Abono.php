@@ -11,7 +11,6 @@ class Abono extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        "id_pago",
         "id_cargo",
         "id_origen",
         "modelo_origen",

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('monto', 8, 2);
             $table->enum('estado', ['pendiente', 'pagado', 'cancelado']);
             $table->date('fecha_cargo');
-            $table->date('fecha_liquidacion');
+            $table->date('fecha_liquidacion')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

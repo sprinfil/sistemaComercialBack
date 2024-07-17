@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Cargo;
 use App\Models\Contrato;
 use App\Models\Toma;
 use App\Models\Usuario;
@@ -101,6 +102,31 @@ class ContratoFactory extends Factory
                     'clave_catastral'=> $contrato->clave_catastral,
                     'tipo_toma'=> $contrato->tipo_toma,
                     'servicio_contratado' => 'agua',
+                ]);
+            }
+            $estado_pago = 'ninguno';
+            $fecha_liquidacion = null;
+
+            if($contrato->estatus == 'pendiente de pago'){
+                $estado_pago = 'pendiente';
+            } else if($contrato->estatus == 'contratado' || $contrato->estatus == 'terminado'){
+                $estado_pago = 'pagado';
+                $fecha_liquidacion = now();
+            }
+
+            if ($contrato->estatus == 'pendiente de pago' || $contrato->estatus == 'contratado' || $contrato->estatus == 'terminado') {
+                Cargo::factory()->create([
+                    'id_origen' =>$contrato->id,
+                    'modelo_origen' => 'contrato',
+                    'id_dueño' => $contrato->id_toma,
+                    'modelo_dueño' => 'toma',
+                    'monto' => $this->faker->randomFloat(2, 0, 9999),
+                    'estado' => $estado_pago,
+                    'fecha_cargo' => now(),
+                    'fecha_liquidacion' => $fecha_liquidacion,
+                    'deleted_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
         });
