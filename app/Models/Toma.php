@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class Toma extends Model
 {
@@ -69,7 +68,7 @@ class Toma extends Model
     {
         return $this->hasMany(Contrato::class, 'id_toma');
     }
-    public function contratovigente() : HasMany
+    public function contratoVigente() : HasMany
     {
         return $this->hasMany(Contrato::class, 'id_toma')->where('estatus','!=','cancelado');
     }
@@ -80,7 +79,11 @@ class Toma extends Model
         return $this->hasOne(Medidor::class, 'id_toma');
     }
 
-<<<<<<< HEAD
+    //Toma asociada a una factibilidad
+    public function factibilidad () : HasOne
+    {
+        return $this->hasOne(Factibilidad::class);
+    }
     public static function ConsultarContratosPorToma(string $id_toma){
         
         $data=Toma::findOrFail($id_toma);
@@ -90,11 +93,6 @@ class Toma extends Model
         })->get();
         return $contratos;
         
-=======
-    //Toma asociada a una factibilidad
-    public function factibilidad () : HasOne
-    {
-        return $this->hasOne(Factibilidad::class);
->>>>>>> Develop
     }
 }
+
