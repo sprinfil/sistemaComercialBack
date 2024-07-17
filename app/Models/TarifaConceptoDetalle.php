@@ -25,7 +25,7 @@ class TarifaConceptoDetalle extends Model
      }
 
      // Tipo de toma asociado al concepto detalle de tarifa
-     public function toma() : BelongsTo
+     public function tipoToma() : BelongsTo
      {
          return $this->belongsTo(TipoToma::class, 'id_tipo_toma');
      }
