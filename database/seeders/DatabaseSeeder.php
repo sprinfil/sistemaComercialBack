@@ -33,12 +33,13 @@ class DatabaseSeeder extends Seeder
         $this->call(GiroComercialSeeder::class);
         $this->call(TipoTomasSeeder::class);
         $this->call(TomaSeeder::class);
+        $this->call(ConceptoCatalogoSeeder::class);
         //
         $this->call(DescuentosSeeder::class);
         // 
         $this->call(AnomaliaSeeder::class);
         $this->call(AjusteSeeder::class);
-        $this->call(ConceptoCatalogoSeeder::class);
+        
         $this->call(ConvenioSeeder::class);
         $this->call(ConstanciaSeeder::class);
         $this->call(BonificacionCatalogoSeeder::class);
