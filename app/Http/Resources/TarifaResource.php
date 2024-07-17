@@ -15,12 +15,26 @@ class TarifaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $conceptos = [];
+        foreach($this->conceptos as $concepto){
+            $conceptos[] = [
+                "id" => $concepto->id,
+                "id_tarifa" => $concepto->id_tarifa,
+                "id_tipo_toma" => $concepto->id_tipo_toma,
+                "id_concepto" => $concepto->id_concepto,
+                "nombre_concepto" => $concepto->concepto->nombre,
+                "monto" => $concepto->monto,
+            ];
+        }
+
         return [
             "id" => $this->id,
             "nombre" => $this->nombre,
             "descripcion" => $this->descripcion,
             "fecha" => $this->fecha,
             "estado" => $this->estado,
+            "servicios" => $this->servicio,
+            "conceptos" => $conceptos,
         ];
     }
 }

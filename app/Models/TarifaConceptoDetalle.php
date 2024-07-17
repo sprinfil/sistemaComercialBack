@@ -35,4 +35,8 @@ class TarifaConceptoDetalle extends Model
      {
          return $this->belongsTo(ConceptoCatalogo::class, 'id_concepto');
      }
+
+     public function getNombreConceptoAttribute(){
+        
+     }
 }
