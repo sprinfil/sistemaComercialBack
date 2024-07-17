@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Abono;
 use App\Models\Cargo;
+use App\Models\Pago;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,5 +33,40 @@ class CargoFactory extends Factory
             'created_at' => now(),
             'updated_at' => now(),
         ];
+    }
+
+    /**
+     * Configure the factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Cargo $cargo) {
+            if ($cargo->estado == 'pagado') {
+                // origen del abono
+                $id_origen = 0;
+                $origen_abono = $this->faker->randomElement(['pago']);
+                $total_abonado = 0;
+                if($origen_abono == 'pago')
+                {
+                    $total_abonado = $cargo->monto;
+                    $pago = Pago::factory()->create([
+                        'total_pagado'=>$total_abonado,
+                        //'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
+                        //'fecha_pago'=>$this->faker->randomFloat(2, 0, 9999),
+                        'estado'=> 'abonado',
+                    ]);  
+                    $id_origen = $pago->id;
+                }
+
+                Abono::factory()->create([
+                    'id_cargo'=> $cargo->id,
+                    'id_origen'=> $id_origen,
+                    'modelo_origen'=> $origen_abono,
+                    'total_abonado'=>$total_abonado,
+                ]); 
+            }
+        });
     }
 }

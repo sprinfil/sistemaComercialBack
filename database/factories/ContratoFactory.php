@@ -117,9 +117,9 @@ class ContratoFactory extends Factory
             if ($contrato->estatus == 'pendiente de pago' || $contrato->estatus == 'contratado' || $contrato->estatus == 'terminado') {
                 Cargo::factory()->create([
                     'id_origen' =>$contrato->id,
-                    'modelo_origen' => 'App\Models\Contrato',
+                    'modelo_origen' => 'contrato',
                     'id_dueño' => $contrato->id_toma,
-                    'modelo_dueño' => 'App\Models\Toma',
+                    'modelo_dueño' => 'toma',
                     'monto' => $this->faker->randomFloat(2, 0, 9999),
                     'estado' => $estado_pago,
                     'fecha_cargo' => now(),

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\DescuentoAsociado;
+use App\Models\DescuentoCatalogo;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class DescuentosSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('descuento_catalogos')->insert([
+        /*DB::table('descuento_catalogos')->insert([
             [
                 'nombre' => 'Descuento de Verano',
                 'descripcion' => 'Descuento aplicado durante la temporada de verano',
@@ -44,8 +45,9 @@ class DescuentosSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ]);*/
 
+        DescuentoCatalogo::factory()->count(5)->create();
         DescuentoAsociado::factory()->count(5)->create();
     }
 }

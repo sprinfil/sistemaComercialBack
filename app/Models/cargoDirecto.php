@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class cargoDirecto extends Model
@@ -26,9 +27,8 @@ class cargoDirecto extends Model
         */
     ];
 
-    public function cargos () 
+    public function origen(): MorphMany
     {
-        return $this->belongsTo(Cargo::class);
+        return $this->morphMany(Cargo::class, 'origen', 'modelo', 'id_modelo');
     }
-    
 }
