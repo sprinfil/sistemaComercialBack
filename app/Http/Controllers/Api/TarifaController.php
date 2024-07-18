@@ -14,6 +14,7 @@ use App\Http\Resources\StoreTarifaConceptoDetalleResource;
 use App\Http\Resources\TarifaConceptoDetalleResource;
 use App\Http\Resources\TarifaResource;
 use App\Http\Resources\TarifaServiciosDetalleResource;
+use App\Models\ConceptoCatalogo;
 use App\Models\TarifaConceptoDetalle;
 use App\Models\TarifaServiciosDetalle;
 use Exception;
@@ -63,6 +64,19 @@ class TarifaController extends Controller
         if(!$tarifa)
         {
             $tarifa = tarifa::create($data);
+            $conceptos = ConceptoCatalogo::all();
+            $tipo_tomas = ConceptoCatalogo::all();
+
+            foreach($conceptos as $concepto){
+              foreach($tipo_tomas as $tipo_toma){
+                $TarifaConceptoDetalle = new TarifaConceptoDetalle();
+                $TarifaConceptoDetalle->id_tarifa = $tarifa->id;
+                $TarifaConceptoDetalle->id_tipo_toma = $tipo_toma->id;
+                $TarifaConceptoDetalle->id_concepto = $concepto->id;
+                $TarifaConceptoDetalle->monto = 100;
+                $TarifaConceptoDetalle->save();
+              }
+            }
             return response(new tarifaResource ($tarifa), 201);
         }
 
@@ -278,6 +292,6 @@ class TarifaController extends Controller
             ];
         }
 
-        return json_encode(   $conceptos);
+        return json_encode($conceptos);
     }
 }
