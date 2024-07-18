@@ -13,6 +13,7 @@ class TipoTomaSeeder extends Seeder
      */
     public function run(): void
     {
+        /*
         DB::table('tipo_tomas')->insert([
             [
                 'nombre' => 'Domestica',
@@ -30,6 +31,6 @@ class TipoTomaSeeder extends Seeder
                 'nombre' => 'Especial',
                 'descripcion' => 'ninguna',
             ],
-        ]);
+        ]);*/
     }
 }

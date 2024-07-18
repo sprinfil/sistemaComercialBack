@@ -84,4 +84,15 @@ class Toma extends Model
     {
         return $this->hasOne(Factibilidad::class);
     }
+    public static function ConsultarContratosPorToma(string $id_toma){
+        
+        $data=Toma::findOrFail($id_toma);
+        $contratos=$data->withWhereHas('contratovigente' , function (Builder $query) {
+            $query->where('estatus', '!=','cancelado');
+            
+        })->get();
+        return $contratos;
+        
+    }
 }
+

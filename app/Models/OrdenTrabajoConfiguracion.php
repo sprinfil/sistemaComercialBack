@@ -6,14 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Abono extends Model
+class OrdenTrabajoConfiguracion extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        "id_cargo",
-        "id_origen",
-        "modelo_origen",
-        "total_abonado",
+    protected $table=[
+        "nombre",
+       
     ];
 }

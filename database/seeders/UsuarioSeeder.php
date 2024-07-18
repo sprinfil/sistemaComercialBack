@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Operador;
 use App\Models\Usuario;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -37,6 +38,7 @@ class UsuarioSeeder extends Seeder
             ],
         ]);
 
-        Usuario::factory()->count(10)->create();
+        Usuario::factory()->count(30)->create();
+        Operador::factory()->count(30)->create();
     }
 }
