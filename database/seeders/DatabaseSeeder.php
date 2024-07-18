@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Cotizacion;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AnomaliaSeeder;
 use Database\Seeders\ConvenioSeeder;
@@ -31,15 +33,18 @@ class DatabaseSeeder extends Seeder
 */
         //
         $this->call(UsuarioSeeder::class);
+        //
         $this->call(GiroComercialSeeder::class);
         $this->call(TipoTomasSeeder::class);
+        $this->call(ConceptoCatalogoSeeder::class);
+        //
         $this->call(TomaSeeder::class);
         //
         $this->call(DescuentosSeeder::class);
         // 
         $this->call(AnomaliaSeeder::class);
         $this->call(AjusteSeeder::class);
-        $this->call(ConceptoCatalogoSeeder::class);
+        
         $this->call(ConvenioSeeder::class);
         $this->call(ConstanciaSeeder::class);
         $this->call(BonificacionCatalogoSeeder::class);
@@ -47,5 +52,6 @@ class DatabaseSeeder extends Seeder
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
         $this->call(TipoTomaSeeder::class);
+        //
     }
 }

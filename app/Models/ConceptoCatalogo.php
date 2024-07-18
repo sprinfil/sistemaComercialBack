@@ -24,8 +24,19 @@ class ConceptoCatalogo extends Model
     {
         return $this->hasOne(TarifaConceptoDetalle::class, 'id');
     }
+
     public function ordenTrabajoConfiguracion() : HasOne
     {
         return $this->hasOne(ordenTrabajoConfiguracion::class, 'id_concepto_catalogo');
+    }
+
+
+    // Busqueda por nombre
+    public static function buscarPorNombre(string $nombre){
+        
+        $data=ConceptoCatalogo::where('nombre',$nombre)->get()->first();
+        return $data;
+        
+
     }
 }

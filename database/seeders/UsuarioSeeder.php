@@ -38,7 +38,7 @@ class UsuarioSeeder extends Seeder
             ],
         ]);
 
-        Usuario::factory()->count(10)->create();
-        Operador::factory()->count(10)->create();
+        Usuario::factory()->count(30)->create();
+        Operador::factory()->count(30)->create();
     }
 }
