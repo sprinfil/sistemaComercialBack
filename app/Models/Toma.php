@@ -84,6 +84,9 @@ class Toma extends Model
     {
         return $this->hasOne(Factibilidad::class);
     }
+    public function ordenesTrabajo():HasMany{
+        return $this->hasMany(ordenTrabajo::class,'id_toma');;
+    }
     public static function ConsultarContratosPorToma(string $id_toma){
         
         $data=Toma::findOrFail($id_toma);

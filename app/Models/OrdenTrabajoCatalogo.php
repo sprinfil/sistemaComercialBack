@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrdenTrabajoCatalogo extends Model
@@ -11,9 +13,14 @@ class OrdenTrabajoCatalogo extends Model
     use HasFactory, SoftDeletes;
 
     protected $table=[
-        "id_orden_trabajo_catalogo",
-        "id_concepto_catalogo",
-        "accion",
-        "momento",
+        "nombre",
+
     ];
+    public function ordenTrabajoConfiguracion():HasOne{
+        return $this->hasOne(OrdenTrabajoConfiguracion::class,'id_orden_trabajo_catalogo');;
+    }
+    public function ordenTrabajo():HasMany{
+        return $this->hasMany(ordenTrabajo::class,'id_orden_trabajo_catalogo');
+    }
+    
 }

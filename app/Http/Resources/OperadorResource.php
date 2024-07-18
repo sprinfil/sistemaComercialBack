@@ -26,6 +26,8 @@ class OperadorResource extends JsonResource
             "fecha_nacimiento" => $this->fecha_nacimiento,
             "user" => $this->user,
             "roles" => $this->roles,
+            'ordenes_trabajo_asignar' => OrdenTrabajoResource::collection($this->whenLoaded('ordenTrabajoAsignar')),
+            'ordenes_trabajo_encargados' => OrdenTrabajoResource::collection($this->whenLoaded('ordenTrabajoEncargado')),
         ];
     }
 }
