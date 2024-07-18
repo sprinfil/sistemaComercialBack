@@ -29,7 +29,14 @@ class Operador extends Model
     {
         return $this->belongsTo(User::class, "id_user", "id");
     }
-
+    public function ordenTrabajoAsignar()
+    {
+        return $this->hasMany(ordenTrabajo::class, "id_empleado_asigno", "id");
+    }
+    public function ordenTrabajoEncargado()
+    {
+        return $this->hasMany(ordenTrabajo::class, "id_empleado_encargado", "id");
+    }
     public function getRolesAttribute()
     {
         $user = $this->user;
