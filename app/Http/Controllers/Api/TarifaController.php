@@ -28,7 +28,7 @@ class TarifaController extends Controller
      */
     public function index()
     {
-        //$this->authorize('create', Operador::class);
+        ////$this->authorize('create', Operador::class);
         return TarifaResource::collection(
             tarifa::all()
         );
@@ -96,7 +96,7 @@ class TarifaController extends Controller
      */
     public function update(UpdatetarifaRequest $request,  string $id)
     {
-        //$this->authorize('update', tarifa::class);
+        ////$this->authorize('update', tarifa::class);
         //Log::info("id");
         try {
             $data = $request->validated();
@@ -127,7 +127,7 @@ class TarifaController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('delete', tarifa::class);
+        //$this->authorize('delete', tarifa::class);
         try {
             $operador = tarifa::findOrFail($id);
             $operador->delete();
@@ -158,7 +158,7 @@ class TarifaController extends Controller
 
     public function indexTarifaConceptoDetalle()
     {
-        //$this->authorize('create', Operador::class);
+        ////$this->authorize('create', Operador::class);
         return TarifaConceptoDetalleResource::collection(
             TarifaConceptoDetalle::all()
         );
@@ -196,7 +196,7 @@ class TarifaController extends Controller
     }
     public function updateTarifaConceptoDetalle(UpdateTarifaConceptoDetalle $request,  string $id)
     {
-        //$this->authorize('update', tarifa::class);
+        ////$this->authorize('update', tarifa::class);
         //Log::info("id");
 
         //Falta validacion que evite modificaciones si ya esta asociado a una facturacion
@@ -218,7 +218,7 @@ class TarifaController extends Controller
 
     public function indexServicioDetalle()
     {
-        //$this->authorize('create', Operador::class);
+        ////$this->authorize('create', Operador::class);
         return TarifaServiciosDetalleResource::collection(
             TarifaServiciosDetalle::all()
         );
@@ -256,7 +256,7 @@ class TarifaController extends Controller
     }
     public function TarifasPorConcepto(UpdateTarifaServiciosDetalleRequest $request,  string $id)
     {
-        //$this->authorize('update', tarifa::class);
+        ////$this->authorize('update', tarifa::class);
         //Log::info("id");
 
         //Falta validacion que evite modificaciones si ya esta asociado a una facturacion
