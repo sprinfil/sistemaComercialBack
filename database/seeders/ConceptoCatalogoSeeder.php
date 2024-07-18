@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\ConceptoCatalogo;
+use App\Models\TarifaServiciosDetalle;
+use App\Models\TipoToma;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +16,7 @@ class ConceptoCatalogoSeeder extends Seeder
      */
     public function run(): void
     {
+        /*
         DB::table('concepto_catalogos')->insert([
             [
                 'nombre' => 'Servicio de agua potable',
@@ -80,6 +84,35 @@ class ConceptoCatalogoSeeder extends Seeder
                 'prioridad_abono' => '5',
                 'estado' => 'activo',
             ],
+        ]);*/
+
+        DB::table('tarifas')->insert([
+            [
+                'nombre' => 'TARIFA JULIO 2024',
+                'descripcion' => 'ninguna',
+                'fecha' => now(),
+                'estado' => 'activo',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
+
+        $tipo_tomas = TipoToma::all();
+
+        $tipo_tomas->each(function ($tipo_toma) {
+            $rango = 17;
+            for ($i = 1; $i <= 10; $i++) {
+                TarifaServiciosDetalle::factory()->create([
+                    'id_tarifa'=>1,
+                    'id_tipo_toma'=>$tipo_toma->id,
+                    'rango'=>$rango*$i,
+                    'agua'=>10*17,
+                    'alcantarillado'=>2*17,
+                    'saneamiento'=>2*17
+                ]);
+            }
+        });
+
+        ConceptoCatalogo::factory()->count(10)->create();
     }
 }
