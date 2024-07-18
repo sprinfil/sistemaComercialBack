@@ -101,12 +101,22 @@ class TarifaController extends Controller
         try {
             $data = $request->validated();
             $tarifa = tarifa::findOrFail($id);
-            $tarifa->update($data);
-            $tarifa->save();
-            return response(new tarifaResource($tarifa), 200);
-        } catch (Exception $e) {
+
+            if($tarifa){
+                if($tarifa->estado == 'inactivo' && $request->input('estado', $tarifa->estado)){
+                    tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
+                }
+                $tarifa->update($data);
+                $tarifa->save();
+                return response(new tarifaResource($tarifa), 200);
+            }
             return response()->json([
                 'error' => 'No se pudo editar la tarifa'
+            ], 400);
+            
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo editar la tarifa'.$e
             ], 500);
         }
             
