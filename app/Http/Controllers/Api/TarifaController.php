@@ -263,4 +263,21 @@ class TarifaController extends Controller
         }
             
     }
+
+    public function get_conceptos_detalles_by_tarifa_id($tarifa_id){
+        $tarifa = Tarifa::find($tarifa_id)->first();
+        $conceptos = [];
+        foreach($tarifa->conceptos as $concepto){
+            $conceptos[] = [
+                "id" => $concepto->id,
+                "id_tarifa" => $concepto->id_tarifa,
+                "id_tipo_toma" => $concepto->id_tipo_toma,
+                "id_concepto" => $concepto->id_concepto,
+                "nombre_concepto" => $concepto->concepto->nombre,
+                "monto" => $concepto->monto,
+            ];
+        }
+
+        return json_encode(   $conceptos);
+    }
 }
