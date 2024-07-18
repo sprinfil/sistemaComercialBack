@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTarifaConceptoDetalleRequest;
 use App\Models\tarifa;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoretarifaRequest;
 use App\Http\Requests\StoreTarifaServiciosDetalleRequest;
 use App\Http\Requests\UpdateTarifaConceptoDetalle;
@@ -40,47 +41,61 @@ class TarifaController extends Controller
      */
     public function store(StoretarifaRequest $request)
     {
-        try{
+        try {
             //VALIDA EL STORE
-        $data = $request->validated();
+            $data = $request->validated();
             //Busca por nombre las tarifas eliminadas
-        $tarifa = tarifa::withTrashed()->where('nombre', $request->input('nombre'))->first();
+            $tarifa = tarifa::withTrashed()->where('nombre', $request->input('nombre'))->first();
 
-          //VALIDACION POR SI EXISTE
-          if ($tarifa) {
-            if ($tarifa->trashed()) {
+            //VALIDACION POR SI EXISTE
+            if ($tarifa) {
+                if ($tarifa->trashed()) {
+                    return response()->json([
+                        'message' => 'La tarifa ya existe pero ha sido eliminada. ¿Desea restaurarla?',
+                        'restore' => true,
+                        'tarifa' => $tarifa->id
+                    ], 200);
+                }
                 return response()->json([
-                    'message' => 'La tarifa ya existe pero ha sido eliminada. ¿Desea restaurarla?',
-                    'restore' => true,
-                    'tarifa' => $tarifa->id
+                    'message' => 'La tarifa ya existe.',
+                    'restore' => false
                 ], 200);
             }
-            return response()->json([
-                'message' => 'La tarifa ya existe.',
-                'restore' => false
-            ], 200);
-        }
-        //Si no existe la tarifa, crea una tarifa
-        if(!$tarifa)
-        {
-            $tarifa = tarifa::create($data);
-            $conceptos = ConceptoCatalogo::all();
-            $tipo_tomas = ConceptoCatalogo::all();
+            //Si no existe la tarifa, crea una tarifa
+            if (!$tarifa) {
+                $tarifa = tarifa::create($data);
+                $conceptos = ConceptoCatalogo::all();
+                $tipo_tomas = ConceptoCatalogo::all();
 
-            foreach($conceptos as $concepto){
-              foreach($tipo_tomas as $tipo_toma){
-                $TarifaConceptoDetalle = new TarifaConceptoDetalle();
-                $TarifaConceptoDetalle->id_tarifa = $tarifa->id;
-                $TarifaConceptoDetalle->id_tipo_toma = $tipo_toma->id;
-                $TarifaConceptoDetalle->id_concepto = $concepto->id;
-                $TarifaConceptoDetalle->monto = 100;
-                $TarifaConceptoDetalle->save();
-              }
+                foreach ($conceptos as $concepto) {
+                    foreach ($tipo_tomas as $tipo_toma) {
+                        $TarifaConceptoDetalle = new TarifaConceptoDetalle();
+                        $TarifaConceptoDetalle->id_tarifa = $tarifa->id;
+                        $TarifaConceptoDetalle->id_tipo_toma = $tipo_toma->id;
+                        $TarifaConceptoDetalle->id_concepto = $concepto->id;
+                        $TarifaConceptoDetalle->monto = 100;
+                        $TarifaConceptoDetalle->save();
+                    }
+                }
+
+                /*
+                        foreach ($tipo_tomas as $tipo_toma) {
+                        $TarifaServicioDetalle = new TarifaServiciosDetalle();
+                        $TarifaServicioDetalle->id_tarifa = $tarifa->id;
+                        $TarifaServicioDetalle->id_tipo_toma = $tipo_toma->id;
+                        $TarifaServicioDetalle->rango = $i;
+                        $TarifaServicioDetalle->agua = 20;
+                        $TarifaServicioDetalle->alcantarillado = 20;
+                        $TarifaServicioDetalle->saneamiento = 20;
+                        $TarifaServicioDetalle->save();
+                    
+                }
+                */
+
+
+                return response(new tarifaResource($tarifa), 201);
             }
-            return response(new tarifaResource ($tarifa), 201);
-        }
-
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar la tarifa'
             ], 500);
@@ -92,7 +107,7 @@ class TarifaController extends Controller
      */
     public function show($tarifa)
     {
-        
+
         try {
             $tarifa = tarifa::findOrFail($tarifa);
             return response(new tarifaResource($tarifa), 200);
@@ -102,7 +117,7 @@ class TarifaController extends Controller
             ], 500);
         }
         //
-        
+
     }
 
     /**
@@ -123,7 +138,6 @@ class TarifaController extends Controller
                 'error' => 'No se pudo editar la tarifa'
             ], 500);
         }
-            
     }
 
     /**
@@ -135,7 +149,7 @@ class TarifaController extends Controller
         try {
             $operador = tarifa::findOrFail($id);
             $operador->delete();
-            return response("Tarifa eliminada con exito",200);
+            return response("Tarifa eliminada con exito", 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se ha podido remover la tarifa'
@@ -148,14 +162,13 @@ class TarifaController extends Controller
 
         $tarifa = tarifa::withTrashed()->findOrFail($request->id);
 
-           // Verifica si el registro está eliminado
+        // Verifica si el registro está eliminado
         if ($tarifa->trashed()) {
 
             // Restaura el registro
             $tarifa->restore();
             return response()->json(['message' => 'La tarifa ha sido restaurada.'], 200);
         }
-
     }
 
     //METODOS DE TARIFA_CONCEPTO_DETALLE
@@ -166,19 +179,18 @@ class TarifaController extends Controller
         return TarifaConceptoDetalleResource::collection(
             TarifaConceptoDetalle::all()
         );
-    }   
+    }
     public function storeTarifaConceptoDetalle(StoreTarifaConceptoDetalleRequest $request)
     {
-       // $data = $request->validated();
+        // $data = $request->validated();
         //return response()->json(['message' => $data], 200);
-        try{
+        try {
             //VALIDA EL STORE
             $data = $request->validated();
             $tarifaConceptoDetalle = TarifaConceptoDetalle::create($data);
-            
-            return response(new TarifaConceptoDetalleResource ($tarifaConceptoDetalle), 201);
 
-        } catch(Exception $e) {
+            return response(new TarifaConceptoDetalleResource($tarifaConceptoDetalle), 201);
+        } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el concepto detalle de tarifa'
             ], 500);
@@ -186,7 +198,7 @@ class TarifaController extends Controller
     }
     public function showTarifaConceptoDetalle($tarifaDetalle)
     {
-        
+
         try {
             $tarifaDetalle = TarifaConceptoDetalle::findOrFail($tarifaDetalle);
             return response(new TarifaConceptoDetalleResource($tarifaDetalle), 200);
@@ -196,7 +208,7 @@ class TarifaController extends Controller
             ], 500);
         }
         //
-        
+
     }
     public function updateTarifaConceptoDetalle(UpdateTarifaConceptoDetalle $request,  string $id)
     {
@@ -215,7 +227,6 @@ class TarifaController extends Controller
                 'error' => 'No se pudo editar el concepto de tarifa'
             ], 500);
         }
-            
     }
 
     //Servicio tarifa detalle
@@ -226,20 +237,19 @@ class TarifaController extends Controller
         return TarifaServiciosDetalleResource::collection(
             TarifaServiciosDetalle::all()
         );
-    }  
+    }
 
     public function storeTarifaServicioDetalle(StoreTarifaServiciosDetalleRequest $request)
     {
-       // $data = $request->validated();
+        // $data = $request->validated();
         //return response()->json(['message' => $data], 200);
-        try{
+        try {
             //VALIDA EL STORE
             $data = $request->validated();
             $tarifaServicioDetalle = TarifaServiciosDetalle::create($data);
-            
-            return response(new TarifaServiciosDetalleResource ($tarifaServicioDetalle), 201);
 
-        } catch(Exception $e) {
+            return response(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 201);
+        } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el detalle de servicio'
             ], 500);
@@ -247,7 +257,7 @@ class TarifaController extends Controller
     }
     public function showTarifaServicioDetalle($tarifaDetalle)
     {
-        
+
         try {
             $tarifaDetalle = TarifaServiciosDetalle::findOrFail($tarifaDetalle);
             return response(new TarifaServiciosDetalleResource($tarifaDetalle), 200);
@@ -256,14 +266,10 @@ class TarifaController extends Controller
                 'error' => 'No se pudo encontrar el servicio asociado a la tarifa'
             ], 500);
         }
-        
     }
-    public function TarifasPorConcepto(UpdateTarifaServiciosDetalleRequest $request,  string $id)
-    {
-        //$this->authorize('update', tarifa::class);
-        //Log::info("id");
 
-        //Falta validacion que evite modificaciones si ya esta asociado a una facturacion
+    public function updateTarifaServicioDetalle(UpdateTarifaServiciosDetalleRequest $request,  string $id)
+    {
         try {
             $data = $request->validated();
             $tarifaServicioDetalle = TarifaServiciosDetalle::findOrFail($request["id"]);
@@ -275,13 +281,13 @@ class TarifaController extends Controller
                 'error' => 'No se pudo editar el servicio'
             ], 500);
         }
-            
     }
 
-    public function get_conceptos_detalles_by_tarifa_id($tarifa_id){
+    public function get_conceptos_detalles_by_tarifa_id($tarifa_id)
+    {
         $tarifa = Tarifa::find($tarifa_id)->first();
         $conceptos = [];
-        foreach($tarifa->conceptos as $concepto){
+        foreach ($tarifa->conceptos as $concepto) {
             $conceptos[] = [
                 "id" => $concepto->id,
                 "id_tarifa" => $concepto->id_tarifa,
@@ -295,11 +301,12 @@ class TarifaController extends Controller
         return json_encode($conceptos);
     }
 
-    public function get_servicios_detalles_by_tarifa_id($tarifa_id){
+    public function get_servicios_detalles_by_tarifa_id($tarifa_id)
+    {
 
         $tarifa = Tarifa::find($tarifa_id)->first();
         $servicio = [];
-        foreach($tarifa->servicio as $servicios){
+        foreach ($tarifa->servicio as $servicios) {
             $servicio[] = [
                 "id" => $servicios->id,
                 "id_tarifa" => $servicios->id_tarifa,
@@ -312,6 +319,10 @@ class TarifaController extends Controller
             ];
         }
 
+        usort($servicio, function ($a, $b) {
+            return $a['rango'] <=> $b['rango'];
+        });
+        
         return json_encode($servicio);
     }
 }
