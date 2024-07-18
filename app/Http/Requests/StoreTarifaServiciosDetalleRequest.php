@@ -25,9 +25,9 @@ class StoreTarifaServiciosDetalleRequest extends FormRequest
             "id_tarifa"=> "required|int",
             "id_tipo_toma"=> "required|int",
             "rango"=> "required|int|gt:0",
-            "agua"=> "required|numeric|gt:0",
-            "alcantarillado"=> "required|numeric|gt:0",
-            "saneamiento"=> "required|numeric|gt:0",
+            "agua"=> "required|int|gt:0",
+            "alcantarillado"=> "required|int|gt:0",
+            "saneamiento"=> "required|int|gt:0",
         ];
     }
 }

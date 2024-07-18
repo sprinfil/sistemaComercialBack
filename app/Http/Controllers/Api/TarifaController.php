@@ -280,4 +280,24 @@ class TarifaController extends Controller
 
         return json_encode(   $conceptos);
     }
+
+    public function get_servicios_detalles_by_tarifa_id($tarifa_id){
+
+        $tarifa = Tarifa::find($tarifa_id)->first();
+        $servicio = [];
+        foreach($tarifa->servicio as $servicios){
+            $servicio[] = [
+                "id" => $servicios->id,
+                "id_tarifa" => $servicios->id_tarifa,
+                "id_tipo_toma" => $servicios->id_tipo_toma,
+                "rango" => $servicios->rango,
+                "agua" => $servicios->agua,
+                "alcantarillado" => $servicios->alcantarillado,
+                "saneamiento" => $servicios->saneamiento,
+
+            ];
+        }
+
+        return json_encode($servicio);
+    }
 }

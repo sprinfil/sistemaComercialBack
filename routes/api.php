@@ -355,6 +355,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //CONSULTAR CONCEPTOS POR TARIFA ID
         Route::get("/tarifaConceptoDetalle/{tarifa_id}","get_conceptos_detalles_by_tarifa_id");
+        Route::get("/tarifaServicioDetalle/{tarifa_id}","get_servicios_detalles_by_tarifa_id");
+
     });
 
     //Tarifa Servicio detalle
