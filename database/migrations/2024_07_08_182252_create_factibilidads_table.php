@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('factibilidad', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_contrato')->default('1');
-            $table->enum('estado_factible', ['no_factible', 'factible'])->default('no_factible');
+            $table->enum('agua_estado_factible', ['no_factible', 'factible'])->default('no_factible');
+            $table->enum('alc_estado_factible', ['no_factible', 'factible'])->default('no_factible');
             $table->decimal('derechos_conexion' , total:8 , places:2)->nullable(); //Cambio a decimal.
             $table->softDeletes();
             $table->timestamps();

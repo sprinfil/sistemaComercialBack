@@ -21,12 +21,15 @@ class CargoFactory extends Factory
     public function definition(): array
     {
         return [
+            'id_concepto' => 1,
+            'concepto' => 'ninguno',
             'id_origen' => $this->faker->numberBetween(1, 100),
             'modelo_origen' => $this->faker->word,
             'id_dueño' => $this->faker->numberBetween(1, 100),
             'modelo_dueño' => $this->faker->word,
             'monto' => $this->faker->randomFloat(2, 0, 9999),
-            'estado' => $this->faker->randomElement(['pendiente', 'pagado', 'cancelado']),
+            'estado' => $this->faker->randomElement(['pendiente', 'pagado', 'conveniado', 'cancelado']),
+            'id_convenio' => null,
             'fecha_cargo' => now(),
             'fecha_liquidacion' => now()->addDays(1),
             'deleted_at' => null,
