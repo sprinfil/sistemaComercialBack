@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
             $table->unsignedBigInteger('id_concepto_catalogo');
-            $table->enum('accion',['generar','quitar']);
+            $table->enum('accion',['generar','modificar','quitar']);
             $table->enum('momento',['generar','asignar','concluir']);
             $table->timestamps();
         });
