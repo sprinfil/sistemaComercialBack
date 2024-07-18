@@ -12,12 +12,15 @@ class Cargo extends Model
     use HasFactory, SoftDeletes;
     
     protected $fillable = [
+        "id_concepto",
+        "concepto",
         "id_origen",
         "modelo_origen",
         "id_dueño",
         "modelo_dueño",
         "monto",
         "estado",
+        "id_convenio",
         "fecha_cargo",
         "fecha_liquidacion",
     ];

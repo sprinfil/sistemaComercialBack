@@ -23,4 +23,12 @@ class ConceptoCatalogo extends Model
     {
         return $this->hasOne(TarifaConceptoDetalle::class, 'id');
     }
+
+    // Busqueda por nombre
+    public static function buscarPorNombre(string $nombre){
+        
+        $data=ConceptoCatalogo::where('nombre',$nombre)->get()->first();
+        return $data;
+        
+    }
 }

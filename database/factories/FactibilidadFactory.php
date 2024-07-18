@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Factibilidad;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FactibilidadFactory extends Factory
 {
+    protected $model = Factibilidad::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +19,10 @@ class FactibilidadFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'id_contrato'=>1,
+            'agua_estado_factible'=> 'factible',//['no_factible', 'factible'],
+            'alc_estado_factible'=> 'factible',//['no_factible', 'factible'],
+            'derechos_conexion' =>0
         ];
     }
 }

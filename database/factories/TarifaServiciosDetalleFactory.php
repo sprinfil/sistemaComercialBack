@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\TarifaServiciosDetalle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TarifaServiciosDetalleFactory extends Factory
 {
+    protected $model = TarifaServiciosDetalle::class;
     /**
      * Define the model's default state.
      *

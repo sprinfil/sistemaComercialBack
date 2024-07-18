@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\TarifaConceptoDetalle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TarifaConceptoDetalleFactory extends Factory
 {
+    protected $model = TarifaConceptoDetalle::class;
     /**
      * Define the model's default state.
      *
@@ -18,7 +20,7 @@ class TarifaConceptoDetalleFactory extends Factory
     {
         return [
             'id_tarifa' => 0,
-            'id_tipo_toma' => 0,
+            'id_tipo_toma' => '0',
             'id_concepto' => 0,
             'monto' => 100
         ];
