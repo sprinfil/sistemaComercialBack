@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('abonos', function (Blueprint $table) {
+        Schema::create('orden_trabajo_catalogos', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_cargo')->unsigned()->default('1');
-            $table->bigInteger('id_origen')->unsigned()->default('1'); 
-            $table->string('modelo_origen');
-            $table->decimal('total_abonado', 8, 2);
-            $table->softDeletes();
+            $table->string('nombre');
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('abonos');
+        Schema::dropIfExists('orden_trabajo_catalogos');
     }
 };

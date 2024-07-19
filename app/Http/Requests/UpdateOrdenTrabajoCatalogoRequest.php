@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAbonoRequest extends FormRequest
+class UpdateOrdenTrabajoCatalogoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,7 @@ class StoreAbonoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_cargo"=>"required|integer",
-            "id_origen"=>"required|integer",
-            "modelo_origen"=>"required|string|max:55",
-            "total_abonado"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "nombre" => "required|string",
         ];
     }
 }

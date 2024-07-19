@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
+use App\Http\Controllers\Api\OrdenTrabajoController;
 use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\TarifaController;
 use App\Http\Controllers\Api\Tipo_tomaController;
@@ -173,7 +174,15 @@ Route::middleware('auth:sanctum')->group(function () {
         });
      
     });
-
+    // Gestion de ordenes de trabajo
+    Route::controller(OrdenTrabajoController::class)->group(function () {
+        Route::get("/OrdenTrabajoCatalogo", "indexCatalogo");
+        Route::post("/OrdenTrabajoCatalogo/create", "storeCatalogo");
+        Route::put("/OrdenTrabajoCatalogo/update/{id}", "update");
+        Route::put("/OrdenTrabajoCatalogo/log_delete/{id}", "destroy");
+        Route::get("/OrdenTrabajoCatalogo/show/{id}", "show");
+    });
+    
     // Gestion de contribuyentes
     Route::controller(Dato_fiscalController::class)->group(function () {
         Route::get("/Datos_fiscales", "index");
@@ -352,6 +361,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/tarifaConceptoDetalle/show/{id}","showTarifaConceptoDetalle");
         Route::put("/tarifaConceptoDetalle/update/{id}","updateTarifaConceptoDetalle");
         Route::get("/tarifaConceptoDetalle/conceptoAsociado/{id}","tarifaPorConceptoAsociado");
+
+        //CONSULTAR CONCEPTOS POR TARIFA ID
+        Route::get("/tarifaConceptoDetalle/{tarifa_id}","get_conceptos_detalles_by_tarifa_id");
+        Route::get("/tarifaServicioDetalle/{tarifa_id}","get_servicios_detalles_by_tarifa_id");
+
     });
 
     //Tarifa Servicio detalle

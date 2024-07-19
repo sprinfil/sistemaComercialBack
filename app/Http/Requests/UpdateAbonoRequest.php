@@ -22,7 +22,6 @@ class UpdateAbonoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_pago"=>"required|integer",
             "id_cargo"=>"required|integer",
             "id_origen"=>"required|integer",
             "modelo_origen"=>"required|string|max:55",

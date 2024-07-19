@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contrato extends Model
@@ -65,6 +66,12 @@ class Contrato extends Model
         $fecha=Carbon::now()->format('Y-m-d');
         return $this->HasOne(cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
     }
+
+    public function origen(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'origen', 'modelo', 'id_modelo');
+    }
+
     public static function contratoRepetido($id_usuario, $servicios,$toma_id){
         $contratos= Contrato::where('id_usuario', $id_usuario)->where('id_toma',$toma_id)
         ->where('estatus', '!=', 'cancelado')

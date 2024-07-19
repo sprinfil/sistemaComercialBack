@@ -15,18 +15,20 @@ class Factibilidad extends Model
 
     protected $fillable = 
     [
-        'estado_factible',
+        'id_contrato',
+        'agua_estado_factible',
+        'alc_estado_factible',
         'derechos_conexion'
     ];
 
     public function contrato () : BelongsTo
     {
-        return $this->belongsTo(Contrato::class);
+        return $this->belongsTo(Contrato::class, 'id_contrato');
     }
 
-    public function toma () : BelongsTo
+    /*public function toma () : BelongsTo
     {
         return $this->belongsTo(Toma::class);
-    }
+    }*/
 
 }
