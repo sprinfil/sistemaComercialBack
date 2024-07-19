@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\Cargo;
 use App\Models\ConceptoCatalogo;
 use App\Models\Contrato;
+use App\Models\Cotizacion;
+use App\Models\DatosDomiciliacion;
 use App\Models\Factibilidad;
 use App\Models\Toma;
 use App\Models\Usuario;
@@ -151,12 +153,29 @@ class ContratoFactory extends Factory
                     'updated_at' => now(),
                 ]);
             } else {
+                if($contrato_alc != null){
+                    $cotizacion_alc = Cotizacion::factory()->create([
+                        'id_contrato'=>$contrato_alc->id
+                    ]);
+                }
+                $cotizacion = Cotizacion::factory()->create([
+                    'id_contrato'=>$contrato->id,
+                ]);
                 if($contrato->estatus != 'pendiente de inspeccion'){
                     $factibilidad = Factibilidad::factory()->create([
                         'id_contrato' => $contrato->id,
                         'agua_estado_factible' => 'factible',
                         'alc_estado_factible' => 'factible',
                         'derechos_conexion' => $derechos_conexion
+                    ]);
+
+                    DatosDomiciliacion::factory()->create([
+                        'id_toma' => $contrato->id_toma,
+                        'numero_cuenta' => $this->faker->creditCardNumber,
+                        'fecha_vencimiento' => date('Y-m-d H:i:s', (strtotime('+1 year', time()))),
+                        'tipo_tarjeta' => $this->faker->randomElement(['credito','debito']),
+                        'limite_cobro' => $this->faker->randomFloat(2, 0, 9999),
+                        'domicilio_tarjeta' => Toma::find($contrato->id_toma)->getDireccionCompleta(),
                     ]);
 
                     Cargo::factory()->create([
