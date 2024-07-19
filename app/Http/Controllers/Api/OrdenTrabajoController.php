@@ -82,6 +82,7 @@ class OrdenTrabajoController extends Controller
         $data=$request->validated();
         $catalogo=OrdenTrabajoConfiguracion::create($data);
         return response(new OrdenTrabajoConfResource($catalogo),200);
+        
     }
     //// ORDEN DE TRABAJO
     public function storeOrden(StoreOrdenTrabajoRequest $request)
