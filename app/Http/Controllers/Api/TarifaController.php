@@ -30,7 +30,7 @@ class TarifaController extends Controller
     {
         //$this->authorize('create', Operador::class);
         return TarifaResource::collection(
-            tarifa::all()
+            tarifa::with('conceptos')->get()
         );
     }
 
@@ -98,6 +98,7 @@ class TarifaController extends Controller
     {
         //$this->authorize('update', tarifa::class);
         //Log::info("id");
+       
         try {
             $data = $request->validated();
             $tarifa = tarifa::findOrFail($id);
@@ -216,21 +217,36 @@ class TarifaController extends Controller
 
     public function storeTarifaServicioDetalle(StoreTarifaServiciosDetalleRequest $request)
     {
-       // $data = $request->validated();
-        //return response()->json(['message' => $data], 200);
+       
         try{
-            //VALIDA EL STORE
-            $data = $request->validated();
-            $tarifaServicioDetalle = TarifaServiciosDetalle::create($data);
             
-            return response(new TarifaServiciosDetalleResource ($tarifaServicioDetalle), 201);
+            $registro = TarifaServiciosDetalle::select('rango','agua','alcantarillado','saneamiento')->where('id_tarifa',$request->id_tarifa)->orderBy('rango')->get();
+            //return $registro;
+            //next $rangoRegistrado
+            foreach ($registro as $rangoRegistrado) {
 
-        } catch(Exception $e) {
+              if ($rangoRegistrado->rango == $request->rango) {
+                return response()->json([
+                    'error' => 'No se puede repetir el rango en la misma tarifa'
+                ], 500);
+              }
+
+              else{
+                 //VALIDA EL STORE
+                 $data = $request->validated();
+                 $tarifaServicioDetalle = TarifaServiciosDetalle::create($data);
+                 return response(new TarifaServiciosDetalleResource ($tarifaServicioDetalle), 201);
+                }
+            }
+            
+           
+        }catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el detalle de servicio'
             ], 500);
         }
     }
+
     public function showTarifaServicioDetalle($tarifaDetalle)
     {
         
@@ -244,6 +260,8 @@ class TarifaController extends Controller
         }
         
     }
+    
+    // Consultas especificas
     public function TarifasPorConcepto(UpdateTarifaServiciosDetalleRequest $request,  string $id)
     {
         //$this->authorize('update', tarifa::class);
