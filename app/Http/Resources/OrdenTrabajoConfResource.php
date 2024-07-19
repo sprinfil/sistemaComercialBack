@@ -17,11 +17,10 @@ class OrdenTrabajoConfResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "id_tarifa" => $this->id_tarifa,
-            "id_tipo_toma" => $this->id_tipo_toma,
-            "id_concepto" => $this->id_concepto,
-            "nombre_concepto" => $this->concepto->nombre,
-            "monto" => $this->monto,
+            "id_orden_trabajo_catalogo" => $this->id_orden_trabajo_catalogo,
+            "id_concepto_catalogo" => $this->id_concepto_catalogo,
+            "accion" => $this->accion,
+            "momento" => $this->momento,
         ];
     }
 }

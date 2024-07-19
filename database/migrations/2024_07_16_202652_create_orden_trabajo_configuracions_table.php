@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_concepto_catalogo');
             $table->enum('accion',['generar','modificar','quitar']);
             $table->enum('momento',['generar','asignar','concluir']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
