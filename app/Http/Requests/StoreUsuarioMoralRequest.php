@@ -22,8 +22,8 @@ class StoreUsuarioMoralRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255|alpha:ascii',
-            'nombre_contacto' => 'nullable|string|max:255|alpha:ascii',
+            'nombre' => 'required|string|max:255',
+            'nombre_contacto' => 'nullable|string|max:255',
             'telefono' => 'required|string|size:10',
             'rfc' => 'required|string|size:13|unique:usuarios,rfc',
             'correo' => 'required|string|email|max:255|unique:usuarios,correo',

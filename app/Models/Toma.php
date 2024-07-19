@@ -34,6 +34,8 @@ class Toma extends Model
         "tipo_servicio",
         "tipo_toma",
         "tipo_contratacion",
+        'c_agua',
+        'c_alc_san',
     ];
 
     
@@ -66,10 +68,34 @@ class Toma extends Model
     {
         return $this->hasMany(Contrato::class, 'id_toma');
     }
+    public function contratoVigente() : HasMany
+    {
+        return $this->hasMany(Contrato::class, 'id_toma')->where('estatus','!=','cancelado');
+    }
 
      // Medidor asociado a la toma
     public function medidor() : HasOne
     {
         return $this->hasOne(Medidor::class, 'id_toma');
     }
+
+    //Toma asociada a una factibilidad
+    public function factibilidad () : HasOne
+    {
+        return $this->hasOne(Factibilidad::class);
+    }
+    public function ordenesTrabajo():HasMany{
+        return $this->hasMany(ordenTrabajo::class,'id_toma');;
+    }
+    public static function ConsultarContratosPorToma(string $id_toma){
+        
+        $data=Toma::findOrFail($id_toma);
+        $contratos=$data->withWhereHas('contratovigente' , function (Builder $query) {
+            $query->where('estatus', '!=','cancelado');
+            
+        })->get();
+        return $contratos;
+        
+    }
 }
+

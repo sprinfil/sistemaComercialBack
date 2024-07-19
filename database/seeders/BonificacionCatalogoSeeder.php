@@ -13,10 +13,12 @@ class BonificacionCatalogoSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('concepto_catalogos')->insert([
+        DB::table('catalogo_bonificaciones')->insert([
             [
-                'nombre' => 'Servicio de agua potable',
-                'descripcion' => 'Aqui se describe el agua potable',
+                'nombre' => '60 y mas',
+                'descripcion' => 'Aqui se describe el bono',
+                'estado' => 'activo',
+
             ],
           
         ]);

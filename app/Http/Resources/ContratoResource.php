@@ -24,6 +24,7 @@ class ContratoResource extends JsonResource
             "nombre_contrato" => $this->nombre_contrato,
             "clave_catastral" => $this->clave_catastral,
             "tipo_toma" => $this->tipo_toma,
+            "servicio_contratado" => $this->servicio_contratado,
             "colonia" => $this->colonia,
             "calle" => $this->calle,
             "municipio" => $this->municipio,

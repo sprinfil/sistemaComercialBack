@@ -17,7 +17,7 @@ class Tipo_tomaController extends Controller
      */
     public function index()
     {
-        $this->authorize('viewAny', TipoToma::class);
+        //$this->authorize('viewAny', TipoToma::class);
         try{
             return TipoTomaResource::collection(
                 TipoToma::all()
@@ -34,7 +34,7 @@ class Tipo_tomaController extends Controller
      */
     public function store(StoreTipoTomaRequest $request)
     {
-        $this->authorize('create', TipoToma::class);
+        //$this->authorize('create', TipoToma::class);
 
 
         try{
@@ -78,7 +78,7 @@ class Tipo_tomaController extends Controller
     public function show(string $tipoToma)
     {
         try{
-            $data = TipoToma::ConsultarPorNombres($tipoToma);
+            $data = TipoToma::ConsultarPorNombre($tipoToma);
             return TipoTomaResource::collection(
                 $data
             );
@@ -95,7 +95,7 @@ class Tipo_tomaController extends Controller
      */
     public function update(UpdateTipoTomaRequest $request, TipoToma $tipoToma)
     {
-        $this->authorize('update', TipoToma::class);
+        //$this->authorize('update', TipoToma::class);
         try{
             $data=$request->validated();
             $usuario=TipoToma::findorFail($request['id']);
@@ -114,7 +114,7 @@ class Tipo_tomaController extends Controller
      */
     public function destroy(TipoToma $tipoToma,Request $request)
     {
-        $this->authorize('delete', TipoToma::class);
+        //$this->authorize('delete', TipoToma::class);
         try
         {
             $tipoToma = TipoToma::findOrFail($request["id"]);

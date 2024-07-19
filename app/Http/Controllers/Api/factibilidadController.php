@@ -7,6 +7,7 @@ use App\Models\factibilidad;
 use App\Http\Requests\StorefactibilidadRequest;
 use App\Http\Requests\UpdatefactibilidadRequest;
 use App\Http\Resources\factibilidadResource;
+use App\Models\Contrato;
 use Exception;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -36,9 +37,23 @@ class factibilidadController extends Controller
     public function store(factibilidad $factibilidad , StorefactibilidadRequest $request)
     {
         try{
-            $data = $request->validated();
-            $factibilidad = factibilidad::create($data);
-                return response(new factibilidadResource($factibilidad), 201);
+             $data = $request->validated();
+            $factibilidad = factibilidad::join('contratos' , 'factibilidad.id_contrato' 
+            , '=' , 
+            'contratos.id')
+            ->where('contratos.estatus' , '=' , 'pendiente de inspeccion')
+            ->orWhere('contratos.estatus' , '=' , 'inspeccionado')
+            ->get();
+            if ($request->estado_factible == 'no_factible' ) {
+                $factibilidad = factibilidad::create($data);
+                return response()->json([
+                    'message' => 'Contrato no factible',
+                ], 500); 
+            }
+            else{
+                $factibilidad = factibilidad::create($data);
+                     return response(new factibilidadResource($factibilidad), 201);
+            }
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar la factibilidad'.$e

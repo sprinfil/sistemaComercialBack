@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('anomalia_catalogos', function (Blueprint $table) {
             $table->id();
             $table->string("nombre");
-            $table->string("descripcion");
+            $table->string("descripcion")->nullable();
+            $table->enum('estado', ['activo', 'inactivo'])->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

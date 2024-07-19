@@ -30,6 +30,7 @@ class UpdateContratoRequest extends FormRequest
             'nombre_contrato' => 'sometimes|string',
             'clave_catastral' => 'nullable|string',
             'tipo_toma' => 'sometimes|string',
+            'servicio_contratado' => 'sometimes|in:agua,alcantarillado y saneamiento',
             'colonia' => 'sometimes|string',
             'calle' => 'sometimes|string',
             'municipio' => 'sometimes|string',

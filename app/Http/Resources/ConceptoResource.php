@@ -20,6 +20,7 @@ class ConceptoResource extends JsonResource
             "id" => $this->id,
             "nombre" => $this->nombre,
             "descripcion" => $this->descripcion,
+            "prioridad_abono" => $this->prioridad_abono,
         ];
      }
 }

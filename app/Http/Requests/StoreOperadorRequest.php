@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class StoreOperadorRequest extends FormRequest
 {
@@ -22,6 +23,15 @@ class StoreOperadorRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "name" => "required",
+            "email"=>"nullable|email|unique:users,email",
+            "password"=>[
+                "required",
+                "confirmed",
+                Password::min(3)
+                //->letters()
+                //->symbols()
+            ],
             "codigo_empleado"=>"required|string|max:55|unique:operadores,codigo_empleado",
             "nombre"=>"required|string|max:55",
             "apellido_paterno"=>"required|string|max:55",

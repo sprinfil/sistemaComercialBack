@@ -17,7 +17,6 @@ class AbonoResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "id_pago" => $this->id_pago,
             "id_cargo" => $this->id_cargo,
             "id_origen" => $this->id_origen,
             "modelo_origen" => $this->modelo_origen,

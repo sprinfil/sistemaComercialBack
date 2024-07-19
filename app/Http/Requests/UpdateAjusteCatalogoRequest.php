@@ -24,8 +24,8 @@ class UpdateAjusteCatalogoRequest extends FormRequest
         return [
             "nombre"=>"required|string|max:55|unique:ajuste_catalogos,nombre,".$this->id,
             "descripcion"=>"nullable|string|max:55",
-            "estado"=>"nullable|string|max:55",
-            "vigencia"=>"nullable|date",
+            "estado"=>"nullable|string|max:10|
+            in:activo,inactivo",
         ];
     }
 }

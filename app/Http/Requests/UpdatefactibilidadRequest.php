@@ -23,7 +23,7 @@ class UpdatefactibilidadRequest extends FormRequest
     {
         return [
             "estado_factible"=>"required|in:factible,no_factible" ,
-            "monto_derechos_conexion"=>"numeric|nullable|min:0", 
+            "derechos_conexion"=>"numeric|nullable|min:0", 
         ];
     }
 }

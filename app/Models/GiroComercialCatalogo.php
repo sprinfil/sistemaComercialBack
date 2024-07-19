@@ -14,6 +14,7 @@ class GiroComercialCatalogo extends Model
     protected $fillable = [
         "nombre",
         "descripcion",
+        "estado",
     ];
 
     public function tomas() : HasMany
