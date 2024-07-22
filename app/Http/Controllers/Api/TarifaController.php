@@ -32,7 +32,7 @@ class TarifaController extends Controller
     {
         ////$this->authorize('create', Operador::class);
         return TarifaResource::collection(
-            tarifa::all()
+            tarifa::with('conceptos')->get()
         );
     }
 
@@ -127,14 +127,44 @@ class TarifaController extends Controller
     {
         ////$this->authorize('update', tarifa::class);
         //Log::info("id");
+       //Aqui estoy chambeando e 
+// $registro = TarifaServiciosDetalle::select('rango','agua','alcantarillado','saneamiento')
+//->where('id_tarifa',$request->id_tarifa)->orderBy('rango')->get();
+        
         try {
+            $catalogoConcepto = ConceptoCatalogo::select('id','nombre','estado')->where('estado',"activo")->get();
+            $tarifaDetalle = TarifaConceptoDetalle::select('id_tarifa','id_concepto','monto')->where('id_tarifa',$id)->get();
             $data = $request->validated();
             $tarifa = tarifa::findOrFail($id);
-
+            //$totalConcepto = count($catalogoConcepto);
+            $conceptoAsociado = false;
+            //return $totalConcepto;
             if($tarifa){
-                if($tarifa->estado == 'inactivo' && $request->input('estado', $tarifa->estado)){
+                if($tarifa->estado == 'inactivo' && $request->input('estado') == 'activo'){
                     tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
                 }
+                //valida que los los detalles de conceptos asociados a la tarifa esten tambien 
+                //asociados a un elemento del catalogo de conceptos
+
+                foreach ($catalogoConcepto as $concepto) {
+
+                    foreach ($tarifaDetalle as $conceptoDetalle) {
+
+                        if ($concepto->id == $conceptoDetalle->id_concepto) {
+                            $conceptoAsociado = true;
+                        }               
+                    }
+                    
+                    if ($conceptoAsociado == false) {
+                        return response()->json([
+                            'error' => 'No se pudo activar la tarifa, existen conceptos sin monto asociado'
+                        ], 400);
+                    }
+                    else{
+                        $conceptoAsociado = false;
+                    }
+                }
+                            
                 $tarifa->update($data);
                 $tarifa->save();
                 return response(new tarifaResource($tarifa), 200);
@@ -251,20 +281,36 @@ class TarifaController extends Controller
 
     public function storeTarifaServicioDetalle(StoreTarifaServiciosDetalleRequest $request)
     {
-        // $data = $request->validated();
-        //return response()->json(['message' => $data], 200);
-        try {
-            //VALIDA EL STORE
-            $data = $request->validated();
-            $tarifaServicioDetalle = TarifaServiciosDetalle::create($data);
+       
+        try{
+            
+            $registro = TarifaServiciosDetalle::select('rango','agua','alcantarillado','saneamiento')->where('id_tarifa',$request->id_tarifa)->orderBy('rango')->get();
+            //return $registro;
+            //next $rangoRegistrado
+            foreach ($registro as $rangoRegistrado) {
 
-            return response(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 201);
-        } catch (Exception $e) {
+              if ($rangoRegistrado->rango == $request->rango) {
+                return response()->json([
+                    'error' => 'No se puede repetir el rango en la misma tarifa'
+                ], 500);
+              }
+
+              else{
+                 //VALIDA EL STORE
+                 $data = $request->validated();
+                 $tarifaServicioDetalle = TarifaServiciosDetalle::create($data);
+                 return response(new TarifaServiciosDetalleResource ($tarifaServicioDetalle), 201);
+                }
+            }
+            
+           
+        }catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el detalle de servicio'
             ], 500);
         }
     }
+
     public function showTarifaServicioDetalle($tarifaDetalle)
     {
 
@@ -277,7 +323,13 @@ class TarifaController extends Controller
             ], 500);
         }
     }
-
+    
+    // Consultas especificas
+    public function TarifasPorConcepto(UpdateTarifaServiciosDetalleRequest $request,  string $id)
+    {
+        //$this->authorize('update', tarifa::class);
+        //Log::info("id");
+    }
     public function updateTarifaServicioDetalle(UpdateTarifaServiciosDetalleRequest $request,  string $id)
     {
         try {
