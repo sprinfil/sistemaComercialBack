@@ -189,9 +189,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/OrdenTrabajoConf", "indexConf");
         Route::post("/OrdenTrabajoConf/create", "storeConf");
         Route::put("/OrdenTrabajoConf/update/{id}", "updateConf");
-        Route::put("/OrdenTrabajoConf/restore/{id}", "restoreConf");
+        //Route::put("/OrdenTrabajoConf/restore/{id}", "restoreConf");
         Route::delete("/OrdenTrabajoConf/log_delete/{id}", "destroyConf");
-        Route::get("/OrdenTrabajoConf/show/{nombre}", "showConf");
+        Route::post("/OrdenTrabajoConf/show/{nombre}", "showConf");
 
         //ORDEN DE TRABAJO
         Route::get("/OrdenTrabajo", "indexOrdenes");
