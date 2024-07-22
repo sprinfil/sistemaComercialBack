@@ -26,6 +26,7 @@ class UpdateAnomaliaCatalogoRequest extends FormRequest
             "descripcion"=>"nullable|string|max:55",
             "estado"=>"nullable|string|max:10|
             in:activo,inactivo",
+            "facturable"=>"required|boolean"
         ];
     }
 }
