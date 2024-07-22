@@ -18,7 +18,6 @@ class TarifaConceptoDetalleResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "id_tarifa" => $this->id_tarifa,
             "id_tipo_toma" => $this->id_tipo_toma,
             "id_concepto" => $this->id_concepto,
             "nombre_concepto" => $this->concepto->nombre,

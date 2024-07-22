@@ -12,9 +12,9 @@ class OrdenTrabajoCatalogo extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table=[
+    protected $table='orden_trabajo_catalogos';
+    protected $fillable=[
         "nombre",
-
     ];
     public function ordenTrabajoConfiguracion():HasOne{
         return $this->hasOne(OrdenTrabajoConfiguracion::class,'id_orden_trabajo_catalogo');;

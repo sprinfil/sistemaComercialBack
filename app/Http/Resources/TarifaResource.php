@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\TarifaConceptoDetalle;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,6 +16,7 @@ class TarifaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /*
         $conceptos = [];
         foreach($this->conceptos as $concepto){
             $conceptos[] = [
@@ -26,6 +28,7 @@ class TarifaResource extends JsonResource
                 "monto" => $concepto->monto,
             ];
         }
+            */
 
         return [
             "id" => $this->id,
@@ -34,7 +37,7 @@ class TarifaResource extends JsonResource
             "fecha" => $this->fecha,
             "estado" => $this->estado,
             "servicios" => $this->servicio,
-            "conceptos" => $conceptos,
+            "conceptos" =>TarifaConceptoDetalle::all()//TarifaConceptoDetalleResource::collection($this->whenLoaded('conceptos')),
         ];
     }
 }

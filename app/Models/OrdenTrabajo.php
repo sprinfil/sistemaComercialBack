@@ -12,7 +12,7 @@ class OrdenTrabajo extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table=[
+    protected $fillable=[
         "id_toma",
         "id_empleado_asigno",
         "id_empleado_encargado",
