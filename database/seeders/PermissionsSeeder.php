@@ -197,6 +197,10 @@ class PermissionsSeeder extends Seeder
                 'name' => 'VerConfiguraciones',
                 'guard_name' => 'web',
             ],
+            [
+                'name' => 'VerCatalogos',
+                'guard_name' => 'web',
+            ],
         ]);
     }
 }
