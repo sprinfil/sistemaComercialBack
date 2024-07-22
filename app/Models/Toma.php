@@ -97,5 +97,10 @@ class Toma extends Model
         return $contratos;
         
     }
+
+    public function getDireccionCompleta()
+    {
+        return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
+    }
 }
 

@@ -19,7 +19,7 @@ class PagoFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_caja'=>$this->faker->numberBetween(1, 2),
+            'id_caja'=>0,
             'total_pagado'=>$this->faker->randomFloat(2, 0, 9999),
             'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
             'fecha_pago'=>now(),

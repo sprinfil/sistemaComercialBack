@@ -22,7 +22,6 @@ class StoreTarifaConceptoDetalleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_tarifa"=> "required|int",
             "id_tipo_toma"=> "required|int",
             "id_concepto"=> "required|int",
             "monto"=> "required|regex:/^\d{1,9}(\.\d{2})?$/|gt:0",

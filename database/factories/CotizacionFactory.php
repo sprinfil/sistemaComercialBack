@@ -48,7 +48,7 @@ class CotizacionFactory extends Factory
             
 
             // registro detalles
-            for ($i = 1; $i <= 4; $i++) {
+            for ($i = 0; $i <= 3; $i++) {
                 $concepto = ConceptoCatalogo::buscarPorNombre($conceptos[$i]);
                 CotizacionDetalle::factory()->create([
                     'id_cotizacion'=>$cotizacion->id,

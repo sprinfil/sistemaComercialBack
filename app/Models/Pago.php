@@ -13,6 +13,7 @@ class Pago extends Model
     protected $table = "pagos";
 
     protected $fillable = [
+        "id_caja",
         "total_pagado",
         "forma_pago",
         "fecha_pago",
