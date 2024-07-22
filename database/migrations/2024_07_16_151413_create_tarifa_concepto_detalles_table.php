@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('tarifa_concepto_detalles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_tarifa');
             $table->unsignedBigInteger('id_tipo_toma');
             $table->unsignedBigInteger('id_concepto');
             $table->decimal('monto', total:9, places:2);

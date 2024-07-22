@@ -36,8 +36,8 @@ class TarifaResource extends JsonResource
             "descripcion" => $this->descripcion,
             "fecha" => $this->fecha,
             "estado" => $this->estado,
-            "servicios" => $this->servicio,
-            "conceptos" =>TarifaConceptoDetalle::all()//TarifaConceptoDetalleResource::collection($this->whenLoaded('conceptos')),
+            //"servicios" => $this->servicio,
+            //"conceptos" =>TarifaConceptoDetalle::all()//TarifaConceptoDetalleResource::collection($this->whenLoaded('conceptos')),
         ];
     }
 }
