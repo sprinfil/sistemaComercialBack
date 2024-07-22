@@ -18,11 +18,13 @@ class AnomaliaSeeder extends Seeder
                 'nombre' => 'Sin medidor',
                 'descripcion' => 'Descripción de la anomalia 1',
                 'estado' => 'activo',
+                'facturable' => 0
             ],
             [
                 'nombre' => 'Medidor opaco',
                 'descripcion' => 'Descripción de la anomalia 2',
                 'estado' => 'activo',
+                'facturable' => 0
             ],
         ]);
     }

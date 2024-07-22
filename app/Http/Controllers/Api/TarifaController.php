@@ -32,7 +32,7 @@ class TarifaController extends Controller
     {
         ////$this->authorize('create', Operador::class);
         return TarifaResource::collection(
-            tarifa::with('conceptos')->get()
+            tarifa::all()
         );
     }
 
