@@ -18,6 +18,7 @@ use App\Http\Resources\TarifaServiciosDetalleResource;
 use App\Models\ConceptoCatalogo;
 use App\Models\TarifaConceptoDetalle;
 use App\Models\TarifaServiciosDetalle;
+use App\Models\TipoToma;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request as HttpRequest;
@@ -126,42 +127,39 @@ class TarifaController extends Controller
     public function update(UpdatetarifaRequest $request,  string $id)
     {
         ////$this->authorize('update', tarifa::class);
-        //Log::info("id");
-       //Aqui estoy chambeando e 
-// $registro = TarifaServiciosDetalle::select('rango','agua','alcantarillado','saneamiento')
-//->where('id_tarifa',$request->id_tarifa)->orderBy('rango')->get();
-        
+             
         try {
-            $catalogoConcepto = ConceptoCatalogo::select('id','nombre','estado')->where('estado',"activo")->get();
-            $tarifaDetalle = TarifaConceptoDetalle::select('id_tarifa','id_concepto','monto')->where('id_tarifa',$id)->get();
+            //$catalogoConcepto = ConceptoCatalogo::select('id','nombre','estado')->where('estado',"activo")->get();
+            //$tarifaDetalle = TarifaConceptoDetalle::select('id_tarifa','id_concepto','monto')->where('id_tarifa',$id)->get();
+            $catalogoTiposToma = TipoToma::select('id','nombre')->get();
+            $catalogoServicioDealle = TarifaServiciosDetalle::select('id_tipo_toma','rango')->where('id_tarifa',$id)->get();
             $data = $request->validated();
             $tarifa = tarifa::findOrFail($id);
             //$totalConcepto = count($catalogoConcepto);
-            $conceptoAsociado = false;
-            //return $totalConcepto;
+            $servicioAsociado = false;
+            //return $catalogoServicioDealle;
             if($tarifa){
                 if($tarifa->estado == 'inactivo' && $request->input('estado') == 'activo'){
                     tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
                 }
-                //valida que los los detalles de conceptos asociados a la tarifa esten tambien 
-                //asociados a un elemento del catalogo de conceptos
+               //valida que exista almenos 1 rango de servicio asociado a la tarifa a activar
 
-                foreach ($catalogoConcepto as $concepto) {
+                foreach ($catalogoTiposToma as $TipoToma) {
 
-                    foreach ($tarifaDetalle as $conceptoDetalle) {
+                    foreach ($catalogoServicioDealle as $servicioDetalle) {
 
-                        if ($concepto->id == $conceptoDetalle->id_concepto) {
-                            $conceptoAsociado = true;
+                        if ($TipoToma->id == $servicioDetalle->id_tipo_toma) {
+                            $servicioAsociado = true;
                         }               
                     }
                     
-                    if ($conceptoAsociado == false) {
+                    if ($servicioAsociado == false) {
                         return response()->json([
-                            'error' => 'No se pudo activar la tarifa, existen conceptos sin monto asociado'
+                            'error' => 'No se pudo activar la tarifa, existen tomas sin servicio asociado'
                         ], 400);
                     }
                     else{
-                        $conceptoAsociado = false;
+                        $servicioAsociado = false;
                     }
                 }
                             
@@ -347,9 +345,9 @@ class TarifaController extends Controller
 
     public function get_conceptos_detalles_by_tarifa_id($tarifa_id)
     {
-        $tarifa = Tarifa::find($tarifa_id)->first();
+        $tarifa = TarifaConceptoDetalle::all();
         $conceptos = [];
-        foreach ($tarifa->conceptos as $concepto) {
+        foreach ($tarifa as $concepto) {
             $conceptos[] = [
                 "id" => $concepto->id,
                 "id_tarifa" => $concepto->id_tarifa,
