@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAnomaliaCatalogoRequest extends FormRequest
+class StoreCajasRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,11 +22,7 @@ class UpdateAnomaliaCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:anomalia_catalogos,nombre,".$this->id,
-            "descripcion"=>"nullable|string|max:55",
-            "estado"=>"nullable|string|max:10|
-            in:activo,inactivo",
-            "facturable"=>"required|boolean"
+            //
         ];
     }
 }

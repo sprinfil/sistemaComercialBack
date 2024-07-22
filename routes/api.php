@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
+use App\Http\Controllers\Api\CajasController;
 use App\Http\Controllers\Api\CalleController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\cargoDirectoController;
@@ -411,6 +412,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/colonia/update/{id}" , "update");
         Route::delete("/colonia/delete/{id}", "destroy");
     });
+    //cajas
+    Route::controller(CajasController::class)->group(function() {
+        Route::get("/cajas","index");   
+    });
+
+
 });
 
 

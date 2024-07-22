@@ -22,8 +22,8 @@ class tarifa extends Model
     {
         return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa');
     }
-    public function conceptos() : HasMany
+    public function conceptos()
     {
-        return $this->hasMany(TarifaConceptoDetalle::class, 'id_tarifa');
+        return TarifaConceptoDetalle::all();
     }
 }
