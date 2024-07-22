@@ -347,14 +347,13 @@ class TarifaController extends Controller
     {
         $tarifa = TarifaConceptoDetalle::all();
         $conceptos = [];
-        foreach ($tarifa as $concepto) {
+        foreach ($tarifa as $tarifa) {
             $conceptos[] = [
-                "id" => $concepto->id,
-                "id_tarifa" => $concepto->id_tarifa,
-                "id_tipo_toma" => $concepto->id_tipo_toma,
-                "id_concepto" => $concepto->id_concepto,
-                "nombre_concepto" => $concepto->concepto->nombre,
-                "monto" => $concepto->monto,
+                "id" => $tarifa->id,
+                "id_tipo_toma" => $tarifa->id_tipo_toma,
+                "id_concepto" => $tarifa->id_concepto,
+                "nombre_concepto" => $tarifa->concepto->nombre,
+                "monto" => $tarifa->monto,
             ];
         }
 
