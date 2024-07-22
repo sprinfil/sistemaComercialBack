@@ -71,28 +71,12 @@ class TarifaController extends Controller
                 foreach ($conceptos as $concepto) {
                     foreach ($tipo_tomas as $tipo_toma) {
                         $TarifaConceptoDetalle = new TarifaConceptoDetalle();
-                        $TarifaConceptoDetalle->id_tarifa = $tarifa->id;
                         $TarifaConceptoDetalle->id_tipo_toma = $tipo_toma->id;
                         $TarifaConceptoDetalle->id_concepto = $concepto->id;
                         $TarifaConceptoDetalle->monto = 100;
                         $TarifaConceptoDetalle->save();
                     }
                 }
-
-                /*
-                        foreach ($tipo_tomas as $tipo_toma) {
-                        $TarifaServicioDetalle = new TarifaServiciosDetalle();
-                        $TarifaServicioDetalle->id_tarifa = $tarifa->id;
-                        $TarifaServicioDetalle->id_tipo_toma = $tipo_toma->id;
-                        $TarifaServicioDetalle->rango = $i;
-                        $TarifaServicioDetalle->agua = 20;
-                        $TarifaServicioDetalle->alcantarillado = 20;
-                        $TarifaServicioDetalle->saneamiento = 20;
-                        $TarifaServicioDetalle->save();
-                    
-                }
-                */
-
 
                 return response(new tarifaResource($tarifa), 201);
             }
@@ -374,8 +358,7 @@ class TarifaController extends Controller
 
     public function get_servicios_detalles_by_tarifa_id($tarifa_id)
     {
-
-        $tarifa = Tarifa::find($tarifa_id)->first();
+        $tarifa = Tarifa::find($tarifa_id);
         $servicio = [];
         foreach ($tarifa->servicio as $servicios) {
             $servicio[] = [
@@ -386,14 +369,12 @@ class TarifaController extends Controller
                 "agua" => $servicios->agua,
                 "alcantarillado" => $servicios->alcantarillado,
                 "saneamiento" => $servicios->saneamiento,
-
             ];
         }
 
         usort($servicio, function ($a, $b) {
             return $a['rango'] <=> $b['rango'];
         });
-
         return json_encode($servicio);
     }
 }
