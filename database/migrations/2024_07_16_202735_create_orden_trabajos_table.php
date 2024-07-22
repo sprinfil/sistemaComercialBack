@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('obervaciones');
             $table->string('evidencia');
             $table->string('material_utilizado');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

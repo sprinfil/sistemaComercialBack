@@ -13,7 +13,7 @@ class OrdenTrabajoConfiguracion extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table=[
+    protected $fillable=[
         "id_orden_trabajo_catalogo",
         "id_concepto_catalogo",
         "accion",

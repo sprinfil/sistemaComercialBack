@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
+use App\Http\Controllers\Api\CajasController;
 use App\Http\Controllers\Api\CalleController;
 use App\Http\Controllers\Api\CargoController;
 use App\Http\Controllers\Api\cargoDirectoController;
@@ -174,6 +175,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
      
     });
+
     // Gestion de ordenes de trabajo
     Route::controller(OrdenTrabajoController::class)->group(function () {
         Route::get("/OrdenTrabajoCatalogo", "indexCatalogo");
@@ -181,6 +183,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/OrdenTrabajoCatalogo/update/{id}", "update");
         Route::put("/OrdenTrabajoCatalogo/log_delete/{id}", "destroy");
         Route::get("/OrdenTrabajoCatalogo/show/{id}", "show");
+
+        //ORDEN TRABAJO CONFIGURACIONES
+        Route::get("/OrdenTrabajoConf", "indexConf");
+        Route::post("/OrdenTrabajoConf/create", "storeConf");
+
+        //ORDEN DE TRABAJO
+        Route::get("/OrdenTrabajo", "indexOrdenes");
+        Route::post("/OrdenTrabajo/create", "storeOrden");  
     });
     
     // Gestion de contribuyentes
@@ -393,6 +403,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/colonia/update/{id}" , "update");
         Route::delete("/colonia/delete/{id}", "destroy");
     });
+    //cajas
+    Route::controller(CajasController::class)->group(function() {
+        Route::get("/cajas","index");   
+    });
+
+
 });
 
 

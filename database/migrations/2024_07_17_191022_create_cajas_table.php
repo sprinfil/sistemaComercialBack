@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pagos', function (Blueprint $table) {
+        Schema::create('cajas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('id_caja');
-            $table->decimal('total_pagado');
-            $table->string('forma_pago');
-            $table->date('fecha_pago');
-            $table->enum("estado",['abonado','pendiente','cancelado']);
+            $table->unsignedBigInteger('id_operador');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pagos');
+        Schema::dropIfExists('cajas');
     }
 };

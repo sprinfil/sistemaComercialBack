@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreOrdenTrabajoCatalogoRequest;
 use App\Http\Requests\StoreOrdenTrabajoConfRequest;
 use App\Models\OrdenTrabajo;
 use App\Http\Requests\StoreOrdenTrabajoRequest;
@@ -25,11 +26,26 @@ class OrdenTrabajoController extends Controller
         );
        
     }
+    public function indexConf()
+    {
+        return OrdenTrabajoConfResource::collection(
+            OrdenTrabajoConfiguracion::all()
+        );
+       
+    }
+    public function indexOrdenes()
+    {
+        return OrdenTrabajoResource::collection(
+            OrdenTrabajo::all()
+        );
+       
+    }
+
 
     /**
      * Store a newly created resource in storage.
      */
-    public function storeCatalogo(StoreOrdenTrabajoRequest $request)
+    public function storeCatalogo(StoreOrdenTrabajoCatalogoRequest $request)
     {
         $data=$request->validated();
         $catalogo=OrdenTrabajoCatalogo::create($data);
@@ -66,6 +82,7 @@ class OrdenTrabajoController extends Controller
         $data=$request->validated();
         $catalogo=OrdenTrabajoConfiguracion::create($data);
         return response(new OrdenTrabajoConfResource($catalogo),200);
+        
     }
     //// ORDEN DE TRABAJO
     public function storeOrden(StoreOrdenTrabajoRequest $request)
