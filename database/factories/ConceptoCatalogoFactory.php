@@ -59,7 +59,6 @@ class ConceptoCatalogoFactory extends Factory
 
                 $tipo_tomas->each(function ($tipo_toma) use ($concepto){
                     TarifaConceptoDetalle::factory()->create([
-                        'id_tarifa' => 1,
                         'id_tipo_toma' => $tipo_toma->id,
                         'id_concepto' => $concepto->id,
                         'monto' => $this->faker->numberBetween(50, 500),
