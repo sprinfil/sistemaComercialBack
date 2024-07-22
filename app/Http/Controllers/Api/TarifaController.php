@@ -133,10 +133,12 @@ class TarifaController extends Controller
         
         try {
             $catalogoConcepto = ConceptoCatalogo::select('id','nombre','estado')->where('estado',"activo")->get();
-            $tarifaDetalle = TarifaConceptoDetalle::select('id_concepto','monto')->get();
+            $tarifaDetalle = TarifaConceptoDetalle::select('id_tarifa','id_concepto','monto')->where('id_tarifa',$id)->get();
             $data = $request->validated();
             $tarifa = tarifa::findOrFail($id);
-            return $tarifaDetalle;
+            //$totalConcepto = count($catalogoConcepto);
+            $conceptoAsociado = false;
+            //return $totalConcepto;
             if($tarifa){
                 if($tarifa->estado == 'inactivo' && $request->input('estado') == 'activo'){
                     tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
@@ -144,6 +146,25 @@ class TarifaController extends Controller
                 //valida que los los detalles de conceptos asociados a la tarifa esten tambien 
                 //asociados a un elemento del catalogo de conceptos
 
+                foreach ($catalogoConcepto as $concepto) {
+
+                    foreach ($tarifaDetalle as $conceptoDetalle) {
+
+                        if ($concepto->id == $conceptoDetalle->id_concepto) {
+                            $conceptoAsociado = true;
+                        }               
+                    }
+                    
+                    if ($conceptoAsociado == false) {
+                        return response()->json([
+                            'error' => 'No se pudo activar la tarifa, existen conceptos sin monto asociado'
+                        ], 400);
+                    }
+                    else{
+                        $conceptoAsociado = false;
+                    }
+                }
+                            
                 $tarifa->update($data);
                 $tarifa->save();
                 return response(new tarifaResource($tarifa), 200);
