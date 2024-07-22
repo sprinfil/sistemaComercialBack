@@ -191,6 +191,12 @@ class PermissionsSeeder extends Seeder
                 'name' => 'EliminarOperador',
                 'guard_name' => 'web',
             ],
+
+            //CONFIGURACION
+            [
+                'name' => 'VerConfiguraciones',
+                'guard_name' => 'web',
+            ],
         ]);
     }
 }
