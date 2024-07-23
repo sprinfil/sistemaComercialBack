@@ -13,6 +13,6 @@ class fondoCaja extends Model
     use HasFactory, SoftDeletes;
 
     public function fondoCaja() : BelongsTo {
-        return $this->belongsTo(Caja::class, 'id');
+        return $this->belongsTo(Caja::class, 'id_fondo_caja'); //ta bien confirmado
     }
 }
