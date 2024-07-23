@@ -217,7 +217,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/TipoToma/update/{id}", "update");
         Route::get("/TipoToma/consulta/{nombre}", "show");
         Route::put("/TipoToma/restore/{id}", "restaurarDato");
-
+        Route::post("TipoToma/import","importarTipoTomaTarifas");
         //log delete significa borrado logico
         Route::delete("/TipoToma/log_delete/{id}", "destroy");
     });
