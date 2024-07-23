@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AnomaliaCatalogo;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -40,11 +41,12 @@ class AnomaliaSeeder extends Seeder
             ['nombre' => 'Lectura Imposible', 'descripcion' => 'Por diversas razones, no es posible obtener una lectura del medidor.', 'estado' => 'activo', 'facturable' => true],
         ];
 
-        foreach ($ajustes as $nombre => $descripcion) {
-            AjusteCatalogo::factory()->create([
-                'nombre' => $nombre,
-                'descripcion' => $descripcion,
-                'estado' => 'activo',
+        foreach ($anomalias as $anomalia) {
+            AnomaliaCatalogo::factory()->create([
+                'nombre' => $anomalia['nombre'],
+                'descripcion' => $anomalia['descripcion'],
+                'estado' => $anomalia['estado'],
+                'facturable' => $anomalia['facturable'],
             ]);
         }
     }
