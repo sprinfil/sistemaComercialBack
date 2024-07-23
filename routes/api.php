@@ -361,6 +361,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/tarifa","index");
         Route::get("/tarifa/show/{id}","show");
         Route::put("/tarifa/update/{id}","update");
+        Route::put("/actualizar-tarifa","actualizarEstadoTarifa");
         Route::delete("/tarifa/log_delete/{id}","destroy");
         Route::put("tarifa/restaurar/{id}","restaurarTarifa");
     });
