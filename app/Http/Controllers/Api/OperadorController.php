@@ -21,10 +21,12 @@ class OperadorController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Operador::class);
+
+        
         return response(OperadorResource::collection(
             Operador::all()
         ), 200);
-        //
+
     }
 
     public function store_2(StoreOperadorRequest $request)
