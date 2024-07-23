@@ -124,7 +124,10 @@ class TarifaController extends Controller
             //return $catalogoServicioDealle;
             if ($tarifa) {
                 if ($tarifa->estado == 'inactivo' && $request->input('estado') == 'activo') {
-                    tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
+                    return response()->json([
+                        'message' => 'Existen tarifas anteriores activas. ¿Desea inactivarlas?',
+                        'confirmUpdate' => true,
+                    ], 200);
                 }
                 //valida que exista almenos 1 rango de servicio asociado a la tarifa a activar
 
@@ -159,6 +162,37 @@ class TarifaController extends Controller
             ], 500);
         }
     }
+
+    public function actualizarEstadoTarifa(Request $request)
+    {
+        try {
+            //obtenemos la respuesta
+            if ($request->input('confirmUpdate')) {
+                // inactivar todo TODO
+                tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
+                
+                // obtener el fakin id
+                $tarifaId = $request->input('tarifa_id');
+                $tarifa = tarifa::find($tarifaId);
+                if ($tarifa) {
+                    $tarifa->estado = 'activo';
+                    $tarifa->save();
+                }
+    
+                return response()->json([
+                    'message' => 'Actualización realizada con éxito.',
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'No se realizó ninguna actualización.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo editar la tarifa: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
     /**
      * Remove the specified resource from storage.
