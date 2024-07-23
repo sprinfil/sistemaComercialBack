@@ -193,7 +193,6 @@ class TarifaController extends Controller
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
@@ -211,9 +210,9 @@ class TarifaController extends Controller
         }
         //
     }
+
     public function restaurarTarifa(tarifa $tarifa, HttpRequest $request)
     {
-
         $tarifa = tarifa::withTrashed()->findOrFail($request->id);
 
         // Verifica si el registro está eliminado
@@ -234,6 +233,7 @@ class TarifaController extends Controller
             TarifaConceptoDetalle::all()
         );
     }
+
     public function storeTarifaConceptoDetalle(StoreTarifaConceptoDetalleRequest $request)
     {
         // $data = $request->validated();
@@ -250,9 +250,9 @@ class TarifaController extends Controller
             ], 500);
         }
     }
+
     public function showTarifaConceptoDetalle($tarifaDetalle)
     {
-
         try {
             $tarifaDetalle = TarifaConceptoDetalle::findOrFail($tarifaDetalle);
             return response(new TarifaConceptoDetalleResource($tarifaDetalle), 200);
@@ -262,8 +262,8 @@ class TarifaController extends Controller
             ], 500);
         }
         //
-
     }
+
     public function updateTarifaConceptoDetalle(UpdateTarifaConceptoDetalle $request,  string $id)
     {
         ////$this->authorize('update', tarifa::class);
@@ -284,7 +284,6 @@ class TarifaController extends Controller
     }
 
     //Servicio tarifa detalle
-
     public function indexServicioDetalle()
     {
         ////$this->authorize('create', Operador::class);
@@ -324,7 +323,6 @@ class TarifaController extends Controller
             ], 500);
         }
        */
-
         try {
 
             //VALIDA EL STORE
@@ -341,7 +339,6 @@ class TarifaController extends Controller
 
     public function showTarifaServicioDetalle($tarifaDetalle)
     {
-
         try {
             $tarifaDetalle = TarifaServiciosDetalle::findOrFail($tarifaDetalle);
             return response(new TarifaServiciosDetalleResource($tarifaDetalle), 200);
@@ -358,6 +355,7 @@ class TarifaController extends Controller
         //$this->authorize('update', tarifa::class);
         //Log::info("id");
     }
+
     public function updateTarifaServicioDetalle(UpdateTarifaServiciosDetalleRequest $request,  string $id)
     {
         try {
@@ -386,7 +384,6 @@ class TarifaController extends Controller
                 "monto" => $tarifa->monto,
             ];
         }
-
         return json_encode($conceptos);
     }
 
