@@ -90,7 +90,7 @@ class Toma extends Model
     public static function ConsultarContratosPorToma(string $id_toma){
         
         $data=Toma::findOrFail($id_toma);
-        $contratos=$data->withWhereHas('contratovigente' , function (Builder $query) {
+        $contratos=$data->withWhereHas('contratoVigente' , function (Builder $query) {
             $query->where('estatus', '!=','cancelado');
             
         })->get();

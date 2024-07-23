@@ -37,4 +37,5 @@ class OrdenTrabajo extends Model
         return $this->belongsTo(ordenTrabajoCatalogo::class,'id_orden_trabajo_catalogo');;
     }
    
+    
 }

@@ -21,6 +21,8 @@ class OrdenTrabajoConfResource extends JsonResource
             "id_concepto_catalogo" => $this->id_concepto_catalogo,
             "accion" => $this->accion,
             "momento" => $this->momento,
+            "atributo" => $this->atributo,
+            "valor" => $this->valor,
         ];
     }
 }

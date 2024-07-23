@@ -26,5 +26,22 @@ class OrdenTrabajoCatalogo extends Model
         $ordenTrabajo=OrdenTrabajoCatalogo::where('nombre','LIKE','%'.$nombre.'%')->get();
         return $ordenTrabajo;
     }
+    /*
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($parent) {
+            // Soft delete related child models
+            $parent->OrdenTrabajoConfiguracion()->each(function ($child) {
+                $child->delete();
+            });
+        });
+
+        static::restoring(function ($parent) {
+            $parent->OrdenTrabajoConfiguracion()->withTrashed()->restore();
+        });
+    }
+        */
     
 }
