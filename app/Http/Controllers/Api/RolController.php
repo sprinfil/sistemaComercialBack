@@ -94,4 +94,18 @@ class RolController extends Controller
         }
         return $user->getRoleNames();
     }
+
+        //OBTENER PERMISOS DE UN USER
+        public function get_all_permissions_by_user_id(string $id)
+        {
+            $user = User::find($id);
+
+            $permissions = $user->getAllPermissions();
+
+            foreach($permissions as $permission){
+                $data[] = $permission["name"];
+            }
+
+            return json_encode($data);
+        }
 }
