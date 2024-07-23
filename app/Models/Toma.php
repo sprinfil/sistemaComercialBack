@@ -79,6 +79,11 @@ class Toma extends Model
         return $this->hasOne(Medidor::class, 'id_toma');
     }
 
+    //Consumos asociados a la toma
+    public function consumo():HasMany{
+        return $this->hasMany(Consumo::class,'id_toma');
+    }
+
     //Toma asociada a una factibilidad
     public function factibilidad () : HasOne
     {
@@ -87,6 +92,7 @@ class Toma extends Model
     public function ordenesTrabajo():HasMany{
         return $this->hasMany(ordenTrabajo::class,'id_toma');;
     }
+    //Consulta de referencia (no se usa)
     public static function ConsultarContratosPorToma(string $id_toma){
         
         $data=Toma::findOrFail($id_toma);
