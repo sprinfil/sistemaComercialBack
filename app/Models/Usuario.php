@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Usuario extends Model
 {
     use HasFactory, SoftDeletes;
+    protected $table = "usuarios";
     protected $fillable=[
         'codigo_usuario',
         'nombre',
