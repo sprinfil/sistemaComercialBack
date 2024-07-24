@@ -134,6 +134,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/usuarios/log_delete/{id}", "destroy");
         Route::put("/usuarios/restore/{id}", "restaurarDato");
         //Consultas
+        //codigo
+        Route::get("/usuarios/consulta/{codigo}", "showCodigo");
         //nombres
         Route::get("/usuarios/consulta/{nombre}", "show");
         //CURP

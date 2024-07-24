@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('codigo_operador');
+            $table->bigInteger('codigo_usuario');
             $table->string('nombre');
             $table->string('apellido_paterno')->nullable();
             $table->string('apellido_materno')->nullable();

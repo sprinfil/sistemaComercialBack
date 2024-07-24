@@ -129,6 +129,20 @@ class UsuarioController extends Controller
         
         
     }
+    public function showCodigo(string $usuario)
+    {
+        try{
+            $data = Usuario::ConsultarPorCodigo($usuario);
+        return UsuarioResource::collection(
+            $data
+        );
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+        }
+        
+        
+    }
     public function showCURP(string $usuario)
     {
         try{
