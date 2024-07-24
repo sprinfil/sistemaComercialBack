@@ -27,10 +27,12 @@ use App\Http\Controllers\Api\ContratoController;
 use App\Http\Controllers\Api\correccionInformacionSolicitudController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
+use App\Http\Controllers\Api\LibroController;
 use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\MedidorController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\OrdenTrabajoController;
+use App\Http\Controllers\Api\RutaController;
 use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\TarifaController;
 use App\Http\Controllers\Api\Tipo_tomaController;
@@ -421,6 +423,23 @@ Route::middleware('auth:sanctum')->group(function () {
     //cajas
     Route::controller(CajasController::class)->group(function() {
         Route::get("/cajas","index");   
+    });
+
+    //Rutas
+    Route::controller(RutaController::class)->group(function() {
+        Route::get("/ruta","index");
+        Route::post("/ruta/create","store");
+        Route::get("/ruta/show/{id}","show");
+        Route::put("/ruta/update/{id}","update");
+        Route::delete("/ruta/log_delete/{id}","destroy");
+        Route::put("/ruta/restaurar/{id}","restaurarRuta");
+    });
+    Route::controller(LibroController::class)->group(function() {
+        Route::get("/libro","index");
+        Route::post("/libro/create","store");
+        Route::get("/libro/show/{id}","show");
+        Route::put("/libro/update/{id}","update");
+
     });
 
 
