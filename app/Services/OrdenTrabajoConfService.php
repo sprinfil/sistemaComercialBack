@@ -23,4 +23,8 @@ class OrdenTrabajoConfService{
             return $respuesta;
         }  
     }
+    public function show(array $ordenCatalogo): ?OrdenTrabajoConfiguracion{ //Ejemplo de service
+       
+    
+    }
 }

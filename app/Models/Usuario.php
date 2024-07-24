@@ -14,6 +14,7 @@ class Usuario extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable=[
+        'codigo_usuario',
         'nombre',
         'apellido_paterno',
         'apellido_materno',
@@ -49,6 +50,10 @@ class Usuario extends Model
     }
     public static function ConsultarPorCurp(string $usuario){
         $data = Usuario::whereRaw("curp LIKE ?", ['%'.$usuario.'%'])->get();
+          return $data;
+    }
+    public static function ConsultarPorCodigo(string $usuario){
+        $data = Usuario::where("codigo_usuario",$usuario)->get();
           return $data;
     }
     public static function ConsultarPorRfc(string $usuario){
