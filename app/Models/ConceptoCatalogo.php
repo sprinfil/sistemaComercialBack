@@ -21,9 +21,9 @@ class ConceptoCatalogo extends Model
     ];
 
     // Medidor asociado a la toma
-    public function tarifa() : HasOne
+    public function tarifas() : HasMany
     {
-        return $this->hasOne(TarifaConceptoDetalle::class, 'id');
+        return $this->hasMany(TarifaConceptoDetalle::class, 'id_concepto');
     }
 
     public function ordenTrabajoConfiguracion() : HasOne
