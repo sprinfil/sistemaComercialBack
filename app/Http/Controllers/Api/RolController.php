@@ -101,12 +101,19 @@ class RolController extends Controller
         $user = User::find($user_id);
 
         foreach ($data as $rol => $value) {
-            $rol = ModelsRole::where("name", $rol)->first();
-            $value === "true" ?
-                $user->assignRole($rol->name)
-                :
-                $user->removeRole($rol->name);
+            $rolModel = ModelsRole::where("name", $rol)->first();
+
+            if ($value === "true") {
+                $user->assignRole($rolModel->name);
+            } else {
+                $user->removeRole($rolModel->name);
+                $permissions = $rolModel->permissions;
+                foreach($permissions as $permission){
+                    $user->revokePermissionTo($permission);
+                }
+            }
         }
+
         return $user->getRoleNames();
     }
 
@@ -126,7 +133,8 @@ class RolController extends Controller
     }
 
     //OBTENER ROLES DE UN OPERADOR
-    public function get_all_rol_names_by_user_id(string $id){
+    public function get_all_rol_names_by_user_id(string $id)
+    {
         $user = User::find($id);
         return $user->getRoleNames();
     }
