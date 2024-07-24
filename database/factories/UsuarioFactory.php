@@ -18,7 +18,10 @@ class UsuarioFactory extends Factory
      */
     public function definition(): array
     {
+        static $count = 0;
+        $codigo = date('Ym', (time())).($count++);
         return [
+            'codigo_usuario' => intval($codigo),
             'nombre' => $this->faker->firstName,
             'apellido_paterno' => $this->faker->lastName,
             'apellido_materno' => $this->faker->lastName,

@@ -40,7 +40,7 @@ class OperadorFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Operador $operador) {
-            $name = substr($operador->nombre, 0, 3).$operador->apellido_paterno.$operador->id;
+            $name = strtolower(substr($operador->nombre, 0, 3).$operador->apellido_paterno.$operador->id);
             $user = User::factory()->create([
                 'name' => $name,
                 'email' => $name.'@sapalapaz.gob.mx'
