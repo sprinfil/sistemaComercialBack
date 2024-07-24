@@ -53,7 +53,7 @@ class CotizacionFactory extends Factory
                 CotizacionDetalle::factory()->create([
                     'id_cotizacion'=>$cotizacion->id,
                     'nombre_concepto'=>$conceptos[$i],
-                    'monto'=>$concepto->tarifa->monto,
+                    'monto'=>$concepto->tarifas()->first()->monto,
                 ]);
             }            
         });
