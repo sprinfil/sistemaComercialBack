@@ -7,6 +7,7 @@ use App\Models\Calle;
 use App\Http\Requests\StoreCalleRequest;
 use App\Http\Requests\UpdateCalleRequest;
 use App\Http\Resources\CalleResource;
+use App\Models\Colonia;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -24,6 +25,22 @@ class CalleController extends Controller
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No fue posible consultar la calle'
+            ], 500);
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function getCallesPorColonia($id)
+    {
+        try{
+            return response(CalleResource::collection(
+                Colonia::find($id)->calles
+            ),200);
+        } catch(Exception $e) {
+            return response()->json([
+                'error' => 'No fue posible consultar la calle'.$e
             ], 500);
         }
     }
