@@ -9,6 +9,7 @@ use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioMoralRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
 use App\Http\Resources\UsuarioResource;
+use App\Services\UsuarioService;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -38,8 +39,7 @@ class UsuarioController extends Controller
         
         
         try{
-            $data=$request->validated();
-            $usuario=Usuario::create($data);
+            $usuario=(new UsuarioService())->store($request->validated());
             return response(new UsuarioResource($usuario),201);
             /*
             $usuario = Usuario::withTrashed()->where('curp', $request['curp'])->orWhere('rfc', $request['rfc'])->orWhere('correo', $request['correo'])->first();
@@ -119,6 +119,20 @@ class UsuarioController extends Controller
     {
         try{
             $data = Usuario::ConsultarPorNombres($usuario);
+        return UsuarioResource::collection(
+            $data
+        );
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+        }
+        
+        
+    }
+    public function showCodigo(string $usuario)
+    {
+        try{
+            $data = Usuario::ConsultarPorCodigo($usuario);
         return UsuarioResource::collection(
             $data
         );
