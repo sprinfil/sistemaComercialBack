@@ -101,10 +101,23 @@ class ConceptoController extends Controller
     {
         $this->authorize('update', ConceptoCatalogo::class);
         $data = $request->validated();
-        $conceptoCatalogo = ConceptoCatalogo::find($request["id"]);
-        $conceptoCatalogo->update($data);
-        $conceptoCatalogo->save();
-        return new ConceptoResource($conceptoCatalogo);
+    
+        $concepto = ConceptoCatalogo::findOrFail($request["id"]);
+
+        // Actualizar los datos del concepto
+        $concepto->update($request->only(['nombre', 'descripcion', 'estado', 'prioridad_abono', 'genera_iva']));
+
+        // Actualizar tarifas
+        $tarifas = $request->input('tarifas', []);
+        foreach ($tarifas as $tarifaData) {
+            $tarifa = TarifaConceptoDetalle::findOrNew($tarifaData['id']);
+            $tarifa->fill($tarifaData);
+            $tarifa->id_concepto = $concepto->id;
+            $tarifa->save();
+        }
+
+        // Devolver el concepto actualizado con sus tarifas
+        return new ConceptoResource($concepto);
 
     }
 
