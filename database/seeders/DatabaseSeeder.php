@@ -49,9 +49,14 @@ class DatabaseSeeder extends Seeder
         $this->call(ConstanciaSeeder::class);
         $this->call(BonificacionCatalogoSeeder::class);
         //
+        //
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
         $this->call(TipoTomaSeeder::class);
         //
+        $this->call(PeriodoSeeder::class);
+        $this->call(CargaTrabajoSeeder::class);
+        $this->call(LecturaSeeder::class);
+        $this->call(ConsumoSeeder::class);
     }
 }
