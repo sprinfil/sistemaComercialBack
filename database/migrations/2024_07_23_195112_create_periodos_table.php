@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lecturas', function (Blueprint $table) {
+        Schema::create('periodos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_empleado_lecturista');
-            $table->unsignedBigInteger('id_toma');
-            $table->unsignedBigInteger('id_carga_trabajo');
-            $table->integer('lectura');
-            $table->softDeletes();
+            $table->unsignedInteger('id_ruta');
+            $table->unsignedInteger('id_tarifa');
+            $table->date('facturacion_fecha_inicio');
+            $table->date('facturacion_fecha_final');
+            $table->date('lectura_inicio');
+            $table->date('lectura_final');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lecturas');
+        Schema::dropIfExists('periodos');
     }
 };

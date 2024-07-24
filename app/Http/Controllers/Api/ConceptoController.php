@@ -8,6 +8,7 @@ use App\Http\Resources\ConceptoResource;
 use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
 use App\Models\TarifaConceptoDetalle;
+use App\Models\TipoToma;
 use Database\Factories\TarifaConceptoDetalleFactory;
 use Exception;
 use Illuminate\Http\Request;
@@ -34,10 +35,10 @@ class ConceptoController extends Controller
         $this->authorize('create', ConceptoCatalogo::class);
         //Valida el store
         $data = $request->validated();
-        //Busca por nombre a los operadores eliminados
+        //Busca por nombre a los conceptos eliminados
         $conceptoCatalogo = ConceptoCatalogo::withTrashed()->where('nombre', $request->input('nombre'))->first();
 
-        //Validacion en caso de que el operador ya este registrado en le base de datos
+        //Validacion en caso de que el concepto ya este registrado en le base de datos
         if ($conceptoCatalogo) {
             if ($conceptoCatalogo->trashed()) {
                 return response()->json([
@@ -52,7 +53,7 @@ class ConceptoController extends Controller
             ], 200);
         }
 
-        //Si el operador no existe, lo crea
+        //Si el concepto no existe, lo crea
         if(!$conceptoCatalogo)
         {
             DB::beginTransaction();
@@ -64,6 +65,15 @@ class ConceptoController extends Controller
                         $tarifa->id_tipo_toma = $tarifas['id_tipo_toma'];
                         $tarifa->id_concepto = $conceptoCatalogo->id;
                         $tarifa->monto = $tarifas['monto'];
+                        $tarifa->save();
+                    }
+                }else{
+                    $tarifas_tipo = TipoToma::all();
+                    foreach ($tarifas_tipo as $tipo) {
+                        $tarifa = new TarifaConceptoDetalle();
+                        $tarifa->id_tipo_toma = $tipo->id;
+                        $tarifa->id_concepto = $conceptoCatalogo->id;
+                        $tarifa->monto = 0;
                         $tarifa->save();
                     }
                 }

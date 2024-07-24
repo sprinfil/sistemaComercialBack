@@ -61,10 +61,18 @@ class Tipo_tomaController extends Controller
             if(!$Tipotoma)
             {
                 $Tipotoma=TipoToma::create($data);
-                return response()->json([
+                /*return response()->json([
                     'message' => 'No existen tarifas para este tipo de toma. ¿Desea importarlas?',
                     'confirm' => true,
-                ], 200);
+                ], 200);*/
+                 // E importa las tarifas de un tipo de toma de la tarifa activa si se desea
+                 $request = new Request();
+                 $request->merge(['confirm' => true]);
+                 $request->merge(['tipo' => 4]);
+                 $request->merge(['id' => $Tipotoma->id]);
+
+                 $respuesta = $this->importarTipoTomaTarifas($request);
+                 return response($respuesta, 201);
             }
         }
         catch(Exception $ex){
@@ -128,9 +136,9 @@ class Tipo_tomaController extends Controller
                     $detalle_servicio->saneamiento = $servicio['saneamiento'];
                     $detalle_servicio->save();
                 }
-
+                
                 return response()->json([
-                    'message' => 'Se importaron los registros '.$request->input('tipo').' '.$request->input('id'),
+                    'message' => 'Se importaron los registros ',
                     'import' => $request->input('confirm')
                 ], 200);
             }else{

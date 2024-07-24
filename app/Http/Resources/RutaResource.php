@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CalleResource extends JsonResource
+class RutaResource extends JsonResource
 {
     public static $wrap = false;
     /**
@@ -18,7 +18,6 @@ class CalleResource extends JsonResource
         return [
             "id" => $this->id,
             "nombre" => $this->nombre,
-            "id_colonia" => $this->nombre,
         ];
     }
 }
