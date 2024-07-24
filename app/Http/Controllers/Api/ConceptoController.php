@@ -7,7 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ConceptoResource;
 use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
+use App\Models\TarifaConceptoDetalle;
+use Database\Factories\TarifaConceptoDetalleFactory;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConceptoController extends Controller
 {
@@ -51,8 +55,24 @@ class ConceptoController extends Controller
         //Si el operador no existe, lo crea
         if(!$conceptoCatalogo)
         {
-            $conceptoCatalogo = ConceptoCatalogo::create($data);
-            return new ConceptoResource($conceptoCatalogo);
+            DB::beginTransaction();
+            try{
+                $conceptoCatalogo = ConceptoCatalogo::create($data);
+                if(isset($data['tarifas']) && !is_null($data['tarifas'])){
+                    foreach ($data['tarifas'] as $tarifas) {
+                        $tarifa = new TarifaConceptoDetalle();
+                        $tarifa->id_tipo_toma = $tarifas['id_tipo_toma'];
+                        $tarifa->id_concepto = $conceptoCatalogo->id;
+                        $tarifa->monto = $tarifas['monto'];
+                        $tarifa->save();
+                    }
+                }
+                DB::commit();
+                return new ConceptoResource($conceptoCatalogo);
+            }catch(Exception $ex){
+                DB::rollBack();
+                return $ex;
+            }
         }
     }
 
@@ -96,9 +116,6 @@ class ConceptoController extends Controller
         }
     }
 
-
-
-
     public function restaurarDato(ConceptoCatalogo $conceptoCatalogo, Request $request)
     {
 
@@ -112,6 +129,4 @@ class ConceptoController extends Controller
         }
 
     }
-
 }
-

@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pagos', function (Blueprint $table) {
+        Schema::create('consumos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('id_caja');
-            $table->unsignedInteger('id_corte_caja');
-            $table->decimal('total_pagado');
-            $table->string('forma_pago');
-            $table->date('fecha_pago');
-            $table->enum("estado",['abonado','pendiente','cancelado']);
+            $table->unsignedBigInteger('id_toma');
+            $table->unsignedBigInteger('id_lectura_anterior')->nullable();
+            $table->unsignedBigInteger('id_lectura_actual')->nullable();
+            $table->integer('consumo');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pagos');
+        Schema::dropIfExists('consumos');
     }
 };

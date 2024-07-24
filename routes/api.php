@@ -217,7 +217,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/TipoToma/update/{id}", "update");
         Route::get("/TipoToma/consulta/{nombre}", "show");
         Route::put("/TipoToma/restore/{id}", "restaurarDato");
-
+        Route::post("TipoToma/import","importarTipoTomaTarifas");
         //log delete significa borrado logico
         Route::delete("/TipoToma/log_delete/{id}", "destroy");
     });
@@ -294,7 +294,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/Rol/update/{id}", "update");
 
         Route::post("Rol/give_rol_permissions/{id}", "give_rol_permissions");
+        Route::post("Rol/give_user_permissions/{id}", "give_user_permissions");
+
         Route::get("Rol/get_all_permissions_by_rol_id/{id}", "get_all_permissions_by_rol_id");
+        Route::get("Rol/get_all_permissions_by_user_id/{id}", "get_all_permissions_by_user_id");
+        Route::get("Rol/get_all_rol_names_by_user_id/{id}", "get_all_rol_names_by_user_id");
 
         //log delete significa borrado logico
         Route::delete("Rol/log_delete/{id}", "destroy");
@@ -360,6 +364,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/tarifa","index");
         Route::get("/tarifa/show/{id}","show");
         Route::put("/tarifa/update/{id}","update");
+        Route::put("/actualizar-tarifa","actualizarEstadoTarifa");
         Route::delete("/tarifa/log_delete/{id}","destroy");
         Route::put("tarifa/restaurar/{id}","restaurarTarifa");
     });
@@ -390,7 +395,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //Tarifa Servicio detalle
     Route::controller(TarifaController::class)->group(function(){
         Route::post("/tarifaServicioDetalle/create","storeTarifaServicioDetalle");
-        Route::get("/tarifaServicioDetalle","indexServicioDetalle");
+        Route::get("/tarifaServicioDetalle/{tarifa_id}","get_servicios_detalles_by_tarifa_id");
         Route::get("/tarifaServicioDetalle/show/{id}","showTarifaServicioDetalle");
         Route::put("/tarifaServicioDetalle/update/{id}","updateTarifaServicioDetalle");
     });
