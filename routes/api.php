@@ -435,6 +435,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/libro/create","store");
         Route::get("/libro/show/{id}","show");
         Route::put("/libro/update/{id}","update");
+        Route::delete("/libro/log_delete/{id}","destroy");
+        Route::put("/libro/restaurar/{id}","restaurarLibro");
 
     });
 
