@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Operador extends Model
@@ -41,5 +43,11 @@ class Operador extends Model
     {
         $user = $this->user;
         return $user->getRoleNames();
+    }
+    public function operadorEncargado() : HasMany {
+        return $this->hasMany(CargaTrabajo::class, "id_operador_encargado");
+    }
+    public function operadorAsignado() : HasMany {
+        return $this->hasMany(CargaTrabajo::class, "id_operador_asigno");
     }
 }
