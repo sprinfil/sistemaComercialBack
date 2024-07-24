@@ -124,6 +124,25 @@ class TarifaController extends Controller
             //return $catalogoServicioDealle;
             if ($tarifa) {
                 if ($tarifa->estado == 'inactivo' && $request->input('estado') == 'activo') {
+
+                    foreach ($catalogoTiposToma as $TipoToma) {
+
+                        foreach ($catalogoServicioDealle as $servicioDetalle) {
+    
+                            if ($TipoToma->id == $servicioDetalle->id_tipo_toma) {
+                                $servicioAsociado = true;
+                            }
+                        }
+    
+                        if ($servicioAsociado == false) {
+                            return response()->json([
+                                'error' => 'No se pudo activar la tarifa, existen tomas sin servicio asociado'
+                            ], 400);
+                        } else {
+                            $servicioAsociado = false;
+                        }
+                    }
+
                     return response()->json([
                         'message' => 'Existen tarifas anteriores activas. ¿Desea inactivarlas?',
                         'confirmUpdate' => true,
@@ -131,23 +150,7 @@ class TarifaController extends Controller
                 }
                 //valida que exista almenos 1 rango de servicio asociado a la tarifa a activar
 
-                foreach ($catalogoTiposToma as $TipoToma) {
-
-                    foreach ($catalogoServicioDealle as $servicioDetalle) {
-
-                        if ($TipoToma->id == $servicioDetalle->id_tipo_toma) {
-                            $servicioAsociado = true;
-                        }
-                    }
-
-                    if ($servicioAsociado == false) {
-                        return response()->json([
-                            'error' => 'No se pudo activar la tarifa, existen tomas sin servicio asociado'
-                        ], 400);
-                    } else {
-                        $servicioAsociado = false;
-                    }
-                }
+                
 
                 $tarifa->update($data);
                 $tarifa->save();
