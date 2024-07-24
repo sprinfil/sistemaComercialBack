@@ -65,25 +65,88 @@ class TarifaController extends Controller
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
                 $tarifa = tarifa::create($data);
-                $conceptos = ConceptoCatalogo::all();
-                $tipo_tomas = ConceptoCatalogo::all();
-
-                foreach ($conceptos as $concepto) {
-                    foreach ($tipo_tomas as $tipo_toma) {
-                        $TarifaConceptoDetalle = new TarifaConceptoDetalle();
-                        $TarifaConceptoDetalle->id_tipo_toma = $tipo_toma->id;
-                        $TarifaConceptoDetalle->id_concepto = $concepto->id;
-                        $TarifaConceptoDetalle->monto = 100;
-                        $TarifaConceptoDetalle->save();
-                    }
-                }
-
-                return response(new tarifaResource($tarifa), 201);
+                // E importa las tarifas de la tarifa activa si se desea
+                $request = new Request();
+                $request->merge(['confirm' => true]);
+                $request->merge(['tarifa_id' => $tarifa->id]);
+                $respuesta = $this->importarTipoTomaTarifas($request);
+                return response($respuesta, 201);
             }
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar la tarifa'
             ], 500);
+        }
+    }
+
+    public function importarTipoTomaTarifas(Request $request){
+        try{
+            if($request->input('confirm') == true && $request->input('tarifa_id') != null){
+                $id_tarifa_nueva = $request->input('tarifa_id');
+                // se obtienen los conceptos importados de conceptos por tipo de toma
+                // primero los tipos de toma
+                $tarifas_tipo = TipoToma::all();
+                $tarifa_activa = tarifa::where('estado', 'activo')->get()->first();
+                foreach ($tarifas_tipo as $tipo) {
+                    // despues los conceptos por tipo de toma
+                    /*$tarifas_conceptos = TarifaConceptoDetalle::where('id_tipo_toma', $tipo)->get();
+
+                    foreach ($tarifas_conceptos as $concepto) {
+                        $nuevo_concepto = new TarifaConceptoDetalle;
+                        $nuevo_concepto->id_tipo_toma = $tipo;
+                        $nuevo_concepto->id_concepto = $concepto['id_concepto'];
+                        $nuevo_concepto->monto = $concepto['monto'];
+                        $nuevo_concepto->save();
+                    }
+
+                    // valida si hay tarifas para ese tipo de toma
+                    $tarifa_registrada =  $request->input('id');
+                    if(count($tarifas_conceptos) < 1){
+                        return response()->json([
+                            'error' => 'No hay conceptos importables de tipo '.$tipo,
+                            'import' => false
+                        ], 200);
+                    }*/
+
+                    // y al final los servicios por tipo de toma, en la tarifa activa
+                    $tarifas_servicios = TarifaServiciosDetalle::where('id_tipo_toma', $tipo->id)
+                    ->where('id_tarifa', $tarifa_activa->id)->get();
+
+                    foreach ($tarifas_servicios as $servicio) {
+                        $detalle_servicio = new TarifaServiciosDetalle();
+                        $detalle_servicio->id_tarifa = $id_tarifa_nueva;
+                        $detalle_servicio->id_tipo_toma = $tipo->id;
+                        $detalle_servicio->rango = $servicio['rango'];
+                        $detalle_servicio->agua = $servicio['agua'];
+                        $detalle_servicio->alcantarillado = $servicio['alcantarillado'];
+                        $detalle_servicio->saneamiento = $servicio['saneamiento'];
+                        $detalle_servicio->save();
+                    }
+
+                    // valida si hay tarifas para ese tipo de toma
+                    if(count($tarifas_servicios) < 1){
+                        return response()->json([
+                            'error' => 'No hay servicios importables de tipo '.$tipo->id,
+                            'import' => false
+                        ], 200);
+                    }
+                }
+                return response()->json([
+                    'message' => 'Se han importado las tarifas',
+                    'import' => $request->input('confirm')
+                ], 200);
+            }
+            else {
+                return response()->json([
+                    'message' => 'Registros en blanco',
+                    'import' => $request->input('confirm')
+                ], 200);
+            }
+        }catch(Exception $ex){
+            return response()->json([
+                'error' => 'Error al crear las tarifas'.$ex,
+                'import' => false
+            ], 200);
         }
     }
 
