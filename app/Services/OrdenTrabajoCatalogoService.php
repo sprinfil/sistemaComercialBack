@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\OrdenTrabajoCatalogo;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrdenTrabajoCatalogoService{
 

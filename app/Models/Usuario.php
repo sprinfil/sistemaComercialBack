@@ -14,6 +14,7 @@ class Usuario extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable=[
+        'codigo_operador',
         'nombre',
         'apellido_paterno',
         'apellido_materno',

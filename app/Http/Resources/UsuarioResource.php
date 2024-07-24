@@ -18,6 +18,7 @@ class UsuarioResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "codigo_operador" => $this->codigo_operador,
             "nombre" => $this->nombre,
             "apellido_paterno" => $this->apellido_paterno,
             "apellido_materno" => $this->apellido_materno,
