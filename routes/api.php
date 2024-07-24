@@ -403,6 +403,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Calle
     Route::controller(CalleController::class)->group(function() {
         Route::get("/calle","index");
+        Route::get("/callesPorColonia/{id}","getCallesPorColonia");
         Route::post("/calle/store","store");
         Route::get("/calle/show/{id}" , "show");
         Route::put("/calle/update/{id}" , "update");
