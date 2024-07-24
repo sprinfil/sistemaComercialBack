@@ -7,7 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ConceptoResource;
 use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
+use App\Models\TarifaConceptoDetalle;
+use App\Models\TipoToma;
+use Database\Factories\TarifaConceptoDetalleFactory;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConceptoController extends Controller
 {
@@ -30,10 +35,10 @@ class ConceptoController extends Controller
         $this->authorize('create', ConceptoCatalogo::class);
         //Valida el store
         $data = $request->validated();
-        //Busca por nombre a los operadores eliminados
+        //Busca por nombre a los conceptos eliminados
         $conceptoCatalogo = ConceptoCatalogo::withTrashed()->where('nombre', $request->input('nombre'))->first();
 
-        //Validacion en caso de que el operador ya este registrado en le base de datos
+        //Validacion en caso de que el concepto ya este registrado en le base de datos
         if ($conceptoCatalogo) {
             if ($conceptoCatalogo->trashed()) {
                 return response()->json([
@@ -48,11 +53,36 @@ class ConceptoController extends Controller
             ], 200);
         }
 
-        //Si el operador no existe, lo crea
+        //Si el concepto no existe, lo crea
         if(!$conceptoCatalogo)
         {
-            $conceptoCatalogo = ConceptoCatalogo::create($data);
-            return new ConceptoResource($conceptoCatalogo);
+            DB::beginTransaction();
+            try{
+                $conceptoCatalogo = ConceptoCatalogo::create($data);
+                if(isset($data['tarifas']) && !is_null($data['tarifas'])){
+                    foreach ($data['tarifas'] as $tarifas) {
+                        $tarifa = new TarifaConceptoDetalle();
+                        $tarifa->id_tipo_toma = $tarifas['id_tipo_toma'];
+                        $tarifa->id_concepto = $conceptoCatalogo->id;
+                        $tarifa->monto = $tarifas['monto'];
+                        $tarifa->save();
+                    }
+                }else{
+                    $tarifas_tipo = TipoToma::all();
+                    foreach ($tarifas_tipo as $tipo) {
+                        $tarifa = new TarifaConceptoDetalle();
+                        $tarifa->id_tipo_toma = $tipo->id;
+                        $tarifa->id_concepto = $conceptoCatalogo->id;
+                        $tarifa->monto = 0;
+                        $tarifa->save();
+                    }
+                }
+                DB::commit();
+                return new ConceptoResource($conceptoCatalogo);
+            }catch(Exception $ex){
+                DB::rollBack();
+                return $ex;
+            }
         }
     }
 
@@ -96,9 +126,6 @@ class ConceptoController extends Controller
         }
     }
 
-
-
-
     public function restaurarDato(ConceptoCatalogo $conceptoCatalogo, Request $request)
     {
 
@@ -112,6 +139,4 @@ class ConceptoController extends Controller
         }
 
     }
-
 }
-

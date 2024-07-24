@@ -20,6 +20,7 @@ class PagoFactory extends Factory
     {
         return [
             'id_caja'=>0,
+            'id_corte_caja'=>0,
             'total_pagado'=>$this->faker->randomFloat(2, 0, 9999),
             'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
             'fecha_pago'=>now(),

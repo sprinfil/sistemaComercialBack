@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_libro');
             $table->unsignedBigInteger('id_codigo_toma');
             $table->string('clave_catastral');
-            $table->enum('estatus', ['pendiente confirmación inspección', 'pendiente de inspeccion', 'pendiente de instalacion', 'activa', 'baja definitiva', 'baja temporal', 'en proceso']);
+            $table->enum('estatus', ['pendiente confirmación inspección', 'pendiente de inspeccion', 'pendiente de instalacion', 'activa', 'baja definitiva', 'baja temporal', 'en proceso','limitado']);
             $table->string('calle');
             $table->string('entre_calle_1')->nullable();
             $table->string('entre_calle_2')->nullable();

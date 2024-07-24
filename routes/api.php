@@ -217,7 +217,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/TipoToma/update/{id}", "update");
         Route::get("/TipoToma/consulta/{nombre}", "show");
         Route::put("/TipoToma/restore/{id}", "restaurarDato");
-
+        Route::post("TipoToma/import","importarTipoTomaTarifas");
         //log delete significa borrado logico
         Route::delete("/TipoToma/log_delete/{id}", "destroy");
     });
@@ -294,8 +294,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/Rol/update/{id}", "update");
 
         Route::post("Rol/give_rol_permissions/{id}", "give_rol_permissions");
+        Route::post("Rol/give_user_permissions/{id}", "give_user_permissions");
+
         Route::get("Rol/get_all_permissions_by_rol_id/{id}", "get_all_permissions_by_rol_id");
         Route::get("Rol/get_all_permissions_by_user_id/{id}", "get_all_permissions_by_user_id");
+        Route::get("Rol/get_all_rol_names_by_user_id/{id}", "get_all_rol_names_by_user_id");
 
         //log delete significa borrado logico
         Route::delete("Rol/log_delete/{id}", "destroy");
@@ -400,6 +403,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Calle
     Route::controller(CalleController::class)->group(function() {
         Route::get("/calle","index");
+        Route::get("/callesPorColonia/{id}","getCallesPorColonia");
         Route::post("/calle/store","store");
         Route::get("/calle/show/{id}" , "show");
         Route::put("/calle/update/{id}" , "update");

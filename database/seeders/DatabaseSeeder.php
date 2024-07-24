@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\corteCaja;
 use App\Models\Cotizacion;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AnomaliaSeeder;
@@ -49,7 +50,9 @@ class DatabaseSeeder extends Seeder
         $this->call(ConstanciaSeeder::class);
         $this->call(BonificacionCatalogoSeeder::class);
         //
-        //
+        $this->call(CajaSeeder::class);
+        $this->call(corteCajaSeeder::class);
+
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
         $this->call(TipoTomaSeeder::class);

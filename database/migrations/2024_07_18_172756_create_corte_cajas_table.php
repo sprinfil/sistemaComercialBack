@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('corte_cajas', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('id_caja');
+            $table->unsignedInteger('id_pago');
             $table->decimal('saldo_real', total: 8 , places:2);
             $table->decimal('saldo_contable' , total: 8 , places: 2);
             $table->enum('discrepancia' , ['si' , 'no']);
             $table->decimal('discrepancia_monto', total: 8 , places: 2);
             $table->dateTime('periodo'); //datetime?
-            $table->string('moneda_extranjera');
-            $table->string('moneda_nacional');
+            $table->enum('moneda_extranjera', ['MXN' , 'USD']);
+            $table->enum('moneda_nacional', ['MXN' , 'USD']);
 
             $table->integer('cantidad_billete_20');
             $table->integer('cantidad_billete_50');
