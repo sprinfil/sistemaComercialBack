@@ -18,6 +18,8 @@ class OrdenTrabajoConfiguracion extends Model
         "id_concepto_catalogo",
         "accion",
         "momento",
+        "atributo",
+        "valor",
        
     ];
     public function orden_trabajo_catalogo(): BelongsTo{

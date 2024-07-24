@@ -26,6 +26,8 @@ class UpdateOrdenTrabajoConfRequest extends FormRequest
             "id_concepto_catalogo" => "required|exists:concepto_catalogos,id",
             "accion"=>"required|in:generar,modificar,quitar",
             "momento"=>"required|in:generar,asignar,concluir",
+            "atributo"=>"required|string",
+            "valor"=>"required|string",
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrdenTrabajoCatalogo;
+use App\Models\OrdenTrabajoConfiguracion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +20,8 @@ class OrdenTrabajoCatalogoResource extends JsonResource
         return [
             "id" => $this->id,
             "nombre" => $this->nombre,
-            'orden_trabajo_configuracion' => OrdenTrabajoCatalogoResource::collection($this->whenLoaded('ordenTrabajoConfiguracion')),
+            'orden_trabajo_conf' =>new OrdenTrabajoConfResource($this->orden_trabajo_conf),
+            'orden_trabajo_configuracion' => OrdenTrabajoConfResource::collection($this->whenLoaded('ordenTrabajoConfiguracion')),
         ];
     }
 }
