@@ -1,12 +1,14 @@
 <?php
 namespace App\Services;
 
+use App\Http\Requests\StoreOrdenTrabajoConfRequest;
 use App\Http\Resources\OrdenTrabajoConfResource;
 use App\Models\OrdenTrabajoConfiguracion;
 
 class OrdenTrabajoConfService{
 
     public function store(array $ordenCatalogo): ?OrdenTrabajoConfiguracion{ //Ejemplo de service
+       
         $catalogo=OrdenTrabajoConfiguracion::where('id_orden_trabajo_catalogo',$ordenCatalogo['id_orden_trabajo_catalogo'])->
         where('id_concepto_catalogo',$ordenCatalogo['id_concepto_catalogo'])->
         where('accion',$ordenCatalogo['accion'])->

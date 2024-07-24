@@ -17,9 +17,11 @@ use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
 use App\Services\OrdenTrabajoCatalogoService;
 use App\Services\OrdenTrabajoConfService;
+use App\Services\OrdenTrabajoService;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrdenTrabajoController extends Controller
 {
@@ -54,6 +56,32 @@ class OrdenTrabajoController extends Controller
      */
     public function storeCatalogo(StoreOrdenTrabajoCatalogoRequest $request)
     {
+        
+        
+        try{
+            DB::beginTransaction();
+            $data=$request->validated();
+            $dataConf=$data['orden_trabajo_configuracion'] ?? null;
+            $orden=null;
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
+            if  ($dataConf){
+                $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
+                $orden=(new OrdenTrabajoConfService())->store($dataConf);
+                $catalogo['orden_trabajo_conf']= $orden;
+               
+            }
+            DB::commit();
+            return response(new OrdenTrabajoCatalogoResource($catalogo),200);
+        }
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'La orden de trabajo no se pudo registar.'
+            ], 200);
+        }
+        
+
+        /*
         try{
             $catalogo=(new OrdenTrabajoCatalogoService())->store($request->validated());
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
@@ -64,29 +92,7 @@ class OrdenTrabajoController extends Controller
                 'restore' => false
             ], 200);
         }
-       
-        /*
-        if ($catalogo[1]==true){
-            if ($catalogo[0]->trashed()) {
-                return response()->json([
-                    'message' => 'El tipo de orden de trabajo y existe. ¿Desea restaurarlo?',
-                    'restore' => true,
-                    'orden_trabajo_catalogo_id' => $catalogo[0]->id
-                ], 200);
-            }
-            else{
-                return response()->json([
-                    'message' => 'La orden de trabajo ya existe.',
-                    'restore' => false
-                ], 200);
-            }
-            
-        }
-        else{
-           
-        }
-        */
-       
+            */
         
     }
 
@@ -173,6 +179,8 @@ class OrdenTrabajoController extends Controller
         }
       
     }
+   
+
     public function updateConf(UpdateOrdenTrabajoConfRequest $request, OrdenTrabajoCatalogo $ordenTrabajo)
     {
         try{
@@ -219,8 +227,8 @@ class OrdenTrabajoController extends Controller
         try{
             $ordenTrabajo=OrdenTrabajoCatalogo::find($id);
             $ordenTrabajoConf=$ordenTrabajo->ordenTrabajoConfiguracion;
-            if (count($ordenTrabajoConf)!=0){
-                return OrdenTrabajoConfResource::collection($ordenTrabajoConf);
+            if ($ordenTrabajoConf){
+                return  OrdenTrabajoConfResource::collection($ordenTrabajoConf);
             }
             else{
                 return response()->json(['message'=>'No se encontro una configuración para la orden de trabajo']);
@@ -236,10 +244,10 @@ class OrdenTrabajoController extends Controller
     //// ORDEN DE TRABAJO
     public function storeOrden(StoreOrdenTrabajoRequest $request)
     {
-        /*
-        $data=$request->validated();
+        
+        $data=(new OrdenTrabajoService())->store($request->validated());
         $catalogo=OrdenTrabajo::create($data);
         return response(new OrdenTrabajoResource($catalogo),200);
-        */
+        
     }
 }

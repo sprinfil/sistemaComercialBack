@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_toma');
             $table->unsignedBigInteger('id_empleado_asigno');
-            $table->unsignedBigInteger('id_empleado_encargado');
+            $table->unsignedBigInteger('id_empleado_encargado')->nullable();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
             $table->enum('estado',['No asignada','Concluida','En proceso']);
             $table->string('fecha_finalizada');
