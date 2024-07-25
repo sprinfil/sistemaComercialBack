@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_ruta');
             $table->string('nombre');
-            $table->double('latitud');
-            $table->double('longitud');
             $table->softDeletes();
             $table->timestamps();
         });
