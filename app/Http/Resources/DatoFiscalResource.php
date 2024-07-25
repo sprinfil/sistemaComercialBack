@@ -20,6 +20,7 @@ class DatoFiscalResource extends JsonResource
             "id_modelo" => $this->id_modelo,
             "modelo" => $this->modelo,
             "regimen_fiscal" => $this->regimen_fiscal,
+            "nombre" => $this->nombre,
             "correo" => $this-> correo,
             "razon_social"=> $this->razon_social,
             "telefono"=> $this->telefono,

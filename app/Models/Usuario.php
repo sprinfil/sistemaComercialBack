@@ -96,4 +96,9 @@ class Usuario extends Model
         $contrato=$usuario->contratoVigente;
         return $contrato;
     }
+
+    public function getNombreCompletoAttribute()
+    {
+        return $this->nombre . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
+    }
 }
