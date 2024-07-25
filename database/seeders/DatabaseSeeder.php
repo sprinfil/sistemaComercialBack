@@ -52,7 +52,10 @@ class DatabaseSeeder extends Seeder
         //
         $this->call(CajaSeeder::class);
         $this->call(corteCajaSeeder::class);
-
+        //
+        $this->call(RutaSeeder::class);
+        $this->call(LibroSeeder::class);
+        //
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
         $this->call(TipoTomaSeeder::class);

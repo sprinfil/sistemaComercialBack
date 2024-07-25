@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_modelo')->default('1');
             $table->string('modelo');
             $table->string('regimen_fiscal');
+            $table->string('nombre');
             $table->string('correo');
             $table->string('razon_social');
             $table->string('telefono',10);

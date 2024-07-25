@@ -27,7 +27,9 @@ class UsuarioResource extends JsonResource
             "curp" => $this->curp,
             "rfc" => $this->rfc,
             "correo" => $this->correo,
+            'tomas' => TomaResource::collection($this->whenLoaded('tomas')),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratos')),
+            'descuento_asociado' => new DescuentoAsociadoResource($this->whenLoaded('descuento_asociado')),
 
         ];
     }
