@@ -8,6 +8,7 @@ use App\Http\Requests\StoreColoniaRequest;
 use App\Http\Requests\UpdateColoniaRequest;
 use App\Http\Resources\ColoniaResource;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ColoniaController extends Controller
@@ -35,12 +36,42 @@ class ColoniaController extends Controller
     {
         try{
             $data = $request->validated();
-            $colonia = Colonia::create($data);
-            return response(new ColoniaResource($colonia), 201);
+            //valida trash
+            $colonia = Colonia::withTrashed()->where('nombre', $request->input('nombre'))->first();
+
+            //validacion en caso de que la colonia ya este registrado en le base de datos
+            if ($colonia) {
+                if ($colonia->trashed()) {
+                    return response()->json([
+                        'message' => 'La colonia ya existe pero ha sido eliminado. ¿Desea restaurarla?',
+                        'restore' => true,
+                        'colonia_id' => $colonia->id
+                    ], 200);
+                }
+                return response()->json([
+                    'message' => 'La colonia ya existe.',
+                    'restore' => false
+                ], 200);
+            } else {
+                // si el concepto no existe, lo crea
+                $colonia = Colonia::create($data);
+                return response(new ColoniaResource($colonia), 201);
+            }  
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar la colonia'
             ], 500);
+        }
+    }
+
+    public function restaurarDato(Colonia $colonia, Request $request)
+    {
+        $colonia = Colonia::withTrashed()->findOrFail($request->id);
+        //verifica si el registro está eliminado
+        if ($colonia->trashed()) {
+            //restaura el registro
+            $colonia->restore();
+            return response()->json(['message' => 'El colonia ha sido restaurado'], 200);
         }
     }
 
