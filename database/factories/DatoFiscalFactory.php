@@ -22,6 +22,7 @@ class DatoFiscalFactory extends Factory
             'id_modelo' => 0,
             'modelo' => '',
             'regimen_fiscal' => '',
+            'nombre' => '',
             'correo' => '',
             'razon_social' => '',
             'telefono' => '',

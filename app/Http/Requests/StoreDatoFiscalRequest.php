@@ -25,6 +25,7 @@ class StoreDatoFiscalRequest extends FormRequest
             "id_modelo"=>"required|integer",
             "modelo"=>"required|string|max:10",
             "regimen_fiscal"=>"required|string|max:55",
+            "nombre"=>"required|string|max:55",
             "correo"=>"required|email|max:55|",  
             "razon_social"=>"required|string|max:55",
             "telefono"=>"required|string|size:10",

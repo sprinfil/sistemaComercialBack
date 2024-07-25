@@ -60,6 +60,7 @@ class UsuarioFactory extends Factory
                     'Dividendos',
                     'Demas ingresos'
                 ]),
+                'nombre'=>$usuario->getNombreCompletoAttribute(),
                 'correo' => $usuario->correo,
                 'razon_social' => $usuario->rfc,
                 'telefono' => $usuario->telefono,

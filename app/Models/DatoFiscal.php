@@ -16,6 +16,7 @@ class DatoFiscal extends Model
         "id_modelo",
         "modelo",
         "regimen_fiscal",
+        "nombre",
         "correo",
         "razon_social",
         "telefono",
