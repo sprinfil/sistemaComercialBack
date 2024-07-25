@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
             'convenio_catalogo' => 'App\Models\ConvenioCatalogo',
             'descuento_catalogo' => 'App\Models\DescuentoCatalogo',
             'ajuste_catalogo' => 'App\Models\AjusteCatalogo',
+            'datos_fiscales' => 'App\Models\DatoFiscal',
         ]);
     }
 }

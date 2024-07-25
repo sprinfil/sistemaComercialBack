@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Usuario extends Model
@@ -31,15 +32,23 @@ class Usuario extends Model
     {
         return $this->hasMany(Contrato::class, 'id_usuario');
     }
+
     public function contratoVigente(): hasMany
     {
         return $this->hasMany(Contrato::class, 'id_usuario')->where('estatus','!=','cancelado');
     }
-      // Tomas asociadas al usuario
+
+    // Tomas asociadas al usuario
     public function tomas() : HasMany
     {
         return $this->hasMany(Toma::class, 'id_usuario');
     }
+
+    public function datos_fiscales(): MorphMany
+    {
+        return $this->morphMany(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
+    }
+
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("
         CONCAT(
@@ -49,18 +58,22 @@ class Usuario extends Model
         )  LIKE ?", ['%'.$usuario.'%'])->get();
           return $data;
     }
+
     public static function ConsultarPorCurp(string $usuario){
         $data = Usuario::whereRaw("curp LIKE ?", ['%'.$usuario.'%'])->get();
           return $data;
     }
+
     public static function ConsultarPorCodigo(string $usuario){
         $data = Usuario::where("codigo_usuario",$usuario)->get();
           return $data;
     }
+
     public static function ConsultarPorRfc(string $usuario){
         $data = Usuario::whereRaw("rfc LIKE ?", ['%'.$usuario.'%'])->get();
           return $data;
     }
+
     public static function ConsultarPorCorreo(string $usuario){
         $data = Usuario::whereRaw("correo LIKE ?", ['%'.$usuario.'%'])->get();
           return $data;
@@ -77,11 +90,10 @@ class Usuario extends Model
         return $contratos;
         
     }
+
     public function contratoServicio($id_usuario){
         $usuario=usuario::find($id_usuario);
         $contrato=$usuario->contratoVigente;
         return $contrato;
     }
-
-  
 }
