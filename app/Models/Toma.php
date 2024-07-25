@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Toma extends Model
@@ -83,9 +84,16 @@ class Toma extends Model
     {
         return $this->hasOne(Factibilidad::class);
     }
+
     public function ordenesTrabajo():HasMany{
         return $this->hasMany(ordenTrabajo::class,'id_toma');;
     }
+
+    public function datos_fiscales(): MorphMany
+    {
+        return $this->morphMany(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
+    }
+
     //Consulta de referencia (no se usa)
     public static function ConsultarContratosPorToma(string $id_toma){
         

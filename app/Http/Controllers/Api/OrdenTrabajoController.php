@@ -64,6 +64,7 @@ class OrdenTrabajoController extends Controller
             $dataConf=$data['orden_trabajo_configuracion'] ?? null;
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
+            
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
                 $orden=(new OrdenTrabajoConfService())->store($dataConf);

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDato_fiscalRequest extends FormRequest
+class UpdateDatoFiscalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,11 @@ class StoreDato_fiscalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "regimen_fiscal"=>"required|string|max:55",
-            "correo"=>"required|email|max:55|",  
+            "id_modelo"=>"required|integer",
+            "modelo"=>"required|string|max:10",
+            "regimen_fiscal"=>"required|string|max:55" ,
+            "nombre"=>"required|string|max:55",
+            "correo"=>"required|email|max:55|",
             "razon_social"=>"required|string|max:55",
             "telefono"=>"required|string|size:10",
             "pais"=>"required|string|max:55",
@@ -34,8 +37,8 @@ class StoreDato_fiscalRequest extends FormRequest
             "calle"=>"string|max:55",
             "referencia"=>"string|max:55",
             "numero_exterior"=>"nullable|string|max:10", 
-            "codigo_postal"=>"required|string|max:10", 
-            "tipo_modelo"=>"required|string|max:10",
+            "codigo_postal"=>"required|string|max:10",
         ];
+       
     }
 }

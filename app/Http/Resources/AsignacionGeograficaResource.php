@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CalleResource extends JsonResource
+class AsignacionGeograficaResource extends JsonResource
 {
     public static $wrap = false;
     /**
@@ -17,8 +17,10 @@ class CalleResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "nombre" => $this->nombre,
-            "id_colonia" => $this->id_colonia,
+            "id_modelo" => $this->id_modelo,
+            "latitud" => $this->latitud,
+            "longitud" => $this->longitud,
+            "estatus" => $this->estatus,
         ];
     }
 }

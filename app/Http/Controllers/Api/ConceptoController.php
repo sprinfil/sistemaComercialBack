@@ -110,7 +110,7 @@ class ConceptoController extends Controller
         // Actualizar tarifas
         $tarifas = $request->input('tarifas', []);
         foreach ($tarifas as $tarifaData) {
-            $tarifa = TarifaConceptoDetalle::findOrNew($tarifaData['id']);
+            $tarifa = TarifaConceptoDetalle::findOrNew($tarifaData['id_tipo_toma']);
             $tarifa->fill($tarifaData);
             $tarifa->id_concepto = $concepto->id;
             $tarifa->save();

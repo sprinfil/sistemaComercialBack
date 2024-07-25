@@ -92,8 +92,23 @@ class LibroController extends Controller
      */
     public function update(UpdateLibroRequest $request,  string $id)
     {
-        //$this->authorize('update', GiroComercialCatalogo::class); pendiente permiso
+        //$this->authorize('update', GiroComercialCatalogo::class); pendiente permiso withTrashed()
+        
+
         try {
+
+            $rutaAsociada = Libro::select('id_ruta')->where('id', $id)->first();
+            $listaLibros = Libro::select('nombre')->where('id_ruta', $rutaAsociada->id_ruta)->get();
+
+            foreach ($listaLibros as $librosReg) {
+
+                if ($librosReg->nombre == $request->nombre) {
+                return response()->json([
+                    'error' => 'Esten nombre ya se encuentra asociado a esta ruta'
+                 ], 200);
+                }
+            }
+
             $data = $request->validated();
             $libro = Libro::findOrFail($id);
             $libro->update($data);
@@ -111,21 +126,21 @@ class LibroController extends Controller
      */
     public function destroy(string $id)
     {
-        //$this->authorize('delete', GiroComercialCatalogo::class); pendiente permiso
+        //$this->authorize('delete', GiroComercialCatalogo::class); pendiente permiso, pendiente que no se pueda borrar un libro asociado a tomas
         try {
             $libro = Libro::findOrFail($id);
             $libro->delete();
             return response("El libro se ha eliminado con exito",200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'No se pudo borrar el libro'
+                'error' => 'Ocurrio un error al borrar el libro'
             ], 500);
         }
     }
 
-    public function restaurarRuta (Libro $ruta, Request $request)
+    public function restaurarLibro (Libro $libro, Request $request)
     {
-        //Pendiente permiso
+        //Pendiente permiso, Pendiente validar las implicaciones de restaurar un libro
         try {
             $libro = Libro::withTrashed()->findOrFail($request->id);
             //Condicion para verificar si el registro esta eliminado
