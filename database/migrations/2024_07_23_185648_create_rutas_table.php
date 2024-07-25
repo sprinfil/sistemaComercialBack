@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('rutas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->unique();
+            $table->string('color')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
