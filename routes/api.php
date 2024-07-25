@@ -5,12 +5,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\AjusteController;
-use App\Http\Controllers\Api\AnomaliaController;
 use App\Http\Controllers\Api\ConceptoController;
 use App\Http\Controllers\Api\ConvenioController;
 use App\Http\Controllers\Api\UsuarioController;
-use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
 use App\Http\Controllers\Api\CajasController;
@@ -25,6 +22,7 @@ use App\Http\Controllers\Api\factibilidadController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\ContratoController;
 use App\Http\Controllers\Api\correccionInformacionSolicitudController;
+use App\Http\Controllers\Api\DatoFiscalController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\LibroController;
@@ -37,7 +35,6 @@ use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\TarifaController;
 use App\Http\Controllers\Api\Tipo_tomaController;
 use App\Http\Controllers\Api\TomaController;
-use App\Models\correccionInformacionSolicitud;
 use App\Http\Controllers\PrinterController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
@@ -207,12 +204,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
     // Gestion de contribuyentes
-    Route::controller(Dato_fiscalController::class)->group(function () {
-        Route::get("/Datos_fiscales", "index");
-        Route::post("/Datos_fiscales/create", "store");
-        Route::put("/Datos_fiscales/update/{id}", "update");
-        Route::put("/Datos_fiscales/log_delete/{id}", "destroy");
-        Route::get("/Datos_fiscales/show/{id}", "show");
+    Route::controller(DatoFiscalController::class)->group(function () {
+        Route::get("/datos_fiscales", "index");
+        Route::post("/datos_fiscales/create", "store");
+        Route::put("/datos_fiscales/update/{id}", "update");
+        Route::delete("/datos_fiscales/delete/{id}", "destroy");
+        Route::get("/datos_fiscales/show/{id}", "show");
+        Route::get("/datos_fiscales/showPorModelo", "showPorModelo");
     });
     //Tipo Toma
     Route::controller(Tipo_tomaController::class)->group(function () {

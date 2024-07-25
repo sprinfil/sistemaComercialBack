@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dato_fiscales', function (Blueprint $table) {
+        Schema::create('datos_fiscales', function (Blueprint $table) {
             
             $table->id();
+            $table->unsignedBigInteger('id_modelo')->default('1');
+            $table->string('modelo');
             $table->string('regimen_fiscal');
             $table->string('correo');
             $table->string('razon_social');
@@ -28,10 +30,9 @@ return new class extends Migration
             $table->string('numero_exterior')->nullable();
             $table->string('codigo_postal');
             $table->bigInteger('contacto')->unsigned()->default('1'); //llave foranea que apunta a la tabla de contactos de facturas CFDI, esta pendiente
-            $table->string('tipo_modelo');
             $table->softDeletes();
             $table->timestamps();
- 
+
         });
     }
 
@@ -40,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dato_fiscales');
+        Schema::dropIfExists('datos_fiscales');
     }
 };

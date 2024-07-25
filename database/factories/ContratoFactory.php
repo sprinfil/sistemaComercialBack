@@ -6,6 +6,7 @@ use App\Models\Cargo;
 use App\Models\ConceptoCatalogo;
 use App\Models\Contrato;
 use App\Models\Cotizacion;
+use App\Models\DatoFiscal;
 use App\Models\DatosDomiciliacion;
 use App\Models\Factibilidad;
 use App\Models\Toma;
@@ -237,6 +238,37 @@ class ContratoFactory extends Factory
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                DatoFiscal::factory()->create([
+                    'id_modelo' => $contrato->id_toma,
+                    'modelo' => 'toma',
+                    'regimen_fiscal' => $this->faker->randomElement([
+                        'Regimen Simplificado de Confianza',
+                        'Sueldos y salarios e ingresos asimilados a salarios',
+                        'Regimen de Actividades Empresariales y Profesionales',
+                        'Regimen de Incorporacion Fiscal',
+                        'Enajenacion de bienes',
+                        'Regimen de Actividades Empresariales con ingresos a traves de Plataformas Tecnologicas',
+                        'Regimen de Arrendamiento',
+                        'Intereses',
+                        'Obtencion de premios',
+                        'Dividendos',
+                        'Demas ingresos'
+                    ]),
+                    'correo' => $contrato->toma->usuario->correo,
+                    'razon_social' => $contrato->toma->usuario->rfc,
+                    'telefono' => $contrato->toma->usuario->telefono,
+                    'pais' => 'México',
+                    'estado' => 'Baja California Sur',
+                    'municipio' => $this->faker->city,
+                    'localidad' => $this->faker->city,
+                    'colonia' => $this->faker->streetName,
+                    'calle' => $this->faker->streetAddress,
+                    'referencia' => 'ninguna',
+                    'numero_exterior' => $this->faker->numerify('###'),
+                    'codigo_postal' => $this->faker->postcode
+                ]);
+
             }
         });
     }
