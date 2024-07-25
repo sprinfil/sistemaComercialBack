@@ -39,6 +39,11 @@ class Usuario extends Model
     {
         return $this->hasMany(Toma::class, 'id_usuario');
     }
+    public function descuento_asociado() : HasOne
+    {
+        return $this->hasOne(DescuentoAsociado::class, 'id_usuario');
+    }
+    
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("
         CONCAT(
@@ -46,6 +51,10 @@ class Usuario extends Model
             COALESCE(apellido_paterno, ''), ' ', 
             COALESCE(apellido_materno, '')
         )  LIKE ?", ['%'.$usuario.'%'])->get();
+          return $data;
+    }
+    public static function ConsultarTomas(string $usuario){
+        $data=Usuario::find($usuario)->with('tomas');
           return $data;
     }
     public static function ConsultarPorCurp(string $usuario){

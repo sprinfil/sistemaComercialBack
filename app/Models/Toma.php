@@ -57,12 +57,6 @@ class Toma extends Model
         return $this->belongsTo(Usuario::class, 'id_usuario');
     }
 
-    // Servicio asociado a la toma
-    public function servicio() : HasMany
-    {
-        return $this->hasMany(Servicio::class, 'id_toma');
-    }
-
     // Contrato asociado a la toma
     public function contrato() : HasMany
     {

@@ -18,6 +18,7 @@ class UsuarioSeeder extends Seeder
         DB::table('usuarios')->insert([
             [
                 'nombre' => 'Miguel Angel',
+                'codigo_usuario' => '1',
                 'apellido_paterno' => 'Murillo',
                 'apellido_materno' => 'Jaimes',
                 'nombre_contacto' => 'Miguel Angel',
@@ -28,6 +29,7 @@ class UsuarioSeeder extends Seeder
             ],
             [
                 'nombre' => 'Alan Jacob',
+                'codigo_usuario' => '2',
                 'apellido_paterno' => 'De La Rosa',
                 'apellido_materno' => 'Ruiz',
                 'nombre_contacto' => 'Alan Jacob',

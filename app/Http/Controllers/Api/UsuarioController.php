@@ -129,6 +129,23 @@ class UsuarioController extends Controller
         
         
     }
+    public function general(string $codigoUsuario)
+    {
+        try{
+            $data =(new UsuarioService())->ConsultaGeneral($codigoUsuario);
+            return $data;
+            /*
+        return UsuarioResource::collection(
+            $data
+        );
+        */
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+        }
+        
+        
+    }
     public function showCodigo(string $usuario)
     {
         try{
