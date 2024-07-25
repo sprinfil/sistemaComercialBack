@@ -18,7 +18,7 @@ class CalleResource extends JsonResource
         return [
             "id" => $this->id,
             "nombre" => $this->nombre,
-            "id_colonia" => $this->nombre,
+            "id_colonia" => $this->id_colonia,
         ];
     }
 }

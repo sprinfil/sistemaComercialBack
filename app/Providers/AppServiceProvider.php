@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
             'ajuste_catalogo' => 'App\Models\AjusteCatalogo',
             'libro' => 'App\Models\Libro',
             'ruta' => 'App\Models\Ruta',
+            'datos_fiscales' => 'App\Models\DatoFiscal',
         ]);
     }
 }
