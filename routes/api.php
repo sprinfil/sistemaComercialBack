@@ -412,6 +412,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/calle/show/{id}" , "show");
         Route::put("/calle/update/{id}" , "update");
         Route::delete("/calle/delete/{id}", "destroy");
+        Route::put("/calle/restore/{id}", "restaurarDato");
     });
   
      // Colonia
@@ -421,6 +422,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/colonia/show/{id}" , "show");
         Route::put("/colonia/update/{id}" , "update");
         Route::delete("/colonia/delete/{id}", "destroy");
+        Route::put("/colonia/restore/{id}", "restaurarDato");
     });
     //cajas
     Route::controller(CajasController::class)->group(function() {
