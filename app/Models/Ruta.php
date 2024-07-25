@@ -17,11 +17,11 @@ class Ruta extends Model
         "nombre"
     ];
 
-    public function tieneLibros() : HasMany {
+    public function Libros() : HasMany {
         return $this->hasMany(Libro::class , "id_ruta");
     }
 
-    public function tienePeriodos() : HasMany {
+    public function Periodos() : HasMany {
         return $this->hasMany(Periodo::class , "id_ruta");
     }
     
