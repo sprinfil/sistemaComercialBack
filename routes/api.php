@@ -142,6 +142,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/usuarios/consultaRFC/{rfc}", "showRFC");
         //CORREO
         Route::get("/usuarios/consultaCorreo/{correo}", "showCorreo");
+
+        //Consulta general
+         Route::get("/usuarios/consulta/general/{codigo}", "general");
         //log delete significa borrado logico
         Route::delete("/usuarios/log_delete/{id}", "destroy");
 
