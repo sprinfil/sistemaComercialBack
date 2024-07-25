@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\Dato_fiscalController;
 use App\Http\Controllers\Api\AjusteCatalagoController;
 use App\Http\Controllers\Api\AnomaliaCatalagoController;
+use App\Http\Controllers\Api\AsignacionGeograficaController;
 use App\Http\Controllers\Api\CajasController;
 use App\Http\Controllers\Api\CalleController;
 use App\Http\Controllers\Api\CargoController;
@@ -436,6 +437,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/ruta/log_delete/{id}","destroy");
         Route::put("/ruta/restaurar/{id}","restaurarRuta");
     });
+    //Libro
     Route::controller(LibroController::class)->group(function() {
         Route::get("/libro","index");
         Route::post("/libro/create","store");
@@ -444,6 +446,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/libro/log_delete/{id}","destroy");
         Route::put("/libro/restaurar/{id}","restaurarLibro");
 
+    });
+
+    //AsignacionGeografica
+    Route::controller(AsignacionGeograficaController::class)->group(function(){
+        Route::get("/asignacionGeografica","index");
+        Route::post("/asignacionGeografica/create","store");
+        Route::get('/asignacionGeografica/show/{id}','show');
+        Route::put('/asignacionGeografica/update/{id}','update');
+        Route::delete('/asignacionGeografica/log_delete/{id}','destroy');
+        Route::get('/asignacionGeografica/asignaciongeograficaToma','asignaciongeograficaToma');
+        Route::get('/asignacionGeografica/asignaciongeograficaLibro','asignaciongeograficaLibro');
+        Route::get('/asignacionGeografica/asignaciongeograficaRuta','asignaciongeograficaRuta');
     });
 
 
