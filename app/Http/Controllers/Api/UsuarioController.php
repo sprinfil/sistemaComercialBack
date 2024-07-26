@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreDatoFiscalRequest;
 use App\Http\Requests\StoreUsuarioMoralRequest;
 use App\Models\Usuario;
 use App\Http\Requests\StoreUsuarioRequest;
@@ -67,7 +68,7 @@ class UsuarioController extends Controller
         }
         catch(Exception $ex){
             return response()->json([
-                'error' => 'El usuario no se pudo crear.',
+                'error' => 'El usuario no se pudo crear.'.$ex,
                 'restore' => false
             ], 200);
         }
@@ -270,5 +271,36 @@ class UsuarioController extends Controller
         } catch(Exception $ex) {
             return response()->json(['message' => 'error'.$ex], 500);
         } 
+    }
+
+    public function storeOrUpdateDatosFiscales(StoreDatoFiscalRequest $datoFiscalRequest, $id)
+    {
+        try{
+                // Validar el request
+                $validatedData = $datoFiscalRequest->validated();
+
+                // Encontrar el usuario
+                $usuario = Usuario::find($id);
+
+                if ($usuario) {
+                    $polymorphicData = [
+                        'id_modelo' => $usuario->id,
+                        'modelo' => get_class($usuario)
+                    ];
+            
+                    // Obtener o crear los datos fiscales
+                    $datosFiscales = $usuario->datos_fiscales()->updateOrCreate(
+                        $polymorphicData,
+                        $validatedData
+                    );
+            
+                    // Retornar los datos fiscales actualizados o creados
+                    return new DatoFiscalResource($datosFiscales);
+                }
+                return response()->json(['message' => 'error no se encontro usuario'], 500);
+            }
+            catch(Exception $ex) {
+                return response()->json(['message' => 'error'.$ex], 500);
+            } 
     }
 }

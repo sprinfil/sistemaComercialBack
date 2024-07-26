@@ -148,6 +148,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/usuarios/log_delete/{id}", "destroy");
         //datos fiscales del usuario
         Route::get("/usuarios/datos_fiscales/{id}", "datosFiscales");
+        Route::post("/usuarios/datos_fiscales/storeOrUpdate/{id}", "storeOrUpdateDatosFiscales");
 
     });
     // CONTRATOS
