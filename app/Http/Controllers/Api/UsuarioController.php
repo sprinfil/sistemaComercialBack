@@ -8,6 +8,7 @@ use App\Models\Usuario;
 use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioMoralRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
+use App\Http\Resources\DatoFiscalResource;
 use App\Http\Resources\UsuarioResource;
 use App\Services\UsuarioService;
 use Exception;
@@ -35,9 +36,7 @@ class UsuarioController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Usuario $usuario,StoreUsuarioRequest $request)
-    {
-        
-        
+    {   
         try{
             $usuario=(new UsuarioService())->store($request->validated());
             return response(new UsuarioResource($usuario),201);
@@ -72,11 +71,8 @@ class UsuarioController extends Controller
                 'restore' => false
             ], 200);
         }
-   
-        
-        
     }
-    //////
+    
     public function storemoral(StoreUsuarioMoralRequest $request)
     {
         try{
@@ -126,9 +122,8 @@ class UsuarioController extends Controller
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         }
-        
-        
     }
+
     public function general(string $codigoUsuario)
     {
         try{
@@ -146,6 +141,7 @@ class UsuarioController extends Controller
         
         
     }
+
     public function showCodigo(string $usuario)
     {
         try{
@@ -160,6 +156,7 @@ class UsuarioController extends Controller
         
         
     }
+
     public function showCURP(string $usuario)
     {
         try{
@@ -172,6 +169,7 @@ class UsuarioController extends Controller
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         }   
     }
+
     public function showRFC(string $usuario)
     {
         try{
@@ -184,6 +182,7 @@ class UsuarioController extends Controller
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         } 
     }
+
     public function showCorreo(string $usuario)
     {
         try{
@@ -196,6 +195,7 @@ class UsuarioController extends Controller
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         }
     }
+
     /**
      * Update the specified resource in storage.
      */
@@ -213,7 +213,7 @@ class UsuarioController extends Controller
         }
        
     }
-    ///////
+    
     public function updateMoral(UpdateUsuarioMoralRequest $request)
     {
         try{
@@ -244,17 +244,31 @@ class UsuarioController extends Controller
             return response()->json(['message' => 'error'], 500);
         }
     }
+
     public function restaurarDato(Usuario $Usuario, Request $request)
     {
-
         $Usuario = Usuario::withTrashed()->findOrFail($request->id);
 
-           // Verifica si el registro está eliminado
+        // Verifica si el registro está eliminado
         if ($Usuario->trashed()) {
             // Restaura el registro
             $Usuario->restore();
             return response()->json(['message' => 'El usuario ha sido restaurado.'], 200);
         }
 
+    }
+
+    public function datosFiscales($id)
+    {
+        try{
+            $usuario = Usuario::findOrFail($id);
+            if($usuario){
+                $datos_fiscales = $usuario->datos_fiscales()->first();
+                return new DatoFiscalResource($datos_fiscales);
+            }
+            return response()->json(['message' => 'error'], 500);
+        } catch(Exception $ex) {
+            return response()->json(['message' => 'error'.$ex], 500);
+        } 
     }
 }
