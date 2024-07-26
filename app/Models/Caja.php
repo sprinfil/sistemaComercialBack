@@ -16,16 +16,16 @@ class Caja extends Model
     //Caja con pagos
     public function pagos () : HasMany
     {
-        return $this->hasMany(Pago::class , 'id_caja'); //ta bien confirmado
+        return $this->hasMany(Pago::class , 'id_caja'); 
     }
     //Corte de caja con cajas
     public function corteCaja() : HasMany {
-        return $this->hasMany(corteCaja::class , 'id_caja'); //ta bien confirmado
+        return $this->hasMany(corteCaja::class , 'id_caja'); 
     }
   
     //Fondo de una caja
     public function fondoCaja() : HasOne {
-        return $this->hasOne(fondoCaja::class, 'id_caja'); //confirmado
+        return $this->hasOne(fondoCaja::class, 'id_caja'); 
     }
   
 
