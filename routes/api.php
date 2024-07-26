@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\DescuentoCatalogoController;
 use App\Http\Controllers\Api\ConstanciaCatalogoController;
 use App\Http\Controllers\Api\CatalogoBonificacionController;
 use App\Http\Controllers\Api\ColoniaController;
+use App\Http\Controllers\Api\ContactoController;
 use App\Http\Controllers\Api\factibilidadController;
 use App\Http\Controllers\Api\DatosDomiciliacionController;
 use App\Http\Controllers\Api\ContratoController;
@@ -465,6 +466,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/asignacionGeografica/asignaciongeograficaRuta','asignaciongeograficaRuta');
     });
 
+    Route::controller(ContactoController::class)->group(function(){
+        Route::get("/contacto","index");
+        Route::post("/contacto/create","store");
+        Route::get("/contacto/show/{id}","show");
+        Route::put("/contacto/update/{id}","update");
+        Route::delete("/contacto/log_delete/{id}","destroy");
+
+    });
 
 });
 
