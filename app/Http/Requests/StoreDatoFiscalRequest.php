@@ -22,8 +22,8 @@ class StoreDatoFiscalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_modelo"=>"required|integer",
-            "modelo"=>"required|string|max:10",
+            "id_modelo"=>"nullable|integer",
+            "modelo"=>"nullable|string|max:10",
             "regimen_fiscal"=>"required|string|max:55",
             "nombre"=>"required|string|max:55",
             "correo"=>"required|email|max:55|",  
