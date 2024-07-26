@@ -14,14 +14,14 @@ class corteCaja extends Model
 {
     use HasFactory, SoftDeletes;
     
-    public function pago () : HasMany
-    {
-        return $this->hasMany(Pago::class, 'id_corte_caja'); //ta bien confirmado
+   
+    public function pago() : BelongsTo {
+        return $this->belongsTo(pago::class , 'id_pago'); 
     }
 
     public function caja () : BelongsTo 
     {
-        return $this->belongsTo(Caja::class , 'id_corte_caja'); //ta bien confirmado
+        return $this->belongsTo(Caja::class , 'id_caja'); 
     }
     //Retiro de un corte de caja
     public function retiro() : HasMany {
