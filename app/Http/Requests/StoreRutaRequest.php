@@ -23,6 +23,7 @@ class StoreRutaRequest extends FormRequest
     {
         return [
             "nombre"=>"required|string|max:20|unique:rutas,nombre",
+            "color"=>"nullable|string",
         ];
     }
 }
