@@ -22,9 +22,7 @@ class UpdateLibroRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:20|unique:rutas,nombre",
-            "latitud"=>"required|numeric",
-            "longitud"=>"required|numeric",
+            "nombre"=>"required|string|max:20|unique:rutas,nombre,".$this->id,
         ];
     }
 }
