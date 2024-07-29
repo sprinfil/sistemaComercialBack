@@ -60,9 +60,9 @@ class DatoFiscalController extends Controller
             $modelo = $request->input('modelo');
 
             if($modelo == 'usuario'){
-                $dato_fiscal = Usuario::findOrFail($id)->datos_fiscales()->first();
+                $dato_fiscal = Usuario::findOrFail($id)->datos_fiscales;
             } else if($modelo == 'toma'){
-                $dato_fiscal = Toma::findOrFail($id)->datos_fiscales()->first();
+                $dato_fiscal = Toma::findOrFail($id)->datos_fiscales;
             }
 
             if($dato_fiscal){

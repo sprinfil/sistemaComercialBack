@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Usuario extends Model
@@ -49,9 +50,9 @@ class Usuario extends Model
     }
     
 
-    public function datos_fiscales(): MorphMany
+    public function datos_fiscales(): MorphOne
     {
-        return $this->morphMany(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
+        return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
     }
 
     public static function ConsultarPorNombres(string $usuario){

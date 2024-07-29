@@ -14,7 +14,8 @@ class Ruta extends Model
 
 
     protected $fillable = [
-        "nombre"
+        "nombre",
+        "color"
     ];
 
     public function Libros() : HasMany {

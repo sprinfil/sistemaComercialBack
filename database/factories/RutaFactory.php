@@ -19,6 +19,7 @@ class RutaFactory extends Factory
         static $num = 1;
         return [
             'nombre' => 'Ruta ' .$num++,
+            'color' => $this->faker->hexColor,
         ];
     }
 }
