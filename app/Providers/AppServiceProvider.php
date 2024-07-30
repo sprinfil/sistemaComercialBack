@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
             'ruta' => 'App\Models\Ruta',
             'datos_fiscales' => 'App\Models\DatoFiscal',
             'asignacionGeografica' => 'App\Models\AsignacionGeografica',
+            'factibilidad' => 'App\Models\Factibilidad',
+            'pago' => 'App\Models\Factibilidad'
         ]);
     }
 }

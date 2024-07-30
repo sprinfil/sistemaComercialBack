@@ -55,6 +55,8 @@ class CargoFactory extends Factory
                 {
                     $total_abonado = $cargo->monto;
                     $pago = Pago::factory()->create([
+                        'id_dueño' => $cargo->id_dueño,
+                        'modelo_dueño' => $cargo->modelo_dueño,
                         'total_pagado'=>$total_abonado,
                         //'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
                         //'fecha_pago'=>$this->faker->randomFloat(2, 0, 9999),

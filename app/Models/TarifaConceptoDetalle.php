@@ -11,6 +11,7 @@ class TarifaConceptoDetalle extends Model
 {
     use HasFactory, SoftDeletes;
     
+    
     protected $fillable = [
         "id_tipo_toma",
         "id_concepto",

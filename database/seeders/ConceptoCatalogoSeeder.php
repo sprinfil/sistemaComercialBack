@@ -124,8 +124,12 @@ class ConceptoCatalogoSeeder extends Seeder
             "rompimiento y levantamiento de pavimento hidráulico" => "Proceso de demolición y remoción del pavimento de concreto hidráulico, utilizado comúnmente en carreteras y calles de alta resistencia. Este trabajo es necesario para realizar reparaciones subterráneas, instalar nuevas infraestructuras o renovar la superficie del pavimento.",
             "tipo de suelo A (común)" => "Suelo de características comunes, generalmente compuesto por materiales como arena, arcilla y limo. Es considerado de fácil manejo para excavaciones y obras de construcción debido a su estabilidad y facilidad de compactación.",
             "tipo de suelo C (de piedra)" => "Suelo compuesto predominantemente por materiales rocosos o pedregosos. Este tipo de suelo presenta mayor dificultad para excavaciones y obras de construcción debido a su dureza y resistencia, lo que requiere el uso de maquinaria pesada y técnicas especializadas.",
-            "registro a red sanitaria" => "Conexión y registro de una edificación o área a la red de alcantarillado o sistema sanitario municipal. Este proceso incluye la instalación de tuberías y accesorios necesarios para garantizar el correcto desecho de aguas residuales hacia la red de saneamiento público."  
-        ];
+            "registro a red sanitaria" => "Conexión y registro de una edificación o área a la red de alcantarillado o sistema sanitario municipal. Este proceso incluye la instalación de tuberías y accesorios necesarios para garantizar el correcto desecho de aguas residuales hacia la red de saneamiento público.",
+            "reconexion de agua" => "Proceso de restablecimiento del suministro de agua potable a una propiedad que ha sido previamente desconectada. Este servicio puede ser necesario después de trabajos de mantenimiento, reparaciones o por falta de pago.",
+            "reconexion de alcantarillado" => "Proceso de restablecimiento de la conexión al sistema de alcantarillado de una propiedad que ha sido previamente desconectada. Este servicio es necesario después de reparaciones, trabajos de mantenimiento o problemas de pago.",
+            "recuperación de medidor" => "Sustitución del dispositivo que mide el consumo de agua en una propiedad. Este proceso puede realizarse por razones de mantenimiento, actualización del equipo o por mal funcionamiento del medidor existente.",
+            "recuperación de lectura" => "Proceso de obtención de la lectura actual del medidor de agua cuando no se ha podido realizar en el tiempo programado. Esto puede incluir visitas adicionales para asegurar que se registre el consumo correcto de agua."
+        ];        
         
         foreach ($conceptos as $nombre => $descripcion) {
             ConceptoCatalogo::factory()->create([

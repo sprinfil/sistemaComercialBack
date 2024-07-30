@@ -96,9 +96,23 @@ class Toma extends Model
         return $this->MorphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
     }
 
+    public function cargos(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño');
+    }
+
+    public function pagos(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
+    }
+
     //Consumos asociados a la toma
     public function factura():HasMany{
         return $this->hasMany(factura::class,'id_toma');
+    }
+    public function TarifaContrato()
+    {
+        return $this->id;
     }
 
     public function asignacionGeografica(): MorphOne
