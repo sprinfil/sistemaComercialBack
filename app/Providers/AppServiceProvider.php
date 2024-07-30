@@ -33,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
             'libro' => 'App\Models\Libro',
             'ruta' => 'App\Models\Ruta',
             'datos_fiscales' => 'App\Models\DatoFiscal',
+            'factibilidad' => 'App\Models\Factibilidad',
+            'pago' => 'App\Models\Factibilidad'
         ]);
     }
 }
