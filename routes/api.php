@@ -358,6 +358,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/Toma/update/{id}","update");
         Route::delete("/Toma/log_delete/{id}","destroy");
         Route::get("/Toma/show/{id}","show");
+        Route::get("/Toma/pagos/{id}","pagosPorToma");
+        Route::get("/Toma/cargos/{id}","cargosPorToma");
+        Route::get("/Toma/codigo/{codigo}","buscarCodigoToma");
     });
     //Solicitud de correcciones
     Route::controller(correccionInformacionSolicitudController::class)->group(function(){

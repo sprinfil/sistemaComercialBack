@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateCajasRequest;
 use App\Http\Resources\CajaResource;
 use App\Models\Caja;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class CajasController extends Controller
 {
@@ -57,5 +58,13 @@ class CajasController extends Controller
     public function destroy(Caja $cajas)
     {
         //
+    }
+
+     /**
+     * Display a listing of the resource.
+     */
+    public function cargosPorModelo (Request $request)
+    {
+        // si es por 
     }
 }
