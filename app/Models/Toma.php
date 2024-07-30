@@ -93,6 +93,10 @@ class Toma extends Model
     {
         return $this->morphMany(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
     }
+    public function TarifaContrato()
+    {
+        return $this->id;
+    }
 
     //Consulta de referencia (no se usa)
     public static function ConsultarContratosPorToma(string $id_toma){

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cotizacion extends Model
@@ -26,6 +27,10 @@ class Cotizacion extends Model
     public function cotizacionesDetalles(): HasMany
     {
         return $this->hasMany(CotizacionDetalle::class, 'id_cotizacion');
+    }
+    public function TomaCotizada(): HasOneThrough
+    {
+        return $this->HasOneThrough(Toma::class, contrato::class,'id','id','id_contrato','id_toma');
     }
 
    

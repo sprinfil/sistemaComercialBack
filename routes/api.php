@@ -203,7 +203,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/OrdenTrabajo/create", "storeOrden");
         Route::put("/OrdenTrabajo/update/{id}", "updateOrden");
         Route::put("/OrdenTrabajo/restore/{id}", "restoreOrden");
-        Route::delete("/OrdenTrabajo/log_delete/{id}", "destroyOrden");
+        Route::delete("/OrdenTrabajo/log_delete/{id}", "deleteOrden");
         Route::get("/OrdenTrabajo/show/{id}", "showOrden");
     });
     

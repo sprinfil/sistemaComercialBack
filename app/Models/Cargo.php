@@ -29,4 +29,5 @@ class Cargo extends Model
     {
         return $this->morphTo(__FUNCTION__, 'modelo_origen', 'id_origen');
     }
+    
 }
