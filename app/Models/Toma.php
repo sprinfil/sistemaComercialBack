@@ -100,6 +100,11 @@ class Toma extends Model
         return $this->morphMany(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
     }
 
+    //Consumos asociados a la toma
+    public function factura():HasMany{
+        return $this->hasMany(factura::class,'id_toma');
+    }
+
     //Consulta de referencia (no se usa)
     public static function ConsultarContratosPorToma(string $id_toma){
         
