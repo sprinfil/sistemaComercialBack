@@ -33,4 +33,9 @@ class Consumo extends Model
       {
           return $this->hasOne(Lectura::class, 'id_toma');
       }
+       //Consumo asociado a la factura
+     public function factura () : HasOne
+     {
+         return $this->hasOne(Factura::class,'id');
+     }
 }

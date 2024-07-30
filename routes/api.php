@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\ContratoController;
 use App\Http\Controllers\Api\correccionInformacionSolicitudController;
 use App\Http\Controllers\Api\DatoFiscalController;
 use App\Http\Controllers\Api\DescuentoAsociadoController;
+use App\Http\Controllers\Api\FacturaController;
 use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\LibroController;
 use App\Http\Controllers\Api\RolController;
@@ -473,6 +474,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/contacto/update/{id}","update");
         Route::delete("/contacto/log_delete/{id}","destroy");
 
+    });
+
+    Route::controller(FacturaController::class)->group(function(){
+        Route::get("/factura","index");
+        Route::post("/factura/create","store");
+        Route::get("/factura/show/{id}","show");
     });
 
 });
