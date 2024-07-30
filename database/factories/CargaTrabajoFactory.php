@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Libro;
 use App\Models\Operador;
 use App\Models\Periodo;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,13 +20,13 @@ class CargaTrabajoFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_libro'=> $this->faker->numberBetween(1,20),
+            'id_libro'=> Libro::all()->random()->id,
             'id_lectura'=> $this->faker->numberBetween(1,20), //lectura no tiene seeder
             'id_operador_encargado'=> Operador::all()->random()->id,
             'id_periodo'=> Periodo::all()->random()->id,
             'id_operador_asigno'=> Operador::all()->random()->id,
             'estado'=>$this->faker->randomElement(['no asignada' , 'en proceso' , 'concluida' , 'cancelada']),
-            'fecha_concluida'=>now(),
+            'fecha_concluida'=>now()->addDays(30),
             'fecha_asignacion'=>now(),
             'tipo_carga'=>$this->faker->randomElement(['lectura' , 'facturacion' , 'facturacion en sitio' ]),
         ];
