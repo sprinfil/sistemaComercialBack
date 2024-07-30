@@ -67,9 +67,9 @@ class Contrato extends Model
         return $this->HasOne(cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
     }
 
-    public function origen(): MorphMany
+    public function cargos(): MorphMany
     {
-        return $this->morphMany(Cargo::class, 'origen', 'modelo', 'id_modelo');
+        return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
     }
 
     public static function contratoRepetido($id_usuario, $servicios,$toma_id){

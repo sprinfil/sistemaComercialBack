@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\corteCaja;
 use App\Models\Cotizacion;
+use App\Models\Factura;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AnomaliaSeeder;
 use Database\Seeders\ConvenioSeeder;
@@ -38,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call(GiroComercialSeeder::class);
         $this->call(TipoTomasSeeder::class);
         $this->call(ConceptoCatalogoSeeder::class);
+        $this->call(OrdenesTrabajoSeeder::class);
         //
         $this->call(TomaSeeder::class);
         //
@@ -65,5 +67,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CargaTrabajoSeeder::class);
         $this->call(LecturaSeeder::class);
         $this->call(ConsumoSeeder::class);
+        $this->call(FacturaSeeder::class);
     }
 }
