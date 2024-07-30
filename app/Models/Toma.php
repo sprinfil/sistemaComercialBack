@@ -109,6 +109,10 @@ class Toma extends Model
     public function factura():HasMany{
         return $this->hasMany(factura::class,'id_toma');
     }
+    public function TarifaContrato()
+    {
+        return $this->id;
+    }
 
     //Consulta de referencia (no se usa)
     public static function ConsultarContratosPorToma(string $id_toma){

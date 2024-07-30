@@ -246,9 +246,31 @@ class OrdenTrabajoController extends Controller
     public function storeOrden(StoreOrdenTrabajoRequest $request)
     {
         
-        $data=(new OrdenTrabajoService())->store($request->validated());
-        $catalogo=OrdenTrabajo::create($data);
-        return response(new OrdenTrabajoResource($catalogo),200);
+        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        //$catalogo=OrdenTrabajo::create($data);
+        //return response(new OrdenTrabajoResource($catalogo),200);
+        return $data;
+        
+    }
+
+
+    public function deleteOrden(StoreOrdenTrabajoRequest $request)
+    {
+        
+        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        //$catalogo=OrdenTrabajo::create($data);
+        //return response(new OrdenTrabajoResource($catalogo),200);
+        return $data;
+        
+    }
+
+    public function restoreOrden(StoreOrdenTrabajoRequest $request)
+    {
+        
+        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        //$catalogo=OrdenTrabajo::create($data);
+        //return response(new OrdenTrabajoResource($catalogo),200);
+        return $data;
         
     }
 }
