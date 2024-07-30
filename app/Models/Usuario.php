@@ -55,6 +55,16 @@ class Usuario extends Model
         return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
     }
 
+    public function cargos(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño');
+    }
+
+    public function pagos(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
+    }
+
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("
         CONCAT(

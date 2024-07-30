@@ -92,5 +92,49 @@ class TomaController extends Controller
         }
     }
 
-   
+    /**
+     * Display the specified resource.
+     */
+    public function buscarCodigoToma($codigo)
+    {
+        try {
+            $toma = Toma::where('id_codigo_toma', $codigo)->get()->first();
+            return response(new TomaResource($toma), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar la toma'
+            ], 500);
+        }
+        //
+    }
+
+    /**
+     * Cargos por toma
+     */
+    public function cargosPorToma($id)
+    {
+        try {
+            $toma = Toma::findOrFail($id);
+            return $toma->cargos;
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar los cargos'
+            ], 500);
+        }
+    }
+
+    /**
+     * Pagos por toma
+     */
+    public function pagosPorToma($id)
+    {
+        try {
+            $toma = Toma::findOrFail($id);
+            return $toma->pagos;
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar los pagos'
+            ], 500);
+        }
+    }
 }
