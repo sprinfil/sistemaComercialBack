@@ -19,7 +19,7 @@ class AsignacionGeograficaResource extends JsonResource
             "id" => $this->id,
             "id_modelo" => $this->id_modelo,
             "estatus" => $this->estatus,
-            "punto"=>PuntoResource::collection($this->whenLoaded('punto')),
+            "punto" => PuntoResource::collection($this->whenLoaded('punto')),
         ];
     }
 }

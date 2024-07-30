@@ -21,7 +21,7 @@ class LibroResource extends JsonResource
             "nombre" => $this->nombre,
             "latitud" => $this->latitud,
             "longitud" => $this->longitud,
-            "asignacionGeografica"=>AsignacionGeograficaResource::collection($this->whenLoaded('asignacionGeografica')),
+            "Puntos" => $this->Puntos,
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\LibroResource;
 
 class RutaResource extends JsonResource
 {
@@ -18,7 +19,7 @@ class RutaResource extends JsonResource
         return [
             "id" => $this->id,
             "nombre" => $this->nombre,
-            "libros" => $this->Libros,
+            "libros" => LibroResource::collection($this->Libros),
             "color" => $this->color,
         ];
     }
