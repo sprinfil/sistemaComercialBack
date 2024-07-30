@@ -15,5 +15,9 @@ class UsuarioService{
         $user=Usuario::where('codigo_usuario',$codigoUsuario)->with('tomas.medidor','tomas.giroComercial','contratos','descuento_asociado')->get();
         return $user;
     }
+    public function TomasUsuario($id): Collection{
+        $tomas=Usuario::find($id)->tomas;
+        return $tomas;
+    }
 
 }
