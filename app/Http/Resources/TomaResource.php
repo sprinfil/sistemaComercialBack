@@ -21,7 +21,6 @@ class TomaResource extends JsonResource
             "id_giro_comercial" => $this->id_giro_comercial,
             "id_libro" => $this->id_libro,
             "id_codigo_toma" => $this->id_codigo_toma,
-            
             "estatus" => $this->estatus,
             "clave_catastral" => $this->clave_catastral,
             "calle" => $this->calle,
@@ -38,6 +37,9 @@ class TomaResource extends JsonResource
             "tipo_toma" => $this->tipo_toma,
             "tipo_contratacion" => $this->tipo_contratacion,
             'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
+            'giroComercial' => new GiroComercialCatalogoResource($this->whenLoaded('giroComercial')),
+            'medidor' => new GiroComercialCatalogoResource($this->whenLoaded('medidor')),
+            'consumo' => $this->whenLoaded('consumo'),
             'ordenes_trabajo' => OrdenTrabajoResource::collection($this->whenLoaded('ordenesTrabajo')),
             
         ];

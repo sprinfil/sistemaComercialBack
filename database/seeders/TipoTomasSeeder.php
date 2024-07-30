@@ -15,25 +15,25 @@ class TipoTomasSeeder extends Seeder
     {
         DB::table('tipo_tomas')->insert([
             [
-                'nombre' => 'domestica',
+                'nombre' => 'Domestica',
                 'descripcion' => 'ninguna',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nombre' => 'comercial',
+                'nombre' => 'Comercial',
                 'descripcion' => 'ninguna',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nombre' => 'industrial',
+                'nombre' => 'Industrial',
                 'descripcion' => 'ninguna',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nombre' => 'escuelas',
+                'nombre' => 'Escuelas',
                 'descripcion' => 'ninguna',
                 'created_at' => now(),
                 'updated_at' => now(),

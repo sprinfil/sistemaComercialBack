@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Usuario extends Model
@@ -43,10 +44,15 @@ class Usuario extends Model
     {
         return $this->hasMany(Toma::class, 'id_usuario');
     }
-
-    public function datos_fiscales(): MorphMany
+    public function descuento_asociado() : HasOne
     {
-        return $this->morphMany(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
+        return $this->hasOne(DescuentoAsociado::class, 'id_usuario');
+    }
+    
+
+    public function datos_fiscales(): MorphOne
+    {
+        return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
     }
 
     public static function ConsultarPorNombres(string $usuario){
@@ -56,6 +62,10 @@ class Usuario extends Model
             COALESCE(apellido_paterno, ''), ' ', 
             COALESCE(apellido_materno, '')
         )  LIKE ?", ['%'.$usuario.'%'])->get();
+          return $data;
+    }
+    public static function ConsultarTomas(string $usuario){
+        $data=Usuario::find($usuario)->with('tomas');
           return $data;
     }
 

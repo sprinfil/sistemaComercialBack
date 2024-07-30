@@ -24,8 +24,6 @@ class StoreLibroRequest extends FormRequest
         return [
             "id_ruta"=>"required|int|gt:0",
             "nombre"=>"required|string|max:20|unique:rutas,nombre",
-            "latitud"=>"required|numeric",
-            "longitud"=>"required|numeric",
         ];
     }
 }

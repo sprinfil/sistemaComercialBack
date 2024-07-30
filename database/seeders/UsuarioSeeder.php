@@ -15,6 +15,31 @@ class UsuarioSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('usuarios')->insert([
+            [
+                'nombre' => 'Miguel Angel',
+                'codigo_usuario' => '1',
+                'apellido_paterno' => 'Murillo',
+                'apellido_materno' => 'Jaimes',
+                'nombre_contacto' => 'Miguel Angel',
+                'telefono' => '6121595570',
+                'curp' => 'MUJM011113HBSRMGA7',
+                'rfc' => 'MUJM750605HML',
+                'correo' => 'mgamj13@gmail.com',
+            ],
+            [
+                'nombre' => 'Alan Jacob',
+                'codigo_usuario' => '2',
+                'apellido_paterno' => 'De La Rosa',
+                'apellido_materno' => 'Ruiz',
+                'nombre_contacto' => 'Alan Jacob',
+                'telefono' => '6121710135',
+                'curp' => 'RORA001023HBSSZLA5',
+                'rfc' => 'RORA840910MN0',
+                'correo' => 'kou4_alan@gmail.com',
+            ],
+        ]);
+
         Usuario::factory()->count(30)->create();
         Operador::factory()->count(30)->create();
     }

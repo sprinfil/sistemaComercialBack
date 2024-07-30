@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Toma extends Model
@@ -58,12 +59,6 @@ class Toma extends Model
         return $this->belongsTo(Usuario::class, 'id_usuario');
     }
 
-    // Servicio asociado a la toma
-    public function servicio() : HasMany
-    {
-        return $this->hasMany(Servicio::class, 'id_toma');
-    }
-
     // Contrato asociado a la toma
     public function contrato() : HasMany
     {
@@ -95,9 +90,9 @@ class Toma extends Model
         return $this->hasMany(ordenTrabajo::class,'id_toma');;
     }
 
-    public function datos_fiscales(): MorphMany
+    public function datos_fiscales(): MorphOne
     {
-        return $this->morphMany(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
+        return $this->MorphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
     }
 
     //Consumos asociados a la toma

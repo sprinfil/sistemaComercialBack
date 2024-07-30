@@ -18,6 +18,8 @@ class RutaResource extends JsonResource
         return [
             "id" => $this->id,
             "nombre" => $this->nombre,
+            "libros" => $this->Libros,
+            "color" => $this->color,
         ];
     }
 }

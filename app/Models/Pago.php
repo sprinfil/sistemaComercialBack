@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -23,12 +24,13 @@ class Pago extends Model
     ];
     //Pagos con caja
     public function caja() : BelongsTo {
-        return $this->belongsTo(Caja::class , 'id_pago'); //confirmado
+        return $this->belongsTo(Caja::class , 'id_caja'); 
     }
 
     //pagos con corte de caja
-    public function corteCaja() : BelongsTo {
-        return $this->belongsTo(corteCaja::class , 'id_pago'); //ta bien confirmado
+    public function corteCaja () : HasMany
+    {
+        return $this->hasMany(corteCaja::class, 'id_pago'); 
     }
 
 }

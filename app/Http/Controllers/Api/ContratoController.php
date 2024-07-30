@@ -14,6 +14,7 @@ use App\Http\Resources\CotizacionDetalleResource;
 use App\Http\Resources\CotizacionResource;
 use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
+use App\Models\Cargo;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
 use App\Models\Toma;
@@ -23,6 +24,7 @@ use Exception;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ContratoController extends Controller
 {
@@ -312,10 +314,12 @@ class ContratoController extends Controller
     } 
     public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
     {
+        DB::beginTransaction();
         $data=$request->validated();
         //$detallito=CotizacionDetalle::create($data[0]);
         $detalleCot=$data['monto'];
-       $detalleCot=new Collection();
+        $detalleCot=new Collection();
+        $cargos=0;
        
         
         
@@ -327,14 +331,17 @@ class ContratoController extends Controller
                 'nombre_concepto' => $data['nombre_concepto'][$i],
                 'monto' => $data['monto'][$i],
             ]));
+            $cargos+=$data['monto'][$i];
             $i++;
         }
             
         //return  $detalleCot;
         
-        return CotizacionDetalleResource::collection(
+        $detalle=CotizacionDetalleResource::collection(
             $detalleCot
         );
+        DB::commit();
+        return[$detalle,$cargos];
         
        
     }
