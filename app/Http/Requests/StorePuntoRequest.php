@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAsignacionGeograficaRequest extends FormRequest
+class StorePuntoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,9 @@ class StoreAsignacionGeograficaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_modelo"=>"required|int|gt:0",
-            "modelo"=>"required|string|max:30|
-               in:libro,ruta,toma",
-            "estatus"=>"required|string|
-               in:activo,inactivo",
+            "id_asignacion_geografica"=>"required|int|gt:0",
+            "latitud"=>"required|numeric",
+            "longitud"=>"required|numeric",
         ];
     }
 }

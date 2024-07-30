@@ -7,6 +7,9 @@ use App\Models\AsignacionGeografica;
 use App\Http\Requests\StoreAsignacionGeograficaRequest;
 use App\Http\Requests\UpdateAsignacionGeograficaRequest;
 use App\Http\Resources\AsignacionGeograficaResource;
+use App\Models\Libro;
+use App\Models\Ruta;
+use App\Models\Toma;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -17,7 +20,7 @@ class AsignacionGeograficaController extends Controller
      */
     public function index()
     {
-        //pediente asignar permisos
+        //pediente asignar permisos correccion
 
         $asignacionGeograficaIndex = AsignacionGeografica::select('latitud','longitud')
         ->where('estatus','activo')->get();
@@ -127,25 +130,68 @@ class AsignacionGeograficaController extends Controller
     }
 
     //Pendiente consultas relacionadas con toma, libro y ruta par alos poligonos
-    public function asignaciongeograficaToma()
+    public function asignaciongeograficaToma($id)
     {
-        $asignacionGeograficaToma = AsignacionGeografica::select('latitud','longitud')
-        ->where('modelo', 'toma')->where('estatus','activo')->get();
-        return $asignacionGeograficaToma;
+        try{
+            $asignacion = Toma::findOrFail($id);
+            $puntos = $asignacion->asignacionGeografica;
+            if($puntos){
+                $puntos->puntos;
+            }
+            if($puntos){
+                return $puntos;
+            }
+            return response()->json([
+                'error' => 'No hay puntos'
+            ], 400);
+        } catch(Exception $ex){
+            return response()->json([
+                'error' => 'Error'. $ex
+            ], 500);
+        }
+        
     }
 
-    public function asignaciongeograficaLibro()
+    public function asignaciongeograficaLibro($id)
     {
-        $asignacionGeograficaLibro = AsignacionGeografica::select('latitud','longitud')
-        ->where('modelo', 'libro')->where('estatus','activo')->get();
-        return $asignacionGeograficaLibro;
+        try{
+            $asignacion = Libro::findOrFail($id);
+            $puntos = $asignacion->asignacionGeografica;
+            if($puntos){
+                $puntos->puntos;
+            }
+            if($puntos){
+                return $puntos;
+            }
+            return response()->json([
+                'error' => 'No hay puntos'
+            ], 400);
+        } catch(Exception $ex){
+            return response()->json([
+                'error' => 'Error'. $ex
+            ], 500);
+        }
     }
 
-    public function asignaciongeograficaRuta()
+    public function asignaciongeograficaRuta($id)
     {
-        $asignacionGeograficaRuta = AsignacionGeografica::select('latitud','longitud')
-        ->where('modelo', 'ruta')->where('estatus','activo')->get();
-        return $asignacionGeograficaRuta;
+        try{
+            $asignacion = Ruta::findOrFail($id);
+            $puntos = $asignacion->asignacionGeografica;
+            if($puntos){
+                $puntos->puntos;
+            }
+            if($puntos){
+                return $puntos;
+            }
+            return response()->json([
+                'error' => 'No hay puntos'
+            ], 400);
+        } catch(Exception $ex){
+            return response()->json([
+                'error' => 'Error'. $ex
+            ], 500);
+        }
     }
 
     

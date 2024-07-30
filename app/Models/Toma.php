@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Toma extends Model
@@ -98,6 +99,11 @@ class Toma extends Model
     //Consumos asociados a la toma
     public function factura():HasMany{
         return $this->hasMany(factura::class,'id_toma');
+    }
+
+    public function asignacionGeografica(): MorphOne
+    {
+        return $this->morphOne(AsignacionGeografica::class, 'asignacionModelo', 'modelo', 'id_modelo');
     }
 
     //Consulta de referencia (no se usa)
