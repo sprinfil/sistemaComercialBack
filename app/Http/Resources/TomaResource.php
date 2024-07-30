@@ -36,6 +36,8 @@ class TomaResource extends JsonResource
             "tipo_servicio" => $this->tipo_servicio,
             "tipo_toma" => $this->tipo_toma,
             "tipo_contratacion" => $this->tipo_contratacion,
+            "c_agua" => $this->c_agua,
+            "c_alc_san" => $this->c_alc_san,
             'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
             'giroComercial' => new GiroComercialCatalogoResource($this->whenLoaded('giroComercial')),
             'medidor' => $this->whenLoaded('medidor'),
