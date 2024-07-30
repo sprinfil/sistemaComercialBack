@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('asignaciones_geograficas', function (Blueprint $table) {
+        Schema::create('puntos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_modelo');
-            $table->string('modelo');
-            $table->enum('estatus',['activo','inactivo']);   
+            $table->unsignedBigInteger('id_asignacion_geografica');
+            $table->double('latitud');
+            $table->double('longitud');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('asignaciones_geograficas');
+        Schema::dropIfExists('puntos');
     }
 };

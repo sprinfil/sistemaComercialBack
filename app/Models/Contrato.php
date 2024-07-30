@@ -71,6 +71,28 @@ class Contrato extends Model
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
     }
+    public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
+    {
+        
+        switch($this->servicio_contratado){
+            case 'agua':
+                $servicio=1; //id del concepto del contrato
+                break;
+            case 'alcantarillado y saneamiento':
+                $servicio=2; //id del concepto del contrato
+                break;
+        }
+        $conceptoContrato=ConceptoCatalogo::find($servicio);
+        return $conceptoContrato;
+    }
+    public function tarifaContrato() //Obtiene el concepto dependiendo del nombre del servicio
+    {
+        
+        $concepto=$this->conceptoContrato();
+        $tipotoma=$this->tipoToma;
+        $tarifa=TarifaConceptoDetalle::where('id_tipo_toma',$tipotoma['id'])->where('id_concepto',$concepto['id'])->first();
+        return $tarifa;
+    }
 
     public static function contratoRepetido($id_usuario, $servicios,$toma_id){
         $contratos= Contrato::where('id_usuario', $id_usuario)->where('id_toma',$toma_id)

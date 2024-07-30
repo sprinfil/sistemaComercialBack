@@ -68,5 +68,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LecturaSeeder::class);
         $this->call(ConsumoSeeder::class);
         $this->call(FacturaSeeder::class);
+        $this->call(AsignacionGeograficaSeeder::class);
     }
 }

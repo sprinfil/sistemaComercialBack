@@ -145,7 +145,9 @@ Route::middleware('auth:sanctum')->group(function () {
         //CORREO
         Route::get("/usuarios/consultaCorreo/{correo}", "showCorreo");
         //Consulta general
-         Route::get("/usuarios/consulta/general/{codigo}", "general");
+        Route::get("/usuarios/consulta/general/{codigo}", "general");
+        Route::get("/usuarios/consulta/tomas/{id}", "showTomas");
+        
         //log delete significa borrado logico
         Route::delete("/usuarios/log_delete/{id}", "destroy");
         //datos fiscales del usuario
@@ -207,7 +209,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("/OrdenTrabajo/create", "storeOrden");
         Route::put("/OrdenTrabajo/update/{id}", "updateOrden");
         Route::put("/OrdenTrabajo/restore/{id}", "restoreOrden");
-        Route::delete("/OrdenTrabajo/log_delete/{id}", "destroyOrden");
+        Route::delete("/OrdenTrabajo/log_delete/{id}", "deleteOrden");
         Route::get("/OrdenTrabajo/show/{id}", "showOrden");
     });
     
@@ -465,9 +467,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/asignacionGeografica/show/{id}','show');
         Route::put('/asignacionGeografica/update/{id}','update');
         Route::delete('/asignacionGeografica/log_delete/{id}','destroy');
-        Route::get('/asignacionGeografica/asignaciongeograficaToma','asignaciongeograficaToma');
-        Route::get('/asignacionGeografica/asignaciongeograficaLibro','asignaciongeograficaLibro');
-        Route::get('/asignacionGeografica/asignaciongeograficaRuta','asignaciongeograficaRuta');
+        Route::get('/asignacionGeografica/Toma/{id}','asignaciongeograficaToma');
+        Route::get('/asignacionGeografica/Libro/{id}','asignaciongeograficaLibro');
+        Route::get('/asignacionGeografica/Ruta/{id}','asignaciongeograficaRuta');
     });
 
     Route::controller(ContactoController::class)->group(function(){

@@ -10,6 +10,7 @@ use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioMoralRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
 use App\Http\Resources\DatoFiscalResource;
+use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
 use App\Services\UsuarioService;
 use Exception;
@@ -153,6 +154,23 @@ class UsuarioController extends Controller
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
+        }
+        
+        
+    }
+    public function showTomas(string $usuario)
+    {
+        try{
+            $data =(new UsuarioService())->TomasUsuario($usuario);
+            //return $data;
+            
+        return TomaResource::collection(
+            $data
+        );
+        
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron tomas'], 200);
         }
         
         
