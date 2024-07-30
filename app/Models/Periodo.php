@@ -28,4 +28,7 @@ class Periodo extends Model
     public function tieneRutas() : BelongsTo {
         return $this->belongsTo(Ruta::class , 'id_ruta');
     }
+    public function cargaTrabajo() : HasMany {
+        return $this->hasMany(cargaTrabajo::class , "id_periodo");
+    }
 }
