@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rutas', function (Blueprint $table) {
+        Schema::create('facturas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->unique();
-            $table->string('color')->nullable();
+            $table->unsignedBigInteger('id_periodo');
+            $table->unsignedBigInteger('id_toma');
+            $table->unsignedBigInteger('id_consumo');
+            $table->double('monto');
+            $table->date('fecha');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rutas');
+        Schema::dropIfExists('facturas');
     }
 };

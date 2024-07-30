@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rutas', function (Blueprint $table) {
+        Schema::create('contactos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->unique();
-            $table->string('color')->nullable();
+            $table->string('nombre');
+            $table->string('correo');
+            $table->string('telefono',10);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rutas');
+        Schema::dropIfExists('contactos');
     }
 };

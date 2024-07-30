@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Libro;
 use App\Models\tarifa;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,8 +19,8 @@ class PeriodoFactory extends Factory
     public function definition(): array
     {
         return [
-           'id_ruta'=>$this->faker->numberBetween(1,10),
-           'id_tarifa'=>$this->faker->numberBetween(1,10),
+           'id_ruta'=>Libro::all()->random()->id,
+           'id_tarifa'=>tarifa::all()->random()->id,
            'facturacion_fecha_inicio'=>now(),
            'facturacion_fecha_final'=>now(),
            'lectura_inicio'=>now(),

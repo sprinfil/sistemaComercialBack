@@ -35,6 +35,7 @@ class RutaController extends Controller
 
         //Valida el store
         $data = $request->validated();
+            
         //Busca por registros eliminados
         $rutaCatalogo = Ruta::withTrashed()->where('nombre', $request->input('nombre'))->first();
 

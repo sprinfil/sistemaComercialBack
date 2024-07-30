@@ -35,4 +35,6 @@ class DatoFiscal extends Model
     {
         return $this->morphTo(__FUNCTION__, 'modelo', 'id_modelo');
     }
+
+    
 }
