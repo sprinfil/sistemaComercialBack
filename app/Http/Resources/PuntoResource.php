@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AsignacionGeograficaResource extends JsonResource
+class PuntoResource extends JsonResource
 {
     public static $wrap = false;
     /**
@@ -16,10 +16,9 @@ class AsignacionGeograficaResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id" => $this->id,
-            "id_modelo" => $this->id_modelo,
-            "estatus" => $this->estatus,
-            "punto"=>PuntoResource::collection($this->whenLoaded('punto')),
+            "id_asignacion_geografica" => $this->id_asignacion_geografica,
+            "latitud" => $this->latitud,
+            "longitud" => $this->longitud,
         ];
     }
 }

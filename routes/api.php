@@ -465,9 +465,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/asignacionGeografica/show/{id}','show');
         Route::put('/asignacionGeografica/update/{id}','update');
         Route::delete('/asignacionGeografica/log_delete/{id}','destroy');
-        Route::get('/asignacionGeografica/asignaciongeograficaToma','asignaciongeograficaToma');
-        Route::get('/asignacionGeografica/asignaciongeograficaLibro','asignaciongeograficaLibro');
-        Route::get('/asignacionGeografica/asignaciongeograficaRuta','asignaciongeograficaRuta');
+        Route::get('/asignacionGeografica/Toma/{id}','asignaciongeograficaToma');
+        Route::get('/asignacionGeografica/Libro/{id}','asignaciongeograficaLibro');
+        Route::get('/asignacionGeografica/Ruta/{id}','asignaciongeograficaRuta');
     });
 
     Route::controller(ContactoController::class)->group(function(){
