@@ -28,6 +28,7 @@ class Toma extends Model
         "entre_calle_2",
         "colonia",
         "codigo_postal",
+        "numero_casa",
         "localidad",
         "diametro_toma",
         "calle_notificaciones",

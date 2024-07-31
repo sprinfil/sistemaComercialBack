@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('entre_calle_2')->nullable();
             $table->string('colonia');
             $table->string('codigo_postal');
+            $table->string('numero_casa')->nullable();
             $table->string('localidad');
             $table->string('diametro_toma');
             $table->string('calle_notificaciones');
