@@ -141,7 +141,7 @@ class UsuarioController extends Controller
     {
         try{
             $data =(new UsuarioService())->DireccionToma($usuario);
-            if (count($data)==0){
+            if ($data->isEmpty()){
                 return response()->json(["message"=>"No existen tomas para esta dirección",],201);
             }
             else{
