@@ -21,6 +21,7 @@ class LibroResource extends JsonResource
             "nombre" => $this->nombre,
             "latitud" => $this->latitud,
             "longitud" => $this->longitud,
+            "Puntos" => $this->Puntos,
         ];
     }
 }
