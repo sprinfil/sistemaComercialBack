@@ -284,10 +284,8 @@ Route::middleware('auth:sanctum')->group(function () {
      // Cargos
      Route::controller(CargoController::class)->group(function () {
         Route::get("/cargos", "index");
-        Route::post("/cargos", "store");
-        Route::get("/cargos/{id}", "show");
-        Route::put("/cargos/{id}", "update");
-        Route::delete("/cargos/{id}", "destroy");
+        Route::post("/cargos/store", "store");
+        Route::get("/cargos/show/{id}", "show");
     });
 
     // Abonos

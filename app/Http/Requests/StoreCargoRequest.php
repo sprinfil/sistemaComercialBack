@@ -30,9 +30,9 @@ class StoreCargoRequest extends FormRequest
             "modelo_dueño"=>"required|string|max:55",
             "monto"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
             "estado"=>"required|string|max:55",
-            "id_convenio"=>"integer",
+            "id_convenio"=>"nullable|integer",
             "fecha_cargo"=>"required|date|max:55",
-            "fecha_liquidacion"=>"required|date|max:55",
+            "fecha_liquidacion"=>"nullable|date|max:55",
         ];
     }
 }
