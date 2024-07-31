@@ -52,6 +52,8 @@ class DatabaseSeeder extends Seeder
         $this->call(BonificacionCatalogoSeeder::class);
         //
         $this->call(CajaSeeder::class);
+        $this->call(OperadorAsignadoSeeder::class);
+        $this->call(CajaCatalogoSeeder::class);
         $this->call(PagoSeeder::class);
         $this->call(corteCajaSeeder::class);
         //

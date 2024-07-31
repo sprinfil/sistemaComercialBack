@@ -27,6 +27,13 @@ class Caja extends Model
     public function fondoCaja() : HasOne {
         return $this->hasOne(fondoCaja::class, 'id_caja'); 
     }
+    //Operador de caja
+    public function operador() : HasOne {
+        return $this->hasOne(OperadorAsignado::class, 'id_caja');
+    }
+    public function cajaCatalogo() : HasOne {
+        return $this->hasOne(CajaCatalogo::class , 'id_caja');
+    }
   
 
 }

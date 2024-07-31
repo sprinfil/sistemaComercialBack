@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cajas', function (Blueprint $table) {
+        Schema::create('operador_asignados', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_operador');
-            $table->dateTime('fecha_apertura')->nullable();
-            $table->dateTime('fecha_cierre')->nullable();
+            $table->unsignedInteger('id_operador');
+            $table->unsignedInteger('id_caja');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cajas');
+        Schema::dropIfExists('operador_asignados');
     }
 };
