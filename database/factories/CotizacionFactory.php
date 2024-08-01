@@ -40,10 +40,10 @@ class CotizacionFactory extends Factory
 
             // calculo de costos
             $conceptos = [
-                "rompimiento y levantamiento de banqueta",
-                "rompimiento y levantamiento de pavimento asfalto",
-                "tipo de suelo A (común)",
-                "registro a red sanitaria"
+                "Rompimiento de banqueta (ml)",
+                "Rompimiento de pavimento asfalto (ml)",
+                "Tipo de suelo a (comun) ml adicional a 9m.",
+                "Registro a la red sanitaria"
             ];
             
 

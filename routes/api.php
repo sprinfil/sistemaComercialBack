@@ -38,7 +38,6 @@ use App\Http\Controllers\Api\ServicioController;
 use App\Http\Controllers\Api\TarifaController;
 use App\Http\Controllers\Api\Tipo_tomaController;
 use App\Http\Controllers\Api\TomaController;
-use App\Http\Controllers\PrinterController;
 
 //Route::post('/signup',[AuthController::class, "signup"]);
 Route::post('/login', [AuthController::class, "login"]);
@@ -46,8 +45,6 @@ Route::post('/login', [AuthController::class, "login"]);
 Route::middleware('auth:sanctum')->group(function () {
     //AQUI VAN TODAS LAS RUTAS
     Route::post("/logout", [AuthController::class, "logout"]);
-
-    Route::post('/print', [PrinterController::class, 'print']);
 
     //ANOMALIAS
     Route::controller(AnomaliaCatalagoController::class)->group(function () {
@@ -186,7 +183,6 @@ Route::middleware('auth:sanctum')->group(function () {
             });
             //Detalle de cotizacion 
         });
-     
     });
 
     // Gestion de ordenes de trabajo
@@ -283,22 +279,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete("/datos-domiciliados/{id}", "destroy");
     });
 
-     // Cargos
-     Route::controller(CargoController::class)->group(function () {
-        Route::get("/cargos", "index");
-        Route::post("/cargos", "store");
-        Route::get("/cargos/{id}", "show");
-        Route::put("/cargos/{id}", "update");
-        Route::delete("/cargos/{id}", "destroy");
-    });
-
-    // Abonos
-    Route::controller(AbonoController::class)->group(function () {
-        Route::get("/abonos", "index");
-        Route::post("/abonos", "store");
-        Route::get("/abonos/{id}", "show");
-        Route::put("/abonos/{id}", "update");
-        Route::delete("/abonos/{id}", "destroy");
+    // Auditoria
+    Route::middleware(['audit'])->group(function () {
+        // Cargos
+        Route::controller(CargoController::class)->group(function () {
+            Route::get("/cargos", "index");
+            Route::post("/cargos/store/{id}", "store");
+            Route::get("/cargos/show/{id}", "show");
+        }); 
+        // Abonos
+        Route::controller(AbonoController::class)->group(function () {
+            Route::get("/abonos", "index");
+            Route::post("/abonos/store", "store");
+            Route::get("/abonos/show/{id}", "show");
+            Route::put("/abonos/update/{id}", "update");
+            Route::delete("/abonos/delete/{id}", "destroy");
+        });
     });
 
     // ROLES
