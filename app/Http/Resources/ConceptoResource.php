@@ -24,6 +24,8 @@ class ConceptoResource extends JsonResource
             "estado" => $this->estado,
             "prioridad_abono" => $this->prioridad_abono,
             "genera_iva" => $this->genera_iva,
+            "abonable"=>$this->abonable,
+            "tarifa_fija"=>$this->tarifa_fija,
             'tarifas' => TarifaConceptoDetalleResource::collection($this->tarifas),
         ];
      }

@@ -19,7 +19,7 @@ class CargoService{
         }
     }
 
-    // metodo para cargar un cargo a un usuario
+    // metodo para cargar un cargo a un usuario/toma
     public function generarCargo(StoreCargoRequest $request): Cargo
     {
         try{
@@ -30,7 +30,7 @@ class CargoService{
         }
     }
 
-    // metodo para cargar un cargo a un usuario
+    // metodo para buscar un cargo por id
     public function busquedaPorId($id): Cargo
     {
         try{

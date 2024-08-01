@@ -222,7 +222,7 @@ class ContratoFactory extends Factory
             }
 
             if ($contrato->estatus == 'pendiente de pago' || $contrato->estatus == 'contratado' || $contrato->estatus == 'terminado') {
-                $concepto = ConceptoCatalogo::buscarPorNombre('contrato de '.$contrato->servicio_contratado);
+                $concepto = ConceptoCatalogo::buscarPorNombre('Contrato agua 1" comun');
                 Cargo::factory()->create([
                     'id_concepto' => $concepto->id ?? 1,
                     'concepto' => $concepto->nombre ?? "", 

@@ -2,16 +2,16 @@
 
 namespace Database\Factories;
 
-use App\Models\AjusteCatalogo;
 use App\Models\ConceptoAplicable;
+use App\Models\ConvenioCatalogo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AjusteCatalogo>
  */
-class AjusteCatalogoFactory extends Factory
+class ConvenioCatalogoFactory extends Factory
 {
-    protected $model = AjusteCatalogo::class;
+    protected $model = ConvenioCatalogo::class;
     /**
      * Define the model's default state.
      *
@@ -33,12 +33,12 @@ class AjusteCatalogoFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterCreating(function (AjusteCatalogo $ajuste) {
+        return $this->afterCreating(function (ConvenioCatalogo $convenio) {
             for ($i = 1; $i <= 11; $i++) {
                 ConceptoAplicable::factory()->create([
                     'id_concepto_catalogo'=>$i,
-                    'id_modelo'=>$ajuste->id,
-                    'modelo'=>'ajuste_catalogo',
+                    'id_modelo'=>$convenio->id,
+                    'modelo'=>'convenio_catalogo',
                 ]); 
             }            
         });
