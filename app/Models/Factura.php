@@ -16,6 +16,7 @@ class Factura extends Model
         "id_periodo",
         "id_toma",
         "id_consumo",
+        "id_tarifa_servicio",
         "monto",
         "fecha",
     ];
@@ -35,5 +36,9 @@ class Factura extends Model
       {
           return $this->belongsTo(periodo::class,'id_periodo');
       }
-
+      //Tarifa de servicio asociada a la factura
+      public function tarifaServicio () : BelongsTo
+      {
+          return $this->belongsTo(TarifaServiciosDetalle::class,'id_tarifa_servicio');
+      }
 }

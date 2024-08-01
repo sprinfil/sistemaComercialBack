@@ -22,9 +22,10 @@ class UpdateFacturaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_periodo" => "required|int",
-            "id_toma" => "required|int",
-            "id_consumo" => "required|int",
+            "id_periodo" => "required|int|gt:0",
+            "id_toma" => "required|int|gt:0",
+            "id_consumo" => "required|int|gt:0",
+            "id_tarifa_servicio" => "required|int|gt:0",
             "monto"=> "required|numeric|gt:0",
             "fecha"=> "required|date",
         ];
