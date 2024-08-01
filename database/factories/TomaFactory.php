@@ -40,6 +40,7 @@ class TomaFactory extends Factory
             'entre_calle_2' => $this->faker->streetName,
             'colonia' => $this->faker->city,
             'codigo_postal' => $this->faker->postcode,
+            'numero_casa' => $this->faker->numerify('####'),
             'localidad' => $this->faker->city,
             'diametro_toma' => $this->faker->randomNumber(),
             'calle_notificaciones' => $this->faker->streetName,

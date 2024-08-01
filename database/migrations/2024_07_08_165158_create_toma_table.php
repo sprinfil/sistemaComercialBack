@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('entre_calle_2')->nullable();
             $table->string('colonia');
             $table->string('codigo_postal');
+            $table->string('numero_casa')->nullable();
             $table->string('localidad');
             $table->string('diametro_toma');
             $table->string('calle_notificaciones');
@@ -32,7 +33,8 @@ return new class extends Migration
             $table->string('tipo_servicio');
             $table->enum('tipo_toma', ['domestica', 'comercial', 'industrial']);
             $table->unsignedBigInteger('c_agua')->nullable();
-            $table->unsignedBigInteger('c_alc_san')->nullable();
+            $table->unsignedBigInteger('c_alc')->nullable();
+            $table->unsignedBigInteger('c_san')->nullable();
             $table->enum('tipo_contratacion', ['normal', 'condicionado', 'desarrollador']);
             $table->softDeletes();
             $table->timestamps();
