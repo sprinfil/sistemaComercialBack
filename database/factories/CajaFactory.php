@@ -17,8 +17,12 @@ class CajaFactory extends Factory
      */
     public function definition(): array
     {
+        $fechaApertura = $this->faker->dateTimeBetween('-1 year' , 'now');
+        $fechaCierre = $this->faker->dateTimeBetween($fechaApertura , 'now');
         return [
             'id_operador'=>$this->faker->numberBetween(1,4),
+            'fecha_apertura'=> $fechaApertura,
+            'fecha_cierre' =>  $fechaCierre,
         ];
     }
 }

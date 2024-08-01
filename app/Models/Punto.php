@@ -20,4 +20,5 @@ class Punto extends Model
     public function asignacion():BelongsTo{
         return $this->belongsTo(BelongsTo::class,'id_asignacion_geografica');;
     }
+
 }
