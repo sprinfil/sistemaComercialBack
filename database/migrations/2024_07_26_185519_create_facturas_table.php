@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_periodo');
             $table->unsignedBigInteger('id_toma');
             $table->unsignedBigInteger('id_consumo');
+            $table->unsignedBigInteger('id_tarifa_servicio');
             $table->double('monto');
             $table->date('fecha');
             $table->softDeletes();

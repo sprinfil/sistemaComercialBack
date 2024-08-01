@@ -490,6 +490,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/factura","index");
         Route::post("/factura/create","store");
         Route::get("/factura/show/{id}","show");
+        Route::get("/factura/facturaPorToma/{id}","facturaPorToma");
     });
 
 });
