@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Consumo;
 use App\Models\Periodo;
+use App\Models\TarifaServiciosDetalle;
 use App\Models\Toma;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,6 +24,7 @@ class FacturaFactory extends Factory
             'id_periodo'=> Periodo::all()->random()->id,
             'id_toma'=> Toma::all()->random()->id,
             'id_consumo'=> Consumo::all()->random()->id,
+            'id_tarifa_servicio'=> TarifaServiciosDetalle::all()->random()->id,
             'monto'=>$this->faker->numberBetween(1,400),
             'fecha'=>now(),
         ];
