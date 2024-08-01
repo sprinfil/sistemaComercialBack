@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('orden_trabajo_configuracions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
-            $table->unsignedBigInteger('id_concepto_catalogo');
-            $table->enum('accion',['generar','modificar','quitar']);
-            $table->enum('momento',['generar','asignar','concluir']);
-            $table->string('atributo')->nullable();
-            $table->string('valor')->nullable();
+            $table->enum('accion',['registrar','modificar','quitar']);
+            $table->string('modelo');
+            $table->boolean('opcional')->nullable();
+            $table->unsignedBigInteger('id_orden_trabajo_conf_encadena')->nullable();
+            $table->unsignedBigInteger('id_orden_trabajo_conf_alterna')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
