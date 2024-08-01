@@ -51,8 +51,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //ANOMALIAS
     Route::controller(AnomaliaCatalagoController::class)->group(function () {
-
-
         Route::get("/AnomaliasCatalogo", "index");
         Route::post("/AnomaliasCatalogo/create", "store");
         Route::put("/AnomaliasCatalogo/update/{id}", "update");
@@ -448,6 +446,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/ruta/update/{id}","update");
         Route::delete("/ruta/log_delete/{id}","destroy");
         Route::put("/ruta/restaurar/{id}","restaurarRuta");
+        Route::post("/ruta/create_masive","masive_store");
+        Route::post("/ruta/masive_polygon_delete","masive_polygon_delete");
     });
     //Libro
     Route::controller(LibroController::class)->group(function() {
@@ -470,6 +470,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/asignacionGeografica/Toma/{id}','asignaciongeograficaToma');
         Route::get('/asignacionGeografica/Libro/{id}','asignaciongeograficaLibro');
         Route::get('/asignacionGeografica/Ruta/{id}','asignaciongeograficaRuta');
+        Route::post('/asignacionGeografica/update_points/{asignacionGeografica_id}','update_points_with_asignacion_geografica_id');
     });
 
     Route::controller(ContactoController::class)->group(function(){

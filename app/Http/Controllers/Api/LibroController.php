@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Exception;
 use App\Models\Libro;
+use App\Models\Punto;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\AsignacionGeografica;
+use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreLibroRequest;
 use App\Http\Requests\UpdateLibroRequest;
-use App\Http\Resources\LibroResource;
-use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 
 class LibroController extends Controller
 {
@@ -57,6 +59,40 @@ class LibroController extends Controller
             if(!$libros)
             {
                 $libros = Libro::create($data);
+
+                $asignacionGeografica = new AsignacionGeografica();
+                $asignacionGeografica->modelo = "libro";
+                $asignacionGeografica->id_modelo = $libros->id;
+                $asignacionGeografica->estatus = "activo";
+                $asignacionGeografica->save();
+
+                $default_coords = [
+                    [
+                        "latitud"=>24.1277,
+                        "longitud"=>-110.3033
+                    ],
+                    [
+                        "latitud"=>24.1343,
+                        "longitud"=>-110.3033
+                    ],
+                    [
+                        "latitud"=>24.1343,
+                        "longitud"=>-110.2967
+                    ],
+                    [
+                        "latitud"=>24.1277,
+                        "longitud"=>-110.2967
+                    ],
+                ];
+
+                foreach($default_coords as $coords){
+                    $punto = new Punto();
+                    $punto->id_asignacion_geografica = $asignacionGeografica->id;
+                    $punto->latitud = $coords["latitud"];
+                    $punto->longitud = $coords["longitud"];
+                    $punto->save();
+                }
+
                 return new LibroResource($libros);
             }
             //
