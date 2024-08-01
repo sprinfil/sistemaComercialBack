@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('orden_trabajo_catalogos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_concepto_catalogo')->nullable();
             $table->string('nombre');
+            $table->integer('vigencias');
+            $table->enum('momentoCargo',['generar','asignar','concluir','No genera']);
             $table->softDeletes();
             $table->timestamps();
         });

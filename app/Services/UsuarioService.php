@@ -28,8 +28,10 @@ class UsuarioService{
                 CONCAT(
                     COALESCE(calle, ''), ' ', 
                     COALESCE(entre_calle_1, ''), ' ', 
-                    COALESCE(entre_calle_2, '')
+                    COALESCE(entre_calle_2, ''), ' ', 
+                    COALESCE(colonia, '')
                 )  LIKE ?", ['%'.$direccion.'%'])
+                ->with('usuario')
                 ->paginate(10);
         } 
         else{
@@ -38,6 +40,7 @@ class UsuarioService{
                     COALESCE(calle, ''), ' ', 
                     COALESCE(numero_casa, '')
                 )  LIKE ?", ['%'.$direccion.'%'])
+                ->with('usuario')
                 ->paginate(10);
         }
         
