@@ -89,7 +89,7 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::where("codigo_usuario",$usuario);
+        $data = Usuario::where("codigo_usuario",$usuario)->first();
           return $data;
     }
 

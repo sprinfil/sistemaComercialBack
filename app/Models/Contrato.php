@@ -33,6 +33,9 @@ class Contrato extends Model
         'diametro_de_la_toma',
         'codigo_postal',
         'coordenada',
+        'c_agua',
+        'c_alc',
+        'c_san',
     ];
 
     // Toma asociada al contrato
