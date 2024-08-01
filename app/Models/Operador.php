@@ -50,4 +50,7 @@ class Operador extends Model
     public function operadorAsignado() : HasMany {
         return $this->hasMany(CargaTrabajo::class, "id_operador_asigno");
     }
+    public function operadorCaja() : HasOne {
+        return $this->hasOne(OperadorAsignado::class , "id_operador");
+    }
 }
