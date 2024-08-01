@@ -28,6 +28,7 @@ class TomaResource extends JsonResource
             "entre_calle_2" => $this->entre_calle_2,
             "colonia" => $this->colonia,
             "codigo_postal" => $this->codigo_postal,
+            "numero_casa" => $this->numero_casa,
             "localidad" => $this->localidad,
             "diametro_toma" => $this->diametro_toma,
             "calle_notificaciones" => $this->calle_notificaciones,
