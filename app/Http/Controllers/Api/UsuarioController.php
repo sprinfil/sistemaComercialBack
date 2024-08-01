@@ -125,7 +125,36 @@ class UsuarioController extends Controller
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         }
     }
-
+    public function showContacto(string $usuario)
+    {
+        try{
+            $data = Usuario::ConsultarPorNombreContacto($usuario);
+        return UsuarioResource::collection(
+            $data
+        );
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+        }
+    }
+    public function showDireccion(string $usuario)
+    {
+        try{
+            $data =(new UsuarioService())->DireccionToma($usuario);
+            if ($data->isEmpty()){
+                return response()->json(["message"=>"No existen tomas para esta dirección",],201);
+            }
+            else{
+                return TomaResource::collection(
+                    $data
+                );
+            }
+        
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'error, consulta invalida'], 205);
+        }
+    }
     public function general(string $codigoUsuario)
     {
         try{

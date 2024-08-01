@@ -138,6 +138,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/usuarios/consultaCodigo/{codigo}", "showCodigo");
         //nombres
         Route::get("/usuarios/consulta/{nombre}", "show");
+        //nombre contacto
+        Route::get("/usuarios/consultaContacto/{nombre}", "showContacto");
+        //Usuario por Dirección de tomas
+        Route::get("/usuarios/consultaDireccion/{direccion}", "showDireccion");
         //CURP
         Route::get("/usuarios/consultaCURP/{curp}", "showCURP");
         //RFC
