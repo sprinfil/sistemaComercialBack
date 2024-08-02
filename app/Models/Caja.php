@@ -20,12 +20,12 @@ class Caja extends Model
     }
     //Corte de caja con cajas
     public function corteCaja() : HasMany {
-        return $this->hasMany(corteCaja::class , 'id_caja'); 
+        return $this->hasMany(CorteCaja::class , 'id_caja'); 
     }
   
     //Fondo de una caja
     public function fondoCaja() : HasOne {
-        return $this->hasOne(fondoCaja::class, 'id_caja'); 
+        return $this->hasOne(FondoCaja::class, 'id_caja'); 
     }
     //Operador de caja
     public function operador() : HasOne {

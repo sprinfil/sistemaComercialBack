@@ -22,7 +22,7 @@ class Cotizacion extends Model
 
     public function contrato(): BelongsTo
     {
-        return $this->belongsTo(contrato::class, 'id_contrato');
+        return $this->belongsTo(Contrato::class, 'id_contrato');
     }
     public function cotizacionesDetalles(): HasMany
     {
@@ -30,7 +30,7 @@ class Cotizacion extends Model
     }
     public function TomaCotizada(): HasOneThrough
     {
-        return $this->HasOneThrough(Toma::class, contrato::class,'id','id','id_contrato','id_toma');
+        return $this->HasOneThrough(Toma::class, Contrato::class,'id','id','id_contrato','id_toma');
     }
 
    

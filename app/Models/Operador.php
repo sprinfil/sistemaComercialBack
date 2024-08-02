@@ -33,11 +33,11 @@ class Operador extends Model
     }
     public function ordenTrabajoAsignar()
     {
-        return $this->hasMany(ordenTrabajo::class, "id_empleado_asigno", "id");
+        return $this->hasMany(OrdenTrabajo::class, "id_empleado_asigno", "id");
     }
     public function ordenTrabajoEncargado()
     {
-        return $this->hasMany(ordenTrabajo::class, "id_empleado_encargado", "id");
+        return $this->hasMany(OrdenTrabajo::class, "id_empleado_encargado", "id");
     }
     public function getRolesAttribute()
     {

@@ -10,7 +10,7 @@ use App\Http\Resources\cargoDirectoResource;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class cargoDirectoController extends Controller
+class CargoDirectoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,8 +18,8 @@ class cargoDirectoController extends Controller
     public function index()
     {
         try{
-            return response(cargoDirectoResource::collection(     
-                cargoDirecto::join('cargos' 
+            return response(CargoDirectoResource::collection(     
+                CargoDirecto::join('cargos' 
                 , 'cargo_directo.id_cargo'
                 , '=' ,
                 'cargos.id')
@@ -38,12 +38,12 @@ class cargoDirectoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorecargoDirectoRequest $request)
+    public function store(StoreCargoDirectoRequest $request)
     {
         try{
             $data = $request->validated();
-            $cargoDirecto = cargoDirecto::create($data);
-            return response(new cargoDirectoResource($cargoDirecto), 201);
+            $cargoDirecto = CargoDirecto::create($data);
+            return response(new CargoDirectoResource($cargoDirecto), 201);
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el cargo directo'.$e
@@ -57,8 +57,8 @@ class cargoDirectoController extends Controller
     public function show($id)
     {
         try {
-            $cargoDirecto = cargoDirecto::findOrFail($id);
-            return response(new cargoDirectoResource($cargoDirecto), 200);
+            $cargoDirecto = CargoDirecto::findOrFail($id);
+            return response(new CargoDirectoResource($cargoDirecto), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar el cargo directo'
@@ -73,11 +73,11 @@ class cargoDirectoController extends Controller
     {
         try {
             $data = $request->validated();
-            $cargoDirecto = cargoDirecto::findOrFail($id);
+            $cargoDirecto = CargoDirecto::findOrFail($id);
             $cargoDirecto->update($data);
             $cargoDirecto->save();
             //return json_encode($cargoDirecto);
-            return response(new cargoDirectoResource($cargoDirecto), 200);
+            return response(new CargoDirectoResource($cargoDirecto), 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo editar el cargo directo'
@@ -91,7 +91,7 @@ class cargoDirectoController extends Controller
     public function destroy($id)
     {
         try {
-            $cargoDirecto = cargoDirecto::findOrFail($id);
+            $cargoDirecto = CargoDirecto::findOrFail($id);
             $cargoDirecto->delete();
             return response("Cargo eliminado con exito",200);
         } catch (ModelNotFoundException $e) {

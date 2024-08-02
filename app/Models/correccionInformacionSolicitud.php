@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class correccionInformacionSolicitud extends Model
+class CorreccionInformacionSolicitud extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = "correccion_informacion_solicitudes";
