@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\AsignacionGeografica;
-use App\Http\Requests\StoreAsignacionGeograficaRequest;
-use App\Http\Requests\UpdateAsignacionGeograficaRequest;
-use App\Http\Resources\AsignacionGeograficaResource;
-use App\Models\Libro;
+use Exception;
 use App\Models\Ruta;
 use App\Models\Toma;
-use Exception;
+use App\Models\Libro;
+use App\Models\Punto;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\AsignacionGeografica;
+use App\Http\Resources\AsignacionGeograficaResource;
+use App\Http\Requests\StoreAsignacionGeograficaRequest;
+use App\Http\Requests\UpdateAsignacionGeograficaRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AsignacionGeograficaController extends Controller
@@ -194,5 +196,16 @@ class AsignacionGeograficaController extends Controller
         }
     }
 
+    public function update_points_with_asignacion_geografica_id(Request $request, $asignacionGeografica_id){
+        Punto::where("id_asignacion_geografica", $asignacionGeografica_id)->delete();
+        $new_points = $request["puntos"];
+        foreach($new_points as $new_point){
+            $point = new Punto();
+            $point->id_asignacion_geografica = $asignacionGeografica_id;
+            $point->latitud = $new_point["lat"];
+            $point->longitud = $new_point["lng"];
+            $point->save();
+        }
+    }
     
 }

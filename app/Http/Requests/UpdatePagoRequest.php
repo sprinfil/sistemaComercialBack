@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateFacturaRequest extends FormRequest
+class UpdatePagoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,7 @@ class UpdateFacturaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_periodo" => "required|int|gt:0",
-            "id_toma" => "required|int|gt:0",
-            "id_consumo" => "required|int|gt:0",
-            "id_tarifa_servicio" => "required|int|gt:0",
-            "monto"=> "required|numeric|gt:0",
-            "fecha"=> "required|date",
+            //
         ];
     }
 }

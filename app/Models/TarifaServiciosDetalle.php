@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TarifaServiciosDetalle extends Model
@@ -31,5 +32,10 @@ class TarifaServiciosDetalle extends Model
          return $this->belongsTo(TipoToma::class, 'id_tipo_toma');
      }
 
+     //facturas asociadas a la tarifaServicio
+     public function factura() : HasMany
+     {
+         return $this->HasMany(Factura::class, 'id');
+     }
     
 }

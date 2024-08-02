@@ -3,23 +3,32 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cargo;
 use App\Http\Requests\StoreCargoRequest;
-use App\Http\Requests\UpdateCargoRequest;
 use App\Http\Resources\CargoResource;
+use App\Services\CargoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CargoController extends Controller
 {
+    protected $cargoService;
+
     /**
-     * Display a listing of the resource.
+     * Constructor del controller
+     */
+    public function __construct(CargoService $_cargoService)
+    {
+        $this->cargoService = $_cargoService;
+    }
+    
+    /**
+     * Consulta todos los cargos registrados
      */
     public function index()
     {
         try{
             return response(CargoResource::collection(
-                Cargo::all()
+                $this->cargoService->obtenerCargos()
             ),200);
         } catch(Exception $e) {
             return response()->json([
@@ -29,66 +38,33 @@ class CargoController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Registra el cargo de un concepto a un usuario/toma.
      */
     public function store(StoreCargoRequest $request)
     {
         try{
-            $data = $request->validated();
-            $cargo = Cargo::create($data);
-            return response(new CargoResource($cargo), 201);
+            return response(new CargoResource(
+                $this->cargoService->generarCargo($request)
+            ), 201);
         } catch(Exception $e) {
             return response()->json([
-                'error' => 'No se pudo guardar el cargo'
+                'error' => 'No se pudo cargar el cargo'
             ], 500);
         }
     }
 
     /**
-     * Display the specified resource.
+     * Consulta un cargo especifico por su id
      */
     public function show($id)
     {
         try {
-            $cargo = Cargo::findOrFail($id);
-            return response(new CargoResource($cargo), 200);
+            return response(new CargoResource(
+                $this->cargoService->busquedaPorId($id)
+            ), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'No se pudo encontrar el cargo'
-            ], 500);
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCargoRequest $request, $id)
-    {
-        try {
-            $data = $request->validated();
-            $cargo = Cargo::findOrFail($id);
-            $cargo->update($data);
-            $cargo->save();
-            return response(new CargoResource($cargo), 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'error' => 'No se pudo editar el cargo'
-            ], 500);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        try {
-            $cargo = Cargo::findOrFail($id);
-            $cargo->delete();
-            return response("Cargo eliminado con exito",200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'error' => 'No se pudo borrar el cargo'
+                'error' => 'No se pudo encontrar el cargo por su id '.$id
             ], 500);
         }
     }

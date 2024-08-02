@@ -17,7 +17,10 @@ class ConceptoCatalogo extends Model
         "descripcion",
         "estado",
         "prioridad_abono",
-        "genera_iva"
+        "genera_iva",
+        "abonable",
+        "tarifa_fija",
+        "cargo_directo"
     ];
 
     // Medidor asociado a la toma
