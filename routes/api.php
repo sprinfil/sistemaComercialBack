@@ -146,6 +146,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //Consulta general
         Route::get("/usuarios/consulta/general/{codigo}", "general");
         Route::get("/usuarios/consulta/tomas/{id}", "showTomas");
+        Route::get("/usuarios/consulta/tomasCodigo/{id}", "showCodigoToma");
         
         //log delete significa borrado logico
         Route::delete("/usuarios/log_delete/{id}", "destroy");
