@@ -16,7 +16,7 @@ use App\Http\Resources\OrdenTrabajoResource;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoAccion;
 use App\Services\OrdenTrabajoCatalogoService;
-use App\Services\OrdenTrabajoConfService;
+use App\Services\OrdenTrabajoAccionService;
 use App\Services\OrdenTrabajoService;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -61,17 +61,18 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $dataConf=$data['orden_trabajo_configuracion'] ?? null;
+            $dataConf=$data['orden_trabajo_accion'] ?? null;
+            return $data;
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
-                $orden=(new OrdenTrabajoConfService())->store($dataConf);
-                $catalogo['orden_trabajo_conf']= $orden;
+                $orden=(new OrdenTrabajoAccionService())->store($dataConf);
+                $catalogo['orden_trabajo_acc']= $orden;
                
             }
-            DB::commit();
+            DB::rollBack();
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
         }
         catch(Exception $ex){
@@ -163,7 +164,7 @@ class OrdenTrabajoController extends Controller
     public function storeConf(StoreOrdenTrabajoConfRequest $request) //Ejemplo con service
     {
         try{
-            $orden=(new OrdenTrabajoConfService())->store($request->validated());
+            $orden=(new OrdenTrabajoAccionService())->store($request->validated());
             if (!$orden){
                 return response()->json([
                     'message'=>'Ya existe una configuración con las mismas caracteristicas para la orden de trabajo especificada'

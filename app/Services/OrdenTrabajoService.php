@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\OrdenTrabajo;
+use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
 use COM;
@@ -16,7 +17,7 @@ class OrdenTrabajoService{
     public function crearOrden(array $ordenTrabajo){ //Ejemplo de service
         
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        $OrdenConf=OrdenTrabajoConfiguracion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
+        $OrdenConf=OrdenTrabajoAccion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
         $orden=$ordenTrabajo;//eliminar
         if ($OrdenConf['momento']=="generar"){
             $orden=OrdenTrabajo::create($ordenTrabajo);
@@ -30,7 +31,7 @@ class OrdenTrabajoService{
     }
     public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        $OrdenConf=OrdenTrabajoConfiguracion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
+        $OrdenConf=OrdenTrabajoAccion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
         if ($OrdenConf['momento']=="asignar"){
 
             //generar cargo
@@ -44,7 +45,7 @@ class OrdenTrabajoService{
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        $OrdenConf=OrdenTrabajoConfiguracion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
+        $OrdenConf=OrdenTrabajoAccion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
         if ($OrdenConf['momento']=="concluir"){
 
             //generar cargo
