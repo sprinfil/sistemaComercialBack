@@ -3,13 +3,13 @@ namespace App\Services;
 
 use App\Http\Requests\StoreOrdenTrabajoConfRequest;
 use App\Http\Resources\OrdenTrabajoConfResource;
-use App\Models\OrdenTrabajoConfiguracion;
+use App\Models\OrdenTrabajoAccion;
 
-class OrdenTrabajoConfService{
+class OrdenTrabajoAccionService{
 
-    public function store(array $ordenCatalogo): ?OrdenTrabajoConfiguracion{ //Ejemplo de service
+    public function store(array $ordenCatalogo): ?OrdenTrabajoAccion{ //Ejemplo de service
        
-        $catalogo=OrdenTrabajoConfiguracion::where('id_orden_trabajo_catalogo',$ordenCatalogo['id_orden_trabajo_catalogo'])->
+        $catalogo=OrdenTrabajoAccion::where('id_orden_trabajo_catalogo',$ordenCatalogo['id_orden_trabajo_catalogo'])->
         where('id_concepto_catalogo',$ordenCatalogo['id_concepto_catalogo'])->
         where('accion',$ordenCatalogo['accion'])->
         where('momento',$ordenCatalogo['momento'])->
@@ -19,12 +19,14 @@ class OrdenTrabajoConfService{
             return null;
         }
         else{
-            $respuesta=OrdenTrabajoConfiguracion::create($ordenCatalogo);
+            $respuesta=OrdenTrabajoAccion::create($ordenCatalogo);
             return $respuesta;
         }  
     }
-    public function show(array $ordenCatalogo): ?OrdenTrabajoConfiguracion{ //Ejemplo de service
+    /*
+    public function show(array $ordenCatalogo): ?OrdenTrabajoAccion{ //Ejemplo de service
        
     
     }
+    */
 }

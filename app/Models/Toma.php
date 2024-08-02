@@ -121,18 +121,6 @@ class Toma extends Model
         return $this->morphOne(AsignacionGeografica::class, 'asignacionModelo', 'modelo', 'id_modelo');
     }
 
-    //Consulta de referencia (no se usa)
-    public static function ConsultarContratosPorToma(string $id_toma){
-        
-        $data=Toma::findOrFail($id_toma);
-        $contratos=$data->withWhereHas('contratoVigente' , function (Builder $query) {
-            $query->where('estatus', '!=','cancelado');
-            
-        })->get();
-        return $contratos;
-        
-    }
-
     public function getDireccionCompleta()
     {
         return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";

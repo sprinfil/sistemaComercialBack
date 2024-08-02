@@ -2,15 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Models\OrdenTrabajoConfiguracion;
+use App\Models\OrdenTrabajoAccion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OrdenTrabajoConfiguracion>
  */
-class OrdenTrabajoConfiguracionFactory extends Factory
+class OrdenTrabajoAccionFactory extends Factory
 {
-    protected $model = OrdenTrabajoConfiguracion::class;
+    protected $model = OrdenTrabajoAccion::class;
     /**
      * Define the model's default state.
      *
@@ -22,9 +22,10 @@ class OrdenTrabajoConfiguracionFactory extends Factory
             'id_orden_trabajo_catalogo' => 0,
             'id_concepto_catalogo' => '',
             'accion' => $this->faker->randomElement(['generar', 'modificar', 'quitar']),
-            'momento' => $this->faker->randomElement(['generar', 'asignar', 'concluir']),
-            'atributo' => '',
-            'valor' => '',
+            'modelo' => $this->faker->randomElement(['generar', 'asignar', 'concluir']),
+            'opcional' => '',
+            'id_orden_trabajo_acc_encadena' => '',
+            'id_orden_trabajo_acc_alterna' => '',
         ];
     }
 
@@ -35,7 +36,7 @@ class OrdenTrabajoConfiguracionFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterCreating(function (OrdenTrabajoConfiguracion $configuracion) {
+        return $this->afterCreating(function (OrdenTrabajoAccion $configuracion) {
             if (strpos($configuracion->nombre, "reconexion") !== false) {
                 $configuracion->atributo = $this->faker->randomElement(['estatus']);
                 $configuracion->valor = $this->faker->randomElement(['limitada','activa']);

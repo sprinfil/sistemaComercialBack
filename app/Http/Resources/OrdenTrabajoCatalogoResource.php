@@ -20,8 +20,10 @@ class OrdenTrabajoCatalogoResource extends JsonResource
         return [
             "id" => $this->id,
             "nombre" => $this->nombre,
-            'orden_trabajo_conf' =>new OrdenTrabajoConfResource($this->orden_trabajo_conf),
-            'orden_trabajo_configuracion' => OrdenTrabajoConfResource::collection($this->whenLoaded('ordenTrabajoConfiguracion')),
+            "vigencias" => $this->vigencias,
+            "momentoCargo" => $this->momentoCargo,
+            'orden_trabajo_acc' =>new OrdenTrabajoAccionResource($this->orden_trabajo_conf),
+            'orden_trabajo_accion' => OrdenTrabajoAccionResource::collection($this->whenLoaded('ordenTrabajoAccion')),
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ConceptoCatalogo;
+use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,7 +22,9 @@ class OrdenTrabajoCatalogoFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => '',
+            "nombre",
+            "vigencias",
+            "momentoCargo",
         ];
     }
 
@@ -34,7 +37,7 @@ class OrdenTrabajoCatalogoFactory extends Factory
     {
         return $this->afterCreating(function (OrdenTrabajoCatalogo $orden_de_trabajo) {
             $concepto = ConceptoCatalogo::buscarPorNombre($orden_de_trabajo->nombre);
-            $configuracion = OrdenTrabajoConfiguracion::factory()->create([
+            $configuracion = OrdenTrabajoAccion::factory()->create([
                 'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
                 'id_concepto_catalogo' => $concepto->id,
             ]); 

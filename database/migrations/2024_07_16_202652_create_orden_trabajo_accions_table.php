@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orden_trabajo_configuracions', function (Blueprint $table) {
+        Schema::create('orden_trabajo_accions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
             $table->enum('accion',['registrar','modificar','quitar']);
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orden_trabajo_configuracions');
+        Schema::dropIfExists('orden_trabajo_accions');
     }
 };
