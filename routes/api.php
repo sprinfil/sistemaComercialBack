@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\GiroComercialCatalogoController;
 use App\Http\Controllers\Api\LibroController;
 use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\MedidorController;
+use App\Http\Controllers\Api\MonitorFactibilidadController;
 use App\Http\Controllers\Api\OperadorController;
 use App\Http\Controllers\Api\OrdenTrabajoController;
 use App\Http\Controllers\Api\RutaController;
@@ -485,6 +486,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/factura","index");
         Route::post("/factura/create","store");
         Route::get("/factura/show/{id}","show");
+    });
+
+    //Monitor Factibilidad
+    Route::controller(MonitorFactibilidadController::class)->group(function(){
+        Route::get("/MonitorFactibilidad" , "index");
+        Route::get("/MonitorFactibilidad/filtro/{id}" , "filtro");
     });
 
 });

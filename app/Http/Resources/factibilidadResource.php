@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Contrato;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,8 +18,11 @@ class factibilidadResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "estado_factible" => $this->estado_factible,
+            "id_contrato" => $this->id_contrato,
+            "agua_estado_factible"=>$this->agua_estado_factible,
+            "alcantarillado_estado_factible"=>$this->alc_estado_factible,
             "derechos_conexion" => $this->derechos_conexion,
+            "contrato" => ContratoResource::collection($this->whenLoaded('factibilidad')),
         ];
     }
 }
