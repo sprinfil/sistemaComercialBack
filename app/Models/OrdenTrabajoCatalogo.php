@@ -15,12 +15,15 @@ class OrdenTrabajoCatalogo extends Model
     protected $table='orden_trabajo_catalogos';
     protected $fillable=[
         "nombre",
+        "vigencias",
+        "momentoCargo",
+
     ];
-    public function ordenTrabajoConfiguracion():HasMany{
-        return $this->HasMany(OrdenTrabajoConfiguracion::class,'id_orden_trabajo_catalogo');;
+    public function ordenTrabajoAccion():HasMany{
+        return $this->HasMany(OrdenTrabajoAccion::class,'id_orden_trabajo_catalogo');;
     }
     public function ordenTrabajo():HasMany{
-        return $this->hasMany(ordenTrabajo::class,'id_orden_trabajo_catalogo');
+        return $this->hasMany(OrdenTrabajo::class,'id_orden_trabajo_catalogo');
     }
     public static function BuscarCatalogo($nombre){
         $ordenTrabajo=OrdenTrabajoCatalogo::where('nombre','LIKE','%'.$nombre.'%')->get();
