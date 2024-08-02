@@ -72,7 +72,7 @@ class OrdenTrabajoController extends Controller
                 $catalogo['orden_trabajo_acc']= $orden;
                
             }
-            DB::rollBack();
+            DB::commit();
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
         }
         catch(Exception $ex){
