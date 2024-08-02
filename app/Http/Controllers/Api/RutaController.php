@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use mysqli;
 use Exception;
 use App\Models\Ruta;
 use App\Models\Libro;
@@ -12,6 +13,9 @@ use App\Http\Resources\RutaResource;
 use App\Models\AsignacionGeografica;
 use App\Http\Requests\StoreRutaRequest;
 use App\Http\Requests\UpdateRutaRequest;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Objects\Polygon;
+use MatanYadaev\EloquentSpatial\Objects\LineString;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RutaController extends Controller
@@ -145,23 +149,23 @@ class RutaController extends Controller
     {
         $data = $request["data"];
         foreach ($data as $nombre_ruta => $ruta_data) {
-             $ruta = new Ruta();
-                $ruta->nombre = $nombre_ruta;
-                $ruta->save();
+            $ruta = new Ruta();
+            $ruta->nombre = $nombre_ruta;
+            $ruta->save();
             foreach ($ruta_data as $key => $libro_data_1) {
-                foreach($libro_data_1 as $nombre_libro => $libro_data_2){
-                        $libro = new Libro();
-                        $libro->id_ruta = $ruta->id;
-                        $libro->nombre = $nombre_libro;
-                        $libro->save();
+                foreach ($libro_data_1 as $nombre_libro => $libro_data_2) {
+                    $libro = new Libro();
+                    $libro->id_ruta = $ruta->id;
+                    $libro->nombre = $nombre_libro;
+                    $libro->save();
 
-                        $asignacion_geografica = new AsignacionGeografica();
-                        $asignacion_geografica->id_modelo = $libro->id;
-                        $asignacion_geografica->modelo = "libro";
-                        $asignacion_geografica->estatus = "activo";
-                        $asignacion_geografica->save();
+                    $asignacion_geografica = new AsignacionGeografica();
+                    $asignacion_geografica->id_modelo = $libro->id;
+                    $asignacion_geografica->modelo = "libro";
+                    $asignacion_geografica->estatus = "activo";
+                    $asignacion_geografica->save();
 
-                    foreach($libro_data_2 as $punto_data){
+                    foreach ($libro_data_2 as $punto_data) {
                         $punto = new Punto();
                         $punto->id_asignacion_geografica = $asignacion_geografica->id;
                         $punto->latitud = $punto_data[1];
@@ -170,24 +174,68 @@ class RutaController extends Controller
                     }
                 }
             }
-            
         }
     }
 
-    public function masive_polygon_delete(){
+    public function masive_polygon_delete()
+    {
         $rutas = Ruta::all();
-        foreach($rutas as $ruta){
+        foreach ($rutas as $ruta) {
             $libros = Libro::where("id_ruta", $ruta->id)->get();
-            foreach($libros as $libro){
+            foreach ($libros as $libro) {
                 $asignacion_geografica = AsignacionGeografica::where("modelo", "libro")
-                ->where("id_modelo", $libro->id)->first();
-                foreach($asignacion_geografica->puntos as $punto){
-                    $punto->forceDelete();
+                    ->where("id_modelo", $libro->id)->first();
+                if ($asignacion_geografica) {
+                    foreach ($asignacion_geografica->puntos as $punto) {
+                        $punto->forceDelete();
+                    }
+                    $asignacion_geografica->forceDelete();
                 }
-                $asignacion_geografica->forceDelete();
                 $libro->forceDelete();
             }
             $ruta->forceDelete();
         }
+    }
+
+    public function create_polygon()
+    {
+        /*
+        
+          $vaticanCity = AsignacionGeografica::create([
+            "id_modelo" => 1,
+            "modelo"=> "libro",
+            'nombre' => 'Vatican City',
+            'polygon' => new Polygon([
+                new LineString([
+                      new Point(12.455363273620605, 41.90746728266806),
+                      new Point(12.450309991836548, 41.906636872349075),
+                      new Point(12.445632219314575, 41.90197359839437),
+                      new Point(12.447413206100464, 41.90027269624499),
+                      new Point(12.457906007766724, 41.90000118654431),
+                      new Point(12.458517551422117, 41.90281205461268),
+                      new Point(12.457584142684937, 41.903107507989986),
+                      new Point(12.457734346389769, 41.905918239316286),
+                      new Point(12.45572805404663, 41.90637337450963),
+                      new Point(12.455363273620605, 41.90746728266806),
+                ]),
+            ]),
+        ]);
+        
+        */
+        $polygon = new Polygon([
+            new LineString([
+                new Point(12.455363273620605, 41.90746728266806),
+                new Point(12.457906007766724, 41.90000118654431),
+                new Point(12.458517551422117, 41.90281205461268),
+                new Point(12.457584142684937, 41.903107507989986),
+                new Point(12.457734346389769, 41.905918239316286),
+                new Point(12.45572805404663, 41.90637337450963),
+                new Point(12.455363273620605, 41.90746728266806),
+            ])
+        ]);
+
+        $asignacion_geografica = AsignacionGeografica::find(1);
+        $asignacion_geografica->polygon = $polygon;
+        $asignacion_geografica->save();
     }
 }
