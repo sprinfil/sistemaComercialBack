@@ -43,7 +43,8 @@ class ContratoFactory extends Factory
                 $toma->c_agua = $numContratos + 1;
             } else {
                 $toma->c_agua = $numContratos + 1;
-                $toma->c_alc_san = $numContratos + 1;
+                $toma->c_alc = $numContratos + 1;
+                $toma->c_san = $numContratos + 1;
             }
             
             // Guarda el objeto
@@ -222,7 +223,7 @@ class ContratoFactory extends Factory
             }
 
             if ($contrato->estatus == 'pendiente de pago' || $contrato->estatus == 'contratado' || $contrato->estatus == 'terminado') {
-                $concepto = ConceptoCatalogo::buscarPorNombre('contrato de '.$contrato->servicio_contratado);
+                $concepto = ConceptoCatalogo::buscarPorNombre('Contrato agua 1" comun');
                 Cargo::factory()->create([
                     'id_concepto' => $concepto->id ?? 1,
                     'concepto' => $concepto->nombre ?? "", 

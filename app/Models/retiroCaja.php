@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class retiroCaja extends Model
+class RetiroCaja extends Model
 {
     use HasFactory, SoftDeletes;
 
     public function retiroCaja() : BelongsTo {
-        return $this->belongsTo(corteCaja::class , 'id_retiro_caja');
+        return $this->belongsTo(CorteCaja::class , 'id_retiro_caja');
     }
 }

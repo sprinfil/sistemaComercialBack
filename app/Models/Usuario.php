@@ -71,31 +71,35 @@ class Usuario extends Model
             COALESCE(nombre, ''), ' ', 
             COALESCE(apellido_paterno, ''), ' ', 
             COALESCE(apellido_materno, '')
-        )  LIKE ?", ['%'.$usuario.'%'])->get();
+        )  LIKE ?", ['%'.$usuario.'%'])->paginate(10);
+          return $data;
+    }
+    public static function ConsultarPorNombreContacto(string $usuario){
+        $data = Usuario::where('nombre_contacto','like','%'.$usuario.'%')->paginate(10);
           return $data;
     }
     public static function ConsultarTomas(string $usuario){
-        $data=Usuario::find($usuario)->with('tomas');
+        $data=Usuario::find($usuario)->with('tomas')->paginate(10);
           return $data;
     }
 
     public static function ConsultarPorCurp(string $usuario){
-        $data = Usuario::whereRaw("curp LIKE ?", ['%'.$usuario.'%'])->get();
+        $data = Usuario::whereRaw("curp LIKE ?", ['%'.$usuario.'%'])->paginate(10);
           return $data;
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::where("codigo_usuario",$usuario)->get();
+        $data = Usuario::where("codigo_usuario",$usuario)->first();
           return $data;
     }
 
     public static function ConsultarPorRfc(string $usuario){
-        $data = Usuario::whereRaw("rfc LIKE ?", ['%'.$usuario.'%'])->get();
+        $data = Usuario::whereRaw("rfc LIKE ?", ['%'.$usuario.'%'])->paginate(10);
           return $data;
     }
 
     public static function ConsultarPorCorreo(string $usuario){
-        $data = Usuario::whereRaw("correo LIKE ?", ['%'.$usuario.'%'])->get();
+        $data = Usuario::whereRaw("correo LIKE ?", ['%'.$usuario.'%'])->paginate(10);
           return $data;
     }
 

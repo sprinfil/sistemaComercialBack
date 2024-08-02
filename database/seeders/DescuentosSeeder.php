@@ -36,8 +36,8 @@ class DescuentosSeeder extends Seeder
         
         foreach ($descuentos as $nombre => $descripcion) {
             DescuentoCatalogo::factory()->create([
-                'nombre' => $nombre,
-                'descripcion' => $descripcion,
+                'nombre' => ucfirst(strtolower($nombre)),
+                'descripcion' => ucfirst(strtolower($descripcion)),
                 'estado' => 'activo',
             ]);
         }

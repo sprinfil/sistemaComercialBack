@@ -33,6 +33,9 @@ class Contrato extends Model
         'diametro_de_la_toma',
         'codigo_postal',
         'coordenada',
+        'c_agua',
+        'c_alc',
+        'c_san',
     ];
 
     // Toma asociada al contrato
@@ -59,12 +62,12 @@ class Contrato extends Model
     }
     public function cotizaciones(): HasMany
     {
-        return $this->hasMany(cotizacion::class, 'id_contrato');
+        return $this->hasMany(Cotizacion::class, 'id_contrato');
     }
     public function cotizacionesVigentes(): HasOne
     {
         $fecha=Carbon::now()->format('Y-m-d');
-        return $this->HasOne(cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
+        return $this->HasOne(Cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
     }
 
     public function cargos(): MorphMany
@@ -140,8 +143,5 @@ class Contrato extends Model
         $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$año)->get();
         return $data;
         
-    }
-   
-    
-    
+    }   
 }

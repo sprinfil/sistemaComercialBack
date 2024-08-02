@@ -34,8 +34,8 @@ class AjusteSeeder extends Seeder
         
         foreach ($ajustes as $nombre => $descripcion) {
             AjusteCatalogo::factory()->create([
-                'nombre' => $nombre,
-                'descripcion' => $descripcion,
+                'nombre' => ucfirst(strtolower($nombre)),
+                'descripcion' => ucfirst(strtolower($descripcion)),
                 'estado' => 'activo',
             ]);
         }

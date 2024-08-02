@@ -6,7 +6,7 @@ use App\Models\Contrato;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class factibilidadResource extends JsonResource
+class FactibilidadResource extends JsonResource
 {
     public static $wrap = false;
     /**

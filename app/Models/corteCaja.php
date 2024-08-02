@@ -10,13 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class corteCaja extends Model
+class CorteCaja extends Model
 {
     use HasFactory, SoftDeletes;
     
    
     public function pago() : BelongsTo {
-        return $this->belongsTo(pago::class , 'id_pago'); 
+        return $this->belongsTo(Pago::class , 'id_pago'); 
     }
 
     public function caja () : BelongsTo 
@@ -25,6 +25,6 @@ class corteCaja extends Model
     }
     //Retiro de un corte de caja
     public function retiro() : HasMany {
-        return $this->hasMany(retiroCaja::class , 'id_corte_caja');
+        return $this->hasMany(RetiroCaja::class , 'id_corte_caja');
     }
 }

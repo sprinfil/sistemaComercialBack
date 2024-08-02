@@ -17,7 +17,10 @@ class ConceptoCatalogo extends Model
         "descripcion",
         "estado",
         "prioridad_abono",
-        "genera_iva"
+        "genera_iva",
+        "abonable",
+        "tarifa_fija",
+        "cargo_directo"
     ];
 
     // Medidor asociado a la toma
@@ -28,7 +31,7 @@ class ConceptoCatalogo extends Model
 
     public function ordenTrabajoConfiguracion() : HasOne
     {
-        return $this->hasOne(ordenTrabajoConfiguracion::class, 'id_concepto_catalogo');
+        return $this->hasOne(OrdenTrabajoConfiguracion::class, 'id_concepto_catalogo');
     }
 
 

@@ -29,6 +29,7 @@ class Toma extends Model
         "entre_calle_2",
         "colonia",
         "codigo_postal",
+        "numero_casa",
         "localidad",
         "diametro_toma",
         "calle_notificaciones",
@@ -38,9 +39,9 @@ class Toma extends Model
         "tipo_toma",
         "tipo_contratacion",
         'c_agua',
-        'c_alc_san',
+        'c_alc',
+        'c_san',
     ];
-
     
     // Giro comercial asociado a la toma
     public function giroComercial() : BelongsTo
@@ -108,7 +109,7 @@ class Toma extends Model
 
     //Consumos asociados a la toma
     public function factura():HasMany{
-        return $this->hasMany(factura::class,'id_toma');
+        return $this->hasMany(Factura::class,'id_toma');
     }
     public function TarifaContrato()
     {

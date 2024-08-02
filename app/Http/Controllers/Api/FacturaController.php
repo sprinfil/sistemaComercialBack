@@ -99,4 +99,17 @@ class FacturaController extends Controller
     {
         //
     }
+
+    public function facturaPorToma(string $idToma)
+    {
+       
+        try {
+           $factura = Factura::where('id_toma',$idToma)->latest()->first();         
+            return response(new FacturaResource($factura), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se encontraron facturas activas'
+            ], 500);
+        }
+    }
 }
