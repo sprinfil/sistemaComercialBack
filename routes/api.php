@@ -19,6 +19,6 @@ function includeRouteFiles($directory) {
 }
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Incluir todos los archivos de rutas en la carpeta 'catalogo'
+    // Incluir todos los archivos de rutas en la carpeta 'api'
     includeRouteFiles(base_path('routes/api'));
 });

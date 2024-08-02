@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\ConceptoController;
 use App\Http\Controllers\Api\RolController;
 use Illuminate\Support\Facades\Route;
 

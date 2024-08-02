@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class cargoDirecto extends Model
+class CargoDirecto extends Model
 {
     use HasFactory, SoftDeletes;
 

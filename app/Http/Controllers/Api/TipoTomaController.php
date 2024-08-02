@@ -14,7 +14,7 @@ use Database\Factories\TarifaConceptoDetalleFactory;
 use Exception;
 use Illuminate\Http\Request;
 
-class Tipo_tomaController extends Controller
+class TipoTomaController extends Controller
 {
     /**
      * Display a listing of the resource.

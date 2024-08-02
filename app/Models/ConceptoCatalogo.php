@@ -31,7 +31,7 @@ class ConceptoCatalogo extends Model
 
     public function ordenTrabajoConfiguracion() : HasOne
     {
-        return $this->hasOne(ordenTrabajoConfiguracion::class, 'id_concepto_catalogo');
+        return $this->hasOne(OrdenTrabajoConfiguracion::class, 'id_concepto_catalogo');
     }
 
 

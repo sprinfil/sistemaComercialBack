@@ -12,7 +12,7 @@ class OperadorAsignado extends Model
     use HasFactory;
     
     public function caja() : BelongsTo {
-        return $this->belongsTo(caja::class , "id_caja");
+        return $this->belongsTo(Caja::class , "id_caja");
     }
     public function operador() : BelongsTo {
         return $this->belongsTo(Operador::class , "id_operador");

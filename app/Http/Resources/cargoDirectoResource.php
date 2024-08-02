@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class cargoDirectoResource extends JsonResource
+class CargoDirectoResource extends JsonResource
 {
     public static $wrap = false;
     /**

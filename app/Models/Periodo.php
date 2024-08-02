@@ -22,13 +22,13 @@ class Periodo extends Model
   
     //Consumos asociados a la toma
     public function factura():HasMany{
-        return $this->HasMany(factura::class, 'id');
+        return $this->HasMany(Factura::class, 'id');
     }
 
     public function tieneRutas() : BelongsTo {
         return $this->belongsTo(Ruta::class , 'id_ruta');
     }
     public function cargaTrabajo() : HasMany {
-        return $this->hasMany(cargaTrabajo::class , "id_periodo");
+        return $this->hasMany(CargaTrabajo::class , "id_periodo");
     }
 }

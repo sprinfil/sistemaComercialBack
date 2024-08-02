@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\AsignacionGeograficaController;
-use App\Http\Controllers\Api\CalleController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'audit'])->group(function () {

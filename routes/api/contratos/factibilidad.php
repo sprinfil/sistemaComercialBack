@@ -1,11 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\CalleController;
-use App\Http\Controllers\Api\factibilidadController;
+use App\Http\Controllers\Api\FactibilidadController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'audit'])->group(function () {
-    Route::controller(factibilidadController::class)->group(function(){
+    Route::controller(FactibilidadController::class)->group(function(){
         Route::get("/factibilidad" , "index");
         Route::get("/factibilidadContrato" , "contratoFactible");
         Route::post("/factibilidad/create" , "store");
