@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\correccionSolicitud;
-use App\Http\Requests\StorecorreccionSolicitudRequest;
-use App\Http\Requests\UpdatecorreccionSolicitudRequest;
+use App\Models\CorreccionSolicitud;
+use App\Http\Requests\StoreCorreccionSolicitudRequest;
+use App\Http\Requests\UpdateCorreccionSolicitudRequest;
 use App\Http\Resources\CorreccionSolicitudResource;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
