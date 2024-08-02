@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreConstanciaCatalogoRequest;
 use Illuminate\Http\Request;
 use App\Models\ConstanciaCatalogo;
 use App\Http\Requests\StoreCosntanciaCatalogoRequest;
+use App\Http\Requests\UpdateConstanciaCatalogoRequest;
 use App\Http\Requests\UpdateCosntanciaCatalogoRequest;
 use App\Http\Resources\ConstanciaCatalogoResource;
 
@@ -25,7 +27,7 @@ class ConstanciaCatalogoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCosntanciaCatalogoRequest $request)
+    public function store(StoreConstanciaCatalogoRequest $request)
     {
         $this->authorize('create', ConstanciaCatalogo::class);
         /*
@@ -68,7 +70,7 @@ class ConstanciaCatalogoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCosntanciaCatalogoRequest $request, ConstanciaCatalogo $cosntanciaCatalogo)
+    public function update(UpdateConstanciaCatalogoRequest $request, ConstanciaCatalogo $cosntanciaCatalogo)
     {
         $this->authorize('update', ConstanciaCatalogo::class);
         $data = $request->validated();

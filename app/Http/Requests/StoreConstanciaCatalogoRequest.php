@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCosntanciaCatalogoRequest extends FormRequest
+class StoreConstanciaCatalogoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class UpdateCosntanciaCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:constancia_catalogos,nombre,".$this->id,
+            "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string|max:100",
             "estado"=>"nullable|string|max:10|
             in:activo,inactivo",

@@ -109,7 +109,7 @@ class Toma extends Model
 
     //Consumos asociados a la toma
     public function factura():HasMany{
-        return $this->hasMany(factura::class,'id_toma');
+        return $this->hasMany(Factura::class,'id_toma');
     }
     public function TarifaContrato()
     {

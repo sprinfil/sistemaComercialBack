@@ -13,7 +13,7 @@ use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class factibilidadController extends Controller
+class FactibilidadController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,8 +21,8 @@ class factibilidadController extends Controller
     public function index()
     {
         try{
-            return response(factibilidadResource::collection(
-                factibilidad::all()
+            return response(FactibilidadResource::collection(
+                Factibilidad::all()
             ),200);
         } catch(Exception $e) {
             return response()->json([
@@ -34,25 +34,25 @@ class factibilidadController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(factibilidad $factibilidad , StorefactibilidadRequest $request)
+    public function store(Factibilidad $factibilidad , StoreFactibilidadRequest $request)
     {
         try{
              $data = $request->validated();
-            $factibilidad = factibilidad::join('contratos' , 'factibilidad.id_contrato' 
+            $factibilidad = Factibilidad::join('contratos' , 'factibilidad.id_contrato' 
             , '=' , 
             'contratos.id')
             ->where('contratos.estatus' , '=' , 'pendiente de inspeccion')
             ->orWhere('contratos.estatus' , '=' , 'inspeccionado')
             ->get();
             if ($request->estado_factible == 'no_factible' ) {
-                $factibilidad = factibilidad::create($data);
+                $factibilidad = Factibilidad::create($data);
                 return response()->json([
                     'message' => 'Contrato no factible',
                 ], 500); 
             }
             else{
-                $factibilidad = factibilidad::create($data);
-                     return response(new factibilidadResource($factibilidad), 201);
+                $factibilidad = Factibilidad::create($data);
+                     return response(new FactibilidadResource($factibilidad), 201);
             }
         } catch(Exception $e) {
             return response()->json([
@@ -72,8 +72,8 @@ class factibilidadController extends Controller
     public function show($id)
     {
         try {
-            $factibilidad = factibilidad::findOrFail($id);
-            return response(new factibilidadResource($factibilidad), 200);
+            $factibilidad = Factibilidad::findOrFail($id);
+            return response(new FactibilidadResource($factibilidad), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar la factibilidad'
@@ -84,14 +84,14 @@ class factibilidadController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatefactibilidadRequest $request, $id)
+    public function update(UpdateFactibilidadRequest $request, $id)
     {
         try {
             $data = $request->validated();
-            $factibilidad = factibilidad::findOrFail($id);
+            $factibilidad = Factibilidad::findOrFail($id);
             $factibilidad->update($data);
             $factibilidad->save();
-            return response(new factibilidadResource($factibilidad), 200);
+            return response(new FactibilidadResource($factibilidad), 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo editar la factibilidad'
@@ -102,10 +102,10 @@ class factibilidadController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(factibilidad $factibilidad, $id)
+    public function destroy(Factibilidad $factibilidad, $id)
     {
         try {
-            $factibilidad = factibilidad::findOrFail($id);
+            $factibilidad = Factibilidad::findOrFail($id);
             $factibilidad->delete();
             return response("Factibilidad eliminada",200);
         } catch (ModelNotFoundException $e) {
@@ -115,10 +115,10 @@ class factibilidadController extends Controller
         }
     }
     
-    public function restaurar (factibilidad $factibilidad, Request $request)
+    public function restaurar (Factibilidad $factibilidad, Request $request)
     {
         try {
-            $factibilidad = factibilidad::withTrashed()->findOrFail($request->id);
+            $factibilidad = Factibilidad::withTrashed()->findOrFail($request->id);
             //Condicion para verificar si el registro esta eliminado
             if ($factibilidad->trashed()) {
                 //Restaura el registro
