@@ -43,7 +43,8 @@ class ContratoFactory extends Factory
                 $toma->c_agua = $numContratos + 1;
             } else {
                 $toma->c_agua = $numContratos + 1;
-                $toma->c_alc_san = $numContratos + 1;
+                $toma->c_alc = $numContratos + 1;
+                $toma->c_san = $numContratos + 1;
             }
             
             // Guarda el objeto

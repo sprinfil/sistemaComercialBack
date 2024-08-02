@@ -39,9 +39,9 @@ class Toma extends Model
         "tipo_toma",
         "tipo_contratacion",
         'c_agua',
-        'c_alc_san',
+        'c_alc',
+        'c_san',
     ];
-
     
     // Giro comercial asociado a la toma
     public function giroComercial() : BelongsTo
