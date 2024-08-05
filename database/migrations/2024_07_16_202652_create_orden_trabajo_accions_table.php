@@ -17,8 +17,8 @@ return new class extends Migration
             $table->enum('accion',['registrar','modificar','quitar']);
             $table->string('modelo');
             $table->boolean('opcional')->nullable();
-            $table->unsignedBigInteger('id_orden_trabajo_conf_encadena')->nullable();
-            $table->unsignedBigInteger('id_orden_trabajo_conf_alterna')->nullable();
+            $table->unsignedBigInteger('id_orden_trabajo_acc_encadena')->nullable();
+            $table->unsignedBigInteger('id_orden_trabajo_acc_alterna')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
