@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_concepto_catalogo')->nullable();
             $table->string('nombre');
             $table->integer('vigencias');
-            $table->enum('momentoCargo',['generar','asignar','concluir','No genera']);
-            $table->boolean('generaMasiva');
+            $table->enum('momento_cargo',['generar','asignar','concluir','No genera']);
+            $table->boolean('genera_masiva');
             $table->softDeletes();
             $table->timestamps();
         });

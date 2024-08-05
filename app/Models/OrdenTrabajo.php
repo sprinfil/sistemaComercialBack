@@ -19,6 +19,7 @@ class OrdenTrabajo extends Model
         "id_orden_trabajo_catalogo",
         "estado",
         "fecha_finalizada",
+        "fecha_vigencia",
         "obervaciones",
         "material_utilizado",
         "evidencia",
