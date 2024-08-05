@@ -29,11 +29,10 @@ class ConceptoCatalogo extends Model
         return $this->hasMany(TarifaConceptoDetalle::class, 'id_concepto');
     }
 
-    public function ordenTrabajoConfiguracion() : HasMany
+    public function ordenTrabajoCatalogo() : HasMany
     {
-        return $this->hasMany(OrdenTrabajoAccion::class, 'id_concepto_catalogo');
+        return $this->hasMany(ordenTrabajoCatalogo::class, 'id_concepto_catalogo');
     }
-
 
     // Busqueda por nombre
     public static function buscarPorNombre(string $nombre){

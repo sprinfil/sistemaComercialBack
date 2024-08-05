@@ -26,7 +26,4 @@ class OrdenTrabajoAccion extends Model
     public function orden_trabajo_catalogo(): BelongsTo{
         return $this->BelongsTo(OrdenTrabajoCatalogo::class,'id_orden_trabajo_catalogo', 'id');
     }
-    public function id_concepto_catalogo(): BelongsTo{
-        return $this->BelongsTo(ConceptoCatalogo::class,'id_concepto_catalogo', 'id');
-    }
 }

@@ -18,7 +18,6 @@ class OrdenTrabajoAccionResource extends JsonResource
         return [
             "id" => $this->id,
             "id_orden_trabajo_catalogo" => $this->id_orden_trabajo_catalogo,
-            "id_concepto_catalogo" => $this->id_concepto_catalogo,
             "accion" => $this->accion,
             "modelo" => $this->modelo,
             "opcional" => $this->opcional,
