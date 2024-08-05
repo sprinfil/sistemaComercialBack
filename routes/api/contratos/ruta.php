@@ -14,5 +14,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/ruta/restaurar/{id}","restaurarRuta");
         Route::post("/ruta/create_masive","masive_store");
         Route::post("/ruta/masive_polygon_delete","masive_polygon_delete");
+        Route::post("/ruta/create_polygon","create_polygon");
     });
 });
