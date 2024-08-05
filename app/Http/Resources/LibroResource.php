@@ -23,7 +23,8 @@ class LibroResource extends JsonResource
             "latitud" => $this->latitud,
             "longitud" => $this->longitud,
             "Puntos" => $this->Puntos,
-            "tomas" => $this->tomas,
+            "tomas" => TomaResource::collection($this->tomas), 
+        
         ];
     }
 }
