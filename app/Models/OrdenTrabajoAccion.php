@@ -15,7 +15,6 @@ class OrdenTrabajoAccion extends Model
 
     protected $fillable=[
         "id_orden_trabajo_catalogo",
-        "id_concepto_catalogo",
         "accion",
         "modelo",
         "opcional",

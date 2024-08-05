@@ -22,10 +22,9 @@ class OrdenTrabajoCatalogoResource extends JsonResource
             "id_concepto_catalogo" => $this->id_concepto_catalogo,
             "nombre" => $this->nombre,
             "vigencias" => $this->vigencias,
-            "momentoCargo" => $this->momentoCargo,
-            //'orden_trabajo_acc' =>new OrdenTrabajoAccionResource($this->orden_trabajo_acc),
+            "momento_cargo" => $this->momento_cargo,
+            "genera_masiva" => $this->genera_masiva,
             'orden_trabajo_accion' => new OrdenTrabajoAccionResource($this->orden_trabajo_accion) ?? OrdenTrabajoAccionResource::collection($this->whenLoaded('ordenTrabajoAccion')),
-            //'orden_trabajo_accion' => new OrdenTrabajoAccionResource($this->orden_trabajo_accion),
         ];
     }
 }

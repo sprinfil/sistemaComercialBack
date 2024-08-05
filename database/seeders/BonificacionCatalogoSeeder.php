@@ -18,10 +18,7 @@ class BonificacionCatalogoSeeder extends Seeder
                 'nombre' => '60 y mas',
                 'descripcion' => 'Aqui se describe el bono',
                 'estado' => 'activo',
-
             ],
-          
         ]);
-        //
     }
 }

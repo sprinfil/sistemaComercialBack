@@ -17,6 +17,7 @@ class TomaResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "posicion" => $this->posicion,
             "id_usuario" => $this->id_usuario,
             "id_giro_comercial" => $this->id_giro_comercial,
             "id_libro" => $this->id_libro,
@@ -40,7 +41,7 @@ class TomaResource extends JsonResource
             "c_agua" => $this->c_agua,
             "c_alc" => $this->c_alc,
             "c_san" => $this->c_san,
-            'usuario' => new UsuarioResource($this->whenLoaded('usuario')),
+            'usuario' => new UsuarioResource($this->usuario),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
             'giroComercial' => new GiroComercialCatalogoResource($this->whenLoaded('giroComercial')),
             'medidor' => $this->whenLoaded('medidor'),

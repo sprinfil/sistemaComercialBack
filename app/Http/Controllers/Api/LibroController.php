@@ -11,6 +11,9 @@ use App\Models\AsignacionGeografica;
 use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreLibroRequest;
 use App\Http\Requests\UpdateLibroRequest;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Objects\Polygon;
+use MatanYadaev\EloquentSpatial\Objects\LineString;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LibroController extends Controller
@@ -192,5 +195,21 @@ class LibroController extends Controller
             ], 500);
         }
         
+    }
+
+    public function update_polygon(Request $request, $libro_id){
+        $libro = Libro::find($libro_id);
+        $new_points = $request["puntos"];
+
+        $points = [];
+        
+        foreach ($new_points as $punto_data) {
+            $points[] = new Point( /* latitud */$punto_data["lat"], /*longitud*/$punto_data["lng"]);
+        }
+        $lineString = new LineString($points);
+        $polygon = new Polygon([$lineString]);
+
+        $libro->polygon = $polygon;
+        $libro->save();
     }
 }
