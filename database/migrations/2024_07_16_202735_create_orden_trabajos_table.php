@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_empleado_asigno');
             $table->unsignedBigInteger('id_empleado_encargado')->nullable();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
-            $table->enum('estado',['No asignada','Concluida','En proceso']);
-            $table->string('fecha_finalizada');
+            $table->enum('estado',['No asignada','Concluida','En proceso','Cancelada']);
+            $table->date('fecha_finalizada');
+            $table->date('fecha_vigencia');
             $table->string('obervaciones');
             $table->string('evidencia');
             $table->string('material_utilizado');

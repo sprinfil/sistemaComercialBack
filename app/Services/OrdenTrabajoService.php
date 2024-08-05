@@ -5,6 +5,7 @@ use App\Models\OrdenTrabajo;
 use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
+use Carbon\Carbon;
 use COM;
 
 class OrdenTrabajoService{
@@ -14,20 +15,21 @@ class OrdenTrabajoService{
     //Pueden hacerse modificaciones aún con la acción de generar
 
     //un operador crea la orden de trabajo y su tipo
-    public function crearOrden(array $ordenTrabajo){ //Ejemplo de service
+    public function crearOrden(array $ordenTrabajoPeticion):?OrdenTrabajo{ //Ejemplo de service
         
-        $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        $OrdenConf=OrdenTrabajoAccion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        $orden=$ordenTrabajo;//eliminar
-        if ($OrdenConf['momento']=="generar"){
-            $orden=OrdenTrabajo::create($ordenTrabajo);
-            $this->generarCargo();
+        $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->orWhereNot('estado','Cancelada')->first();
+        if ($ordenTrabajo){
+            return null;
         }
         else{
-            $orden=OrdenTrabajo::create($ordenTrabajo);
-        }
-        
-        return $orden;
+            $OtCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajoPeticion['id_orden_trabajo_catalogo']);
+            $OrdenTrabajo['fecha_vigencia']=Carbon::today()->addDays($OtCatalogo['vigencia']);
+            $OrdenCatalogo=OrdenTrabajo::create($ordenTrabajo);
+            return $OrdenCatalogo;
+        } 
+    }
+    public function EjecutarAcciones(){
+
     }
     public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);

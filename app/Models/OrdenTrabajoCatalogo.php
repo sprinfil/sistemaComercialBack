@@ -18,7 +18,8 @@ class OrdenTrabajoCatalogo extends Model
         "id_concepto_catalogo",
         "nombre",
         "vigencias",
-        "momentoCargo",
+        "momento_cargo",
+        "genera_masiva",
 
     ];
     public function concepto():BelongsTo{

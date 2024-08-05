@@ -63,7 +63,7 @@ class OrdenTrabajoController extends Controller
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             if (!$catalogo){
-                return response()->json(["sex",201]);
+                return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
             }
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
@@ -247,9 +247,30 @@ class OrdenTrabajoController extends Controller
     {
         
         $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        if ($data){
+            return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
+        }
+        else
+        {
+            return "get this shigaboo";
+        }
         //$catalogo=OrdenTrabajo::create($data);
         //return response(new OrdenTrabajoResource($catalogo),200);
-        return $data;
+        
+    }
+    public function cerrarOrden(StoreOrdenTrabajoRequest $request)
+    {
+        
+        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        if ($data){
+            return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
+        }
+        else
+        {
+            return "get this shigaboo";
+        }
+        //$catalogo=OrdenTrabajo::create($data);
+        //return response(new OrdenTrabajoResource($catalogo),200);
         
     }
 
