@@ -3,23 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\correccionInformacionSolicitud;
-use App\Http\Requests\StorecorreccionInformacionSolicitudRequest;
-use App\Http\Requests\UpdatecorreccionInformacionSolicitudRequest;
-use App\Http\Resources\CorreccionInformacionSolicitudResource;
+use App\Models\CorreccionSolicitud;
+use App\Http\Requests\StoreCorreccionSolicitudRequest;
+use App\Http\Requests\UpdateCorreccionSolicitudRequest;
+use App\Http\Resources\CorreccionSolicitudResource;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class CorreccionInformacionSolicitudController extends Controller
+class CorreccionSolicitudController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return CorreccionInformacionSolicitudResource::collection(
-            correccionInformacionSolicitud::all()
+        return CorreccionSolicitudResource::collection(
+            correccionSolicitud::all()
         );
         //
     }
@@ -27,12 +27,12 @@ class CorreccionInformacionSolicitudController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorecorreccionInformacionSolicitudRequest $request)
+    public function store(StorecorreccionSolicitudRequest $request)
     {
         try{
             $data = $request->validated();
-            $correccionInformacionSolicitud = CorreccionInformacionSolicitud::create($data);
-            return response(new CorreccionInformacionSolicitudResource($correccionInformacionSolicitud), 201);
+            $correccionSolicitud = correccionSolicitud::create($data);
+            return response(new CorreccionSolicitudResource($correccionSolicitud), 201);
             
         } catch(Exception $e) {
             return response()->json([
@@ -45,12 +45,12 @@ class CorreccionInformacionSolicitudController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CorreccionInformacionSolicitud $correccionInformacionSolicitud, Request $request)
+    public function show(CorreccionSolicitud $correccionSolicitud, Request $request)
     {
         //Falta consulta especifica 
         try {
-            $correccionInformacionSolicitud = CorreccionInformacionSolicitud::findOrFail($request["id"]);
-            return response(new CorreccionInformacionSolicitudResource($correccionInformacionSolicitud), 200);
+            $correccionSolicitud = CorreccionSolicitud::findOrFail($request["id"]);
+            return response(new CorreccionSolicitudResource($correccionSolicitud), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar la solicitud de correccion'
@@ -63,15 +63,15 @@ class CorreccionInformacionSolicitudController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatecorreccionInformacionSolicitudRequest $request, string $id)
+    public function update(UpdatecorreccionSolicitudRequest $request, string $id)
     {
         try {
             $data = $request->validated();
             //return json_encode($data);
-            $correccionInformacionSolicitud = CorreccionInformacionSolicitud::findOrFail($id);
-            $correccionInformacionSolicitud->update($data);
-            $correccionInformacionSolicitud->save();
-            return response(new CorreccionInformacionSolicitudResource($correccionInformacionSolicitud), 200);
+            $correccionSolicitud = CorreccionSolicitud::findOrFail($id);
+            $correccionSolicitud->update($data);
+            $correccionSolicitud->save();
+            return response(new CorreccionSolicitudResource($correccionSolicitud), 200);
         } catch (Exception $e) {
             return response()->json([
                 'error' => 'No se pudo editar la solicitud'
@@ -83,11 +83,11 @@ class CorreccionInformacionSolicitudController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CorreccionInformacionSolicitud $correccionInformacionSolicitud, string $id)
+    public function destroy(CorreccionSolicitud $correccionSolicitud, string $id)
     {
-        //return json_encode($correccionInformacionSolicitud);
+        //return json_encode($correccionSolicitud);
         try {
-            $solicitud = CorreccionInformacionSolicitud::findOrFail($id);
+            $solicitud = CorreccionSolicitud::findOrFail($id);
             
             if($solicitud->fecha_correccion == null){
                 $solicitud->delete();
