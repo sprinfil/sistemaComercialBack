@@ -361,6 +361,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get("/Toma/pagos/{id}","pagosPorToma");
         Route::get("/Toma/cargos/{id}","cargosPorToma");
         Route::get("/Toma/codigo/{codigo}","buscarCodigoToma");
+        Route::post("/Toma/save_position/{toma_id}","save_position");
     });
     //Solicitud de correcciones
     Route::controller(correccionInformacionSolicitudController::class)->group(function(){
@@ -458,7 +459,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put("/libro/update/{id}","update");
         Route::delete("/libro/log_delete/{id}","destroy");
         Route::put("/libro/restaurar/{id}","restaurarLibro");
-
+        Route::post("/libro/update_polygon/{libro_id}","update_polygon");
     });
 
     //AsignacionGeografica

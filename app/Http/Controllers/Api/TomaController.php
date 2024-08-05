@@ -10,6 +10,7 @@ use App\Http\Resources\TomaResource;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class TomaController extends Controller
 {
@@ -137,4 +138,16 @@ class TomaController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * guardar posicion
+     */
+
+     public function save_position(Request $request, $toma_id){
+        $data = $request["data"];
+        $point = new Point($data["latitud"], $data["longitud"]);
+        $toma = Toma::find($toma_id);
+        $toma->posicion = $point;
+        $toma->save();
+     }
 }
