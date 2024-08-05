@@ -39,9 +39,9 @@ class Toma extends Model
         "tipo_toma",
         "tipo_contratacion",
         'c_agua',
-        'c_alc_san',
+        'c_alc',
+        'c_san',
     ];
-
     
     // Giro comercial asociado a la toma
     public function giroComercial() : BelongsTo
@@ -109,7 +109,7 @@ class Toma extends Model
 
     //Consumos asociados a la toma
     public function factura():HasMany{
-        return $this->hasMany(factura::class,'id_toma');
+        return $this->hasMany(Factura::class,'id_toma');
     }
     public function TarifaContrato()
     {
@@ -119,18 +119,6 @@ class Toma extends Model
     public function asignacionGeografica(): MorphOne
     {
         return $this->morphOne(AsignacionGeografica::class, 'asignacionModelo', 'modelo', 'id_modelo');
-    }
-
-    //Consulta de referencia (no se usa)
-    public static function ConsultarContratosPorToma(string $id_toma){
-        
-        $data=Toma::findOrFail($id_toma);
-        $contratos=$data->withWhereHas('contratoVigente' , function (Builder $query) {
-            $query->where('estatus', '!=','cancelado');
-            
-        })->get();
-        return $contratos;
-        
     }
 
     public function getDireccionCompleta()

@@ -206,6 +206,26 @@ class UsuarioController extends Controller
         
         
     }
+    public function showCodigoToma(string $usuario)
+    {
+        try{
+            $data =(new UsuarioService())->UsuarioCodigoToma($usuario);
+            if ($data->isEmpty()){
+                return response()->json(["message"=>"No existen tomas para esta dirección",],201);
+            }
+            else{
+                return TomaResource::collection(
+                    $data
+                );
+            }
+        
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se encontraron usuarios por este código de toma'], 200);
+        }
+        
+        
+    }
 
     public function showCURP(string $usuario)
     {

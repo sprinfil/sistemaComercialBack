@@ -21,6 +21,11 @@ class UsuarioService{
         $tomas=Usuario::find($id)->tomas;
         return $tomas;
     }
+    public function UsuarioCodigoToma($id){
+        $tomas=Toma::where('id_codigo_toma',$id)->with('usuario')
+        ->paginate(10);
+        return $tomas;
+    }
     public function DireccionToma($direccion){
         $numero_casa = preg_replace('/\D/', '', $direccion);
         if (!$numero_casa){
@@ -29,7 +34,8 @@ class UsuarioService{
                     COALESCE(calle, ''), ' ', 
                     COALESCE(entre_calle_1, ''), ' ', 
                     COALESCE(entre_calle_2, ''), ' ', 
-                    COALESCE(colonia, '')
+                    COALESCE(colonia, ''), ' ',
+                    COALESCE(localidad, '') 
                 )  LIKE ?", ['%'.$direccion.'%'])
                 ->with('usuario')
                 ->paginate(10);
@@ -46,5 +52,6 @@ class UsuarioService{
         
         return $toma;
     }
+    
 
 }

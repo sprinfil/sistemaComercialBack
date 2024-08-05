@@ -28,6 +28,8 @@ class StoreConceptoCatalogoRequest extends FormRequest
             in:activo,inactivo",
             "prioridad_abono"=>"required|int",
             "genera_iva"=>"nullable|boolean",
+            "abonable"=>"required|boolean",
+            "tarifa_fija"=>"required|boolean",
             "tarifas.*"=>"nullable|array"
         ];
     }

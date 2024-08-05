@@ -19,10 +19,10 @@ class CargaTrabajo extends Model
         return $this->belongsTo(Operador::class, "id_operador_asigno");
     }
     public function libro() : BelongsTo {
-        return $this->belongsTo(libro::class, "id_libro");
+        return $this->belongsTo(Libro::class, "id_libro");
     }
     public function periodo() : BelongsTo {
-        return $this->belongsTo(periodo::class , "id_periodo");
+        return $this->belongsTo(Periodo::class , "id_periodo");
     }
     
 }

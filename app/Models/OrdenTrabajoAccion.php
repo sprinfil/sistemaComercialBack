@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
-class OrdenTrabajoConfiguracion extends Model
+class OrdenTrabajoAccion extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -17,9 +17,10 @@ class OrdenTrabajoConfiguracion extends Model
         "id_orden_trabajo_catalogo",
         "id_concepto_catalogo",
         "accion",
-        "momento",
-        "atributo",
-        "valor",
+        "modelo",
+        "opcional",
+        "id_orden_trabajo_acc_encadena",
+        "id_orden_trabajo_acc_alterna",
        
     ];
     public function orden_trabajo_catalogo(): BelongsTo{

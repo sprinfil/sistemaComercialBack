@@ -29,7 +29,7 @@ class Libro extends Model
         return $this->belongsTo(Ruta::class , "id_ruta");
     }
     public function cargaTrabajo() : HasMany {
-        return $this->hasMany(cargaTrabajo::class , "id_libro");
+        return $this->hasMany(CargaTrabajo::class , "id_libro");
     }
 
     public function asignacionGeografica(): MorphOne

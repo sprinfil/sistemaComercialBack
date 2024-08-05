@@ -19,11 +19,11 @@ class CotizacionDetalle extends Model
     ];
     public function cotizacion(): BelongsTo
     {
-        return $this->belongsTo(cotizacion::class, 'id_cotizacion');
+        return $this->belongsTo(Cotizacion::class, 'id_cotizacion');
     }
     public function contratoDetalle(): HasOneThrough
     {
-        return $this->HasOneThrough(Contrato::class, cotizacion::class,'id','id','id_cotizacion','id_contrato');
+        return $this->HasOneThrough(Contrato::class, Cotizacion::class,'id','id','id_cotizacion','id_contrato');
     }
     #TODO
     /*

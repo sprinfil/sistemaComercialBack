@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class correccionInformacionSolicitudResource extends JsonResource
+class CorreccionSolicitudResource extends JsonResource
 {
     public static $wrap = false;
     /**

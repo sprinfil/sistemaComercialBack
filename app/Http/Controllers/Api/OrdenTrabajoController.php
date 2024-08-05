@@ -11,12 +11,12 @@ use App\Http\Requests\UpdateOrdenTrabajoCatalogoRequest;
 use App\Http\Requests\UpdateOrdenTrabajoConfRequest;
 use App\Http\Requests\UpdateOrdenTrabajoRequest;
 use App\Http\Resources\OrdenTrabajoCatalogoResource;
-use App\Http\Resources\OrdenTrabajoConfResource;
+use App\Http\Resources\OrdenTrabajoAccionResource;
 use App\Http\Resources\OrdenTrabajoResource;
 use App\Models\OrdenTrabajoCatalogo;
-use App\Models\OrdenTrabajoConfiguracion;
+use App\Models\OrdenTrabajoAccion;
 use App\Services\OrdenTrabajoCatalogoService;
-use App\Services\OrdenTrabajoConfService;
+use App\Services\OrdenTrabajoAccionService;
 use App\Services\OrdenTrabajoService;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -31,14 +31,14 @@ class OrdenTrabajoController extends Controller
     public function indexCatalogo()
     {
         return OrdenTrabajoCatalogoResource::collection(
-            OrdenTrabajoCatalogo::with('ordenTrabajoConfiguracion')->get()
+            OrdenTrabajoCatalogo::with('OrdenTrabajoAccion')->get()
         );
        
     }
     public function indexConf()
     {
-        return OrdenTrabajoConfResource::collection(
-            OrdenTrabajoConfiguracion::all()
+        return OrdenTrabajoAccionResource::collection(
+            OrdenTrabajoAccion::all()
         );
        
     }
@@ -61,17 +61,18 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $dataConf=$data['orden_trabajo_configuracion'] ?? null;
+            $dataConf=$data['orden_trabajo_accion'] ?? null;
+            return $data;
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
-                $orden=(new OrdenTrabajoConfService())->store($dataConf);
-                $catalogo['orden_trabajo_conf']= $orden;
+                $orden=(new OrdenTrabajoAccionService())->store($dataConf);
+                $catalogo['orden_trabajo_acc']= $orden;
                
             }
-            DB::commit();
+            DB::rollBack();
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
         }
         catch(Exception $ex){
@@ -163,14 +164,14 @@ class OrdenTrabajoController extends Controller
     public function storeConf(StoreOrdenTrabajoConfRequest $request) //Ejemplo con service
     {
         try{
-            $orden=(new OrdenTrabajoConfService())->store($request->validated());
+            $orden=(new OrdenTrabajoAccionService())->store($request->validated());
             if (!$orden){
                 return response()->json([
                     'message'=>'Ya existe una configuración con las mismas caracteristicas para la orden de trabajo especificada'
                 ],200);
             }
             else{
-                return response(new OrdenTrabajoConfResource($orden),200);
+                return response(new OrdenTrabajoAccionResource($orden),200);
             } 
         }
         catch(Exception $ex){
@@ -186,8 +187,8 @@ class OrdenTrabajoController extends Controller
     {
         try{
             $data=$request->validated();
-            $ordenTrabajo=OrdenTrabajoConfiguracion::find($request->id);
-            $Orden=OrdenTrabajoConfiguracion::where('id_orden_trabajo_catalogo',$data['id_orden_trabajo_catalogo'])->
+            $ordenTrabajo=OrdenTrabajoAccion::find($request->id);
+            $Orden=OrdenTrabajoAccion::where('id_orden_trabajo_catalogo',$data['id_orden_trabajo_catalogo'])->
             where('id_concepto_catalogo',$data['id_concepto_catalogo'])->
             where('accion',$data['accion'])->
             where('momento',$data['momento'])->get();
@@ -200,7 +201,7 @@ class OrdenTrabajoController extends Controller
             else{
                 $ordenTrabajo->update($data);
                 $ordenTrabajo->save();
-                return new OrdenTrabajoConfResource($ordenTrabajo);
+                return new OrdenTrabajoAccionResource($ordenTrabajo);
             }
            
         }
@@ -209,11 +210,11 @@ class OrdenTrabajoController extends Controller
         }
     }
     
-    public function destroyConf(OrdenTrabajoConfiguracion $ordenTrabajo, Request $request)
+    public function destroyConf(OrdenTrabajoAccion $ordenTrabajo, Request $request)
     {
         try
         {
-            $ordenTrabajo = OrdenTrabajoConfiguracion::findOrFail($request["id"]);
+            $ordenTrabajo = OrdenTrabajoAccion::findOrFail($request["id"]);
             $ordenTrabajo->delete();
             return response()->json(['message' => 'Eliminado correctamente'], 200);
         }
@@ -227,9 +228,9 @@ class OrdenTrabajoController extends Controller
     {
         try{
             $ordenTrabajo=OrdenTrabajoCatalogo::find($id);
-            $ordenTrabajoConf=$ordenTrabajo->ordenTrabajoConfiguracion;
+            $ordenTrabajoConf=$ordenTrabajo->OrdenTrabajoAccion;
             if ($ordenTrabajoConf){
-                return  OrdenTrabajoConfResource::collection($ordenTrabajoConf);
+                return  OrdenTrabajoAccionResource::collection($ordenTrabajoConf);
             }
             else{
                 return response()->json(['message'=>'No se encontro una configuración para la orden de trabajo']);
