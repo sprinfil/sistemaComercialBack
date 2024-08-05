@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,11 +15,15 @@ class OrdenTrabajoCatalogo extends Model
 
     protected $table='orden_trabajo_catalogos';
     protected $fillable=[
+        "id_concepto_catalogo",
         "nombre",
         "vigencias",
         "momentoCargo",
 
     ];
+    public function concepto():BelongsTo{
+        return $this->belongsTo(ConceptoCatalogo::class,'id_concepto_catalogo');
+    }
     public function ordenTrabajoAccion():HasMany{
         return $this->HasMany(OrdenTrabajoAccion::class,'id_orden_trabajo_catalogo');;
     }

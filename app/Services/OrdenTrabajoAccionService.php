@@ -10,11 +10,10 @@ class OrdenTrabajoAccionService{
     public function store(array $ordenCatalogo): ?OrdenTrabajoAccion{ //Ejemplo de service
        
         $catalogo=OrdenTrabajoAccion::where('id_orden_trabajo_catalogo',$ordenCatalogo['id_orden_trabajo_catalogo'])->
-        where('id_concepto_catalogo',$ordenCatalogo['id_concepto_catalogo'])->
         where('accion',$ordenCatalogo['accion'])->
-        where('momento',$ordenCatalogo['momento'])->
-        where('atributo',$ordenCatalogo['atributo'])->
-        where('valor',$ordenCatalogo['valor'])->first();
+        where('modelo',$ordenCatalogo['modelo'])->first();
+        //where('id_orden_trabajo_conf_encadenada',$ordenCatalogo['id_orden_trabajo_conf_encadenada'])->
+        //where('id_orden_trabajo_conf_alterna',$ordenCatalogo['id_orden_trabajo_conf_alterna'])->first();
         if ($catalogo){
             return null;
         }

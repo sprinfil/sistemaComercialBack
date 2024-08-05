@@ -22,6 +22,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "id_concepto_catalogo" => "sometimes|exists:concepto_catalogos,id",
             "nombre" => "required|string|unique:orden_trabajo_catalogos,nombre",
             "vigencias" => "required|integer",
             "momentoCargo" => "required|in:generar,asignar,concluir,No genera",
