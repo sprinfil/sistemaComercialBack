@@ -56,23 +56,22 @@ class OrdenTrabajoController extends Controller
      */
     public function storeCatalogo(StoreOrdenTrabajoCatalogoRequest $request)
     {
-        
-        
         try{
             DB::beginTransaction();
             $data=$request->validated();
             $dataConf=$data['orden_trabajo_accion'] ?? null;
-            return $data;
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
-            
+            if (!$catalogo){
+                return response()->json(["sex",201]);
+            }
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
                 $orden=(new OrdenTrabajoAccionService())->store($dataConf);
-                $catalogo['orden_trabajo_acc']= $orden;
+                $catalogo['orden_trabajo_accion']= $orden;
                
             }
-            DB::rollBack();
+            DB::commit();
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
         }
         catch(Exception $ex){
