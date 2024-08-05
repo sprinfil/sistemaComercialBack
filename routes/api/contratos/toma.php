@@ -15,5 +15,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/Toma/pagos/{id}","pagosPorToma");
         Route::get("/Toma/cargos/{id}","cargosPorToma");
         Route::get("/Toma/codigo/{codigo}","buscarCodigoToma");
+        Route::post("/Toma/save_position/{toma_id}","save_position");
     });
 });
