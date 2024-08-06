@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Api;
 use mysqli;
 use Exception;
 use App\Models\Ruta;
+use App\Models\Toma;
 use App\Models\Libro;
 use App\Models\Punto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RutaResource;
 use App\Models\AsignacionGeografica;
+use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreRutaRequest;
 use App\Http\Requests\UpdateRutaRequest;
-use App\Http\Resources\LibroResource;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
@@ -159,16 +160,22 @@ class RutaController extends Controller
                     $libro = new Libro();
                     $libro->id_ruta = $ruta->id;
                     $libro->nombre = $nombre_libro;
-                
+
                     $points = [];
                     foreach ($libro_data_2 as $punto_data) {
-                        $points[] = new Point( /* latitud */$punto_data[1], /*longitud*/$punto_data[0]);
+                        $points[] = new Point( /* latitud */$punto_data[1], /*longitud*/ $punto_data[0]);
                     }
                     $lineString = new LineString($points);
                     $polygon = new Polygon([$lineString]);
 
                     $libro->polygon = $polygon;
                     $libro->save();
+
+                    $tomasDentroDelPoligono = Toma::whereWithin('posicion', $libro->polygon)->get();
+                    foreach ($tomasDentroDelPoligono as $toma) {
+                        $toma->id_libro = $libro->id;
+                        $toma->save();
+                    }
                 }
             }
         }
@@ -205,8 +212,13 @@ class RutaController extends Controller
             }
         }
     }
-
     public function masive_polygon_delete()
+    {
+        Libro::withTrashed()->forceDelete();
+        Ruta::withTrashed()->forceDelete();
+    }
+
+    public function masive_polygon_delete_deprecated()
     {
         $rutas = Ruta::all();
         foreach ($rutas as $ruta) {
@@ -251,8 +263,6 @@ class RutaController extends Controller
         */
 
         $libro = Libro::find(21);
-        echo json_encode(new LibroResource($libro ));
-
-   
+        echo json_encode(new LibroResource($libro));
     }
 }

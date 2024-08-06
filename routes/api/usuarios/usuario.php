@@ -37,5 +37,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         // datos fiscales del usuario
         Route::get("/usuarios/datos_fiscales/{id}", "datosFiscales");
         Route::post("/usuarios/datos_fiscales/storeOrUpdate/{id}", "storeOrUpdateDatosFiscales");
+        //Consultar el saldo de un usuario
+        Route::get("/usuarios/consultar/saldo/{id}" , "ConsultarSaldoUsuario");
     });
 });
