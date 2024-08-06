@@ -13,9 +13,17 @@ class UsuarioService{
         $user=Usuario::create($usuario);
         return $user;
     }
-    public function ConsultaGeneral($codigoUsuario){
-        $user=Usuario::where('codigo_usuario',$codigoUsuario)->with('tomas.medidor','tomas.giroComercial','contratos','descuento_asociado')->get();
+    public function ConsultaGeneral($id){
+        $user=Usuario::find($id);
         return $user;
+    }
+    public function ConsultaGeneralToma($id){
+        $toma=Toma::findOrFail($id); //->with('usuario')
+        $toma->usuario;
+        $toma->giroComercial;
+        $toma->contratoVigente;
+        $toma->datos_fiscales;
+        return $toma;
     }
     public function TomasUsuario($id): Collection{
         $tomas=Usuario::find($id)->tomas;

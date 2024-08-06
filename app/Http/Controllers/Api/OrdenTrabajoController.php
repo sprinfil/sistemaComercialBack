@@ -245,33 +245,57 @@ class OrdenTrabajoController extends Controller
     //// ORDEN DE TRABAJO
     public function storeOrden(StoreOrdenTrabajoRequest $request)
     {
-        
+       
+       try{
+        DB::beginTransaction();
         $data=(new OrdenTrabajoService())->crearOrden($request->validated());
-        if ($data){
+        if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
         else
         {
-            return "get this shigaboo";
+            DB::commit();
+            return response(new OrdenTrabajoResource($data),200);
         }
-        //$catalogo=OrdenTrabajo::create($data);
-        //return response(new OrdenTrabajoResource($catalogo),200);
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo"],202);
+       }
+   
+        
         
     }
-    public function cerrarOrden(StoreOrdenTrabajoRequest $request)
+    public function asignarOrden(UpdateOrdenTrabajoRequest $request)
     {
-        
-        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
-        if ($data){
+       try{
+        DB::beginTransaction();
+        $data=(new OrdenTrabajoService())->asignar($request->validated());
+        if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
         else
         {
-            return "get this shigaboo";
+            DB::commit();
+            return response(new OrdenTrabajoResource($data),200);
         }
-        //$catalogo=OrdenTrabajo::create($data);
-        //return response(new OrdenTrabajoResource($catalogo),200);
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+       }
+   
         
+        
+    }
+    public function cerrarOrden(Request $request)
+    {
+        //Macaco
+        DB::beginTransaction();
+        //$cerrar=(new OrdenTrabajoService())->concluir($request);
+        $Acciones=(new OrdenTrabajoService())->Acciones($request);
+        
+        DB::rollBack();
+        return $Acciones;
     }
 
 

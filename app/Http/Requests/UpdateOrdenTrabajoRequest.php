@@ -22,11 +22,10 @@ class UpdateOrdenTrabajoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_toma" => "required|exists:toma,id",
+            "id_toma" => "sometimes|exists:toma,id",
             "id_empleado_asigno" => "sometimes|exists:operadores,id",
-            "id_empleado_encargado" => "sometimes|exists:operadores,id",
-            "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id",
-            "estado"=>"required|in:no asignada,concluida,En proceso",
+            "id_empleado_encargado" => "required|exists:operadores,id",
+            "id_orden_trabajo_catalogo" => "sometimes|exists:orden_trabajo_catalogos,id",
             "fecha_finalizada"=>"sometimes|date",
             "obervaciones"=>"nullable|string",
             "evidencia"=>"nullable|string",
