@@ -24,6 +24,9 @@ class Toma extends Model
     protected $casts = [
         'posicion' => Point::class,
     ];
+    protected $spatialFields = [
+        'posicion',
+    ];
  
     protected $fillable = [
         "id_usuario",

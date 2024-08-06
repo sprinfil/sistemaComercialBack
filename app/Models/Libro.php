@@ -26,6 +26,10 @@ class Libro extends Model
         "longitud"
         
     ];
+
+    protected $spatialFields = [
+        'polygon', 
+    ];
     
     protected $casts = [
         'polygon' => Polygon::class,
