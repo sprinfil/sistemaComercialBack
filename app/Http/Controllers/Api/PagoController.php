@@ -49,7 +49,7 @@ class PagoController extends Controller
             ), 201);
         } catch(Exception $e) {
             return response()->json([
-                'error' => 'No se pudo procesar el pago'
+                'error' => 'No se pudo procesar el pago'.$e
             ], 500);
         }
     }
