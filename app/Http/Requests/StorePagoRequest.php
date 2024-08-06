@@ -25,10 +25,12 @@ class StorePagoRequest extends FormRequest
             "id_caja"=>"required|integer",
             "id_dueño"=>"required|integer",
             "modelo_dueño"=>"required|string|max:55",
-            "total_pagado"=>"required|integer",
+            "total_pagado"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
             "forma_pago"=>"required|string|max:55",
             "fecha_pago"=>"required|date",
-            "estado"=>"required|string|max:55"
+            "estado"=>"nullable|string|max:55",
+            "abonos.*"=>"nullable|array",
+            "bonificaciones.*"=>"nullable|array"
         ];
     }
 }

@@ -3,9 +3,13 @@ namespace App\Services;
 
 use App\Http\Requests\StorePagoRequest;
 use App\Http\Requests\UpdatePagoRequest;
+use App\Http\Resources\PagoResource;
+use App\Models\Abono;
+use App\Models\CatalogoBonificacion;
 use App\Models\Pago;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PagoService{
 
@@ -23,9 +27,66 @@ class PagoService{
     public function registrarPago(StorePagoRequest $request): Pago
     {
         try{
+            // se validan los datos
             $data = $request->validated();
-            return Pago::create($data);
+
+            DB::beginTransaction();
+
+            // crea el registro del pago con los datos ingresados
+            $pago = Pago::create($data);
+            $monto_pagado = $pago->total_pagado;
+            $total_abonado = 0;
+            $total_bonificado = 0; //TO DO
+
+            // valida si el pago cuenta con abonos cargados directamente
+            if(isset($data['abonos']) && !is_null($data['abonos'])){
+                // se registran los abonos cargados al pago
+                foreach ($data['abonos'] as $abono) {
+                    $nuevo_abono = new Abono();
+                    // se define el cargo al que abona el pago
+                    $nuevo_abono->id_cargo = $abono['id_cargo'];
+                    // se define el origen del abono (en este caso un pago)
+                    $nuevo_abono->id_origen = $pago->id;
+                    $nuevo_abono->modelo_origen = 'pago';
+                    // se valida que el total del pago no sea menor que el abono
+                    if($total_abonado <= $monto_pagado){
+                        $total_abonado += $abono['monto'];
+                        $nuevo_abono->total_abonado = $abono['monto'];
+                    }else{
+                        throw new Exception();
+                    }
+                    // si nada fallo, se guarda el abono
+                    $nuevo_abono->save();
+                }
+            }else{
+                // no hay abonos en el pago ingresado
+            }
+
+            // valida si el pago aplica alguna bonificacion
+            if(isset($data['bonificacion']) && !is_null($data['bonificacion'])){
+                //TO DO
+            } else{
+                // no hay bonificaciones
+            }
+
+            if($monto_pagado > $total_abonado){ // + bonificaciones
+                $data['estado'] = 'pendiente';
+                $pago_modificado = Pago::findOrFail($pago->id);
+                $pago_modificado->update($data);
+                $pago_modificado->save();
+            } else if($monto_pagado == $total_abonado){ // + bonificaciones
+                $data['estado'] = 'abonado';
+                $pago_modificado = Pago::findOrFail($pago->id);
+                $pago_modificado->update($data);
+                $pago_modificado->save();
+            } else if($monto_pagado < $total_abonado){ // + bonificaciones
+                throw new Exception();
+            }
+
+            DB::commit();
+            return $pago;
         } catch(Exception $ex){
+            DB::rollBack();
             throw $ex;
         }
     }
