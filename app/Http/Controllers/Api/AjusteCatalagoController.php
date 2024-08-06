@@ -7,7 +7,10 @@ use App\Models\AjusteCatalogo;
 use App\Http\Requests\StoreAjusteCatalogoRequest;
 use App\Http\Requests\UpdateAjusteCatalogoRequest;
 use App\Http\Resources\AjusteCatalogoResource;
+use App\Services\Catalogos\AjusteCatalogoService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AjusteCatalagoController extends Controller
 {
@@ -17,9 +20,19 @@ class AjusteCatalagoController extends Controller
     public function index()
     {
         $this->authorize('viewAny', AjusteCatalogo::class);
-        return AjusteCatalogoResource::collection(
-            AjusteCatalogo::all()
-        );
+        try {
+            DB::beginTransaction();
+            $ajuste = (new AjusteCatalogoService())->indexAjusteCatalogoService();
+            DB::commit();
+            return $ajuste;
+    
+           } catch (Exception $ex) {
+    
+            DB::rollBack();
+                return response()->json([
+                    'message' => 'No se encontraron registros de ajustes.'
+                ], 200);
+           }
     }
 
     /**
@@ -28,35 +41,21 @@ class AjusteCatalagoController extends Controller
     public function store(StoreAjusteCatalogoRequest $request)
     {
         $this->authorize('create', AjusteCatalogo::class);
-        /*
-        $data = $request->validated();
-        $ajuste = AjusteCatalogo::create($data);
-        return response(new AjusteCatalogoResource($ajuste), 201);
-        */
-
-        //Se valida el store
-        $data = $request->validated();
-        //Busca por nombre los eliminados
-        $ajuste = AjusteCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
-        if ($ajuste) {
-            if ($ajuste->trashed()) {
-                return response()->json([
-                    'message' => 'El ajuste ya existe pero ha sido eliminada, ¿Desea restaurarla?',
-                    'restore' => true,
-                    'ajuste_id' => $ajuste->id
-                ], 200);
-            }
+        try {
+            $data = $request->validated();
+            $nombre = $request->nombre;
+            DB::beginTransaction();
+            $ajuste = (new AjusteCatalogoService())->storeAjusteCatalogoService($nombre,$data);
+            DB::commit();
+            return $ajuste;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
-                'message' => 'El ajuste ya existe',
-                'restore' => false
+                'message' => 'Ocurrio un error al registrar el ajuste.'
             ], 200);
-        }
-        //Si no existe el ajuste, la crea
-        if (!$ajuste) {
-            $ajuste = AjusteCatalogo::create($data);
-            return response($ajuste, 201);
-        }
-        //$data = $request->validated();
+       }
+        
+    
     }
 
     /**
@@ -64,7 +63,7 @@ class AjusteCatalagoController extends Controller
      */
     public function show(AjusteCatalogo $ajusteCatalogo)
     {
-        //
+        
     }
 
     /**
@@ -73,11 +72,20 @@ class AjusteCatalagoController extends Controller
     public function update(UpdateAjusteCatalogoRequest $request, AjusteCatalogo $ajusteCatalogo)
     {
         $this->authorize('update', AjusteCatalogo::class);
-        $data = $request->validated();
-        $ajuste = AjusteCatalogo::find($request["id"]);
-        $ajuste->update($data);
-        $ajuste->save();
-        return new AjusteCatalogoResource($ajuste);
+        try {
+            $data = $request->validated();
+            $id = $request->id;
+            DB::beginTransaction();
+            $ajuste = (new AjusteCatalogoService())->updateAjusteCatalogoservice($data,$id);
+            DB::commit();
+            return $ajuste;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al modificar el ajuste.'
+            ], 200);
+        }
+        
     }
 
     /**
@@ -86,18 +94,34 @@ class AjusteCatalagoController extends Controller
     public function destroy(AjusteCatalogo $ajusteCatalogo, Request $request)
     {
         $this->authorize('delete', AjusteCatalogo::class);
-        $ajuste = AjusteCatalogo::find($request["id"]);
-        $ajuste->delete();
+        try {
+            $id = $request->id;
+            DB::beginTransaction();
+            $ajuste = (new AjusteCatalogoService())->destroyAjusteCatalogoService($id);
+            DB::commit();
+            return response()->json([
+                'message' => 'Se ha eliminado el ajuste.'
+            ], 200);
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al eliminar el ajuste.'
+            ], 200);
+        }
+        
     }
 
     public function restaurarDato (AjusteCatalogo $convenioCatalogo, Request $request)
     {
-        $convenioCatalogo = AjusteCatalogo::withTrashed()->findOrFail($request->id);
-        //Condicion para verificar si el registro esta eliminado
-        if ($convenioCatalogo->trashed()) {
-            //Restaura el registro
-            $convenioCatalogo->restore();
-            return response()->json(['message' => 'El ajuste ha sido restaurado' , 200]);
+        try {
+            $id = $request->id;
+            $ajuste = (new AjusteCatalogoService())->restaurarAjusteCatalogoServicio($id);
+            return $ajuste;
+        } catch (Exception $ex) {
+            return response()->json([
+                'message' => 'Ocurrio un error al restaurar el ajuste.'
+            ], 200);
         }
+        
     }
 }
