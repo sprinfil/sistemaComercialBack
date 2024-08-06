@@ -150,8 +150,8 @@ class TomaController extends Controller
         $toma = Toma::find($toma_id);
         $toma->posicion = $point;
         $toma->save();
-     }
     }
+    
     
     public function ordenesToma($id)
     {
