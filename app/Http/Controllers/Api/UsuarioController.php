@@ -9,9 +9,11 @@ use App\Models\Usuario;
 use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioMoralRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
+use App\Http\Resources\CargoResource;
 use App\Http\Resources\DatoFiscalResource;
 use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
+use App\Services\ConsultarSaldoService;
 use App\Services\UsuarioService;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,6 +23,13 @@ class UsuarioController extends Controller
     /**
      * Display a listing of the resource.
      */
+    protected $SaldoUsuarioService;
+
+    public function __construct(UsuarioService $_ConsultarSaldoUsuario)
+    {
+        $this->SaldoUsuarioService = $_ConsultarSaldoUsuario;       
+    }
+    
     public function index()
     {
         try{
@@ -375,5 +384,18 @@ class UsuarioController extends Controller
             catch(Exception $ex) {
                 return response()->json(['message' => 'error'.$ex], 500);
             } 
+    }
+
+    public function ConsultarSaldoUsuario($id) 
+    {
+        try {
+            //$usuario = Usuario::find($id);
+            return response(
+             $this->SaldoUsuarioService->ConsultarSaldoUsuario($id));
+         } catch (Exception $ex) {
+             return response()->json([
+                 'error' => 'No fue posible consultar el saldo' .$ex
+             ], 500);
+         }
     }
 }

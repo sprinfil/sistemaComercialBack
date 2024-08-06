@@ -36,6 +36,7 @@ return new class extends Migration
             $table->unsignedBigInteger('c_alc')->nullable();
             $table->unsignedBigInteger('c_san')->nullable();
             $table->enum('tipo_contratacion', ['normal', 'condicionado', 'desarrollador']);
+            $table->point('posicion')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

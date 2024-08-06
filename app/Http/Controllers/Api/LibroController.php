@@ -11,6 +11,9 @@ use App\Models\AsignacionGeografica;
 use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreLibroRequest;
 use App\Http\Requests\UpdateLibroRequest;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Objects\Polygon;
+use MatanYadaev\EloquentSpatial\Objects\LineString;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class LibroController extends Controller
@@ -26,10 +29,67 @@ class LibroController extends Controller
         );
     }
 
-    /**
+        /**
      * Store a newly created resource in storage.
      */
     public function store(StoreLibroRequest $request)
+    {
+        //Pendiente de permiso
+        
+        try {
+
+            //Valida el store
+            $data = $request->validated();
+            //Busca por registros eliminados
+            $libros = Libro::withTrashed()->where('id_ruta', $request->input('id_ruta'))->where('nombre', $request->input('nombre'))->first();
+    
+            //Validacion en caso de registro duplicado
+            if ($libros) {
+                if ($libros->trashed()) {
+                    return response()->json([
+                        'message' => 'El libro ya existe en esta ruta pero ha sido eliminado. ¿Desea restaurarlo?',
+                        'restore' => true,
+                        'ruta_id' => $libros->id
+                    ], 200);
+                }
+                return response()->json([
+                    'message' => 'El libro ya existe en esta ruta.',
+                    'restore' => false
+                ], 200);
+            }
+    
+            //Si el dato no existe lo crea
+            if(!$libros)
+            {
+                $libro = Libro::create($data);
+
+                $polygon = new Polygon([
+                    new LineString([
+                        new Point(24.1277, -110.3033),
+                        new Point(24.1343, -110.3033),
+                        new Point(24.1343, -110.2967),
+                        new Point(24.1277, -110.3033),
+                    ])
+                ]);
+
+                $libro->polygon = $polygon;
+                $libro->save();
+
+                return new LibroResource($libro);
+            }
+            //
+                
+            } catch (ModelNotFoundException $e) {
+                return response()->json([
+                    'error' => 'No se pudo añadir el libro'
+                ], 500);
+            }      
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store_deprecated(StoreLibroRequest $request)
     {
         //Pendiente de permiso
         
@@ -192,5 +252,21 @@ class LibroController extends Controller
             ], 500);
         }
         
+    }
+
+    public function update_polygon(Request $request, $libro_id){
+        $libro = Libro::find($libro_id);
+        $new_points = $request["puntos"];
+
+        $points = [];
+        
+        foreach ($new_points as $punto_data) {
+            $points[] = new Point( /* latitud */$punto_data["lat"], /*longitud*/$punto_data["lng"]);
+        }
+        $lineString = new LineString($points);
+        $polygon = new Polygon([$lineString]);
+
+        $libro->polygon = $polygon;
+        $libro->save();
     }
 }

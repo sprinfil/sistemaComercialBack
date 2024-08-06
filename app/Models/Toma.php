@@ -2,21 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class Toma extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = "toma";
+    use HasSpatial;
 
+    protected $table = "toma";
+  
+    protected $casts = [
+        'posicion' => Point::class,
+    ];
+    protected $spatialFields = [
+        'posicion',
+    ];
+ 
     protected $fillable = [
         "id_usuario",
         "id_giro_comercial",
@@ -102,6 +113,10 @@ class Toma extends Model
         return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño');
     }
 
+    public function cargosVigentes(): MorphMany
+    {
+        return $this->MorphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
+    }
     public function pagos(): MorphMany
     {
         return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');

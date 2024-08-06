@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_modelo');
             $table->string('modelo');
+            $table->polygon('polygon')->nullable();
             $table->enum('estatus',['activo','inactivo']);   
             $table->softDeletes();
             $table->timestamps();

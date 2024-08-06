@@ -30,6 +30,7 @@ class StoreConceptoCatalogoRequest extends FormRequest
             "genera_iva"=>"nullable|boolean",
             "abonable"=>"required|boolean",
             "tarifa_fija"=>"required|boolean",
+            "cargo_directo"=>"required|boolean",
             "tarifas.*"=>"nullable|array"
         ];
     }

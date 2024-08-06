@@ -22,9 +22,11 @@ class OrdenTrabajoCatalogoFactory extends Factory
     public function definition(): array
     {
         return [
-            "nombre",
-            "vigencias",
-            "momentoCargo",
+            "id_concepto_catalogo" => 0,
+            "nombre" => '',
+            "vigencias" => $this->faker->numberBetween(1,30),
+            "momento_cargo" => $this->faker->randomElement(['generar','asignar','concluir','No genera']), //'generar','asignar','concluir','No genera'
+            "genera_masiva" => 0,
         ];
     }
 
@@ -39,7 +41,6 @@ class OrdenTrabajoCatalogoFactory extends Factory
             $concepto = ConceptoCatalogo::buscarPorNombre($orden_de_trabajo->nombre);
             $configuracion = OrdenTrabajoAccion::factory()->create([
                 'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
-                'id_concepto_catalogo' => $concepto->id,
             ]); 
         });
     }
