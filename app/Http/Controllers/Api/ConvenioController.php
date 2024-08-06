@@ -7,7 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ConvenioResource;
 use App\Http\Requests\StoreConvenioCatalogoRequest;
 use App\Http\Requests\UpdateConvenioCatalogoRequest;
+use App\Services\Catalogos\ConvenioCatalogoService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\returnValueMap;
 
 class ConvenioController extends Controller
 {
@@ -17,9 +22,19 @@ class ConvenioController extends Controller
     public function index()
     {
         $this->authorize('viewAny', ConvenioCatalogo::class);
-        return ConvenioResource::collection(
-            ConvenioCatalogo::orderby("id", "desc")->get()
-        );
+        try {
+            DB::beginTransaction();
+            $convenio = (new ConvenioCatalogoService())->indexconvenioCatalogoService();
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'No se encontraron registros de convenios.'
+            ], 200);
+        }
+        
+       
 
     }
 
@@ -28,33 +43,22 @@ class ConvenioController extends Controller
      */
     public function store(StoreConvenioCatalogoRequest $request)
     {
-        $this->authorize('create', ConvenioCatalogo::class);
-       /*$data = $request->validated();
-       $convenio = ConvenioCatalogo::create($data);
-       return response(new ConvenioResource($convenio), 201);*/
-       //Se valida el store
-       $data = $request->validated();
-       //Busca por nombre los eliminados
-       $convenio = ConvenioCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
-       if ($convenio) {
-           if ($convenio->trashed()) {
-               return response()->json([
-                   'message' => 'El convenio ya existe pero ha sido eliminada, ¿Desea restaurarla?',
-                   'restore' => true,
-                   'convenio_id' => $convenio->id
-               ], 200);
-           }
-           return response()->json([
-               'message' => 'El convenio ya existe',
-               'restore' => false
-           ], 200);
+        $this->authorize('create', ConvenioCatalogo::class);      
+       //Se valida el store      
+       try {
+         $data = $request->validated();
+         $nombre = $request->nombre;
+         DB::beginTransaction();
+         $convenio = (new ConvenioCatalogoService())->storeConvenioCatalogoService($nombre, $data);
+         DB::commit();
+         return $convenio;
+       } catch (Exception $ex) {
+         DB::rollBack();
+         return response()->json([
+             'message' => 'Ocurrio un error al registrar el convenio.'
+         ], 200);
        }
-       //Si no existe el convenio, lo crea
-       if (!$convenio) {
-           $convenio = ConvenioCatalogo::create($data);
-           return response($convenio, 201);
-       }
-       //$data = $request->validated();
+       
     }
 
     /**
@@ -71,11 +75,21 @@ class ConvenioController extends Controller
     public function update(UpdateConvenioCatalogoRequest $request, ConvenioCatalogo $convenioCatalogo)
     {
         $this->authorize('update', ConvenioCatalogo::class);
-        $data = $request->validated();
-        $convenioCatalogo = ConvenioCatalogo::find($request["id"]);
-        $convenioCatalogo->update($data);
-        $convenioCatalogo->save();
-        return new ConvenioResource($convenioCatalogo);
+        try {
+            $data = $request->validated();
+            $id = $request->id;
+            DB::beginTransaction();
+            $convenio = (new ConvenioCatalogoService())->updateConvenioCatalogoservice($data,$id);
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al registrar el convenio.'
+            ], 200);
+            
+        }
+        
     }
 
     /**
@@ -86,13 +100,14 @@ class ConvenioController extends Controller
         $this->authorize('delete', ConvenioCatalogo::class);
         try
         {
-
-            $convenioCatalogo = ConvenioCatalogo::findOrFail($request->id);
-            $convenioCatalogo->delete();
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
+           $id = $request->id;
+           DB::beginTransaction();
+           $convenio = (new ConvenioCatalogoService())->destroyConvenioCatalogoService($id);
+           DB::commit();
+           return $convenio;
         }
         catch (\Exception $e) {
-
+            DB::rollBack();
             return response()->json(['message' => 'Algo fallo'], 500);
         }
 
@@ -100,12 +115,18 @@ class ConvenioController extends Controller
 
     public function restaurarDato (ConvenioCatalogo $convenioCatalogo, Request $request)
     {
-        $convenioCatalogo = ConvenioCatalogo::withTrashed()->findOrFail($request->id);
-        //Condicion para verificar si el registro esta eliminado
-        if ($convenioCatalogo->trashed()) {
-            //Restaura el registro
-            $convenioCatalogo->restore();
-            return response()->json(['message' => 'El convenio ha sido restaurado' , 200]);
+        try {
+            $id = $request->id;
+            DB::beginTransaction();
+            $convenio = (new ConvenioCatalogoService())->restaurarConstanciaCatalogoServicio($id);
+            DB::commit();
+            return $convenio;
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al restaurar la constancia.'
+            ], 200); 
         }
+        
     }
 }

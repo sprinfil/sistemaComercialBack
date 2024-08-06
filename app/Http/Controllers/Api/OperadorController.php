@@ -8,9 +8,11 @@ use App\Http\Requests\StoreOperadorRequest;
 use App\Http\Requests\UpdateOperadorRequest;
 use App\Http\Resources\OperadorResource;
 use App\Models\User;
+use App\Services\Catalogos\OperadorCatalogoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OperadorController extends Controller
@@ -21,11 +23,20 @@ class OperadorController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Operador::class);
+        try {
+            DB::beginTransaction();
+            $operador = (new OperadorCatalogoService())->indexOperadorCatalogoService();
+            return $operador;
+            DB::commit();
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No fue posible consultar los operadores'
+            ], 500);
+        }
 
         
-        return response(OperadorResource::collection(
-            Operador::all()
-        ), 200);
+        
 
     }
 
@@ -33,26 +44,14 @@ class OperadorController extends Controller
     {
         try {
             $data = $request->validated();
-            $user = new User();
-            $user->name = $data["name"];
-            $user->email = $data["email"];
-            $user->password = bcrypt($data["password"]);
-            $user->save();
-
-            $operador = new Operador();
-            $operador->id_user = $user->id;
-            $operador->codigo_empleado = $data["codigo_empleado"];
-            $operador->nombre = $data["nombre"];
-            $operador->apellido_paterno = $data["apellido_paterno"];
-            $operador->apellido_materno = $data["apellido_materno"];
-            $operador->CURP = $data["CURP"];
-            $operador->fecha_nacimiento = $data["fecha_nacimiento"];
-            $operador->save();
-
-            return response(new OperadorResource($operador), 201);
+            DB::beginTransaction();
+            $operador = (new OperadorCatalogoService())->storeOperadorCatalogoService_2($data);
+            DB::commit();
+            return $operador;
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo guardar el operador'
+                'error' => 'No se pudo guardar el operador.'
             ], 500);
         }
     }
@@ -66,41 +65,20 @@ class OperadorController extends Controller
 
         try {
             //VALIDA EL STORE
-            $data = $request->validated();
-
-            //Busca por codigo de empleado a los eliminados
-            $operador = Operador::withTrashed()->where('codigo_empleado', $request->input('codigo_empleado'))->first();
-
-            //VALIDACION POR SI EXISTE
-            if ($operador) {
-                if ($operador->trashed()) {
-                    return response()->json([
-                        'message' => 'El operador ya existe pero ha sido eliminado. ¿Desea restaurarlo?',
-                        'restore' => true,
-                        'operador_id' => $operador->id
-                    ], 200);
-                }
-                return response()->json([
-                    'message' => 'El concepto ya existe.',
-                    'restore' => false
-                ], 200);
-            }
-            //si no existe el concepto lo crea
-            if (!$operador) {
-                $operador = Operador::create($data);
-                return response(new OperadorResource($operador), 201);
-            }
-
-            //Lo que ya tenia
-            //$operador = Operador::create($data);
-            // return response(new OperadorResource ($operador), 201);
+            $data = $request->validated();           
+            $codEmpleado = $request->codigo_empleado;
+            DB::beginTransaction();
+            $operador = (new OperadorCatalogoService())->storeOperadorCatalogoService($codEmpleado,$data);
+            DB::commit();
+            return $operador;
+          
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'No se pudo guardar el operador'
             ], 500);
         }
-        // me falta el metodo me baso en el concepto controller
-        //
+        
     }
 
     /**
