@@ -100,7 +100,7 @@ class Toma extends Model
     }
 
     public function ordenesTrabajo():HasMany{
-        return $this->hasMany(ordenTrabajo::class,'id_toma');;
+        return $this->hasMany(ordenTrabajo::class,'id_toma');
     }
 
     public function datos_fiscales(): MorphOne
