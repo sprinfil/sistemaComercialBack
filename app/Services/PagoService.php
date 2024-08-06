@@ -38,6 +38,10 @@ class PagoService{
             $total_abonado = 0;
             $total_bonificado = 0; //TO DO
 
+            // tipo pago
+            $modelo = $data['modelo_dueño'];
+            $id_modelo = $data['id_dueño'];
+
             // valida si el pago cuenta con abonos cargados directamente
             if(isset($data['abonos']) && !is_null($data['abonos'])){
                 // se registran los abonos cargados al pago
@@ -45,6 +49,9 @@ class PagoService{
                     $nuevo_abono = new Abono();
                     // se define el cargo al que abona el pago
                     $nuevo_abono->id_cargo = $abono['id_cargo'];
+                    // valida que el cargo al que se abona pertenezca al usuario
+                    // y su estado sea pendiente de pago
+                    
                     // se define el origen del abono (en este caso un pago)
                     $nuevo_abono->id_origen = $pago->id;
                     $nuevo_abono->modelo_origen = 'pago';
