@@ -166,14 +166,18 @@ class UsuarioController extends Controller
     }
     public function general(string $codigoUsuario)
     {
+        $data =(new UsuarioService())->ConsultaGeneral($codigoUsuario);
+        $numero_tomas=count($data->tomas);
+       
+    $datos=new UsuarioResource(
+        $data
+    );
+    
+    return response()->json(['usuario'=>$datos,'numero_tomas'=>$numero_tomas]);
+    
         try{
-            $data =(new UsuarioService())->ConsultaGeneral($codigoUsuario);
-            return $data;
-            /*
-        return UsuarioResource::collection(
-            $data
-        );
-        */
+            
+           
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);

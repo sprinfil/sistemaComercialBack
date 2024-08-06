@@ -18,11 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('id_empleado_encargado')->nullable();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
             $table->enum('estado',['No asignada','Concluida','En proceso','Cancelada']);
-            $table->date('fecha_finalizada');
-            $table->date('fecha_vigencia');
-            $table->string('obervaciones');
-            $table->string('evidencia');
-            $table->string('material_utilizado');
+            $table->date('fecha_finalizada')->nullable();
+            $table->date('fecha_vigencia')->nullable();
+            $table->string('obervaciones')->nullable();
+            $table->string('evidencia')->nullable();
+            $table->string('material_utilizado')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
