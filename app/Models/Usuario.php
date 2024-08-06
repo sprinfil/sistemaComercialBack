@@ -59,6 +59,10 @@ class Usuario extends Model
     {
         return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño');
     }
+    public function cargosPendientes(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
+    }
 
     public function pagos(): MorphMany
     {
@@ -104,6 +108,7 @@ class Usuario extends Model
     }
 
    /// puede que se borre, usar como prueba para consultas más complejas
+   /*
     public static function ConsultarContratoPorUsuario(string $id_usuario){
         
         $data=Usuario::findOrFail($id_usuario);
@@ -114,6 +119,7 @@ class Usuario extends Model
         return $contratos;
         
     }
+        */
 
     public function contratoServicio($id_usuario){
         $usuario=usuario::find($id_usuario);

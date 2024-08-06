@@ -102,6 +102,10 @@ class Toma extends Model
         return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño');
     }
 
+    public function cargosVigentes(): MorphMany
+    {
+        return $this->MorphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
+    }
     public function pagos(): MorphMany
     {
         return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
