@@ -30,6 +30,7 @@ class UpdateConceptoCatalogoRequest extends FormRequest
             "genera_iva"=>"required|boolean",
             "abonable"=>"required|boolean",
             "tarifa_fija"=>"required|boolean",
+            "cargo_directo"=>"required|boolean",
             "tarifas.*"=>"nullable|array"
         ];
     }
