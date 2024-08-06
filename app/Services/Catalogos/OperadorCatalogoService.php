@@ -57,7 +57,7 @@ class OperadorCatalogoService{
        
          } catch (Exception $ex) {
              return response()->json([
-                 'message' => 'Ocurrio un error al registrar el operador.'.$ex
+                 'message' => 'Ocurrio un error al registrar el operador.'
              ], 200);
          }
               
@@ -85,78 +85,110 @@ class OperadorCatalogoService{
             return response(new OperadorResource($operador), 201);
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'No se pudo guardar el operador'
+                'error' => 'No se guardo el operador'
             ], 500);
         }
     }
 
-    public function showDescuentoCatalogoService(string $id)
+    
+    public function showOperadorCatalogoService(string $id)
     {
         try {
-            $descuento = DescuentoCatalogo::findOrFail($id);
-            return response(new DescuentoCatalogoResource($descuento), 200);
+            $operador = Operador::findOrFail($id);
+            return response(new OperadorResource($operador), 200);
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'No se pudo encontrar el descuento'
+                'error' => 'No se encotro el operador'
             ], 500);
         }
     }
 
     
 
-    public function updateDescuentoCatalogoservice(array $data, string $id)
+    public function updateOperadorCatalogoservice(array $data, string $id)
     {
                //pendiente validacion que permite solucionar repetidos por modificaciones sin update request
         try {            
                 
-                if ($data != null) {
-                 
-                    $descuento = DescuentoCatalogo::findOrFail($id);
-                    $descuento->update($data);
-                    $descuento->save();
-                    return response(new DescuentoCatalogoResource($descuento), 200);
+                if ($data != null) {               
+                    $operador = Operador::findOrFail($id);
+                    $operador->update($data);
+                    $operador->save();
+                    return response(new OperadorResource($operador), 200);
                 }
                 else{
                     return response()->json([
-                        'error' => 'No se pudo editar el descuento'
+                        'error' => 'No se edito el operador'
                     ], 500);
-
                 }                         
         } catch (Exception $ex) {
             return response()->json([
-                'message' => 'Ocurrio un error al modificar el descuento.'
+                'message' => 'Ocurrio un error al modificar el operador.'
             ], 200);
         }        
               
     }
 
-    public function destroyDescuentoCatalogoService(string $id)
-    {      
-        try {          
-            $descuento = DescuentoCatalogo::findOrFail($id);
-            $descuento->delete();
-            return response("Descuento eliminado con exito",200);
+    public function updateOperadorCatalogoservice_2(array $data, string $id_user, string $id_operador)
+    {
+               //pendiente validacion que permite solucionar repetidos por modificaciones sin update request
+        try {            
+                
+            $user = User::find($id_user);
+            $user->name = $data["name"];
+            $user->email = $data["email"];
+            if ($data["password"]) {
+                $user->password = bcrypt($data["password"]);
+            }
+            $user->save();
+
+            $operador = Operador::find($id_operador);
+            $operador->id_user = $user->id;
+            $operador->codigo_empleado = $data["codigo_empleado"];
+            $operador->nombre = $data["nombre"];
+            $operador->apellido_paterno = $data["apellido_paterno"];
+            $operador->apellido_materno = $data["apellido_materno"];
+            $operador->CURP = $data["CURP"];
+            $operador->fecha_nacimiento = $data["fecha_nacimiento"];
+            $operador->save();  
+            return response(new OperadorResource($operador), 201);            
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'Ocurrio un error al borrar el descuento.'
+                'message' => 'Ocurrio un error al modificar el operador.'
+            ], 200);
+        }        
+              
+    }
+
+    public function destroyOperadorCatalogoService(string $id)
+    {      
+        try {          
+            $operador = Operador::findOrFail($id);
+            $operador->delete();
+            return response("Operador eliminado con exito", 200);
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al borrar el operador.'
             ], 500);
         }      
     }
 
-    public function restaurarDescuentoCatalogoService (string $id)
+    public function restaurarOperadorCatalogoService (string $id)
     {
         try {
-            $catalogoDescuento = DescuentoCatalogo::withTrashed()->findOrFail($id);
-            //Condicion para verificar si el registro esta eliminado
-            if ($catalogoDescuento->trashed()) {
-              //Restaura el registro
-              $catalogoDescuento->restore();
-            return response()->json(['message' => 'El descuento ha sido restaurado' , 200]);
-        }
-          
-        } catch (Exception $ex) {
+            $operador = Operador::withTrashed()->findOrFail($id);
+
+             // Verifica si el registro está eliminado
+             if ($operador->trashed()) {
+
+               // Restaura el registro
+               $operador->restore();
+               return response()->json(['message' => 'El operador ha sido restaurado.'], 200);
+            }
+        
+        }catch (Exception $ex) {
             return response()->json([
-                'message' => 'Ocurrio un error al restaurar el descuento.'
+                'message' => 'Ocurrio un error al restaurar el operador.'
             ], 200);         
         }
        

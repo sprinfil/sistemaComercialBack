@@ -87,9 +87,12 @@ class OperadorController extends Controller
     public function show($id)
     {
         try {
-            $operador = Operador::findOrFail($id);
-            return response(new OperadorResource($operador), 200);
+            DB::beginTransaction();
+            $operador = (new OperadorCatalogoService())->showOperadorCatalogoService($id);
+            DB::commit();
+            return $operador;
         } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'No se pudo encontrar el operador'
             ], 500);
@@ -104,16 +107,17 @@ class OperadorController extends Controller
     public function update(UpdateOperadorRequest $request, string $id)
     {
         $this->authorize('update', Operador::class);
-        //Log::info("id");
+        
         try {
             $data = $request->validated();
-            $operador = Operador::findOrFail($id);
-            $operador->update($data);
-            $operador->save();
-            return response(new OperadorResource($operador), 200);
+            DB::beginTransaction();
+            $operador = (new OperadorCatalogoService())->updateOperadorCatalogoservice($data,$id);
+            DB::commit();
+            return $operador;
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo editar el operador'
+                'error' => 'No se edito el operador'
             ], 500);
         }
     }
@@ -121,26 +125,21 @@ class OperadorController extends Controller
     public function update_2(UpdateOperadorRequest $request, string $id_user, string $id_operador)
     {
         
+            
+           try {
             $data = json_decode($request->getContent(), true);
-            $user = User::find($id_user);
-            $user->name = $data["name"];
-            $user->email = $data["email"];
-            if ($data["password"]) {
-                $user->password = bcrypt($data["password"]);
-            }
-            $user->save();
+            DB::beginTransaction();
+            $operador = (new OperadorCatalogoService())->updateOperadorCatalogoservice_2($data, $id_user, $id_operador);
+            DB::commit();
+            return $operador;
+           } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al modificar el operador.'
+            ], 200);
+           }
 
-            $operador = Operador::find($id_operador);
-            $operador->id_user = $user->id;
-            $operador->codigo_empleado = $data["codigo_empleado"];
-            $operador->nombre = $data["nombre"];
-            $operador->apellido_paterno = $data["apellido_paterno"];
-            $operador->apellido_materno = $data["apellido_materno"];
-            $operador->CURP = $data["CURP"];
-            $operador->fecha_nacimiento = $data["fecha_nacimiento"];
-            $operador->save();
-
-            return response(new OperadorResource($operador), 201);
+           
         
         
     }
@@ -152,12 +151,14 @@ class OperadorController extends Controller
     {
         $this->authorize('delete', Operador::class);
         try {
-            $operador = Operador::findOrFail($id);
-            $operador->delete();
-            return response("Operador eliminado con exito", 200);
+            DB::beginTransaction();
+           $operador = (new OperadorCatalogoService())->destroyOperadorCatalogoService($id);
+           DB::commit();
+           return $operador;
         } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo borrar el operador'
+                'error' => 'Ocurrio un error al borrar el operador'
             ], 500);
         }
         //
@@ -165,14 +166,19 @@ class OperadorController extends Controller
     public function restaurarOperador(Operador $operador, HttpRequest $request)
     {
 
-        $operador = Operador::withTrashed()->findOrFail($request->id);
-
-        // Verifica si el registro está eliminado
-        if ($operador->trashed()) {
-
-            // Restaura el registro
-            $operador->restore();
-            return response()->json(['message' => 'El operador ha sido restaurado.'], 200);
+        try {
+            $id = $request->id;
+            DB::beginTransaction();
+            $operador = (new OperadorCatalogoService())->restaurarOperadorCatalogoService($id);
+            DB::commit();
+            return $operador;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([              
+                'message' => 'Ocurrio un error al restaurar el operador.'
+            ], 200);  
         }
+
+       
     }
 }

@@ -27,8 +27,8 @@ class StoreOperadorRequest extends FormRequest
             "email"=>"nullable|email|unique:users,email",
             "password"=>[
                 "required",
-               // "confirmed",
-               // Password::min(3)
+                "confirmed",
+                Password::min(3)
                 //->letters()
                 //->symbols()
             ],
