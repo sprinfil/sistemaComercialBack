@@ -50,8 +50,8 @@ class PagoService{
                     $nuevo_abono->modelo_origen = 'pago';
                     // se valida que el total del pago no sea menor que el abono
                     if($total_abonado <= $monto_pagado){
-                        $total_abonado += $abono['monto'];
-                        $nuevo_abono->total_abonado = $abono['monto'];
+                        $total_abonado += $abono['total_abonado'];
+                        $nuevo_abono->total_abonado = $abono['total_abonado'];
                     }else{
                         throw new Exception();
                     }
@@ -80,7 +80,7 @@ class PagoService{
                 $pago_modificado->update($data);
                 $pago_modificado->save();
             } else if($monto_pagado < $total_abonado){ // + bonificaciones
-                throw new Exception();
+                throw new Exception("calculo de saldos");
             }
 
             DB::commit();
