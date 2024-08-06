@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_concepto_catalogo')->nullable();
             $table->string('nombre');
+            $table->string('descripcion');
             $table->integer('vigencias');
             $table->enum('momento_cargo',['generar','asignar','concluir','No genera']);
             $table->boolean('genera_masiva');

@@ -25,8 +25,8 @@ class OrdenTrabajoCatalogoFactory extends Factory
             "id_concepto_catalogo" => 0,
             "nombre" => '',
             "vigencias" => $this->faker->numberBetween(1,30),
-            "momentoCargo" => $this->faker->randomElement(['generar','asignar','concluir','No genera']), //'generar','asignar','concluir','No genera'
-            "generaMasiva" => 0,
+            "momento_cargo" => $this->faker->randomElement(['generar','asignar','concluir','No genera']), //'generar','asignar','concluir','No genera'
+            "genera_masiva" => 0,
         ];
     }
 
