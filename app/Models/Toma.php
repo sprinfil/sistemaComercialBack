@@ -121,6 +121,10 @@ class Toma extends Model
     {
         return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
     }
+    public function pagosPendientes(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
+    }
 
     //Consumos asociados a la toma
     public function factura():HasMany{

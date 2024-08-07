@@ -9,7 +9,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/Convenio", "index");
         Route::post("/Convenio/create", "store");
         Route::put("/Convenio/update/{id}", "update");
-        Route::put("/Convenio/restaurar/{id}", "update");
+        //Route::put("/Convenio/restaurar/{id}", "update");
 
         //log delete significa borrado logico
         Route::delete("/Convenio/log_delete/{id}", "destroy");

@@ -5,6 +5,7 @@ use App\Http\Requests\StorePagoRequest;
 use App\Http\Requests\UpdatePagoRequest;
 use App\Http\Resources\PagoResource;
 use App\Models\Abono;
+use App\Models\Cargo;
 use App\Models\CatalogoBonificacion;
 use App\Models\Pago;
 use App\Models\Toma;
@@ -31,6 +32,7 @@ class PagoService{
         try{
             // se validan los datos
             $data = $request->validated();
+            $data['estado'] = 'pendiente';
 
             DB::beginTransaction();
 
@@ -108,15 +110,17 @@ class PagoService{
             }
 
             if($monto_pagado > $total_abonado){ // + bonificaciones
-                $data['estado'] = 'pendiente';
+                $this->consolidarEstados($id_modelo, $modelo);
+                /*$data['estado'] = 'pendiente';
                 $pago_modificado = Pago::findOrFail($pago->id);
                 $pago_modificado->update($data);
-                $pago_modificado->save();
+                $pago_modificado->save();*/
             } else if($monto_pagado == $total_abonado){ // + bonificaciones
-                $data['estado'] = 'abonado';
+                $this->consolidarEstados($id_modelo, $modelo);
+                /*$data['estado'] = 'abonado';
                 $pago_modificado = Pago::findOrFail($pago->id);
                 $pago_modificado->update($data);
-                $pago_modificado->save();
+                $pago_modificado->save();*/
             } else if($monto_pagado < $total_abonado){ // + bonificaciones
                 throw new Exception("calculo de saldos");
             }
@@ -126,6 +130,142 @@ class PagoService{
         } catch(Exception $ex){
             DB::rollBack();
             throw $ex;
+        }
+    }
+
+    // metodo para consolidar estados de cargos, pagos y abonos
+    public function consolidarEstados($_id_modelo, $_modelo)
+    {
+        try{
+            DB::beginTransaction();
+            // tipo pago
+            $modelo = $_modelo;
+            $id_modelo = $_id_modelo;
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
+            $dueño = null;
+            if($modelo && $id_modelo){
+                if($modelo == 'usuario'){
+                    $dueño = Usuario::findOrFail($id_modelo);
+                }else if($modelo == 'toma'){
+                    $dueño = Toma::findOrFail($id_modelo);
+                }else{
+                    throw new Exception('modelo definido incorrectamente');
+                }
+                // consolidar estados pagos y cargos
+                $estado_pagos = $this->consolidarEstadosDePago($dueño);
+                $estado_cargos = $this->consolidarEstadosDeCargo($dueño);
+                if($estado_pagos == 1 && $estado_cargos == 1){
+                    DB::commit();
+                }
+                else{
+                    throw new Exception('QPD');
+                }
+            }
+            else{
+                throw new Exception('modelo no definido');
+            }
+        }catch(Exception $ex){
+            DB::rollBack();
+            throw $ex;
+        }
+    }
+
+    public function consolidarEstadosDePago($dueño){
+        try{
+            // carga todos los pagos pendientes
+            $pagos = $dueño->pagosPendientes;
+            if ($pagos) {
+                // se recorren todos los pagos pendientes
+                foreach ($pagos as $pago) {
+                    // cada pago puede tener abonos
+                    $total_abonado = 0;
+                    $total_pagado = $pago->total_pagado;
+                    $abonos_aplicados = $pago->abonos;
+
+                    // se recorren los abonos realizados para saber
+                    // si queda saldo por aplicar de los pagos
+                    if($abonos_aplicados){
+                        foreach ($abonos_aplicados as $abono) {
+                            $total_abonado += $abono->total_abonado;
+                        }
+                        // despues de recorrer todos los abonos
+                        if($total_abonado == $total_pagado){
+                            //throw new Exception('igual abono'.$total_abonado.'pago'.$total_pagado);
+                            // si la suma de abonos es igual al total pagado
+                            $pago_modificado = Pago::findOrFail($pago->id);
+                            $pago_modificado->update([
+                                'estado' => 'abonado'
+                            ]);
+                            $pago_modificado->save();
+                        }
+                        else if($total_abonado < $total_pagado){
+                            //throw new Exception('menor abono'.$total_abonado.'pago'.$total_pagado);
+                            // si la suma de abonos es menor al total pagado
+                            $pago_modificado = Pago::findOrFail($pago->id);
+                            $pago_modificado->update([
+                                'estado' => 'pendiente'
+                            ]);
+                            $pago_modificado->save();
+                        }
+                        else{
+                            throw new Exception('qpd abono'.$total_abonado.'pago'.$total_pagado);
+                        }
+                    }else{
+                        throw new Exception('no hay abonos');
+                    }
+                }
+            }else{
+                throw new Exception('no hay pagos');
+            }
+            return 1;
+        }catch(Exception $ex){
+            return 0;
+        }
+    }
+
+    public function consolidarEstadosDeCargo($dueño){
+        try{
+            // carga todos cargos pendientes
+            $cargos = $dueño->cargosVigentes;
+            if ($cargos) {
+                // se recorren todos los pagos pendientes
+                foreach ($cargos as $cargo) {
+                    // cada cargo puede tener abonos
+                    $total_abonado_al_cargo = 0;
+                    $total_cargo = $cargo->monto;
+                    $abonos_al_cargo = $cargo->abonos;
+                    if($abonos_al_cargo){
+                        foreach ($abonos_al_cargo as $abono) {
+                            $total_abonado_al_cargo += $abono->total_abonado;
+                        }
+                        // despues de recorrer todos los abonos
+                        if($total_abonado_al_cargo == $total_cargo){
+                            // si la suma de abonos es igual al total del cargo
+                            $cargo_modificado = Cargo::findOrFail($cargo->id);
+                            $cargo_modificado->update([
+                                'estado' => 'pagado'
+                            ]);
+                            $cargo_modificado->save();
+                        }
+                        else if($total_abonado_al_cargo < $total_cargo){
+                            // si la suma de abonos es menor al total del cargo
+                            $cargo_modificado = Cargo::findOrFail($cargo->id);
+                            $cargo_modificado->update([
+                                'estado' => 'pendiente'
+                            ]);
+                            $cargo_modificado->save();
+                        }
+                    }else{
+                        throw new Exception('no hay abonos');
+                    }
+                }
+            }else{
+                throw new Exception('no hay cargos');
+            }
+            return 1;
+        }catch(Exception $ex){
+            return 0;
         }
     }
 
