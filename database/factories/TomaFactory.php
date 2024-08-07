@@ -4,8 +4,8 @@ namespace Database\Factories;
 
 use App\Models\GiroComercialCatalogo;
 use App\Models\Toma;
-use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Toma>
@@ -20,10 +20,13 @@ class TomaFactory extends Factory
         static $usuarioId = 0;
         $usuarioId++;
 
+        $latitud = '-110.32761062'.$this->faker->numerify('###');
+        $longitud = '24.135858323'.$this->faker->numerify('###');
+
         return [
             'id_usuario' => $usuarioId,
             'id_giro_comercial' => GiroComercialCatalogo::inRandomOrder()->first()->id,
-            'id_libro' => 1,
+            'id_libro' => $this->faker->numberBetween(21, 37),
             'id_codigo_toma' => $codigoTomaId++,
             'clave_catastral' => $this->faker->regexify('[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}'),
             'estatus' => $this->faker->randomElement([
@@ -52,6 +55,7 @@ class TomaFactory extends Factory
             'c_alc' => null,
             'c_san' => null,
             'tipo_contratacion' => $this->faker->randomElement(['normal', 'condicionado', 'desarrollador']),
+            'posicion' => new Point($longitud, $latitud),
             'deleted_at' => null,
             'created_at' => now(),
             'updated_at' => now(),
