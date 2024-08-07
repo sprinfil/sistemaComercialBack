@@ -8,148 +8,125 @@ use App\Http\Resources\ConceptoResource;
 use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
 use App\Models\TarifaConceptoDetalle;
-use App\Models\TipoToma;
-use Database\Factories\TarifaConceptoDetalleFactory;
+use App\Services\ConceptoService;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ConceptoController extends Controller
 {
+    protected $conceptoService;
+
+    /**
+     * Constructor del controller
+     */
+    public function __construct(ConceptoService $_conceptoService)
+    {
+        $this->conceptoService = $_conceptoService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $this->authorize('viewAny', ConceptoCatalogo::class);
-        return ConceptoResource::collection(
-            ConceptoCatalogo::orderby("id", "desc")->get()
-        );
+        try {
+            $this->authorize('viewAny', ConceptoCatalogo::class);
+            return response(ConceptoResource::collection(
+                $this->conceptoService->obtenerConceptos()
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar los conceptos'
+            ], 500);
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function conceptos()
+    {
+        try {
+            $this->authorize('viewAny', ConceptoCatalogo::class);
+            return response(ConceptoResource::collection(
+                $this->conceptoService->obtenerConceptos()
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar los conceptos'
+            ], 500);
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ConceptoCatalogo $conceptoCatalogo, StoreConceptoCatalogoRequest $request)
+    public function store(StoreConceptoCatalogoRequest $request)
     {
-        $this->authorize('create', ConceptoCatalogo::class);
-        //Valida el store
-        $data = $request->validated();
-        //Busca por nombre a los conceptos eliminados
-        $conceptoCatalogo = ConceptoCatalogo::withTrashed()->where('nombre', $request->input('nombre'))->first();
-
-        //Validacion en caso de que el concepto ya este registrado en le base de datos
-        if ($conceptoCatalogo) {
-            if ($conceptoCatalogo->trashed()) {
-                return response()->json([
-                    'message' => 'El concepto ya existe pero ha sido eliminado. ¿Desea restaurarlo?',
-                    'restore' => true,
-                    'concepto_id' => $conceptoCatalogo->id
-                ], 200);
-            }
+        try {
+            $this->authorize('create', ConceptoCatalogo::class);
+            return response($this->conceptoService->registrarConcepto($request),200);
+        } catch (Exception $e) {
             return response()->json([
-                'message' => 'El concepto ya existe.',
-                'restore' => false
-            ], 200);
-        }
-
-        //Si el concepto no existe, lo crea
-        if(!$conceptoCatalogo)
-        {
-            DB::beginTransaction();
-            try{
-                $conceptoCatalogo = ConceptoCatalogo::create($data);
-                if(isset($data['tarifas']) && !is_null($data['tarifas'])){
-                    foreach ($data['tarifas'] as $tarifas) {
-                        $tarifa = new TarifaConceptoDetalle();
-                        $tarifa->id_tipo_toma = $tarifas['id_tipo_toma'];
-                        $tarifa->id_concepto = $conceptoCatalogo->id;
-                        $tarifa->monto = $tarifas['monto'];
-                        $tarifa->save();
-                    }
-                }else{
-                    $tarifas_tipo = TipoToma::all();
-                    foreach ($tarifas_tipo as $tipo) {
-                        $tarifa = new TarifaConceptoDetalle();
-                        $tarifa->id_tipo_toma = $tipo->id;
-                        $tarifa->id_concepto = $conceptoCatalogo->id;
-                        $tarifa->monto = 0;
-                        $tarifa->save();
-                    }
-                }
-                DB::commit();
-                return new ConceptoResource($conceptoCatalogo);
-            }catch(Exception $ex){
-                DB::rollBack();
-                return $ex;
-            }
+                'error' => 'No se pudo encontrar los conceptos'
+            ], 500);
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(ConceptoCatalogo $conceptoCatalogo)
+    public function show($id)
     {
-        //
+        try {
+            return response(new ConceptoResource(
+                $this->conceptoService->busquedaPorId($id)
+            ), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el cargo por su id '.$id
+            ], 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateConceptoCatalogoRequest $request, ConceptoCatalogo $conceptoCatalogo)
+    public function update(UpdateConceptoCatalogoRequest $request, $id)
     {
-        $this->authorize('update', ConceptoCatalogo::class);
-        $data = $request->validated();
-    
-        $concepto = ConceptoCatalogo::findOrFail($request["id"]);
-
-        // Actualizar los datos del concepto
-        $concepto->update($request->only(['nombre', 'descripcion', 'estado', 'prioridad_abono', 'genera_iva']));
-
-        // Actualizar tarifas
-        $tarifas = $request->input('tarifas', []);
-        foreach ($tarifas as $tarifaData) {
-            $tarifa = TarifaConceptoDetalle::findOrNew($tarifaData['id_tipo_toma']);
-            $tarifa->fill($tarifaData);
-            $tarifa->id_concepto = $concepto->id;
-            $tarifa->save();
+        try {
+            $this->authorize('update', ConceptoCatalogo::class);
+            return response($this->conceptoService->modificarConcepto($request, $id),200);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar los conceptos'
+            ], 500);
         }
-
-        // Devolver el concepto actualizado con sus tarifas
-        return new ConceptoResource($concepto);
-
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ConceptoCatalogo $conceptoCatalogo,Request $request)
+    public function destroy($id)
     {
-        $this->authorize('delete', ConceptoCatalogo::class);
-        try
-        {
-            $conceptoCatalogo = ConceptoCatalogo::findOrFail($request->id);
-            $conceptoCatalogo->delete();
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
-        }
-        catch (\Exception $e) {
-
-            return response()->json(['message' => 'Algo fallo'], 500);
+        try{
+            $this->authorize('delete', ConceptoCatalogo::class);
+            return response()->json(['message' => $this->conceptoService->eliminarConcepto($id)], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Algo fallo'.$e], 500);
         }
     }
 
-    public function restaurarDato(ConceptoCatalogo $conceptoCatalogo, Request $request)
+    public function restaurarDato(Request $request)
     {
-
-        $conceptoCatalogo = ConceptoCatalogo::withTrashed()->findOrFail($request->id);
-
-           // Verifica si el registro está eliminado
-        if ($conceptoCatalogo->trashed()) {
-            // Restaura el registro
-            $conceptoCatalogo->restore();
-            return response()->json(['message' => 'El concepto ha sido restaurado.'], 200);
+        try {
+            $this->authorize('update', ConceptoCatalogo::class);
+            return response($this->conceptoService->restaurarConcepto($request),200);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar los conceptos'
+            ], 500);
         }
-
     }
 }

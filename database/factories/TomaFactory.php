@@ -20,8 +20,8 @@ class TomaFactory extends Factory
         static $usuarioId = 0;
         $usuarioId++;
 
-        $latitud = '-110.32761062'.$this->faker->numerify('###');
-        $longitud = '24.135858323'.$this->faker->numerify('###');
+        $latitud = '-110.3'.$this->faker->numerify('#').'761062742';
+        $longitud = '24.1'.$this->faker->numerify('#').'5858323185';
 
         return [
             'id_usuario' => $usuarioId,
