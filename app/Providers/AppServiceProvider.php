@@ -35,7 +35,8 @@ class AppServiceProvider extends ServiceProvider
             'datos_fiscales' => 'App\Models\DatoFiscal',
             'asignacionGeografica' => 'App\Models\AsignacionGeografica',
             'factibilidad' => 'App\Models\Factibilidad',
-            'pago' => 'App\Models\Factibilidad'
+            'pago' => 'App\Models\Pago',
+            'abono' => 'App\Models\Abono'
         ]);
     }
 }

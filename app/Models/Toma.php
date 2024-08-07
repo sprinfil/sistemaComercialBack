@@ -52,6 +52,7 @@ class Toma extends Model
         'c_agua',
         'c_alc',
         'c_san',
+        'posicion'
     ];
     
     // Giro comercial asociado a la toma
@@ -120,6 +121,10 @@ class Toma extends Model
     public function pagos(): MorphMany
     {
         return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
+    }
+    public function pagosPendientes(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
     }
 
     //Consumos asociados a la toma
