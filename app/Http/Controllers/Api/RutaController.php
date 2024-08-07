@@ -14,7 +14,9 @@ use App\Http\Resources\RutaResource;
 use App\Models\AsignacionGeografica;
 use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreRutaRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateRutaRequest;
+use Faker\Core\Coordinates;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
@@ -264,5 +266,42 @@ class RutaController extends Controller
 
         $libro = Libro::find(21);
         echo json_encode(new LibroResource($libro));
+    }
+
+    public function export_geojson()
+    {
+        $libros = Libro::all();
+
+        $features = $libros->map(function ($libro) {
+
+            $coordinates = json_encode($libro->polygon);
+            $array_coordinates = json_decode($coordinates, true);
+            $coordinates = $array_coordinates["coordinates"];
+
+            return [
+                'type' => 'Feature',
+                'properties' => [
+                    'name' => $libro->nombre,
+                ],
+                'geometry' => [
+                    "type" => "MultiPolygon",
+                    "coordinates" => [$coordinates],
+                ],
+            ];
+        });
+
+        $data = [
+            "type" => "FeatureCollection",
+            "name" =>  "libroslapaz",
+            "features" => $features
+        ];
+        
+        $geojson = json_encode($data, JSON_PRETTY_PRINT);
+
+        $fileName = 'libroslapaz.geojson';
+
+        Storage::disk('local')->put($fileName, $geojson);
+
+        return response()->download(storage_path("app/{$fileName}"))->deleteFileAfterSend(true);
     }
 }
