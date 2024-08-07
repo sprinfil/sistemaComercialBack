@@ -269,6 +269,10 @@ class PagoService{
         }
     }
 
+    public function generarAbonos(){
+        
+    }
+
     // metodo para buscar un pago por su id
     public function busquedaPorId($id): Pago
     {

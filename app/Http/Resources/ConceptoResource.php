@@ -27,6 +27,7 @@ class ConceptoResource extends JsonResource
             "abonable"=>$this->abonable,
             "tarifa_fija"=>$this->tarifa_fija,
             "cargo_directo"=>$this->cargo_directo,
+            "genera_orden"=>$this->genera_orden,
             'tarifas' => TarifaConceptoDetalleResource::collection($this->tarifas),
         ];
      }
