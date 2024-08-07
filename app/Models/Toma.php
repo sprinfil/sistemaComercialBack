@@ -52,6 +52,7 @@ class Toma extends Model
         'c_agua',
         'c_alc',
         'c_san',
+        'posicion'
     ];
     
     // Giro comercial asociado a la toma
