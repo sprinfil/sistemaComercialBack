@@ -1,12 +1,19 @@
 <?php
 namespace App\Services;
 
+use App\Models\Consumo;
+use App\Models\Contrato;
+use App\Models\Medidor;
 use App\Models\OrdenTrabajo;
 use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
+use App\Models\Toma;
+use App\Models\Usuario;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class OrdenTrabajoService{
 
@@ -32,14 +39,18 @@ class OrdenTrabajoService{
             //:?OrdenTrabajo
         } 
     }
-    public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
+    public function asignar(array $ordenTrabajo): OrdenTrabajo{ //Ejemplo de service
         
-        $ordenTrabajoPeticion['estatus']="En proceso";
-        return null;
+        $OT=OrdenTrabajo::find($ordenTrabajo['id']);
+        $OT['estado']="En proceso";
+        $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
+        $OT->update();
+        $OT->save();
+        return $OT;
     }
 
     ///El operador encargado termina la orden de trabajo
-    public function concluir(Request $ordenTrabajo){ //Ejemplo de service
+    public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
         $OrdenConf=OrdenTrabajoAccion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
         //$ordenTrabajoPeticion['estatus']="Concluida";
@@ -47,32 +58,66 @@ class OrdenTrabajoService{
 
             //generar cargo
         }
-        else{
-
-        }
-        return null;
+        $OT=$this->Acciones($ordenTrabajo, $OrdenCatalogo,$modelos);
+        return $OT;
     }
-    public function Acciones(Request $ordenTrabajo){
-        $OT=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        $acciones=$OT->ordenTrabajoAccion;
-        foreach ($acciones as $accion){
+    //metodo que maneja el tipo de accion de la ot a realizar
+    public function Acciones(array $ordenTrabajo, $OtCatalogo, $modelos){
+        $acciones=$OtCatalogo->ordenTrabajoAccion;
+        $i=0;
+        foreach ($acciones as $accion=>$key){
             $resultado=match($accion['accion'])
             {
-                'modificar'=>$this->Modificar($accion),
-                'registrar'=>$this->Registrar(),
-                'quitar'=>$this->Quitar(),
+                'modificar'=>$this->Modificar($accion,$ordenTrabajo, $key),
+                'registrar'=>$this->Registrar($accion,$ordenTrabajo),
+                'quitar'=>$this->Quitar($accion,$ordenTrabajo),
             };
+            $i++;
         }
         
-        return $acciones;
+        return $resultado;
     }
-    public function Modificar($Accion){
+    //metodos que ejecutan los casos de acciones especificas
+    public function Modificar($Accion,$ordenTrabajo,$modelos){
+        
+        $tipo_modelo=$Accion['modelo'];
+
+        switch($tipo_modelo){
+            case "toma":
+                $OTModelo=Toma::find($ordenTrabajo['id_toma']);
+                break;
+            case "medidor":
+                $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                break;
+            case "contrato":
+                $OTModelo=Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                break;
+            case "usuario":
+                $toma=Toma::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                break;
+            case "consumo":
+                $OTModelo=Consumo::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                break;
+            default:
+            $OTModelo=null;
+            break;
+        }
+        return $modelos;
+        /*
+        $OTModelo=match($modelo){
+            "toma"=>Toma::find($ordenTrabajo['id_toma']),
+            "medidor"=>Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first(),
+            "contrato"=>Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first(),
+            "usuario"=>Usuario::where('id_toma',$ordenTrabajo['id_toma'])->first(),
+            "consumo"=>Consumo::where('id_toma',$ordenTrabajo['id_toma'])->first(),
+        };
+        */
+        return $OTModelo;
+    }
+    public function Registrar($Accion,$ordenTrabajo){
         
     }
-    public function Registrar(){
-        
-    }
-    public function Quitar(){
+    public function Quitar($Accion,$ordenTrabajo){
         
     }
     public function generarCargo(){
