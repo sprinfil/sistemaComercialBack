@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Caja;
 
 use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
@@ -17,11 +17,21 @@ class ConceptoService{
     public function obtenerConceptos(): Collection
     {
         try{
-            return ConceptoCatalogo::orderby("id", "desc")->get();
+            return ConceptoCatalogo::orderby("id", "desc")->with('tarifas')->get();
         } catch(Exception $ex){
             throw $ex;
         }
     }
+
+     // metodo para obtener todos los conceptos registrados
+     public function obtenerConceptosCargables(): Collection
+     {
+         try{
+            return ConceptoCatalogo::where('cargo_directo', 1)->orderby("id", "desc")->with('tarifas')->get();
+         } catch(Exception $ex){
+             throw $ex;
+         }
+     }
 
     // metodo para registrar un concepto
     public function registrarConcepto(StoreConceptoCatalogoRequest $request)

@@ -8,7 +8,7 @@ use App\Http\Resources\ConceptoResource;
 use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
 use App\Models\TarifaConceptoDetalle;
-use App\Services\ConceptoService;
+use App\Services\Caja\ConceptoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -45,12 +45,12 @@ class ConceptoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function conceptos()
+    public function conceptosCargables()
     {
         try {
             $this->authorize('viewAny', ConceptoCatalogo::class);
             return response(ConceptoResource::collection(
-                $this->conceptoService->obtenerConceptos()
+                $this->conceptoService->obtenerConceptosCargables()
             ),200);
         } catch (ModelNotFoundException $e) {
             return response()->json([

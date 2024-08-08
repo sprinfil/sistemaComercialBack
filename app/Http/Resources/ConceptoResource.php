@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\TarifaConceptoDetalle;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use PHPUnit\Event\TestSuite\Loaded;
 
 class ConceptoResource extends JsonResource
 {
@@ -28,7 +29,7 @@ class ConceptoResource extends JsonResource
             "tarifa_fija"=>$this->tarifa_fija,
             "cargo_directo"=>$this->cargo_directo,
             "genera_orden"=>$this->genera_orden,
-            'tarifas' => TarifaConceptoDetalleResource::collection($this->tarifas),
+            'tarifas' =>TarifaConceptoDetalleResource::collection($this->whenLoaded('tarifas')) //TarifaConceptoDetalleResource::collection($this->tarifas),
         ];
      }
 }
