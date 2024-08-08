@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Caja;
 
 use App\Http\Requests\StorePagoRequest;
 use App\Http\Requests\UpdatePagoRequest;
@@ -12,6 +12,7 @@ use App\Models\Toma;
 use App\Models\Usuario;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PagoService{
@@ -126,6 +127,7 @@ class PagoService{
             }
 
             DB::commit();
+            $pago->total_abonado = $total_abonado;
             return $pago;
         } catch(Exception $ex){
             DB::rollBack();
@@ -269,11 +271,85 @@ class PagoService{
         }
     }
 
+    public function generarAbonos(){
+        
+    }
+
     // metodo para buscar un pago por su id
     public function busquedaPorId($id): Pago
     {
         try{
             return Pago::findOrFail($id);
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // metodo para buscar todos los pagos de un modelo especifico
+    public function pagosPorModelo(Request $request){
+        try{
+            $data = $request->all();
+
+            // tipo pago
+            $modelo = $data['modelo_dueño'];
+            $id_modelo = $data['id_dueño'];
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
+            $dueño = null;
+            if($modelo == 'usuario'){
+                $dueño = Usuario::findOrFail($id_modelo);
+                $pagos = $dueño->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else if($modelo == 'toma'){
+                $dueño = Toma::findOrFail($id_modelo);
+                $pagos = $dueño->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else{
+                throw new Exception('modelo no definido');
+            }
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // metodo para buscar todos los pagos de un modelo especifico
+    public function pagosPorModeloPendiente(Request $request){
+        try{
+            $data = $request->all();
+
+            // tipo pago
+            $modelo = $data['modelo_dueño'];
+            $id_modelo = $data['id_dueño'];
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
+            $dueño = null;
+            if($modelo == 'usuario'){
+                $dueño = Usuario::findOrFail($id_modelo);
+                $pagos = $dueño->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else if($modelo == 'toma'){
+                $dueño = Toma::findOrFail($id_modelo);
+                $pagos = $dueño->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else{
+                throw new Exception('modelo no definido');
+            }
         } catch(Exception $ex){
             throw $ex;
         }
