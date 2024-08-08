@@ -17,7 +17,7 @@ use App\Http\Resources\UsuarioResource;
 use App\Models\Cargo;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
-use App\Models\tarifa;
+use App\Models\Tarifa;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\CotizacionService;
