@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePagoRequest;
 use App\Http\Resources\PagoResource;
-use App\Services\PagoService;
+use App\Services\Caja\PagoService as CajaPagoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class PagoController extends Controller
 {
@@ -16,7 +17,7 @@ class PagoController extends Controller
     /**
      * Constructor del controller
      */
-    public function __construct(PagoService $_pagoService)
+    public function __construct(CajaPagoService $_pagoService)
     {
         $this->pagoService = $_pagoService;
     }
@@ -66,6 +67,22 @@ class PagoController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar el pago por su id '.$id
+            ], 500);
+        }
+    }
+
+    /**
+     * Consulta historial de pagos por modelo
+     */
+    public function pagosPorModelo(Request $request)
+    {
+        try {
+            return response(PagoResource::collection(
+                $this->pagoService->pagosPorModelo($request)
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los pagos'
             ], 500);
         }
     }

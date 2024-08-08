@@ -20,7 +20,10 @@ return new class extends Migration
             $table->boolean("genera_iva")->nullable();
             $table->boolean("abonable")->nullable();
             $table->boolean("tarifa_fija")->nullable();
-            $table->boolean("cargo_directo")->nullable();;
+            $table->boolean("cargo_directo")->nullable();
+            $table->unsignedBigInteger("genera_orden")->nullable();
+            $table->boolean("genera_recargo")->nullable();
+            $table->unsignedBigInteger("concepto_rezago")->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -31,6 +31,7 @@ class StoreConceptoCatalogoRequest extends FormRequest
             "abonable"=>"required|boolean",
             "tarifa_fija"=>"required|boolean",
             "cargo_directo"=>"required|boolean",
+            "genera_orden"=>"nullable|int",
             "tarifas.*"=>"nullable|array"
         ];
     }

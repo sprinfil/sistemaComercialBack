@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCargoRequest;
 use App\Http\Resources\CargoResource;
+use App\Services\Caja\CargoService as CajaCargoService;
 use App\Services\CargoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class CargoController extends Controller
 {
@@ -16,7 +18,7 @@ class CargoController extends Controller
     /**
      * Constructor del controller
      */
-    public function __construct(CargoService $_cargoService)
+    public function __construct(CajaCargoService $_cargoService)
     {
         $this->cargoService = $_cargoService;
     }
@@ -65,6 +67,38 @@ class CargoController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar el cargo por su id '.$id
+            ], 500);
+        }
+    }
+
+    /**
+     * Consulta todos los cargos de un modelo
+     */
+    public function cargosPorModelo(Request $request)
+    {
+        try {
+            return response(CargoResource::collection(
+                $this->cargoService->cargosPorModelo($request)
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los cargos'
+            ], 500);
+        }
+    }
+
+    /**
+     * Consulta todos los cargos de un modelo
+     */
+    public function cargosPorModeloPendientes(Request $request)
+    {
+        try {
+            return response(CargoResource::collection(
+                $this->cargoService->cargosPorModeloPendientes($request)
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los cargos'
             ], 500);
         }
     }
