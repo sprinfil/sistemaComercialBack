@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\cargoDirecto;
-use App\Http\Requests\StorecargoDirectoRequest;
-use App\Http\Requests\UpdatecargoDirectoRequest;
-use App\Http\Resources\cargoDirectoResource;
+use App\Models\CargoDirecto;
+use App\Http\Requests\StoreCargoDirectoRequest;
+use App\Http\Requests\UpdateCargoDirectoRequest;
+use App\Http\Resources\CargoDirectoResource;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
