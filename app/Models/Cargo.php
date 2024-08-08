@@ -18,8 +18,8 @@ class Cargo extends Model
         "concepto",
         "id_origen",
         "modelo_origen",
-        "id_dueño",
-        "modelo_dueño",
+        "id_dueno",
+        "modelo_dueno",
         "monto",
         "estado",
         "id_convenio",
@@ -32,9 +32,9 @@ class Cargo extends Model
         return $this->morphTo(__FUNCTION__, 'modelo_origen', 'id_origen');
     }
 
-    public function dueño(): MorphTo
+    public function dueno(): MorphTo
     {
-        return $this->morphTo(__FUNCTION__, 'modelo_dueño', 'id_dueño');
+        return $this->morphTo(__FUNCTION__, 'modelo_dueno', 'id_dueno');
     }
 
     public function abonos(): HasMany

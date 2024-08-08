@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('concepto');
             $table->unsignedBigInteger('id_origen');
             $table->string('modelo_origen');
-            $table->unsignedBigInteger('id_dueño'); 
-            $table->string('modelo_dueño');
+            $table->unsignedBigInteger('id_dueno'); 
+            $table->string('modelo_dueno');
             $table->decimal('monto', 8, 2);
             $table->enum('estado', ['pendiente', 'pagado', 'conveniado', 'cancelado']);
             $table->unsignedBigInteger('id_convenio')->nullable();
