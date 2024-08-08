@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\factibilidad;
+use App\Models\Factibilidad;
 use App\Http\Requests\StoreFactibilidadRequest;
 use App\Http\Requests\UpdateFactibilidadRequest;
 use App\Http\Resources\FactibilidadResource;
