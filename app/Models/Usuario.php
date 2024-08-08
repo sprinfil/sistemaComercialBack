@@ -68,6 +68,10 @@ class Usuario extends Model
     {
         return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
     }
+    public function pagosPendientes(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
+    }
 
     public static function ConsultarPorNombres(string $usuario){
         $data = Usuario::whereRaw("

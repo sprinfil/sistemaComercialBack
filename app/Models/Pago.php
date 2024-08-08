@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -39,5 +40,10 @@ class Pago extends Model
     public function dueño(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo_dueño', 'id_dueño');
+    }
+
+    public function abonos(): MorphMany
+    {
+        return $this->morphMany(Abono::class, 'origen', 'modelo_origen', 'id_origen');
     }
 }
