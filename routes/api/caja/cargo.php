@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CargoController;
-use App\Http\Controllers\Api\cargoDirectoController;
+use App\Http\Controllers\Api\CargoDirectoController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'audit'])->group(function () {
@@ -14,7 +14,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/cargos/porModelo/pendientes","cargosPorModeloPendientes");
     });
     // cargo directo
-    Route::controller(cargoDirectoController::class)->group(function() {
+    Route::controller(CargoDirectoController::class)->group(function() {
         Route::get("/cargoDirecto","index");
         Route::post("/cargoDirecto/store","store");
         Route::get("/cargoDirecto/show/{id}" , "show");
