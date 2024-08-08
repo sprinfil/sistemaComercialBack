@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTarifaConceptoDetalleRequest;
 use App\Models\tarifa;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoretarifaRequest;
+use App\Http\Requests\StoreTarifaRequest;
 use App\Http\Requests\StoreTarifaServiciosDetalleRequest;
 use App\Http\Requests\UpdateTarifaConceptoDetalle;
-use App\Http\Requests\UpdatetarifaRequest;
+use App\Http\Requests\UpdateTarifaRequest;
 use App\Http\Requests\UpdateTarifaServiciosDetalleRequest;
 use App\Http\Resources\StoreTarifaConceptoDetalleResource;
 use App\Http\Resources\TarifaConceptoDetalleResource;
@@ -40,7 +40,7 @@ class TarifaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoretarifaRequest $request)
+    public function store(StoreTarifaRequest $request)
     {
         try {
             //VALIDA EL STORE
@@ -171,7 +171,7 @@ class TarifaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatetarifaRequest $request,  string $id)
+    public function update(UpdateTarifaRequest $request,  string $id)
     {
         ////$this->authorize('update', tarifa::class);
 

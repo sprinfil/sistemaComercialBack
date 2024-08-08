@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\factibilidad;
-use App\Http\Requests\StorefactibilidadRequest;
-use App\Http\Requests\UpdatefactibilidadRequest;
-use App\Http\Resources\factibilidadResource;
+use App\Http\Requests\StoreFactibilidadRequest;
+use App\Http\Requests\UpdateFactibilidadRequest;
+use App\Http\Resources\FactibilidadResource;
 use App\Models\Contrato;
 use Exception;
 use Illuminate\Auth\Events\Validated;
