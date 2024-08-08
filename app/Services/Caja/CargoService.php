@@ -75,22 +75,22 @@ class CargoService{
             $data = $request->all();
 
             // tipo pago
-            $modelo = $data['modelo_dueño'];
-            $id_modelo = $data['id_dueño'];
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
             // si el modelo contiene un valor, entonces se determina
             // el tipo de modelo al que pertenece el pago
-            $dueño = null;
+            $dueno = null;
             if($modelo == 'usuario'){
-                $dueño = Usuario::findOrFail($id_modelo);
-                $cargos = $dueño->cargos;
+                $dueno = Usuario::findOrFail($id_modelo);
+                $cargos = $dueno->cargos;
                 if($cargos){
                     return $cargos;
                 } else{
                     throw new Exception('el modelo no contiene cargos');
                 }
             }else if($modelo == 'toma'){
-                $dueño = Toma::findOrFail($id_modelo);
-                $cargos = $dueño->cargos;
+                $dueno = Toma::findOrFail($id_modelo);
+                $cargos = $dueno->cargos;
                 if($cargos){
                     return $cargos;
                 } else{
@@ -110,22 +110,22 @@ class CargoService{
             $data = $request->all();
 
             // tipo pago
-            $modelo = $data['modelo_dueño'];
-            $id_modelo = $data['id_dueño'];
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
             // si el modelo contiene un valor, entonces se determina
             // el tipo de modelo al que pertenece el pago
-            $dueño = null;
+            $dueno = null;
             if($modelo == 'usuario'){
-                $dueño = Usuario::findOrFail($id_modelo);
-                $cargos = $dueño->cargos->where('estado', 'pendiente');
+                $dueno = Usuario::findOrFail($id_modelo);
+                $cargos = $dueno->cargos->where('estado', 'pendiente');
                 if($cargos){
                     return $cargos;
                 } else{
                     throw new Exception('el modelo no contiene cargos');
                 }
             }else if($modelo == 'toma'){
-                $dueño = Toma::findOrFail($id_modelo);
-                $cargos = $dueño->cargos->where('estado', 'pendiente');
+                $dueno = Toma::findOrFail($id_modelo);
+                $cargos = $dueno->cargos->where('estado', 'pendiente');
                 if($cargos){
                     return $cargos;
                 } else{
