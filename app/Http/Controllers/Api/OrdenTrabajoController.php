@@ -268,9 +268,11 @@ class OrdenTrabajoController extends Controller
     }
     public function asignarOrden(UpdateOrdenTrabajoRequest $request)
     {
-       try{
         DB::beginTransaction();
-        $data=(new OrdenTrabajoService())->asignar($request->validated());
+        
+        $datos=$request->validated();
+        $datos['id']=$request->id;
+        $data=(new OrdenTrabajoService())->asignar($datos);
         if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
@@ -278,7 +280,10 @@ class OrdenTrabajoController extends Controller
         {
             DB::commit();
             return response(new OrdenTrabajoResource($data),200);
+            //return "caca";
         }
+       try{
+        
        }
        catch(Exception $ex){
         DB::rollBack();
@@ -291,8 +296,11 @@ class OrdenTrabajoController extends Controller
     {
         //Macaco
         DB::beginTransaction();
+        $data=$request->all();
+        $OT=$data['orden_trabajo'];
+        $modelos=$data['modelos'];
         //$cerrar=(new OrdenTrabajoService())->concluir($request);
-        $Acciones=(new OrdenTrabajoService())->Acciones($request);
+        $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         
         DB::rollBack();
         return $Acciones;

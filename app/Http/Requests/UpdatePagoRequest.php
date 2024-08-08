@@ -23,8 +23,8 @@ class UpdatePagoRequest extends FormRequest
     {
         return [
             "id_caja"=>"required|integer",
-            "id_dueño"=>"required|integer",
-            "modelo_dueño"=>"required|string|max:55",
+            "id_dueno"=>"required|integer",
+            "modelo_dueno"=>"required|string|max:55",
             "total_pagado"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
             "forma_pago"=>"required|string|max:55",
             "fecha_pago"=>"required|date",

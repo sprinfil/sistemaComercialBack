@@ -22,8 +22,8 @@ class CotizacionService{
                 'concepto' => $contrato['concepto'],
                 'id_origen' => $contrato['id_contrato'],
                 'modelo_origen' => "contrato",
-                'id_dueño' => $contrato['id_toma'],
-                'modelo_dueño' => "toma",
+                'id_dueno' => $contrato['id_toma'],
+                'modelo_dueno' => "toma",
                 'monto' => $monto,
                 'fecha_cargo' => $fecha,
             ]));

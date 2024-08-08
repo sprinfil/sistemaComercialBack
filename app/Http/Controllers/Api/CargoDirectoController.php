@@ -24,7 +24,7 @@ class CargoDirectoController extends Controller
                 , '=' ,
                 'cargos.id')
                 ->select('cargo_directo.id' , 'cargo_directo.id_cargo' , 'cargos.id_origen',
-                'cargos.modelo_origen' , 'cargos.id_dueño' , 'cargos.modelo_dueño',
+                'cargos.modelo_origen' , 'cargos.id_dueno' , 'cargos.modelo_dueno',
                 'cargos.monto', 'cargos.estado' , 'cargos.fecha_cargo' ,
                 'cargos.fecha_liquidacion')->get()
             ),200);

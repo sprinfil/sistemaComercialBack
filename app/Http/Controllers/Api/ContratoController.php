@@ -152,8 +152,6 @@ class ContratoController extends Controller
      */
     public function update(UpdateContratoRequest $request, Contrato $contrato)
     {
-       
-        
         try{
         $data=$request->validated();
         $contrato=Contrato::find($request->id);
