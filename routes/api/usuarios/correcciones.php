@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\CorreccionInformacionSolicitudController;
+use App\Http\Controllers\Api\CorreccionSolicitudController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'audit'])->group(function () {
     // solicitud de correcciones
-    Route::controller(CorreccionInformacionSolicitudController::class)->group(function(){
+    Route::controller(CorreccionSolicitudController::class)->group(function(){
         Route::post("/correccionInformacionSolicitud/create","store");
         Route::get("/correccionInformacionSolicitud","index");
         Route::get("/correccionInformacionSolicitud/show/{id}","show");
