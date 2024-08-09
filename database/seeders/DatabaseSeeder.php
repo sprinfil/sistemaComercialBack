@@ -73,5 +73,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AsignacionGeograficaSeeder::class);
         //
         $this->call(OrdenesTrabajoSeeder::class);
+        //
     }
 }
