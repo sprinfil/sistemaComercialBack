@@ -13,6 +13,8 @@ use App\Http\Resources\CargoResource;
 use App\Http\Resources\DatoFiscalResource;
 use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
+use App\Models\Cargo;
+use App\Models\Toma;
 use App\Services\ConsultarSaldoService;
 use App\Services\UsuarioService;
 use Exception;
@@ -386,15 +388,15 @@ class UsuarioController extends Controller
             } 
     }
 
-    public function ConsultarSaldoUsuario($id) 
+    public function ConsultarSaldoDeUsuario($id) 
     {
         try {
-            //$usuario = Usuario::find($id);
+            
             return response(
              $this->SaldoUsuarioService->ConsultarSaldoUsuario($id));
          } catch (Exception $ex) {
              return response()->json([
-                 'error' => 'No fue posible consultar el saldo' .$ex
+                 'error' => 'No fue posible consultar el saldo ' .$ex
              ], 500);
          }
     }
