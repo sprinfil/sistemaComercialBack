@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\OrdenTrabajoResource;
 use App\Models\Consumo;
 use App\Models\Contrato;
 use App\Models\Medidor;
@@ -53,26 +54,35 @@ class OrdenTrabajoService{
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
         $OrdenConf=OrdenTrabajoAccion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        //$ordenTrabajoPeticion['estatus']="Concluida";
+        $ordenTrabajo['estado']="Concluida";
+        $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
+        $OT=OrdenTrabajo::find($ordenTrabajo['id']);
+
+        if ($OT['estado']=="Concluida"){
+            return null;
+        }
+        $OT->update($ordenTrabajo);
+        $OT->save($ordenTrabajo);
+
         if ($OrdenConf['momento']=="concluir"){
 
             //generar cargo
         }
-        $OT=$this->Acciones($ordenTrabajo, $OrdenCatalogo,$modelos);
-        return $OT;
+
+        $OTAcciones=$this->Acciones($ordenTrabajo, $OrdenCatalogo,$modelos);
+        return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones];
+        //return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT)];
     }
     //metodo que maneja el tipo de accion de la ot a realizar
     public function Acciones(array $ordenTrabajo, $OtCatalogo, $modelos){
         $acciones=$OtCatalogo->ordenTrabajoAccion;
-        $i=0;
-        foreach ($acciones as $accion=>$key){
+        foreach ($acciones as $accion){
             $resultado=match($accion['accion'])
             {
-                'modificar'=>$this->Modificar($accion,$ordenTrabajo, $key),
-                'registrar'=>$this->Registrar($accion,$ordenTrabajo),
-                'quitar'=>$this->Quitar($accion,$ordenTrabajo),
+                'modificar'=>$this->Modificar($accion,$ordenTrabajo,$modelos),
+                'registrar'=>$this->Registrar($accion,$ordenTrabajo,$modelos),
+                'quitar'=>$this->Quitar($accion,$ordenTrabajo,$modelos),
             };
-            $i++;
         }
         
         return $resultado;
@@ -82,9 +92,14 @@ class OrdenTrabajoService{
         
         $tipo_modelo=$Accion['modelo'];
 
+
         switch($tipo_modelo){
             case "toma":
                 $OTModelo=Toma::find($ordenTrabajo['id_toma']);
+                $dato=$modelos['toma'];
+                $OTModelo->update($dato);
+                $OTModelo->save();
+                
                 break;
             case "medidor":
                 $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
@@ -93,7 +108,7 @@ class OrdenTrabajoService{
                 $OTModelo=Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 break;
             case "usuario":
-                $toma=Toma::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                $OTModelo=Toma::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 break;
             case "consumo":
                 $OTModelo=Consumo::where('id_toma',$ordenTrabajo['id_toma'])->first();
@@ -102,22 +117,14 @@ class OrdenTrabajoService{
             $OTModelo=null;
             break;
         }
-        return $modelos;
-        /*
-        $OTModelo=match($modelo){
-            "toma"=>Toma::find($ordenTrabajo['id_toma']),
-            "medidor"=>Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first(),
-            "contrato"=>Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first(),
-            "usuario"=>Usuario::where('id_toma',$ordenTrabajo['id_toma'])->first(),
-            "consumo"=>Consumo::where('id_toma',$ordenTrabajo['id_toma'])->first(),
-        };
-        */
         return $OTModelo;
+       
     }
-    public function Registrar($Accion,$ordenTrabajo){
+   
+    public function Registrar($Accion,$ordenTrabajo,$modelos){
         
     }
-    public function Quitar($Accion,$ordenTrabajo){
+    public function Quitar($Accion,$ordenTrabajo,$modelos){
         
     }
     public function generarCargo(){

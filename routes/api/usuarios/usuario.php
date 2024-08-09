@@ -13,7 +13,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/usuarios/updateMoral/{id}", "updateMoral");
         // delete significa borrado logico
         Route::put("/usuarios/log_delete/{id}", "destroy");
-        Route::put("/usuarios/restore/{id}", "restaurarDato");
+        Route::delete("/usuarios/restore/{id}", "restaurarDato");//avisar
         // consultas
         // codigo
         Route::get("/usuarios/consultaCodigo/{codigo}", "showCodigo");

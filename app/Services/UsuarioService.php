@@ -66,8 +66,19 @@ class UsuarioService{
     public function ConsultarSaldoUsuario ($id)
     {
         try{
-            $CargosUsuario=Usuario::where('id',$id)->with('tomas','tomas.cargosVigentes')->get();
-            return $CargosUsuario;
+            $Usuario=Usuario::find($id);
+            $tomas=$Usuario->tomas;
+            $total=0;
+            foreach ($tomas as $toma){
+                $cargos=$toma->cargosVigentes;
+                if (count($cargos)!=0){
+                    //break;
+                    foreach ($cargos as $cargo){
+                        $total+=$cargo->monto;
+                    }
+                }
+            }
+            return $total;
         }
         catch(Exception $ex){
 
