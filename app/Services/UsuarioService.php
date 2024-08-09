@@ -86,8 +86,8 @@ class UsuarioService{
         /*
         try {
             $saldo_total = 0;
-              $cargos = Cargo::with('dueño')
-                ->where('estado', '=' , 'pendiente')->where('id_dueño',$id);
+              $cargos = Cargo::with('dueno')
+                ->where('estado', '=' , 'pendiente')->where('id_dueno',$id);
                
             foreach ($cargos as $cargo) {
                
@@ -107,7 +107,7 @@ class UsuarioService{
                 /*
         $saldo_total = 0;
         //Falta sacar el monto pendiente por usuario {id} (modificar la ruta tambien)
-        return $usuarios = Cargo::with('dueño')
+        return $usuarios = Cargo::with('dueno')
         ->where('estado' , '=', 'pendiente')
         ->find($id);
         $usuarios->monto;
@@ -116,8 +116,8 @@ class UsuarioService{
         }
         return $saldo_total;
         
-        $cargos = Cargo::with('dueño')->where('estado' , '=', 'pendiente')->first();
-        //$cargos->dueño->sum('monto');
+        $cargos = Cargo::with('dueno')->where('estado' , '=', 'pendiente')->first();
+        //$cargos->dueno->sum('monto');
         foreach ($cargos as $cargo) {
             $abonos = $cargo->monto;
             $saldo_total += $cargo->monto;

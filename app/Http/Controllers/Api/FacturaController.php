@@ -7,7 +7,11 @@ use App\Models\Factura;
 use App\Http\Requests\StoreFacturaRequest;
 use App\Http\Requests\UpdateFacturaRequest;
 use App\Http\Resources\FacturaResource;
+use App\Services\Facturacion\FacturaService;
+use App\Services\Facturacion\indexFacturaServiceService;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class FacturaController extends Controller
 {
@@ -17,29 +21,18 @@ class FacturaController extends Controller
     public function index()
     {
         //$this->authorize('viewAny', GiroComercialCatalogo::class); pendiente de permisos
-        $idReciente = Factura::max('id');
-
-        if($idReciente > 501){
-            $idReciente = $idReciente - 500;
-
-            return FacturaResource::collection(
-                Factura::where('id', '>', $idReciente)->get()
-            );
-
-        }
-        if ($idReciente < 501) {
-            $idReciente = 0;
-
-            return FacturaResource::collection(
-                Factura::where('id', '>', $idReciente)->get()
-            );
-           
-        }
-        else{
-            return response()->json([
-                'message' => 'Ocurrio un error al realizar la busqueda',
-            ], 200);
-        }
+        
+       try {
+        DB::beginTransaction();
+        $factura = (new FacturaService())->indexFacturaService();
+        DB::commit();
+        return $factura;
+       } catch (Exception $ex) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'No se encontraron registros de facturas.'
+        ], 200);
+       }
         
     }
 
@@ -48,23 +41,19 @@ class FacturaController extends Controller
      */
     public function store(StoreFacturaRequest $request)
     {
-        //$this->authorize('create', GiroComercialCatalogo::class); pendiente de permisos
-        
-        $data = $request->validated();
-       
+        //$this->authorize('create', GiroComercialCatalogo::class); pendiente de permisos        
        try {
-        if ($data) {
-
-            $factura = Factura::create($data);
-            return response(new FacturaResource($factura), 201);
-        }
-       } catch (ModelNotFoundException $e) {
+        $data = $request->validated();
+        DB::beginTransaction();
+        $factura = (new FacturaService())->storeFacturaService($data);
+        DB::commit();
+        return $factura;
+       } catch (Exception $ex) {
+        DB::rollBack();
         return response()->json([
-            'error' => 'Ocurrio un error al guardar la factura'
+            'error' => 'Ocurrio un error al registrar la factura.'
         ], 500);
-       }
-       
-        
+       }              
     }
 
     /**
@@ -72,14 +61,15 @@ class FacturaController extends Controller
      */
     public function show(string $id)
     {
-        //
-        
         try {
-            $factura = Factura::findOrFail($id);
-            return response(new FacturaResource($factura), 200);
+            DB::beginTransaction();
+            $factura = (new FacturaService())->showFacturaService($id);
+            DB::commit();
+            return $factura;
         } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'Ocurrio un error al buscar la factura'
+                'error' => 'Ocurrio un error durante la busqueda de la factura.'
             ], 500);
         }
     }
@@ -101,12 +91,14 @@ class FacturaController extends Controller
     }
 
     public function facturaPorToma(string $idToma)
-    {
-       
+    {      
         try {
-           $factura = Factura::where('id_toma',$idToma)->latest()->first();         
-            return response(new FacturaResource($factura), 200);
-        } catch (ModelNotFoundException $e) {
+           DB::beginTransaction();
+           $factura = (new FacturaService())->facturaPorTomaService($idToma);   
+           DB::commit();      
+           return $factura;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'No se encontraron facturas activas'
             ], 500);

@@ -16,8 +16,8 @@ class PagoResource extends JsonResource
     {
         return [
             "id_caja" => $this->id_caja,
-            "id_dueño" => $this->id_dueño,
-            "modelo_dueño" => $this->modelo_dueño,
+            "id_dueno" => $this->id_dueno,
+            "modelo_dueno" => $this->modelo_dueno,
             "id_corte_caja" => $this->id_corte_caja,
             "total_pagado" => $this->total_pagado,
             "forma_pago" => $this->forma_pago,

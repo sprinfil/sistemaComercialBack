@@ -23,8 +23,8 @@ class PagoFactory extends Factory
     {
         return [
             'id_caja'=>$this->faker->numberBetween(1,4),
-            'id_dueño' => 0,
-            'modelo_dueño' => '',
+            'id_dueno' => 0,
+            'modelo_dueno' => '',
             //'id_corte_caja'=>corteCaja::all()->random()->id,
             'total_pagado'=>$this->faker->randomFloat(2, 0, 9999),
             'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
