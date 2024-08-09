@@ -6,8 +6,19 @@ use Illuminate\Database\Eloquent\Collection;
 
 class OrdenTrabajoCatalogoService{
 
-    public function store(array $ordenCatalogo): ?OrdenTrabajoCatalogo{
-        $catalogo=OrdenTrabajoCatalogo::where('id_concepto_catalogo',$ordenCatalogo['id_concepto_catalogo'])->first();
+    public function store(array $ordenCatalogo){
+        $catalogo=OrdenTrabajoCatalogo::where('nombre',$ordenCatalogo['nombre'])->first();
+        $concepto=$ordenCatalogo['id_concepto_catalogo'] ?? 0;
+        /*
+        if ($concepto!=0){
+            $catalogo->where('id_concepto_catalogo',$ordenCatalogo['id_concepto_catalogo']);
+        }
+        else{
+            $ordenCatalogo['id_concepto_catalogo']=null;
+        }
+        $catalogo->first();
+        */
+        //return $catalogo;
         if ($catalogo){
             return null;
         }

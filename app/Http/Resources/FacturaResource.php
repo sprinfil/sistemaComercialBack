@@ -20,7 +20,7 @@ class FacturaResource extends JsonResource
             "id_periodo" => $this->id_periodo,
             "id_toma" => $this->id_toma,
             "id_consumo" => $this->id_consumo,
-            "id_tarifa_servicio" => $this->id_consumo,
+            "id_tarifa_servicio" => $this->id_tarifa_servicio,
             "monto" => $this->monto,
             "fecha" => $this->fecha,
         ];

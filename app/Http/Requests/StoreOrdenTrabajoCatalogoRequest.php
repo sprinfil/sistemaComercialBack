@@ -27,11 +27,12 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "vigencias" => "required|integer",
             "momento_cargo" => "required|in:generar,asignar,concluir,No genera",
             "genera_masiva" => "required|boolean",
-            "orden_trabajo_accion" => "sometimes|array:id_orden_trabajo_catalogo,id_concepto_catalogo,accion,modelo,opcional,id_orden_trabajo_acc_encadena,id_orden_trabajo_acc_alterna",
+            "orden_trabajo_accion" => "sometimes|array:id_orden_trabajo_catalogo,id_concepto_catalogo,accion,modelo,campo,opcional,id_orden_trabajo_acc_encadena,id_orden_trabajo_acc_alterna",
             "orden_trabajo_accion.id_orden_trabajo_catalogo" => "sometimes|exists:orden_trabajo_catalogos,id",
             "orden_trabajo_accion.id_concepto_catalogo" => "sometimes|exists:concepto_catalogos,id",
             "orden_trabajo_accion.accion"=>"sometimes|in:registrar,modificar,quitar",
             "orden_trabajo_accion.modelo"=>"sometimes|in:toma,medidor,contrato,lectura",
+            "orden_trabajo_accion.campo"=>"sometimes|string",
             "orden_trabajo_accion.opcional"=>"sometimes|boolean",
              "orden_trabajo_accion.id_orden_trabajo_acc_encadena"=>"sometimes|string",
               "orden_trabajo_accion.id_orden_trabajo_acc_alterna"=>"sometimes|string"
