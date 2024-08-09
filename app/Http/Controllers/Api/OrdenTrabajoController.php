@@ -63,8 +63,8 @@ class OrdenTrabajoController extends Controller
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             if (!$catalogo){
-                //return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
-                return $catalogo;
+                return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
+                //return $catalogo;
             }
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
