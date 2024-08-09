@@ -13,7 +13,6 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "matanyadaev/laravel-eloquent-spatial": "^4.3",
-        "mike42/escpos-php": "^4.0",
         "spatie/laravel-permission": "^6.9"
     },
     "require-dev": {
