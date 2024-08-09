@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\corteCaja;
+use App\Models\CorteCaja;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
