@@ -41,4 +41,8 @@ class Cargo extends Model
     {
         return $this->hasMany(Abono::class,'id_cargo');
     }
+    public function abonosTotal(): HasMany
+    {
+        return $this->hasMany(Abono::class,'id_cargo')->sum('monto');
+    }
 }

@@ -22,6 +22,7 @@ use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Return_;
 
 class OrdenTrabajoController extends Controller
 {
@@ -56,14 +57,14 @@ class OrdenTrabajoController extends Controller
      */
     public function storeCatalogo(StoreOrdenTrabajoCatalogoRequest $request)
     {
-        try{
-            DB::beginTransaction();
+        DB::beginTransaction();
             $data=$request->validated();
             $dataConf=$data['orden_trabajo_accion'] ?? null;
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             if (!$catalogo){
-                return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
+                //return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
+                return $catalogo;
             }
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
@@ -73,6 +74,8 @@ class OrdenTrabajoController extends Controller
             }
             DB::commit();
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
+        try{
+            
         }
         catch(Exception $ex){
             DB::rollBack();
@@ -294,16 +297,27 @@ class OrdenTrabajoController extends Controller
     }
     public function cerrarOrden(Request $request)
     {
-        //Macaco
+       try{
         DB::beginTransaction();
         $data=$request->all();
         $OT=$data['orden_trabajo'];
         $modelos=$data['modelos'];
-        //$cerrar=(new OrdenTrabajoService())->concluir($request);
-        $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         
-        DB::rollBack();
-        return $Acciones;
+        $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
+        if (!$Acciones){
+            return response()->json(["message"=>"la OT especificada ya se cerro"]);
+            DB::rollBack();
+        }
+        else{
+            DB::commit();
+            return $Acciones;
+        }
+      
+       }
+       catch(Exception $ex){
+        Return response()->json(["error"=>"Ha ocurrido un error al cerrar la orden de trabajo ".$ex->getMessage()]);
+       }
+       
     }
 
 
