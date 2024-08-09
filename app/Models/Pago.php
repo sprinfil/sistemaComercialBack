@@ -34,7 +34,7 @@ class Pago extends Model
     //pagos con corte de caja
     public function corteCaja () : HasMany
     {
-        return $this->hasMany(corteCaja::class, 'id_pago'); 
+        return $this->hasMany(CorteCaja::class, 'id_pago'); 
     }
 
     public function dueno(): MorphTo
