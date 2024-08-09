@@ -102,7 +102,10 @@ class TomaController extends Controller
     {
         try {
             $toma = Toma::where('id_codigo_toma', $codigo)->get()->first();
-            return new TomaResource($toma);
+            //return new TomaResource($toma);
+            return TomaResource::collection(
+                    $toma
+            );
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar la toma'
