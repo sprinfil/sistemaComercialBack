@@ -69,18 +69,27 @@ class UsuarioService{
     {
         try {
             DB::beginTransaction();
-            //$usuario = Usuario::with('tomas')->where('id', $id)->first();
-            $saldos = Cargo::with('dueño' , 'dueño.cargosVigentes' , 'dueño.usuario')->distinct()->get();
+             $saldos = Cargo::with('dueño' , 'dueño.cargosVigentes' , 'dueño.usuario')
+            ->whereHas('dueño.usuario', function ($query) use($id) {
+                $query->where('id' , $id);
+            })
+            ->distinct()->get();
+
             $saldoTotalPorUsuario = $saldos->groupBy('dueño.usuario.id')->map(function ($items) {
                 $usuario = $items->first()->dueño->usuario;
-                $saldoTotal = $items->sum(function ($item) {
-                     return$item->dueño->cargosVigentes->sum('monto');
+                
+                $cargosVigentes = $items->flatMap(function ($item) {
+                    return $item->dueño->cargosVigentes;
                 });
-                return  [
+            
+                $saldoTotal = $cargosVigentes->unique('id')->sum('monto');
+            
+                return [
                     'usuario' => $usuario,
                     'saldo_total' => $saldoTotal,
                 ];
             });
+            
             return $saldoTotalPorUsuario;
         } catch (Exception $ex) {
             DB::rollBack();
