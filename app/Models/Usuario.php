@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ramsey\Uuid\Type\Decimal;
 
 class Usuario extends Model
 {
@@ -59,9 +60,22 @@ class Usuario extends Model
     {
         return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno');
     }
-    public function cargosPendientes(): MorphMany
+    public function cargosVigentes(): MorphMany
     {
         return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
+    }
+    public function saldoCargosUsuario(){
+        $total=0;
+        $cargos=$this->cargosVigentes;
+        foreach ($cargos as $cargo){
+            $total+=$cargo->monto;
+            $abonos=$cargo->abonos;
+            foreach ($abonos as $abono){
+                $total-=$abono->total_abonado;
+            }
+
+        }
+        return $total;
     }
 
     public function pagos(): MorphMany
