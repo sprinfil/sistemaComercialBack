@@ -391,7 +391,7 @@ class UsuarioController extends Controller
         try {
             //$usuario = Usuario::find($id);
             return response(
-             $this->SaldoUsuarioService->ConsultarSaldoUsuario($id));
+             $this->SaldoUsuarioService->TotalSaldoUsuario($id));
          } catch (Exception $ex) {
              return response()->json([
                  'error' => 'No fue posible consultar el saldo' .$ex
