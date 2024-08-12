@@ -29,7 +29,7 @@ class ConceptoResource extends JsonResource
             "tarifa_fija"=>$this->tarifa_fija,
             "cargo_directo"=>$this->cargo_directo,
             "genera_orden"=>$this->genera_orden,
-            'tarifas' =>TarifaConceptoDetalleResource::collection($this->whenLoaded('tarifas')) //TarifaConceptoDetalleResource::collection($this->tarifas),
+            'tarifas' =>TarifaConceptoDetalleResource::collection($this->tarifas) //TarifaConceptoDetalleResource::collection($this->tarifas),
         ];
      }
 }
