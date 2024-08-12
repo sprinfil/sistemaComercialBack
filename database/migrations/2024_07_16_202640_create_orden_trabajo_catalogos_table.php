@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('orden_trabajo_catalogos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_concepto_catalogo')->nullable();
+            $table->unsignedBigInteger('id_concepto_catalogo')->nullable()->default(0);
             $table->string('nombre');
+            $table->string('descripcion');
             $table->integer('vigencias');
             $table->enum('momento_cargo',['generar','asignar','concluir','No genera']);
             $table->boolean('genera_masiva');

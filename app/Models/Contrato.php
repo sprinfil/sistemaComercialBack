@@ -135,9 +135,9 @@ class Contrato extends Model
         return $folio;
     }
 
-    public static function ConsultarPorFolio(string $folio, string $año){
+    public static function ConsultarPorFolio(string $folio, string $ano){
         
-        $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$año)->get();
+        $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$ano)->get();
         return $data;
         
     }   

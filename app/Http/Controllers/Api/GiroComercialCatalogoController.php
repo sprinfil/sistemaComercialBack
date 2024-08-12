@@ -8,8 +8,10 @@ use App\Models\GiroComercialCatalogo;
 use App\Http\Resources\GiroComercialCatalogoResource;
 use App\Http\Requests\StoreGiroComercialCatalogoRequest;
 use App\Http\Requests\UpdateGiroComercialCatalogoRequest;
+use App\Services\Facturacion\GiroService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class GiroComercialCatalogoController extends Controller
 {
@@ -20,9 +22,19 @@ class GiroComercialCatalogoController extends Controller
     {
         $this->authorize('viewAny', GiroComercialCatalogo::class);
 
-        return response(GiroComercialCatalogoResource::collection(
-            GiroComercialCatalogo::orderby("id", "desc")->get()
-        ),200);
+        try {
+            DB::beginTransaction();
+            $giro = (new GiroService())->indexGiroService();
+            DB::commit();
+            return $giro;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error durante la busqueda de giros.'
+            ], 200);
+        }
+
+       
     }
 
     /**
@@ -31,37 +43,21 @@ class GiroComercialCatalogoController extends Controller
     public function store(StoreGiroComercialCatalogoRequest $request)
     {
         $this->authorize('create', GiroComercialCatalogo::class);
-        /*
-        try{
+
+        try {
             $data = $request->validated();
-            $girocomercial = GiroComercialCatalogo::create($data);
-            return response(new GiroComercialCatalogoResource($girocomercial), 201);
-        } catch(Exception $e) {
+            $nombre = $request->nombre;
+            DB::beginTransaction();
+            $giro = (new GiroService())->storeGiroService($data,$nombre);
+            DB::commit();
+            return $giro;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo guardar el giro comercial'
-            ], 500);
-        }*/
-        $data = $request->validated();
-        //Busca por nombre los eliminados
-        $giro = GiroComercialCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
-        if ($giro) {
-            if ($giro->trashed()) {
-                return response()->json([
-                    'message' => 'El giro ya existe pero ha sido eliminada, ¿Desea restaurarla?',
-                    'restore' => true,
-                    'giro_comercial_id' => $giro->id
-                ], 200);
-            }
-            return response()->json([
-                'message' => 'El giro comercial ya existe',
-                'restore' => false
+                'message' => 'Ocurrio un error al registrar el giro en el catalogo.'
             ], 200);
         }
-        //Si no existe la constancia, la crea
-        if (!$giro) {
-            $giro = GiroComercialCatalogo::create($data);
-            return response($giro, 201);
-        }
+            
     }
 
     /**
@@ -70,11 +66,14 @@ class GiroComercialCatalogoController extends Controller
     public function show(string $id)
     {
         try {
-            $girocomercial = GiroComercialCatalogo::findOrFail($id);
-            return response(new GiroComercialCatalogoResource($girocomercial), 200);
-        } catch (ModelNotFoundException $e) {
+            DB::beginTransaction();
+            $giro = (new GiroService())->showGiroService($id);
+            DB::commit();
+            return $giro;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo encontrar el giro comercial'
+                'error' => 'No se encontro el giro comercial.'
             ], 500);
         }
     }
@@ -87,13 +86,14 @@ class GiroComercialCatalogoController extends Controller
         $this->authorize('update', GiroComercialCatalogo::class);
         try {
             $data = $request->validated();
-            $girocomercial = GiroComercialCatalogo::findOrFail($id);
-            $girocomercial->update($data);
-            $girocomercial->save();
-            return response(new GiroComercialCatalogoResource($girocomercial), 200);
-        } catch (Exception $e) {
+            DB::beginTransaction();
+            $giro = (new GiroService())->updateGiroService($data,$id);
+            DB::commit();
+            return $giro;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo editar el giro comercial'
+                'error' => 'No se modifico el giro comercial'
             ], 500);
         }
     }
@@ -105,24 +105,33 @@ class GiroComercialCatalogoController extends Controller
     {
         $this->authorize('delete', GiroComercialCatalogo::class);
         try {
-            $girocomercial = GiroComercialCatalogo::findOrFail($id);
-            $girocomercial->delete();
-            return response("Giro comercial eliminado con exito",200);
-        } catch (ModelNotFoundException $e) {
+            DB::beginTransaction();
+            $giro = (new GiroService())->destroyGiroService($id);
+            DB::commit();
+            return $giro;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo borrar el giro comercial'
+                'error' => 'No se borro el giro comercial.'
             ], 500);
         }
     }
 
     public function restaurarDato (GiroComercialCatalogo $catalogoGiros, Request $request)
     {
-        $catalogoGiros = GiroComercialCatalogo::withTrashed()->findOrFail($request->id);
-        //Condicion para verificar si el registro esta eliminado
-        if ($catalogoGiros->trashed()) {
-            //Restaura el registro
-            $catalogoGiros->restore();
-            return response()->json(['message' => 'El giro comercial ha sido restaurado' , 200]);
+
+        try {
+            $id = $request->id;
+            DB::beginTransaction();
+            $giro = (new GiroService())->restaurarDatoGiroService($id);
+            DB::commit();
+            return $giro;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No se restauro giro comercial.'
+            ], 500);
         }
+        
     }
 }

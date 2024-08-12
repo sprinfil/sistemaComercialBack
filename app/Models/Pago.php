@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,8 +18,8 @@ class Pago extends Model
 
     protected $fillable = [
         "id_caja",
-        "id_dueño",
-        "modelo_dueño",
+        "id_dueno",
+        "modelo_dueno",
         "id_corte_caja",
         "total_pagado",
         "forma_pago",
@@ -33,11 +34,16 @@ class Pago extends Model
     //pagos con corte de caja
     public function corteCaja () : HasMany
     {
-        return $this->hasMany(corteCaja::class, 'id_pago'); 
+        return $this->hasMany(CorteCaja::class, 'id_pago'); 
     }
 
-    public function dueño(): MorphTo
+    public function dueno(): MorphTo
     {
-        return $this->morphTo(__FUNCTION__, 'modelo_dueño', 'id_dueño');
+        return $this->morphTo(__FUNCTION__, 'modelo_dueno', 'id_dueno');
+    }
+
+    public function abonos(): MorphMany
+    {
+        return $this->morphMany(Abono::class, 'origen', 'modelo_origen', 'id_origen');
     }
 }

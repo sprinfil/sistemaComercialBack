@@ -7,7 +7,7 @@ use App\Models\MonitorFactibilidad;
 use App\Http\Requests\StoreMonitorFactibilidadRequest;
 use App\Http\Requests\UpdateMonitorFactibilidadRequest;
 use App\Http\Resources\CargoResource;
-use App\Http\Resources\factibilidadResource;
+use App\Http\Resources\FactibilidadResource;
 use App\Models\Cargo;
 use App\Models\Factibilidad;
 use Exception;

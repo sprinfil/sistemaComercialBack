@@ -8,8 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\DescuentoCatalogoResource;
 use App\Http\Requests\StoreDescuentoCatalogoRequest;
 use App\Http\Requests\UpdateDescuentoCatalogoRequest;
+use App\Services\Catalogos\ConvenioCatalogoService;
+use App\Services\Catalogos\DescuentoCatalogoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class DescuentoCatalogoController extends Controller
 {
@@ -20,10 +23,11 @@ class DescuentoCatalogoController extends Controller
     {
         $this->authorize('viewAny', DescuentoCatalogo::class);
         try{
-            return response(DescuentoCatalogoResource::collection(
-                DescuentoCatalogo::all()
-            ),200);
+            DB::beginTransaction();
+            return (new DescuentoCatalogoService())->indexDescuentoCatalogoService();
+            DB::commit();
         } catch(Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'No fue posible consultar los descuentos'
             ], 500);
@@ -36,38 +40,23 @@ class DescuentoCatalogoController extends Controller
     public function store(StoreDescuentoCatalogoRequest $request)
     {
         $this->authorize('create', DescuentoCatalogo::class);
-        /*try{
-            $data = $request->validated();
-            $descuento = DescuentoCatalogo::create($data);
-            return response(new DescuentoCatalogoResource($descuento), 201);
-        } catch(Exception $e) {
-            return response()->json([
-                'error' => 'No se pudo guardar el descuento'
-            ], 500);
-        }*/
-        //Se valida el store
-        $data = $request->validated();
-        //Busca por nombre los eliminados
-        $descuento = DescuentoCatalogo::withTrashed()->where('nombre' , $request->input('nombre'))->first();
-        if ($descuento) {
-            if ($descuento->trashed()) {
-                return response()->json([
-                    'message' => 'El descuento ya existe pero ha sido eliminada, ¿Desea restaurarla?',
-                    'restore' => true,
-                    'descuento_id' => $descuento->id
-                ], 200);
-            }
-            return response()->json([
-                'message' => 'El descuento ya existe',
-                'restore' => false
-            ], 200);
-        }
-        //Si no existe el descuento, lo crea
-        if (!$descuento) {
-            $descuento = DescuentoCatalogo::create($data);
-            return response($descuento, 201);
-        }
-        //$data = $request->validated();
+       try {
+         //Se valida el store
+         $data = $request->validated();
+         $nombre = $request->nombre;
+         DB::beginTransaction();
+         $descuento = (new DescuentoCatalogoService())->storeDescuentoCatalogoService($nombre,$data);
+         DB::commit();
+         return $descuento;
+       } catch (Exception $ex) {
+        DB::rollBack();
+          return response()->json([
+              'message' => 'Ocurrio un error al registrar el descuento.'
+           ], 200);
+       }
+       
+        
+        
     }
 
     /**
@@ -76,9 +65,12 @@ class DescuentoCatalogoController extends Controller
     public function show(string $id)
     {
         try {
-            $descuento = DescuentoCatalogo::findOrFail($id);
-            return response(new DescuentoCatalogoResource($descuento), 200);
+            DB::beginTransaction();
+            $descuento = (new DescuentoCatalogoService())->showDescuentoCatalogoService($id);
+            DB::commit();
+            return $descuento;
         } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'No se pudo encontrar el descuento'
             ], 500);
@@ -92,14 +84,17 @@ class DescuentoCatalogoController extends Controller
     {
         $this->authorize('update', DescuentoCatalogo::class);
         try {
+
             $data = $request->validated();
-            $descuento = DescuentoCatalogo::findOrFail($id);
-            $descuento->update($data);
-            $descuento->save();
-            return response(new DescuentoCatalogoResource($descuento), 200);
+            DB::beginTransaction();
+            $descuento = (new DescuentoCatalogoService())->updateDescuentoCatalogoservice($data,$id);
+            DB::commit();
+            return $descuento;
+           
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo editar el descuento'
+                'error' => 'Ocurrio un error al editar el descuento'
             ], 500);
         }
     }
@@ -111,24 +106,31 @@ class DescuentoCatalogoController extends Controller
     {
         $this->authorize('delete', DescuentoCatalogo::class);
         try {
-            $descuento = DescuentoCatalogo::findOrFail($id);
-            $descuento->delete();
-            return response("Descuento eliminado con exito",200);
+            DB::beginTransaction();
+            $descuento = (new DescuentoCatalogoService())->destroyDescuentoCatalogoService($id);
+            DB::commit();
+            return $descuento;
         } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo borrar el descuento'
+                'error' => 'Ocurrio un error al borrar el descuento.'
             ], 500);
         }
     }
 
     public function restaurarDato (DescuentoCatalogo $catalogoDescuento, Request $request)
     {
-        $catalogoDescuento = DescuentoCatalogo::withTrashed()->findOrFail($request->id);
-        //Condicion para verificar si el registro esta eliminado
-        if ($catalogoDescuento->trashed()) {
-            //Restaura el registro
-            $catalogoDescuento->restore();
-            return response()->json(['message' => 'El descuento ha sido restaurado' , 200]);
+        try {
+            $id = $request->id;
+            DB::beginTransaction();
+            $descuento = (new DescuentoCatalogoService())->restaurarDescuentoCatalogoService($id);
+            DB::commit();
+            return $descuento;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al restaurar el descuento.'
+            ], 200); 
         }
     }
 }

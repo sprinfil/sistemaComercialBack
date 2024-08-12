@@ -22,6 +22,7 @@ use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Return_;
 
 class OrdenTrabajoController extends Controller
 {
@@ -56,14 +57,14 @@ class OrdenTrabajoController extends Controller
      */
     public function storeCatalogo(StoreOrdenTrabajoCatalogoRequest $request)
     {
-        try{
-            DB::beginTransaction();
+        DB::beginTransaction();
             $data=$request->validated();
             $dataConf=$data['orden_trabajo_accion'] ?? null;
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             if (!$catalogo){
-                return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
+                //return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
+                return $catalogo;
             }
             if  ($dataConf){
                 $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
@@ -73,6 +74,8 @@ class OrdenTrabajoController extends Controller
             }
             DB::commit();
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
+        try{
+            
         }
         catch(Exception $ex){
             DB::rollBack();
@@ -245,33 +248,76 @@ class OrdenTrabajoController extends Controller
     //// ORDEN DE TRABAJO
     public function storeOrden(StoreOrdenTrabajoRequest $request)
     {
-        
+       
+       try{
+        DB::beginTransaction();
         $data=(new OrdenTrabajoService())->crearOrden($request->validated());
-        if ($data){
+        if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
         else
         {
-            return "get this shigaboo";
+            DB::commit();
+            return response(new OrdenTrabajoResource($data),200);
         }
-        //$catalogo=OrdenTrabajo::create($data);
-        //return response(new OrdenTrabajoResource($catalogo),200);
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo"],202);
+       }
+   
+        
         
     }
-    public function cerrarOrden(StoreOrdenTrabajoRequest $request)
+    public function asignarOrden(UpdateOrdenTrabajoRequest $request)
     {
+        DB::beginTransaction();
         
-        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
-        if ($data){
+        $datos=$request->validated();
+        $datos['id']=$request->id;
+        $data=(new OrdenTrabajoService())->asignar($datos);
+        if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
         else
         {
-            return "get this shigaboo";
+            DB::commit();
+            return response(new OrdenTrabajoResource($data),200);
+            //return "caca";
         }
-        //$catalogo=OrdenTrabajo::create($data);
-        //return response(new OrdenTrabajoResource($catalogo),200);
+       try{
         
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+       }
+   
+        
+        
+    }
+    public function cerrarOrden(Request $request)
+    {
+       try{
+        DB::beginTransaction();
+        $data=$request->all();
+        $OT=$data['orden_trabajo'];
+        $modelos=$data['modelos'];
+        
+        $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
+        if (!$Acciones){
+            return response()->json(["message"=>"la OT especificada ya se cerro"]);
+            DB::rollBack();
+        }
+        else{
+            DB::commit();
+            return $Acciones;
+        }
+      
+       }
+       catch(Exception $ex){
+        Return response()->json(["error"=>"Ha ocurrido un error al cerrar la orden de trabajo ".$ex->getMessage()]);
+       }
+       
     }
 
 

@@ -23,14 +23,9 @@ class StoreOrdenTrabajoRequest extends FormRequest
     {
         return [
             "id_toma" => "required|exists:toma,id",
-            "id_empleado_asigno" => "sometimes|exists:operadores,id",
+            "id_empleado_asigno" => "required|exists:operadores,id",
             "id_empleado_encargado" => "sometimes|exists:operadores,id",
-            "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id",
-            "estado"=>"required|in:No asignada,Concluida,En proceso",
-            "fecha_finalizada"=>"sometimes|date",
-            "obervaciones"=>"nullable|string",
-            "evidencia"=>"nullable|string",
-            "material_utilizado"=>"nullable|string",
+            "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id"
         ];
     }
 }

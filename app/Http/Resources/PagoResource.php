@@ -14,6 +14,18 @@ class PagoResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            "id_caja" => $this->id_caja,
+            "id_dueno" => $this->id_dueno,
+            "modelo_dueno" => $this->modelo_dueno,
+            "id_corte_caja" => $this->id_corte_caja,
+            "total_pagado" => $this->total_pagado,
+            "forma_pago" => $this->forma_pago,
+            "fecha_pago" => $this->fecha_pago,
+            "estado" => $this->estado,
+            "total_abonado" => $this->total_abonado,
+            "abonos" => AbonoResource::collection($this->whenLoaded('tarifas'))
+            //,"bonificaciones" => AbonoResource::collection($this->whenLoaded('bonificaciones')),
+        ];
     }
 }

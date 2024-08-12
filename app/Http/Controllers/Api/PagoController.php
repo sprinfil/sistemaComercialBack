@@ -3,49 +3,87 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pago;
 use App\Http\Requests\StorePagoRequest;
-use App\Http\Requests\UpdatePagoRequest;
+use App\Http\Resources\PagoResource;
+use App\Services\Caja\PagoService as CajaPagoService;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class PagoController extends Controller
 {
+    protected $pagoService;
+
     /**
-     * Display a listing of the resource.
+     * Constructor del controller
+     */
+    public function __construct(CajaPagoService $_pagoService)
+    {
+        $this->pagoService = $_pagoService;
+    }
+    
+    /**
+     * Consulta todos los pagos registrados
      */
     public function index()
     {
-        //
+        try{
+            return response(PagoResource::collection(
+                $this->pagoService->obtenerPagos()
+            ),200);
+        } catch(Exception $e) {
+            return response()->json([
+                'error' => 'No fue posible consultar el pago'
+            ], 500);
+        }
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Registra el pago de un cargo a un usuario/toma,
+     * sus abonos y bonificaciones.
      */
     public function store(StorePagoRequest $request)
     {
-        //
+        try{
+            return response(new PagoResource(
+                $this->pagoService->registrarPago($request)
+            ), 201);
+        } catch(Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo procesar el pago'.$e
+            ], 500);
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Consulta un cargo especifico por su id
      */
-    public function show(Pago $pago)
+    public function show($id)
     {
-        //
+        try {
+            return response(new PagoResource(
+                $this->pagoService->busquedaPorId($id)
+            ), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el pago por su id '.$id
+            ], 500);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Consulta historial de pagos por modelo
      */
-    public function update(UpdatePagoRequest $request, Pago $pago)
+    public function pagosPorModelo(Request $request)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pago $pago)
-    {
-        //
+        try {
+            return response(PagoResource::collection(
+                $this->pagoService->pagosPorModelo($request)
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los pagos'
+            ], 500);
+        }
     }
 }

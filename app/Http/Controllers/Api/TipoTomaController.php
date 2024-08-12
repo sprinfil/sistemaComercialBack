@@ -7,7 +7,7 @@ use App\Models\TipoToma;
 use App\Http\Requests\StoreTipoTomaRequest;
 use App\Http\Requests\UpdateTipoTomaRequest;
 use App\Http\Resources\TipoTomaResource;
-use App\Models\tarifa;
+use App\Models\Tarifa;
 use App\Models\TarifaConceptoDetalle;
 use App\Models\TarifaServiciosDetalle;
 use Database\Factories\TarifaConceptoDetalleFactory;

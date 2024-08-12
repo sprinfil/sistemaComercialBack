@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\corteCaja;
+use App\Models\CorteCaja;
 use App\Models\Cotizacion;
 use App\Models\Factura;
 use Illuminate\Database\Seeder;
@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
         $this->call(OperadorAsignadoSeeder::class);
         $this->call(CajaCatalogoSeeder::class);
         $this->call(PagoSeeder::class);
-        $this->call(corteCajaSeeder::class);
+        //$this->call(CorteCajaSeeder::class);
         //
         $this->call(RutaSeeder::class);
         $this->call(LibroSeeder::class);
@@ -71,5 +71,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ConsumoSeeder::class);
         $this->call(FacturaSeeder::class);
         $this->call(AsignacionGeograficaSeeder::class);
+        //
+        $this->call(OrdenesTrabajoSeeder::class);
+        //
     }
 }

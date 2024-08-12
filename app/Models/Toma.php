@@ -24,6 +24,9 @@ class Toma extends Model
     protected $casts = [
         'posicion' => Point::class,
     ];
+    protected $spatialFields = [
+        'posicion',
+    ];
  
     protected $fillable = [
         "id_usuario",
@@ -49,6 +52,7 @@ class Toma extends Model
         'c_agua',
         'c_alc',
         'c_san',
+        'posicion'
     ];
     
     // Giro comercial asociado a la toma
@@ -97,7 +101,7 @@ class Toma extends Model
     }
 
     public function ordenesTrabajo():HasMany{
-        return $this->hasMany(ordenTrabajo::class,'id_toma');;
+        return $this->hasMany(ordenTrabajo::class,'id_toma');
     }
 
     public function datos_fiscales(): MorphOne
@@ -107,12 +111,20 @@ class Toma extends Model
 
     public function cargos(): MorphMany
     {
-        return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño');
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno');
     }
 
+    public function cargosVigentes(): MorphMany
+    {
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
+    }
     public function pagos(): MorphMany
     {
-        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno');
+    }
+    public function pagosPendientes(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
 
     //Consumos asociados a la toma

@@ -22,7 +22,15 @@ class UpdatePagoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "id_caja"=>"required|integer",
+            "id_dueno"=>"required|integer",
+            "modelo_dueno"=>"required|string|max:55",
+            "total_pagado"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "forma_pago"=>"required|string|max:55",
+            "fecha_pago"=>"required|date",
+            "estado"=>"nullable|string|max:55",
+            "abonos.*"=>"nullable|array",
+            "bonificaciones.*"=>"nullable|array"
         ];
     }
 }

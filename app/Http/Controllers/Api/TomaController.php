@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Toma;
 use App\Http\Requests\StoreTomaRequest;
 use App\Http\Requests\UpdateTomaRequest;
+use App\Http\Resources\OrdenTrabajoResource;
 use App\Http\Resources\TomaResource;
+use App\Services\UsuarioService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -149,5 +151,30 @@ class TomaController extends Controller
         $toma = Toma::find($toma_id);
         $toma->posicion = $point;
         $toma->save();
-     }
+    }
+    
+    
+    public function ordenesToma($id)
+    {
+        try {
+            $toma = Toma::findOrFail($id);
+            $ordenes=$toma->ordenesTrabajo;
+            return OrdenTrabajoResource::collection($ordenes);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar las ordenes de trabajo'
+            ], 500);
+        }
+    }
+    public function general($id)
+    {
+        try {
+            $toma = (new UsuarioService())->ConsultaGeneralToma($id);
+            return $toma;
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar las ordenes de trabajo'
+            ], 500);
+        }
+    }
 }

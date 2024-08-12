@@ -11,10 +11,12 @@ use App\Models\AsignacionGeografica;
 use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreLibroRequest;
 use App\Http\Requests\UpdateLibroRequest;
+use App\Services\Facturacion\LibroService;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class LibroController extends Controller
 {
@@ -24,15 +26,46 @@ class LibroController extends Controller
     public function index()
     {
         //pediente asignar permisos
-        return LibroResource::collection(
-            Libro::all()
-        );
+        try {
+            DB::beginTransaction();
+            $libro = (new LibroService())->indexLibroService();
+            DB::commit();
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'No se encontraron registros de libros.'
+            ], 200);
+        }
+       
+    }
+
+        /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreLibroRequest $request)
+    {
+        //Pendiente de permiso      
+        try {
+            //Valida el store
+            $data = $request->validated();
+            $nombre = $request->nombre;
+            $id_ruta = $request->id_ruta;
+            DB::beginTransaction();
+            $libro = (new LibroService())->storeLibroService($data, $nombre, $id_ruta);
+            DB::commit();
+            return $libro;
+        } catch (Exception $ex) {
+                DB::rollBack();
+                return response()->json([
+                    'error' => 'No se registro el libro'
+                ], 500);
+            }      
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreLibroRequest $request)
+    public function store_deprecated(StoreLibroRequest $request)
     {
         //Pendiente de permiso
         
@@ -40,67 +73,15 @@ class LibroController extends Controller
 
             //Valida el store
             $data = $request->validated();
-            //Busca por registros eliminados
-            $libros = Libro::withTrashed()->where('id_ruta', $request->input('id_ruta'))->where('nombre', $request->input('nombre'))->first();
-    
-            //Validacion en caso de registro duplicado
-            if ($libros) {
-                if ($libros->trashed()) {
-                    return response()->json([
-                        'message' => 'El libro ya existe en esta ruta pero ha sido eliminado. ¿Desea restaurarlo?',
-                        'restore' => true,
-                        'ruta_id' => $libros->id
-                    ], 200);
-                }
-                return response()->json([
-                    'message' => 'El libro ya existe en esta ruta.',
-                    'restore' => false
-                ], 200);
-            }
-    
-            //Si el dato no existe lo crea
-            if(!$libros)
-            {
-                $libros = Libro::create($data);
-
-                $asignacionGeografica = new AsignacionGeografica();
-                $asignacionGeografica->modelo = "libro";
-                $asignacionGeografica->id_modelo = $libros->id;
-                $asignacionGeografica->estatus = "activo";
-                $asignacionGeografica->save();
-
-                $default_coords = [
-                    [
-                        "latitud"=>24.1277,
-                        "longitud"=>-110.3033
-                    ],
-                    [
-                        "latitud"=>24.1343,
-                        "longitud"=>-110.3033
-                    ],
-                    [
-                        "latitud"=>24.1343,
-                        "longitud"=>-110.2967
-                    ],
-                    [
-                        "latitud"=>24.1277,
-                        "longitud"=>-110.2967
-                    ],
-                ];
-
-                foreach($default_coords as $coords){
-                    $punto = new Punto();
-                    $punto->id_asignacion_geografica = $asignacionGeografica->id;
-                    $punto->latitud = $coords["latitud"];
-                    $punto->longitud = $coords["longitud"];
-                    $punto->save();
-                }
-
-                return new LibroResource($libros);
-            }
-            //
-                
-            } catch (ModelNotFoundException $e) {
+            $nombre = $request->nombre;
+            $id_ruta = $request->id_ruta;
+            DB::beginTransaction();
+            $libro = (new LibroService())->store_deprecatedLibroService($data,$nombre,$id_ruta);
+            DB::commit();
+            return $libro;
+          
+            } catch (Exception $ex) {
+                DB::rollBack();
                 return response()->json([
                     'error' => 'No se pudo añadir el libro'
                 ], 500);
@@ -114,13 +95,15 @@ class LibroController extends Controller
     {
         // pendiente permiso
         try {
+            DB::beginTransaction();
+            $libro = (new LibroService())->showLibroService($id);
+            DB::commit();
+            return $libro;
 
-            $libro = Libro::findOrFail($id);
-            return response(new LibroResource($libro), 200);
-
-        } catch (ModelNotFoundException $e) {
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
-                    'error' => 'No se pudo encontrar el libro'
+                    'error' => 'No se encontro el libro'
             ], 500);
         }
       
@@ -133,29 +116,18 @@ class LibroController extends Controller
     {
         //$this->authorize('update', GiroComercialCatalogo::class); pendiente permiso withTrashed()
         
-
         try {
 
-            $rutaAsociada = Libro::select('id_ruta')->where('id', $id)->first();
-            $listaLibros = Libro::select('nombre')->where('id_ruta', $rutaAsociada->id_ruta)->get();
-
-            foreach ($listaLibros as $librosReg) {
-
-                if ($librosReg->nombre == $request->nombre) {
-                return response()->json([
-                    'error' => 'Esten nombre ya se encuentra asociado a esta ruta'
-                 ], 200);
-                }
-            }
-
             $data = $request->validated();
-            $libro = Libro::findOrFail($id);
-            $libro->update($data);
-            $libro->save();
-            return response(new LibroResource($libro), 200);
-        } catch (Exception $e) {
+            $nombre = $request->nombre;
+            DB::beginTransaction();
+            $libro = (new LibroService())->updateLibroService($data, $id, $nombre);
+            DB::commit();
+            return $libro;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo editar el libro'
+                'error' => 'No se edito el libro'
             ], 500);
         }
     }
@@ -167,10 +139,12 @@ class LibroController extends Controller
     {
         //$this->authorize('delete', GiroComercialCatalogo::class); pendiente permiso, pendiente que no se pueda borrar un libro asociado a tomas
         try {
-            $libro = Libro::findOrFail($id);
-            $libro->delete();
-            return response("El libro se ha eliminado con exito",200);
-        } catch (ModelNotFoundException $e) {
+            DB::beginTransaction();
+            $libro = (new LibroService())->destroyLibroService($id);
+            DB::commit();
+            return $libro;
+        } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'Ocurrio un error al borrar el libro'
             ], 500);
@@ -181,16 +155,15 @@ class LibroController extends Controller
     {
         //Pendiente permiso, Pendiente validar las implicaciones de restaurar un libro
         try {
-            $libro = Libro::withTrashed()->findOrFail($request->id);
-            //Condicion para verificar si el registro esta eliminado
-            if ($libro->trashed()) {
-               //Restaura el registro
-               $libro->restore();
-               return response()->json(['message' => 'El libro ha sido restaurado' , 200]);
-           }
+            $id = $request->id;
+            DB::beginTransaction();
+           $libro = (new LibroService())->restaurarDatoLibroService($id);
+           DB::commit();
+           return $libro;
            
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
+        } catch (ModelNotFoundException $ex) {
+            DB::rollBack(); 
+           return response()->json([
                 'error' => 'Ocurrio un error al restaurar el libro'
             ], 500);
         }
@@ -198,18 +171,16 @@ class LibroController extends Controller
     }
 
     public function update_polygon(Request $request, $libro_id){
-        $libro = Libro::find($libro_id);
-        $new_points = $request["puntos"];
-
-        $points = [];
-        
-        foreach ($new_points as $punto_data) {
-            $points[] = new Point( /* latitud */$punto_data["lat"], /*longitud*/$punto_data["lng"]);
+        try {
+          $new_points = $request["puntos"];
+          DB::beginTransaction();
+          $libro = (new LibroService())->update_polygonLibroServicio($new_points, $libro_id);
+          DB::commit();
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No se actualizo el poligono.'
+            ], 500);
         }
-        $lineString = new LineString($points);
-        $polygon = new Polygon([$lineString]);
-
-        $libro->polygon = $polygon;
-        $libro->save();
     }
 }
