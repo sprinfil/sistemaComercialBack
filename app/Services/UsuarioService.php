@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Expr\Cast\Bool_;
 
 class UsuarioService{
 
@@ -69,7 +70,7 @@ class UsuarioService{
     {
         try {
             DB::beginTransaction();
-             $saldos = Cargo::with('dueño' , 'dueño.cargosVigentes' , 'dueño.usuario')
+            $saldos = Cargo::with('dueño' , 'abonos' , 'dueño.cargosVigentes' , 'dueño.usuario')
             ->whereHas('dueño.usuario', function ($query) use($id) {
                 $query->where('id' , $id);
             })
@@ -81,13 +82,34 @@ class UsuarioService{
                 $cargosVigentes = $items->flatMap(function ($item) {
                     return $item->dueño->cargosVigentes;
                 });
-            
+                
+                $abonos = $items->flatmap(function ($item){
+                    return $item->abonos;
+                });
+
+                $aux = 0; //Auxiliar para los abonos
+                foreach ($abonos as $abono) {
+                    $aux += $abono->total_abonado;
+                }     
                 $saldoTotal = $cargosVigentes->unique('id')->sum('monto');
-            
-                return [
-                    'usuario' => $usuario,
-                    'saldo_total' => $saldoTotal,
-                ];
+                $total = 0;
+                if ($saldoTotal == 0) {
+                    return [
+                        'message' => 'El usuario no tiene cargos vigentes' ,
+                        'usuario' => $usuario,
+                        'cargos pendientes' => $saldoTotal,
+                        'abonos' => $aux,
+                    ];
+                }
+                else{
+                    $total = $saldoTotal - $aux;
+                    return [
+                        'usuario' => $usuario,
+                        'cargos pendientes' => $saldoTotal,
+                        'abonos' => $aux,
+                        'saldo_total' => $total,
+                    ];
+                }      
             });
             
             return $saldoTotalPorUsuario;
