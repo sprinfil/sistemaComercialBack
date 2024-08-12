@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('obervaciones')->nullable();
             $table->string('evidencia')->nullable();
             $table->string('material_utilizado')->nullable();
+            $table->point('posicion_OT')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
