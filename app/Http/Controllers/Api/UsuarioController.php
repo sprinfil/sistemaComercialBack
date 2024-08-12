@@ -17,6 +17,7 @@ use App\Services\ConsultarSaldoService;
 use App\Services\UsuarioService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UsuarioController extends Controller
 {
@@ -86,32 +87,16 @@ class UsuarioController extends Controller
     
     public function storemoral(StoreUsuarioMoralRequest $request)
     {
+        
         try{
             $data=$request->validated();
-            $usuario = Usuario::withTrashed()->where('curp', $request['curp'])->orWhere('rfc', $request['rfc'])->orWhere('correo', $request['correo'])->first();
-
-            //VALIDACION POR SI EXISTE
-            if ($usuario) {
-                if ($usuario->trashed()) {
-                    return response()->json([
-                        'message' => 'El usuario ya existe pero ha sido eliminado. ¿Desea restaurarlo?',
-                        'restore' => true,
-                        'usuario_id' => $usuario->id
-                    ], 200);
-                }
-                return response()->json([
-                    'message' => 'El usuario ya existe.',
-                    'restore' => false
-                ], 200);
-            }
-            //si no existe el usuario lo crea
-            if(!$usuario)
-            {
-                $usuario=Usuario::create($data);
-                return response(new UsuarioResource($usuario),201);
-            }
+            DB::beginTransaction();
+            $usuario = (new UsuarioService())->storeMoralService($data);
+            DB::commit();
+            return  $usuario;
         }
         catch(Exception $ex){
+            DB::rollBack();
             return response()->json([
                 'error' => 'El usuario ya existe.',
                 'restore' => false
@@ -169,9 +154,9 @@ class UsuarioController extends Controller
         $data =(new UsuarioService())->ConsultaGeneral($codigoUsuario);
         $numero_tomas=count($data->tomas);
        
-    $datos=new UsuarioResource(
-        $data
-    );
+        $datos=new UsuarioResource(
+          $data
+         );
     
     return response()->json(['usuario'=>$datos,'numero_tomas'=>$numero_tomas]);
     
@@ -286,12 +271,15 @@ class UsuarioController extends Controller
     {
         try{
             $data=$request->validated();
-            $usuario=Usuario::find($request->id);
-            $usuario->update($data);
-            $usuario->save();
-            return new UsuarioResource($usuario);
+            $id = $request->id;
+            DB::beginTransaction();
+            $usuario = (new UsuarioService())->updateUsuarioService($data, $id);
+            DB::commit();
+            return $usuario;
+        
         }
         catch(Exception $ex){
+            DB::rollBack();
             return response()->json(['error' => 'No se pudo modificar el usuario, introduzca datos correctos'], 200);
         }
        
@@ -301,12 +289,15 @@ class UsuarioController extends Controller
     {
         try{
             $data=$request->validated();
-            $usuario=Usuario::find($request['id']);
-            $usuario->update($data);
-            $usuario->save();
-            return new UsuarioResource($usuario);
+            $id = $request->id;
+            DB::beginTransaction();
+            $usuario = (new UsuarioService())->updateMoralUsuarioService($data,$id);
+            DB::commit();
+            return $usuario;
+            
         }
         catch(Exception $ex){
+            DB::rollBack();
             return response()->json(['error' => 'No se pudo modificar el usuario, introduzca datos correctos'], 200);
         }
     }
@@ -318,25 +309,29 @@ class UsuarioController extends Controller
     {
         try
         {
-            $usuario = Usuario::findOrFail($request["id"]);
-            $usuario->delete();
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
+           $id = $request->id;
+           DB::beginTransaction();
+           $usuario = (new UsuarioService())->destroyUsuarioService($id);
+           DB::commit();
+           return $usuario;
         }
         catch (\Exception $e) {
-
+            DB::rollBack();
             return response()->json(['message' => 'error'], 500);
         }
     }
 
     public function restaurarDato(Usuario $Usuario, Request $request)
     {
-        $Usuario = Usuario::withTrashed()->findOrFail($request->id);
-
-        // Verifica si el registro está eliminado
-        if ($Usuario->trashed()) {
-            // Restaura el registro
-            $Usuario->restore();
-            return response()->json(['message' => 'El usuario ha sido restaurado.'], 200);
+        try {
+           $id = $request->id;
+           DB::beginTransaction();
+           $usuario = (new UsuarioService())->restaurarDatoUsuarioService($id);
+           DB::commit();
+           return $usuario;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json(['message' => 'error'], 500);
         }
 
     }
@@ -344,14 +339,13 @@ class UsuarioController extends Controller
     public function datosFiscales($id)
     {
         try{
-            $usuario = Usuario::findOrFail($id);
-            if($usuario){
-                $datos_fiscales = $usuario->datos_fiscales()->first();
-                return new DatoFiscalResource($datos_fiscales);
-            }
-            return response()->json(['message' => 'error'], 500);
+            DB::beginTransaction();
+            $usuario = (new UsuarioService())->datosFiscalesUsuarioService($id);
+            DB::commit();
+            return $usuario;
         } catch(Exception $ex) {
-            return response()->json(['message' => 'error'.$ex], 500);
+            DB::rollBack();
+            return response()->json(['message' => 'error'], 500);
         } 
     }
 
@@ -360,28 +354,16 @@ class UsuarioController extends Controller
         try{
                 // Validar el request
                 $validatedData = $datoFiscalRequest->validated();
+                DB::beginTransaction();
+                $datoFiscal = (new UsuarioService())->storeOrUpdateDatosFiscalesService($validatedData, $id);
+                DB::commit();
 
-                // Encontrar el usuario
-                $usuario = Usuario::find($id);
+                return $datoFiscal;
 
-                if ($usuario) {
-                    $polymorphicData = [
-                        'id_modelo' => $usuario->id,
-                        'modelo' => get_class($usuario)
-                    ];
-            
-                    // Obtener o crear los datos fiscales
-                    $datosFiscales = $usuario->datos_fiscales()->updateOrCreate(
-                        $polymorphicData,
-                        $validatedData
-                    );
-            
-                    // Retornar los datos fiscales actualizados o creados
-                    return new DatoFiscalResource($datosFiscales);
-                }
                 return response()->json(['message' => 'error no se encontro usuario'], 500);
             }
             catch(Exception $ex) {
+                DB::rollBack();
                 return response()->json(['message' => 'error'.$ex], 500);
             } 
     }
