@@ -25,7 +25,8 @@ class StoreOrdenTrabajoRequest extends FormRequest
             "id_toma" => "required|exists:toma,id",
             "id_empleado_asigno" => "required|exists:operadores,id",
             "id_empleado_encargado" => "sometimes|exists:operadores,id",
-            "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id"
+            "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id",
+            "posicion_OT" => "sometimes|point",
         ];
     }
 }
