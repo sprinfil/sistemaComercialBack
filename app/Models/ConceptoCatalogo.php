@@ -21,7 +21,12 @@ class ConceptoCatalogo extends Model
         "abonable",
         "tarifa_fija",
         "cargo_directo",
-        "genera_orden"
+        "genera_orden",
+        "genera_recargo",
+        "concepto_rezago",
+        "pide_monto",
+        "bonificable",
+        "recargo"
     ];
 
     // Medidor asociado a la toma
