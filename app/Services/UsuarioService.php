@@ -86,47 +86,7 @@ class UsuarioService{
         catch(Exception $ex){
 
         }
-        /*
-        try {
-            $saldo_total = 0;
-              $cargos = Cargo::with('dueno')
-                ->where('estado', '=' , 'pendiente')->where('id_dueno',$id);
-               
-            foreach ($cargos as $cargo) {
-               
-                  $saldo_total += $cargo->monto;
-               
-            }
-            return response()->json(['monto total' => $saldo_total] , 200);
-           
-        } catch (Exception $ex) {
-                return response()->json([
-                    'error' => 'No hay cargos para este usuario.'.$ex
-                ], 404);
-            
-        }
-                */
-     
-                /*
-        $saldo_total = 0;
-        //Falta sacar el monto pendiente por usuario {id} (modificar la ruta tambien)
-        return $usuarios = Cargo::with('dueno')
-        ->where('estado' , '=', 'pendiente')
-        ->find($id);
-        $usuarios->monto;
-        foreach ($usuarios as $usuario) {
-            $saldo_total += $usuario->monto;
-        }
-        return $saldo_total;
-        
-        $cargos = Cargo::with('dueno')->where('estado' , '=', 'pendiente')->first();
-        //$cargos->dueno->sum('monto');
-        foreach ($cargos as $cargo) {
-            $abonos = $cargo->monto;
-            $saldo_total += $cargo->monto;
-        }
-        return $saldo_total;
-        */
+       
         
 
     }
