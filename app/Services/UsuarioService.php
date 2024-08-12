@@ -68,58 +68,68 @@ class UsuarioService{
 
     public function ConsultarSaldoUsuario ($id)
     {
-        try {
-            DB::beginTransaction();
-            $saldos = Cargo::with('dueño' , 'abonos' , 'dueño.cargosVigentes' , 'dueño.usuario')
-            ->whereHas('dueño.usuario', function ($query) use($id) {
-                $query->where('id' , $id);
-            })
-            ->distinct()->get();
-
-            $saldoTotalPorUsuario = $saldos->groupBy('dueño.usuario.id')->map(function ($items) {
-                $usuario = $items->first()->dueño->usuario;
-                
-                $cargosVigentes = $items->flatMap(function ($item) {
-                    return $item->dueño->cargosVigentes;
-                });
-                
-                $abonos = $items->flatmap(function ($item){
-                    return $item->abonos;
-                });
-
-                $aux = 0; //Auxiliar para los abonos
-                foreach ($abonos as $abono) {
-                    $aux += $abono->total_abonado;
-                }     
-                $saldoTotal = $cargosVigentes->unique('id')->sum('monto');
-                $total = 0;
-                if ($saldoTotal == 0) {
-                    return [
-                        'message' => 'El usuario no tiene cargos vigentes' ,
-                        'usuario' => $usuario,
-                        'cargos pendientes' => $saldoTotal,
-                        'abonos' => $aux,
-                    ];
+        try{
+            $Usuario=Usuario::find($id);
+            $tomas=$Usuario->tomas;
+            $total=0;
+            foreach ($tomas as $toma){
+                $cargos=$toma->cargosVigentes;
+                if (count($cargos)!=0){
+                    //break;
+                    foreach ($cargos as $cargo){
+                        $total+=$cargo->monto;
+                    }
                 }
-                else{
-                    $total = $saldoTotal - $aux;
-                    return [
-                        'usuario' => $usuario,
-                        'cargos pendientes' => $saldoTotal,
-                        'abonos' => $aux,
-                        'saldo_total' => $total,
-                    ];
-                }      
-            });
-            
-            return $saldoTotalPorUsuario;
-        } catch (Exception $ex) {
-            DB::rollBack();
-            throw $ex;
+            }
+            return $total;
         }
+        catch(Exception $ex){
+
+        }
+        /*
+        try {
+            $saldo_total = 0;
+              $cargos = Cargo::with('dueno')
+                ->where('estado', '=' , 'pendiente')->where('id_dueno',$id);
+               
+            foreach ($cargos as $cargo) {
+               
+                  $saldo_total += $cargo->monto;
+               
+            }
+            return response()->json(['monto total' => $saldo_total] , 200);
+           
+        } catch (Exception $ex) {
+                return response()->json([
+                    'error' => 'No hay cargos para este usuario.'.$ex
+                ], 404);
+            
+        }
+                */
+     
+                /*
+        $saldo_total = 0;
+        //Falta sacar el monto pendiente por usuario {id} (modificar la ruta tambien)
+        return $usuarios = Cargo::with('dueno')
+        ->where('estado' , '=', 'pendiente')
+        ->find($id);
+        $usuarios->monto;
+        foreach ($usuarios as $usuario) {
+            $saldo_total += $usuario->monto;
+        }
+        return $saldo_total;
+        
+        $cargos = Cargo::with('dueno')->where('estado' , '=', 'pendiente')->first();
+        //$cargos->dueno->sum('monto');
+        foreach ($cargos as $cargo) {
+            $abonos = $cargo->monto;
+            $saldo_total += $cargo->monto;
+        }
+        return $saldo_total;
+        */
+        
+
     }
-
-
     
 
 }

@@ -27,7 +27,8 @@ class ConceptoCatalogoFactory extends Factory
             'prioridad_abono'=>$this->faker->numberBetween(0, 5),
             'genera_iva'=>0,
             'abonable'=>0,
-            'tarifa_fija'=>0
+            'tarifa_fija'=>0,
+            'genera_orden'=>0
         ];
     }
 

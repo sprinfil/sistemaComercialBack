@@ -23,6 +23,7 @@ class OrdenTrabajo extends Model
         "obervaciones",
         "material_utilizado",
         "evidencia",
+        "posicion_OT",
     ];
 
     public function toma():BelongsTo{

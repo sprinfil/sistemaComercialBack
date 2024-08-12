@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Caja;
-use App\Models\corteCaja;
+use App\Models\CorteCaja;
 use App\Models\Pago;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,9 +23,9 @@ class PagoFactory extends Factory
     {
         return [
             'id_caja'=>$this->faker->numberBetween(1,4),
-            'id_dueño' => 0,
-            'modelo_dueño' => '',
-            //'id_corte_caja'=>corteCaja::all()->random()->id,
+            'id_dueno' => 0,
+            'modelo_dueno' => '',
+            //'id_corte_caja'=>CorteCaja::all()->random()->id,
             'total_pagado'=>$this->faker->randomFloat(2, 0, 9999),
             'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
             'fecha_pago'=>now(),

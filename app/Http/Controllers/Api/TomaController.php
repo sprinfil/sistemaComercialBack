@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Toma;
 use App\Http\Requests\StoreTomaRequest;
 use App\Http\Requests\UpdateTomaRequest;
+use App\Http\Resources\OrdenTrabajoResource;
 use App\Http\Resources\TomaResource;
 use App\Services\UsuarioService;
 use Exception;
@@ -100,8 +101,20 @@ class TomaController extends Controller
     public function buscarCodigoToma($codigo)
     {
         try {
-            $toma = Toma::where('id_codigo_toma', $codigo)->get()->first();
+            $toma = Toma::where('id_codigo_toma', $codigo)->first();
             return response(new TomaResource($toma), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar la toma'
+            ], 500);
+        }
+        //
+    }
+    public function buscarCodigoTomas($codigo)
+    {
+        try {
+            $toma = Toma::where('id_codigo_toma', $codigo)->get();
+            return response(TomaResource::collection($toma), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar la toma'
@@ -116,11 +129,12 @@ class TomaController extends Controller
     public function cargosPorToma($id)
     {
         try {
-            $toma = Toma::findOrFail($id);
+            $toma = Toma::where("id_codigo_toma",$id)->first();
+            
             return $toma->cargos;
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'Error al consultar los cargos'
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -131,7 +145,7 @@ class TomaController extends Controller
     public function pagosPorToma($id)
     {
         try {
-            $toma = Toma::findOrFail($id);
+            $toma = Toma::where("id_codigo_toma",$id)->first();
             return $toma->pagos;
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -158,7 +172,7 @@ class TomaController extends Controller
         try {
             $toma = Toma::findOrFail($id);
             $ordenes=$toma->ordenesTrabajo;
-            return $ordenes;
+            return OrdenTrabajoResource::collection($ordenes);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Error al consultar las ordenes de trabajo'

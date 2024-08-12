@@ -111,20 +111,20 @@ class Toma extends Model
 
     public function cargos(): MorphMany
     {
-        return $this->morphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño');
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno');
     }
 
     public function cargosVigentes(): MorphMany
     {
-        return $this->MorphMany(Cargo::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
     public function pagos(): MorphMany
     {
-        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño');
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno');
     }
     public function pagosPendientes(): MorphMany
     {
-        return $this->morphMany(Pago::class, 'dueño', 'modelo_dueño', 'id_dueño')->where('estado','pendiente');
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
 
     //Consumos asociados a la toma

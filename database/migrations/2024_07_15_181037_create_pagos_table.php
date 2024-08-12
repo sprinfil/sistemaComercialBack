@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('id_caja');
-            $table->unsignedBigInteger('id_dueño'); 
-            $table->string('modelo_dueño');
+            $table->unsignedBigInteger('id_dueno'); 
+            $table->string('modelo_dueno');
             //$table->unsignedInteger('id_corte_caja');
             $table->decimal('total_pagado');
             $table->string('forma_pago');

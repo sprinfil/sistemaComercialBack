@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Caja;
 
 use App\Http\Requests\StorePagoRequest;
 use App\Http\Requests\UpdatePagoRequest;
@@ -12,6 +12,7 @@ use App\Models\Toma;
 use App\Models\Usuario;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PagoService{
@@ -43,15 +44,21 @@ class PagoService{
             $total_bonificado = 0; //TO DO
 
             // tipo pago
-            $modelo = $data['modelo_dueño'];
-            $id_modelo = $data['id_dueño'];
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
             // si el modelo contiene un valor, entonces se determina
             // el tipo de modelo al que pertenece el pago
-            $dueño = null;
+            $dueno = null;
             if($modelo == 'usuario'){
-                $dueño = Usuario::findOrFail($id_modelo);
+                $dueno = Usuario::findOrFail($id_modelo);
+                // TO DO
+                // $dueno>datosFiscales == true
+                // generaTimbrado
             }else if($modelo == 'toma'){
-                $dueño = Toma::findOrFail($id_modelo);
+                $dueno = Toma::findOrFail($id_modelo);
+                // TO DO
+                // $dueno>datosFiscales == true
+                // generaTimbrado
             }else{
                 throw new Exception('modelo no definido');
             }
@@ -59,7 +66,7 @@ class PagoService{
             // valida si el pago cuenta con abonos cargados directamente
             if (isset($data['abonos']) && !is_null($data['abonos'])) {
                 // se consultan los cargos pendientes
-                $cargos = $dueño->cargosVigentes;
+                $cargos = $dueno->cargosVigentes;
 
                 if ($cargos) {
                     // se registran los abonos cargados al pago
@@ -126,6 +133,7 @@ class PagoService{
             }
 
             DB::commit();
+            $pago->total_abonado = $total_abonado;
             return $pago;
         } catch(Exception $ex){
             DB::rollBack();
@@ -143,18 +151,18 @@ class PagoService{
             $id_modelo = $_id_modelo;
             // si el modelo contiene un valor, entonces se determina
             // el tipo de modelo al que pertenece el pago
-            $dueño = null;
+            $dueno = null;
             if($modelo && $id_modelo){
                 if($modelo == 'usuario'){
-                    $dueño = Usuario::findOrFail($id_modelo);
+                    $dueno = Usuario::findOrFail($id_modelo);
                 }else if($modelo == 'toma'){
-                    $dueño = Toma::findOrFail($id_modelo);
+                    $dueno = Toma::findOrFail($id_modelo);
                 }else{
                     throw new Exception('modelo definido incorrectamente');
                 }
                 // consolidar estados pagos y cargos
-                $estado_pagos = $this->consolidarEstadosDePago($dueño);
-                $estado_cargos = $this->consolidarEstadosDeCargo($dueño);
+                $estado_pagos = $this->consolidarEstadosDePago($dueno);
+                $estado_cargos = $this->consolidarEstadosDeCargo($dueno);
                 if($estado_pagos == 1 && $estado_cargos == 1){
                     DB::commit();
                 }
@@ -171,10 +179,10 @@ class PagoService{
         }
     }
 
-    public function consolidarEstadosDePago($dueño){
+    public function consolidarEstadosDePago($dueno){
         try{
             // carga todos los pagos pendientes
-            $pagos = $dueño->pagosPendientes;
+            $pagos = $dueno->pagosPendientes;
             if ($pagos) {
                 // se recorren todos los pagos pendientes
                 foreach ($pagos as $pago) {
@@ -224,10 +232,10 @@ class PagoService{
         }
     }
 
-    public function consolidarEstadosDeCargo($dueño){
+    public function consolidarEstadosDeCargo($dueno){
         try{
             // carga todos cargos pendientes
-            $cargos = $dueño->cargosVigentes;
+            $cargos = $dueno->cargosVigentes;
             if ($cargos) {
                 // se recorren todos los pagos pendientes
                 foreach ($cargos as $cargo) {
@@ -269,11 +277,85 @@ class PagoService{
         }
     }
 
+    public function generarAbonos(){
+        
+    }
+
     // metodo para buscar un pago por su id
     public function busquedaPorId($id): Pago
     {
         try{
             return Pago::findOrFail($id);
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // metodo para buscar todos los pagos de un modelo especifico
+    public function pagosPorModelo(Request $request){
+        try{
+            $data = $request->all();
+
+            // tipo pago
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
+            $dueno = null;
+            if($modelo == 'usuario'){
+                $dueno = Usuario::findOrFail($id_modelo);
+                $pagos = $dueno->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else if($modelo == 'toma'){
+                $dueno = Toma::findOrFail($id_modelo);
+                $pagos = $dueno->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else{
+                throw new Exception('modelo no definido');
+            }
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // metodo para buscar todos los pagos de un modelo especifico
+    public function pagosPorModeloPendiente(Request $request){
+        try{
+            $data = $request->all();
+
+            // tipo pago
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
+            $dueno = null;
+            if($modelo == 'usuario'){
+                $dueno = Usuario::findOrFail($id_modelo);
+                $pagos = $dueno->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else if($modelo == 'toma'){
+                $dueno = Toma::findOrFail($id_modelo);
+                $pagos = $dueno->pagos;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else{
+                throw new Exception('modelo no definido');
+            }
         } catch(Exception $ex){
             throw $ex;
         }
