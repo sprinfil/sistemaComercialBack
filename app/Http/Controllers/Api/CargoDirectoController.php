@@ -69,7 +69,7 @@ class CargoDirectoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatecargoDirectoRequest $request, $id)
+    public function update(UpdateCargoDirectoRequest $request, $id)
     {
         try {
             $data = $request->validated();

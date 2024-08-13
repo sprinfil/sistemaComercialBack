@@ -24,6 +24,9 @@ return new class extends Migration
             $table->unsignedBigInteger("genera_orden")->nullable();
             $table->boolean("genera_recargo")->nullable();
             $table->unsignedBigInteger("concepto_rezago")->nullable();
+            $table->boolean("pide_monto")->nullable();
+            $table->boolean("bonificable")->nullable();
+            $table->decimal("recargo", 8, 2)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
