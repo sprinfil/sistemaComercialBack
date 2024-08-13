@@ -117,13 +117,45 @@ class CargoService{
             $dueno = null;
             if($modelo == 'usuario'){
                 $dueno = Usuario::findOrFail($id_modelo);
-                $cargos = $dueno->cargos->where('estado', 'pendiente');
+                $cargos = $dueno->cargosVigentes;
                 if($cargos){
                     return $cargos;
                 } else{
                     throw new Exception('el modelo no contiene cargos');
                 }
             }else if($modelo == 'toma'){
+                $dueno = Toma::findOrFail($id_modelo);
+                $cargos = $dueno->cargosVigentes;
+                if($cargos){
+                    return $cargos;
+                } else{
+                    throw new Exception('el modelo no contiene cargos');
+                }
+            }else{
+                throw new Exception('modelo no definido');
+            }
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // metodo para buscar todos los pagos de un modelo especifico
+    public function cargosDeTomasDeUsuario($id){
+        try{
+            $id_usuario = $id;
+
+            $dueno = null;
+            if($id_usuario){
+                $dueno = Usuario::with([
+                    'tomas',
+                    'cargosVigentes',
+                    'tomas.cargosVigentes',
+                ])->findOrFail($id_usuario);
+                return $dueno;
+            } else{
+                throw new Exception('usuario no definido');
+            }
+                /*else if($modelo == 'toma'){
                 $dueno = Toma::findOrFail($id_modelo);
                 $cargos = $dueno->cargos->where('estado', 'pendiente');
                 if($cargos){
@@ -133,7 +165,7 @@ class CargoService{
                 }
             }else{
                 throw new Exception('modelo no definido');
-            }
+            }*/
         } catch(Exception $ex){
             throw $ex;
         }
