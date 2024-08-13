@@ -35,8 +35,8 @@ class ConceptoResource extends JsonResource
             "pide_monto"=>$this->pide_monto,
             "bonificable"=>$this->bonificable,
             "recargo"=>$this->recargo,
-            "concepto_rezago_data"=>new ConceptoResource($this->whenLoaded('conceptoResago')),
-            "genera_orden_data"=>new OrdenTrabajoCatalogoResource($this->whenLoaded('ordenAsignada')),
+            "concepto_rezago_data"=>$this->whenLoaded('conceptoResago'),
+            "genera_orden_data"=>$this->whenLoaded('ordenAsignada'),
             "tarifas"=>TarifaConceptoDetalleResource::collection($this->tarifas) //TarifaConceptoDetalleResource::collection($this->tarifas),
         ];
      }
