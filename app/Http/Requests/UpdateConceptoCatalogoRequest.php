@@ -33,7 +33,7 @@ class UpdateConceptoCatalogoRequest extends FormRequest
             "cargo_directo"=>"required|boolean",
             "genera_orden"=>"nullable|int",
             "genera_recargo"=>"nullable|boolean",
-            "concepto_rezago"=>"nullable|boolean",
+            "concepto_rezago"=>"nullable|int",
             "pide_monto"=>"nullable|boolean",
             "bonificable"=>"nullable|boolean",
             "recargo"=>"nullable|numeric",
