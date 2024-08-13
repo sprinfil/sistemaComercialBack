@@ -13,6 +13,7 @@ use App\Http\Resources\CargoResource;
 use App\Http\Resources\DatoFiscalResource;
 use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
+use App\Services\Caja\CargoService;
 use App\Services\ConsultarSaldoService;
 use App\Services\UsuarioService;
 use Exception;
@@ -28,7 +29,7 @@ class UsuarioController extends Controller
 
     public function __construct(UsuarioService $_ConsultarSaldoUsuario)
     {
-        $this->SaldoUsuarioService = $_ConsultarSaldoUsuario;       
+        $this->SaldoUsuarioService = $_ConsultarSaldoUsuario;     
     }
     
     public function index()
@@ -175,35 +176,28 @@ class UsuarioController extends Controller
     {
         try{
             $data = Usuario::ConsultarPorCodigo($usuario);
-            
-        return new UsuarioResource(
-            $data
-        );
-        
+            return new UsuarioResource(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
         }
-        
-        
     }
+
     public function showTomas(string $usuario)
     {
         try{
             $data =(new UsuarioService())->TomasUsuario($usuario);
-            //return $data;
-            
-        return TomaResource::collection(
-            $data
-        );
-        
+            return TomaResource::collection(
+                $data
+            );
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron tomas'], 200);
-        }
-        
-        
+        }  
     }
+
     public function showCodigoToma(string $usuario)
     {
         try{
@@ -216,13 +210,10 @@ class UsuarioController extends Controller
                     $data
                 );
             }
-        
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios por este código de toma'], 200);
         }
-        
-        
     }
 
     public function showCURP(string $usuario)
@@ -282,7 +273,6 @@ class UsuarioController extends Controller
             DB::rollBack();
             return response()->json(['error' => 'No se pudo modificar el usuario, introduzca datos correctos'], 200);
         }
-       
     }
     
     public function updateMoral(UpdateUsuarioMoralRequest $request)
@@ -293,8 +283,7 @@ class UsuarioController extends Controller
             DB::beginTransaction();
             $usuario = (new UsuarioService())->updateMoralUsuarioService($data,$id);
             DB::commit();
-            return $usuario;
-            
+            return $usuario; 
         }
         catch(Exception $ex){
             DB::rollBack();
@@ -333,7 +322,6 @@ class UsuarioController extends Controller
             DB::rollBack();
             return response()->json(['message' => 'error'], 500);
         }
-
     }
 
     public function datosFiscales($id)
@@ -357,7 +345,6 @@ class UsuarioController extends Controller
                 DB::beginTransaction();
                 $datoFiscal = (new UsuarioService())->storeOrUpdateDatosFiscalesService($validatedData, $id);
                 DB::commit();
-
                 return $datoFiscal;
 
                 return response()->json(['message' => 'error no se encontro usuario'], 500);
@@ -371,13 +358,25 @@ class UsuarioController extends Controller
     public function ConsultarSaldoUsuario($id) 
     {
         try {
-            //$usuario = Usuario::find($id);
             return response(
-             $this->SaldoUsuarioService->TotalSaldoUsuario($id));
-         } catch (Exception $ex) {
+            $this->SaldoUsuarioService->TotalSaldoUsuario($id)
+            );
+        } catch (Exception $ex) {
              return response()->json([
                  'error' => 'No fue posible consultar el saldo' .$ex
              ], 500);
-         }
+        }
+    }
+
+    public function consultarTodosCargosPendientes($id){
+        try {
+            return response(
+                (new CargoService())->cargosDeTomasDeUsuario($id)
+            );
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No fue posible consultar los cargos' .$ex
+            ], 500);
+        }
     }
 }
