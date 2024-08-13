@@ -39,5 +39,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/usuarios/datos_fiscales/storeOrUpdate/{id}", "storeOrUpdateDatosFiscales");
         //Consultar el saldo de un usuario
         Route::get("/usuarios/consultar/saldo/{id}" , "ConsultarSaldoUsuario");
+        Route::get("/usuarios/consultar/cargos/{id}" , "consultarTodosCargosPendientes");
     });
 });
