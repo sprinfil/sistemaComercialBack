@@ -103,43 +103,44 @@ class UsuarioService{
     }
     //obtiene el saldo para un modelo
     public function ConsultarSaldo($modelo){
-        $total=0;
-        $cargos=$modelo->cargosVigentes;
-                
+        try {
+            $total=0;
+            $cargos=$modelo->cargosVigentes;       
                 foreach ($cargos as $cargo){
                     $total+=$cargo->monto;
                     $abonos=$cargo->abonos;
-                    foreach ($abonos as $abono){
-                        $total-=$abono->total_abonado;
+                        foreach ($abonos as $abono){
+                            $total-=$abono->total_abonado;
+                        }
                     }
-                   
-                    
-                }
-        return $total;
+            return $total;
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No fue posible consultar el saldo '.$ex
+            ], 500);
+        }
+
     }
     //consulta todas las tomas del usuario y obtiene sus saldos y le suma los saldos del usuario
     public function TotalSaldoUsuario($id)
     {
-        
-        $Usuario=Usuario::find($id);
-            $tomas=$Usuario->tomas;
-            $total=0;
-            foreach ($tomas as $toma){
-                $total+=$this->ConsultarSaldo($toma);
-            }
-            $totalUsuario=$Usuario->saldoCargosUsuario();
-            $total+=$totalUsuario;
-            return $total;
-        try{
-
-            
+        try{   
+            $Usuario=Usuario::find($id);
+                $tomas=$Usuario->tomas;
+                $total=0;
+                foreach ($tomas as $toma){
+                    $total+=$this->ConsultarSaldo($toma);
+                }
+                $totalUsuario=$Usuario->saldoCargosUsuario();
+                $total+=$totalUsuario;
+                return $total;            
         }
         catch(Exception $ex){
-
+            return response()->json([
+                'error' => 'No fue posible consultar el saldo '.$ex
+            ], 500);
         }
-       
-        
-
+           
     }
 
 
