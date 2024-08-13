@@ -129,11 +129,12 @@ class TomaController extends Controller
     public function cargosPorToma($id)
     {
         try {
-            $toma = Toma::findOrFail($id);
+            $toma = Toma::where("id_codigo_toma",$id)->first();
+            
             return $toma->cargos;
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'Error al consultar los cargos'
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -144,7 +145,7 @@ class TomaController extends Controller
     public function pagosPorToma($id)
     {
         try {
-            $toma = Toma::findOrFail($id);
+            $toma = Toma::where("id_codigo_toma",$id)->first();
             return $toma->pagos;
         } catch (ModelNotFoundException $e) {
             return response()->json([
