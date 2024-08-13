@@ -37,12 +37,15 @@ class ConceptoCatalogo extends Model
 
     public function ordenAsignada() : HasOne
     {
-        return $this->hasOne(OrdenTrabajoCatalogo::class, 'id', 'genera_orden');
+        return $this->hasOne(OrdenTrabajoCatalogo::class, 'id', 'genera_orden')
+                    ->select(['id', 'nombre']);
     }
+
 
     public function conceptoResago() : HasOne
     {
-        return $this->hasOne(ConceptoCatalogo::class, 'id', 'concepto_rezago');
+        return $this->hasOne(ConceptoCatalogo::class, 'id', 'concepto_rezago')
+                    ->select(['id', 'nombre']);
     }
 
     public function ordenTrabajoCatalogo() : HasMany
