@@ -35,6 +35,19 @@ class ConceptoCatalogo extends Model
         return $this->hasMany(TarifaConceptoDetalle::class, 'id_concepto');
     }
 
+    public function ordenAsignada() : HasOne
+    {
+        return $this->hasOne(OrdenTrabajoCatalogo::class, 'id', 'genera_orden')
+                    ->select(['id', 'nombre']);
+    }
+
+
+    public function conceptoResago() : HasOne
+    {
+        return $this->hasOne(ConceptoCatalogo::class, 'id', 'concepto_rezago')
+                    ->select(['id', 'nombre']);
+    }
+
     public function ordenTrabajoCatalogo() : HasMany
     {
         return $this->hasMany(ordenTrabajoCatalogo::class, 'id_concepto_catalogo');
@@ -42,10 +55,7 @@ class ConceptoCatalogo extends Model
 
     // Busqueda por nombre
     public static function buscarPorNombre(string $nombre){
-        
         $data=ConceptoCatalogo::where('nombre',$nombre)->get()->first();
         return $data;
-        
-
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrdenTrabajoCatalogo;
 use App\Models\TarifaConceptoDetalle;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -34,7 +35,9 @@ class ConceptoResource extends JsonResource
             "pide_monto"=>$this->pide_monto,
             "bonificable"=>$this->bonificable,
             "recargo"=>$this->recargo,
-            'tarifas' =>TarifaConceptoDetalleResource::collection($this->tarifas) //TarifaConceptoDetalleResource::collection($this->tarifas),
+            "concepto_rezago_data"=>$this->whenLoaded('conceptoResago'),
+            "genera_orden_data"=>$this->whenLoaded('ordenAsignada'),
+            "tarifas"=>TarifaConceptoDetalleResource::collection($this->tarifas) //TarifaConceptoDetalleResource::collection($this->tarifas),
         ];
      }
 }
