@@ -28,7 +28,12 @@ class ConceptoCatalogoFactory extends Factory
             'genera_iva'=>0,
             'abonable'=>0,
             'tarifa_fija'=>0,
-            'genera_orden'=>0
+            'genera_orden'=>0,
+            "genera_recargo"=>0,
+            "concepto_rezago"=>0,
+            "pide_monto"=>0,
+            "bonificable"=>0,
+            "recargo"=>3,
         ];
     }
 
