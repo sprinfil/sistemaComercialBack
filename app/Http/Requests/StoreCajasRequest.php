@@ -11,7 +11,7 @@ class StoreCajasRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreCajasRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "id_operador"=>"required|integer|gt:0",
+            "fecha_apertura"=>"required|date_format:Y-m-d H:i:s",
+            "fecha_apertura"=>"required|date_format:Y-m-d H:i:s",
         ];
     }
 }

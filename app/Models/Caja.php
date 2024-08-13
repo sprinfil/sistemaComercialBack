@@ -12,6 +12,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Caja extends Model
 {
+    protected $fillable=[
+        'id_operador',
+        'fecha_apertura',
+        'fecha_cierre',
+    ];
+
     use HasFactory, SoftDeletes;
     //Caja con pagos
     public function pagos () : HasMany
@@ -31,9 +37,15 @@ class Caja extends Model
     public function operador() : HasOne {
         return $this->hasOne(OperadorAsignado::class, 'id_caja');
     }
-    public function cajaCatalogo() : HasOne {
-        return $this->hasOne(CajaCatalogo::class , 'id_caja');
+
+    public function operadorAsignado () : HasMany
+    {
+        return $this->hasMany(operadorAsignado::class , 'id_caja');  //ya
     }
-  
+    
+    public function catalogoCaja () : HasMany
+    {
+        return $this->hasMany(CajaCatalogo::class , 'id_caja'); //ya
+    }
 
 }

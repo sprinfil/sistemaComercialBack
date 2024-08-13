@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCajasRequest extends FormRequest
+class StoreOperadorAsignado extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,7 @@ class UpdateCajasRequest extends FormRequest
     {
         return [
             "id_operador"=>"required|integer|gt:0",
-            "fecha_apertura"=>"required|date_format:Y-m-d H:i:s",
-            "fecha_apertura"=>"required|date_format:Y-m-d H:i:s",
+            "id_caja"=>"required|integer|gt:0",
         ];
     }
 }
