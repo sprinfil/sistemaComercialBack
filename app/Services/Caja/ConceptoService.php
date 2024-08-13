@@ -112,7 +112,7 @@ class ConceptoService{
             $concepto = ConceptoCatalogo::findOrFail($request["id"]);
 
             // Actualizar los datos del concepto
-            $concepto->update($request->only(['nombre', 'descripcion', 'estado', 'prioridad_abono', 'genera_iva', "abonable", "tarifa_fija", "cargo_directo"]));
+            $concepto->update($request->only(['nombre', 'descripcion', 'estado', 'prioridad_abono', 'genera_iva', "abonable", "tarifa_fija", "cargo_directo", "genera_orden", "genera_recargo", "concepto_rezago", "pide_monto", "bonificable", "recargo"]));
 
             // Actualizar tarifas
             $tarifas = $request->input('tarifas', []);
