@@ -17,7 +17,7 @@ class ConceptoService{
     public function obtenerConceptos(): Collection
     {
         try{
-            return ConceptoCatalogo::orderby("id", "desc")->with('tarifas')->get();
+            return ConceptoCatalogo::orderby("id", "desc")->with(['tarifas', 'ordenAsignada', 'conceptoResago'])->get();
         } catch(Exception $ex){
             throw $ex;
         }
