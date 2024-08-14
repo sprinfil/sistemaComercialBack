@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call(GiroComercialSeeder::class);
         $this->call(TipoTomasSeeder::class);
         $this->call(ConceptoCatalogoSeeder::class);
-        $this->call(OrdenesTrabajoSeeder::class);
+        //$this->call(OrdenesTrabajoSeeder::class);
         //
         $this->call(TomaSeeder::class);
         //
@@ -72,7 +72,7 @@ class DatabaseSeeder extends Seeder
         $this->call(FacturaSeeder::class);
         $this->call(AsignacionGeograficaSeeder::class);
         //
-        $this->call(OrdenesTrabajoSeeder::class);
+        //$this->call(OrdenesTrabajoSeeder::class);
         //
     }
 }

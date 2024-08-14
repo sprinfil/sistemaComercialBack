@@ -59,6 +59,7 @@ class OrdenTrabajoController extends Controller
     {
         DB::beginTransaction();
             $data=$request->validated();
+            return $data;
             $dataConf=$data['orden_trabajo_accion'] ?? null;
             $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
