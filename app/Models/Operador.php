@@ -53,4 +53,6 @@ class Operador extends Model
     public function operadorCaja() : HasOne {
         return $this->hasOne(OperadorAsignado::class , "id_operador");
     }
+
+    
 }

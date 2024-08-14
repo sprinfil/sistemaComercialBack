@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\DatoFiscalResource;
+use App\Http\Resources\UsuarioResource;
 use App\Models\Cargo;
 use App\Models\Toma;
 use App\Models\Usuario;
@@ -15,6 +17,43 @@ class UsuarioService{
         $user=Usuario::create($usuario);
         return $user;
     }
+
+    public function storeMoralService(array $request)
+    {
+        try{
+            
+            $usuario = Usuario::withTrashed()->where('nombre', $request['nombre'])->orWhere('rfc', $request['rfc'])->orWhere('correo', $request['correo'])->first();
+            $request['codigo_usuario']=Usuario::max('codigo_usuario')+1;
+            //VALIDACION POR SI EXISTE
+            if ($usuario) {
+                if ($usuario->trashed()) {
+                    return response()->json([
+                        'message' => 'El usuario ya existe pero ha sido eliminado. ¿Desea restaurarlo?',
+                        'restore' => true,
+                        'usuario_id' => $usuario->id
+                    ], 200);
+                }
+                return response()->json([
+                    'message' => 'El usuario ya existe.',
+                    'restore' => false
+                ], 200);
+            }
+            //si no existe el usuario lo crea
+            if(!$usuario)
+            {
+                $usuario=Usuario::create($request); //era $data
+                return response(new UsuarioResource($usuario),201);
+            }
+        }
+        catch(Exception $ex){
+            return response()->json([
+                'error' => 'El usuario ya existe.'.$ex,
+                'restore' => false
+            ], 200);
+        }
+    }
+
+
     public function ConsultaGeneral($id){
         $user=Usuario::find($id);
         return $user;
@@ -64,44 +103,145 @@ class UsuarioService{
     }
     //obtiene el saldo para un modelo
     public function ConsultarSaldo($modelo){
-        $total=0;
-        $cargos=$modelo->cargosVigentes;
-                
+        try {
+            $total=0;
+            $cargos=$modelo->cargosVigentes;       
                 foreach ($cargos as $cargo){
                     $total+=$cargo->monto;
                     $abonos=$cargo->abonos;
-                    foreach ($abonos as $abono){
-                        $total-=$abono->total_abonado;
+                        foreach ($abonos as $abono){
+                            $total-=$abono->total_abonado;
+                        }
                     }
-                   
-                    
-                }
-        return $total;
+            return $total;
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No fue posible consultar el saldo '.$ex
+            ], 500);
+        }
+
     }
     //consulta todas las tomas del usuario y obtiene sus saldos y le suma los saldos del usuario
     public function TotalSaldoUsuario($id)
     {
-        
-        $Usuario=Usuario::find($id);
-            $tomas=$Usuario->tomas;
-            $total=0;
-            foreach ($tomas as $toma){
-                $total+=$this->ConsultarSaldo($toma);
-            }
-            $totalUsuario=$Usuario->saldoCargosUsuario();
-            $total+=$totalUsuario;
-            return $total;
-        try{
-
-            
+        try{   
+            $Usuario=Usuario::find($id);
+                $tomas=$Usuario->tomas;
+                $total=0;
+                foreach ($tomas as $toma){
+                    $total+=$this->ConsultarSaldo($toma);
+                }
+                $totalUsuario=$Usuario->saldoCargosUsuario();
+                $total+=$totalUsuario;
+                return $total;            
         }
         catch(Exception $ex){
+            return response()->json([
+                'error' => 'No fue posible consultar el saldo '.$ex
+            ], 500);
+        }
+           
+    }
 
+
+    public function updateUsuarioService(array $data, string $id)
+    {
+        try{
+            $usuario=Usuario::find($id);
+            $usuario->update($data);
+            $usuario->save();
+            return new UsuarioResource($usuario);
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se pudo modificar el usuario, introduzca datos correctos'], 200);
         }
        
-        
+    }
 
+    public function updateMoralUsuarioService(array $data, string $id)
+    {
+        try{
+            $usuario=Usuario::find($id);
+            $usuario->update($data);
+            $usuario->save();
+            return new UsuarioResource($usuario);
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se pudo modificar el usuario, introduzca datos correctos'], 200);
+        }
+    }
+
+    public function destroyUsuarioService(string $id)
+    {
+        try
+        {
+            $usuario = Usuario::findOrFail($id);
+            $usuario->delete();
+            return response()->json(['message' => 'Eliminado correctamente'], 200);
+        }
+        catch (\Exception $e) {
+
+            return response()->json(['message' => 'error'], 500);
+        }
     }
     
+    public function restaurarDatoUsuarioService(string $id)
+    {
+        try {
+            $Usuario = Usuario::withTrashed()->findOrFail($id);
 
+            // Verifica si el registro está eliminado
+            if ($Usuario->trashed()) {
+                // Restaura el registro
+                $Usuario->restore();
+                return response()->json(['message' => 'El usuario ha sido restaurado.'], 200);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'error'], 500);
+        }
+       
+
+    }
+
+    public function datosFiscalesUsuarioService($id)
+    {
+        try{
+            $usuario = Usuario::findOrFail($id);
+            if($usuario){
+                $datos_fiscales = $usuario->datos_fiscales()->first();
+                return new DatoFiscalResource($datos_fiscales);
+            }
+            return response()->json(['message' => 'error'], 500);
+        } catch(Exception $ex) {
+            return response()->json(['message' => 'error'.$ex], 500);
+        } 
+    }
+
+    public function storeOrUpdateDatosFiscalesService(array $validatedData, $id)
+    {
+        try{
+                // Encontrar el usuario
+                $usuario = Usuario::find($id);
+
+                if ($usuario) {
+                    $polymorphicData = [
+                        'id_modelo' => $usuario->id,
+                        'modelo' => get_class($usuario)
+                    ];
+            
+                    // Obtener o crear los datos fiscales
+                    $datosFiscales = $usuario->datos_fiscales()->updateOrCreate(
+                        $polymorphicData,
+                        $validatedData
+                    );
+            
+                    // Retornar los datos fiscales actualizados o creados
+                    return new DatoFiscalResource($datosFiscales);
+                }
+                return response()->json(['message' => 'error no se encontro usuario'], 500);
+            }
+            catch(Exception $ex) {
+                return response()->json(['message' => 'error'.$ex], 500);
+            } 
+    }
 }

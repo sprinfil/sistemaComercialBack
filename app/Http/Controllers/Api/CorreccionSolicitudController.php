@@ -27,11 +27,11 @@ class CorreccionSolicitudController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorecorreccionSolicitudRequest $request)
+    public function store(StoreCorreccionSolicitudRequest $request)
     {
         try{
             $data = $request->validated();
-            $correccionSolicitud = correccionSolicitud::create($data);
+            $correccionSolicitud = CorreccionSolicitud::create($data);
             return response(new CorreccionSolicitudResource($correccionSolicitud), 201);
             
         } catch(Exception $e) {

@@ -30,7 +30,7 @@ class UsuarioResource extends JsonResource
             'tomas' => TomaResource::collection($this->whenLoaded('tomas')),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratos')),
             'descuento_asociado' => new DescuentoAsociadoResource($this->whenLoaded('descuento_asociado')),
-
+            'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes')))
         ];
     }
   
