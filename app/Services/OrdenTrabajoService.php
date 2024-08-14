@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Http\Resources\OrdenTrabajoResource;
 use App\Models\Consumo;
 use App\Models\Contrato;
+use App\Models\Lectura;
 use App\Models\Medidor;
 use App\Models\OrdenTrabajo;
 use App\Models\OrdenTrabajoAccion;
@@ -36,6 +37,12 @@ class OrdenTrabajoService{
             $ordenTrabajoPeticion['fecha_vigencia']=Carbon::today()->addDays($OtCatalogo['vigencias']);
             $ordenTrabajoPeticion['estado']="No asignada";
             $OrdenCatalogo=OrdenTrabajo::create($ordenTrabajoPeticion);
+            if($OtCatalogo['momento_cargo']=="generar"){
+                $cargo=$this->generarCargo();
+            }
+            else{
+
+            }
             return $OrdenCatalogo;
             //:?OrdenTrabajo
         } 
@@ -103,15 +110,34 @@ class OrdenTrabajoService{
                 break;
             case "medidor":
                 $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                $dato=$modelos['medidor'];
+                $OTModelo->update($dato);
+                $OTModelo->save();
                 break;
             case "contrato":
                 $OTModelo=Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                $dato=$modelos['contrato'];
+                $OTModelo->update($dato);
+                $OTModelo->save();
                 break;
             case "usuario":
-                $OTModelo=Toma::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                $OTModeloHijo=Toma::find($ordenTrabajo['id_toma']);
+                $OTModelo=$OTModeloHijo->usuario;
+                $dato=$modelos['usuario'];
+                $OTModelo->update($dato);
+                $OTModelo->save();
                 break;
             case "consumo":
                 $OTModelo=Consumo::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                $dato=$modelos['usuario'];
+                $OTModelo->update($dato);
+                $OTModelo->save();
+                break;
+            case "lectura":
+                $OTModelo=Lectura::where('id_toma',$ordenTrabajo['id_toma'])->first();
+                $dato=$modelos['lectura'];
+                $OTModelo->update($dato);
+                $OTModelo->save();
                 break;
             default:
             $OTModelo=null;
@@ -122,7 +148,39 @@ class OrdenTrabajoService{
     }
    
     public function Registrar($Accion,$ordenTrabajo,$modelos){
-        
+        $tipo_modelo=$Accion['modelo'];
+
+
+        switch($tipo_modelo){
+            case "toma":
+                $dato=$modelos['toma'];
+                $OTModelo=Toma::create($dato);
+                break;
+            case "medidor":
+                $dato=$modelos['toma'];
+                $OTModelo=Medidor::create($dato);
+                break;
+            case "contrato":
+                $dato=$modelos['contrato'];
+                $OTModelo=Contrato::create($dato);
+                break;
+            case "usuario":
+                $dato=$modelos['usuario'];
+                $OTModelo=Usuario::create($dato);
+                break;
+            case "consumo":
+                $dato=$modelos['usuario'];
+                $OTModelo=Consumo::create($dato);
+                break;
+            case "lectura":
+                $dato=$modelos['lectura'];
+                $OTModelo=Lectura::create($dato);
+                break;
+            default:
+            $OTModelo=null;
+            break;
+        }
+        return $OTModelo;
     }
     public function Quitar($Accion,$ordenTrabajo,$modelos){
         
