@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('id_caja');
             $table->decimal('monto', total:8, places:2);
-            $table->decimal('monto_inicial', total:8, places:2);
-            $table->decimal('monto_final', total:8, places:2);
             $table->softDeletes();
             $table->timestamps();
         });
