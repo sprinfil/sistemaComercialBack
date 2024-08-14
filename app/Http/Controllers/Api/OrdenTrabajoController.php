@@ -59,20 +59,12 @@ class OrdenTrabajoController extends Controller
     {
         DB::beginTransaction();
             $data=$request->validated();
-            return $data;
-            $dataConf=$data['orden_trabajo_accion'] ?? null;
-            $orden=null;
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             if (!$catalogo){
-                return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
+                return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
                 //return $catalogo;
             }
-            if  ($dataConf){
-                $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
-                $orden=(new OrdenTrabajoAccionService())->store($dataConf);
-                $catalogo['orden_trabajo_accion']= $orden;
-               
-            }
+           
             DB::commit();
             return response(new OrdenTrabajoCatalogoResource($catalogo),200);
         try{

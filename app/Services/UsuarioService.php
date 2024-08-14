@@ -76,7 +76,9 @@ class UsuarioService{
         return $tomas;
     }
     public function DireccionToma($direccion){
-        $numero_casa = preg_replace('/\D/', '', $direccion);
+        $numero_casa = preg_replace('/\D/', '', $direccion); 
+        $direccion_Nueva=str_replace(" ","%",$direccion); 
+        $numero_casa_nuevo=str_replace(" ","%",$numero_casa); 
         if (!$numero_casa){
             $toma=Toma::whereRaw("
                 CONCAT(
@@ -85,7 +87,7 @@ class UsuarioService{
                     COALESCE(entre_calle_2, ''), ' ', 
                     COALESCE(colonia, ''), ' ',
                     COALESCE(localidad, '') 
-                )  LIKE ?", ['%'.$direccion.'%'])
+                )  LIKE ?", ['%'.$direccion_Nueva.'%'])
                 ->with('usuario')
                 ->paginate(10);
         } 
@@ -94,7 +96,7 @@ class UsuarioService{
                 CONCAT(
                     COALESCE(calle, ''), ' ', 
                     COALESCE(numero_casa, '')
-                )  LIKE ?", ['%'.$direccion.'%'])
+                )  LIKE ?", ['%'.$numero_casa_nuevo.'%'])
                 ->with('usuario')
                 ->paginate(10);
         }

@@ -88,12 +88,13 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorNombres(string $usuario){
+        $nuvUsuario=str_replace(" ","%",$usuario);
         $data = Usuario::whereRaw("
         CONCAT(
             COALESCE(nombre, ''), ' ', 
             COALESCE(apellido_paterno, ''), ' ', 
             COALESCE(apellido_materno, '')
-        )  LIKE ?", ['%'.$usuario.'%'])->paginate(10);
+        )  LIKE ?", ['%'.$nuvUsuario.'%'])->paginate(10);
           return $data;
     }
     public static function ConsultarPorNombreContacto(string $usuario){
