@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orden_trabajo_catalogos', function (Blueprint $table) {
+        Schema::create('ordenes_trabajo_encadenadas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('descripcion');
-            $table->integer('vigencias');
-            $table->enum('momento_cargo',['generar','asignar','concluir','No genera']);
-            $table->boolean('genera_masiva');
+            $table->unsignedBigInteger('id_OT_Catalogo_padre');
+            $table->unsignedBigInteger('id_OT_Catalogo_encadenada');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orden_trabajo_catalogos');
+        Schema::dropIfExists('ordenes_trabajo_encadenadas');
     }
 };

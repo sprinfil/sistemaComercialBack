@@ -13,6 +13,9 @@ class OrdenTrabajoCatalogoService{
         }
         else{
             $OrdenCatalogo=OrdenTrabajoCatalogo::create($ordenCatalogo);
+            
+            //$this->storeCargos();
+            //$this->storeOTEncadenadas();
             return $OrdenCatalogo;
         } 
        
@@ -20,5 +23,11 @@ class OrdenTrabajoCatalogoService{
     public static function delete($idOrden){
         $ordenTrabajo=OrdenTrabajoCatalogo::findOrFail($idOrden);
         $ordenTrabajo->delete();
+    }
+    public static function storeCargos(){
+
+    }
+    public static function storeOTEncadenadas(){
+        
     }
 }

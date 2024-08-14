@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CajaResource extends JsonResource
+class CajaCatalogoResource extends JsonResource
 {
     public static $wrap = false;
     /**
@@ -17,10 +17,10 @@ class CajaResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "id_operador" => $this->id_operador,
-            "fecha_apertura" => $this->fecha_apertura,
-            "fecha_cierre" => $this->fecha_cierre,
+            "id_caja" => $this->id_caja,
+            "tipo_caja" => $this->tipo_caja,
+            "hora_apertura" => $this->hora_apertura,
+            "hora_cierre" => $this->hora_cierre,
         ];
-
     }
 }

@@ -105,7 +105,7 @@ class UsuarioService{
     public function ConsultarSaldo($modelo){
         try {
             $total=0;
-            $cargos=$modelo->cargosVigentes;       
+            $cargos = $modelo->cargosVigentes;
                 foreach ($cargos as $cargo){
                     $total+=$cargo->monto;
                     $abonos=$cargo->abonos;
@@ -121,19 +121,23 @@ class UsuarioService{
         }
 
     }
-    //consulta todas las tomas del usuario y obtiene sus saldos y le suma los saldos del usuario
+    //consulta todas las tomas del usuario y obtiene sus saldos y le suma los saldos del usuario 
     public function TotalSaldoUsuario($id)
     {
         try{   
             $Usuario=Usuario::find($id);
                 $tomas=$Usuario->tomas;
                 $total=0;
+                $data = [];
                 foreach ($tomas as $toma){
-                    $total+=$this->ConsultarSaldo($toma);
+                    $total += $this->ConsultarSaldo($toma);
                 }
                 $totalUsuario=$Usuario->saldoCargosUsuario();
                 $total+=$totalUsuario;
-                return $total;            
+                return $data = [
+                    'usuario' => $Usuario,
+                    'Saldo: ' => $total
+                ];       
         }
         catch(Exception $ex){
             return response()->json([

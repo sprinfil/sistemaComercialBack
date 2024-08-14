@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrdenTrabajoCatalogo extends Model
@@ -15,42 +16,50 @@ class OrdenTrabajoCatalogo extends Model
 
     protected $table='orden_trabajo_catalogos';
     protected $fillable=[
-        "id_concepto_catalogo",
         "nombre",
         "vigencias",
         "momento_cargo",
         "genera_masiva",
 
     ];
-    public function concepto():BelongsTo{
-        return $this->belongsTo(ConceptoCatalogo::class,'id_concepto_catalogo');
-    }
-    public function ordenTrabajoAccion():HasMany{
+    public function ordenTrabajoAccion():HasMany{ 
         return $this->HasMany(OrdenTrabajoAccion::class,'id_orden_trabajo_catalogo');;
     }
     public function ordenTrabajo():HasMany{
         return $this->hasMany(OrdenTrabajo::class,'id_orden_trabajo_catalogo');
     }
+    public function ordenTrabajoCargos():HasMany{
+        return $this->hasMany(OrdenesTrabajoCargo::class,'id_orden_trabajo_catalogo');
+    }
+    public function ordenTrabajoEncadenado():HasMany{
+        return $this->hasMany(OrdenesTrabajoEncadenada::class,'id_orden_trabajo_catalogo');
+    }
     public static function BuscarCatalogo($nombre){
         $ordenTrabajo=OrdenTrabajoCatalogo::where('nombre','LIKE','%'.$nombre.'%')->get();
         return $ordenTrabajo;
     }
-    /*
-    protected static function boot()
+    
+    protected static function boot() //borrado en cascada
     {
         parent::boot();
 
         static::deleting(function ($parent) {
             // Soft delete related child models
-            $parent->OrdenTrabajoConfiguracion()->each(function ($child) {
+            $parent->ordenTrabajoAccion()->each(function ($child) {
+                $child->delete();
+            });
+            $parent->ordenTrabajoCargos()->each(function ($child) {
+                $child->delete();
+            });
+            $parent->ordenTrabajoEncadenado()->each(function ($child) {
                 $child->delete();
             });
         });
 
         static::restoring(function ($parent) {
-            $parent->OrdenTrabajoConfiguracion()->withTrashed()->restore();
+            $parent->ordenTrabajoAccion()->withTrashed()->restore();
         });
     }
-        */
+        
     
 }
