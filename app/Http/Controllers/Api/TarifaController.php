@@ -163,7 +163,7 @@ class TarifaController extends Controller
         //
     }
 
-    public function restaurarTarifa(tarifa $tarifa, HttpRequest $request)
+    public function restaurarTarifa(Tarifa $tarifa, HttpRequest $request)
     {
         try {
             $id = $request->id;
