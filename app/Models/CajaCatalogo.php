@@ -12,16 +12,15 @@ class CajaCatalogo extends Model
 {
     use HasFactory,SoftDeletes;
     protected $fillable=[
-        'id_caja',
         'tipo_caja',
         'hora_apertura',
         'hora_cierre',
     ];
 
 
-    public function caja () : BelongsTo
+    public function caja () : HasMany
     {
-        return $this->belongsTo(CajaCatalogo::class , 'id_caja'); //ya
+        return $this->hasMany(Caja::class , 'id_caja_catalogo'); //ya
     }
     
 }

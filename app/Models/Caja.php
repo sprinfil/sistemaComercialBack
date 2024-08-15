@@ -14,6 +14,9 @@ class Caja extends Model
 {
     protected $fillable=[
         'id_operador',
+        'id_caja_catalogo',
+        'fondo_inicial',
+        'fondo_final',
         'fecha_apertura',
         'fecha_cierre',
     ];
@@ -28,11 +31,14 @@ class Caja extends Model
     public function corteCaja() : HasMany {
         return $this->hasMany(CorteCaja::class , 'id_caja'); 
     }
+    /*
   
     //Fondo de una caja
     public function fondoCaja() : HasOne {
         return $this->hasOne(FondoCaja::class, 'id_caja'); 
     }
+        
+    */
     //Operador de caja
     public function operador() : HasOne {
         return $this->hasOne(OperadorAsignado::class, 'id_caja');
@@ -43,9 +49,9 @@ class Caja extends Model
         return $this->hasMany(operadorAsignado::class , 'id_caja');  //ya
     }
     
-    public function catalogoCaja () : HasMany
+    public function catalogoCaja () : BelongsTo
     {
-        return $this->hasMany(CajaCatalogo::class , 'id_caja'); //ya
+        return $this->belongsTo(CajaCatalogo::class , 'id_caja_catalogo'); //ya
     }
 
 }
