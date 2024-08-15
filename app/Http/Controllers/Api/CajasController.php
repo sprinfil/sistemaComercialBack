@@ -37,13 +37,14 @@ class CajasController extends Controller
     public function store(StoreCajasRequest $request)
     {
         try {
-            $data = $request->validate();
-            
+            $data = [];
+            $data = $request->validated();
+            return $data;
             $idOperador = $data['id_operador'];
             $idCaja = $data['id_caja'];
             $caja = $data['caja'];
             $fondo = $data['fondo'];
-            return $idOperador;
+            
             DB::beginTransaction();
             $apertura = (new CajaService())->iniciarCaja($idOperador, $idCaja, $caja, $fondo);
             DB::commit();
