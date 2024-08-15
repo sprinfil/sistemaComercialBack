@@ -14,9 +14,24 @@ class CorteCaja extends Model
 {
     use HasFactory, SoftDeletes;
     
-   
-    public function pago() : BelongsTo {
-        return $this->belongsTo(Pago::class , 'id_pago'); 
+    protected $fillable=[
+        'id_caja',
+        'id_operador',
+        'estatus',
+        'total_registrado',
+        'total_real',
+        'total_efectivo_registrado',
+        'total_efectivo_real',
+        'total_tarjetas_registrado',
+        'total_tarjetas_real',
+        'total_cheques_registrado',
+        'total_cheques_real',
+        'discrepancia',
+        'discrepancia_monto',
+        'fecha_corte',
+    ];
+    public function pagos() {
+        return $this->caja->pagos();
     }
 
     public function caja () : BelongsTo 

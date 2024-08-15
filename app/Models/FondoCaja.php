@@ -12,7 +12,12 @@ class fondoCaja extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable=[
+        'id_caja',
+        'monto',
+    ];
+
     public function fondoCaja() : BelongsTo {
-        return $this->belongsTo(Caja::class, 'id_fondo_caja'); //ta bien confirmado
+        return $this->belongsTo(Caja::class, 'id_fondo_caja'); 
     }
 }
