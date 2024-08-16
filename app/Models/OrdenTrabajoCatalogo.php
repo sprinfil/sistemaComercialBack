@@ -17,6 +17,7 @@ class OrdenTrabajoCatalogo extends Model
     protected $table='orden_trabajo_catalogos';
     protected $fillable=[
         "nombre",
+        "descripcion",
         "vigencias",
         "momento_cargo",
         "genera_masiva",
@@ -32,7 +33,7 @@ class OrdenTrabajoCatalogo extends Model
         return $this->hasMany(OrdenesTrabajoCargo::class,'id_orden_trabajo_catalogo');
     }
     public function ordenTrabajoEncadenado():HasMany{
-        return $this->hasMany(OrdenesTrabajoEncadenada::class,'id_orden_trabajo_catalogo');
+        return $this->hasMany(OrdenesTrabajoEncadenada::class,'id_OT_Catalogo_padre');
     }
     public static function BuscarCatalogo($nombre){
         $ordenTrabajo=OrdenTrabajoCatalogo::where('nombre','LIKE','%'.$nombre.'%')->get();

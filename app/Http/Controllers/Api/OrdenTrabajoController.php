@@ -32,7 +32,7 @@ class OrdenTrabajoController extends Controller
     public function indexCatalogo()
     {
         return OrdenTrabajoCatalogoResource::collection(
-            OrdenTrabajoCatalogo::with('OrdenTrabajoAccion')->get()
+            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos','ordenTrabajoEncadenado')->get()
         );
        
     }
@@ -60,13 +60,12 @@ class OrdenTrabajoController extends Controller
         DB::beginTransaction();
             $data=$request->validated();
             $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
+          
             if (!$catalogo){
                 return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
-                //return $catalogo;
             }
-           
-            DB::commit();
-            return response(new OrdenTrabajoCatalogoResource($catalogo),200);
+            DB::rollBack();
+            return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo)],200);
         try{
             
         }
@@ -159,7 +158,8 @@ class OrdenTrabajoController extends Controller
     public function storeConf(StoreOrdenTrabajoConfRequest $request) //Ejemplo con service
     {
         try{
-            $orden=(new OrdenTrabajoAccionService())->store($request->validated());
+            $data=$request->validated();
+            $orden=(new OrdenTrabajoAccionService())->store($data,$data['id_orden_trabajo_catalogo']);
             if (!$orden){
                 return response()->json([
                     'message'=>'Ya existe una configuración con las mismas caracteristicas para la orden de trabajo especificada'
