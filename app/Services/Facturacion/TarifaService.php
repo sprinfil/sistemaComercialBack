@@ -3,7 +3,7 @@ namespace App\Services\Facturacion;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTarifaConceptoDetalleRequest;
-use App\Models\tarifa;
+use App\Models\Tarifa;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoretarifaRequest;
 use App\Http\Requests\StoreTarifaServiciosDetalleRequest;
@@ -33,7 +33,7 @@ class TarifaService{
        
        try {
         return TarifaResource::collection(
-            tarifa::all()
+            Tarifa::all()
         );
        } catch (Exception $ex) {
 
@@ -49,7 +49,7 @@ class TarifaService{
     {
         try {       
              //Busca por nombre las tarifas eliminadas
-            $tarifa = tarifa::withTrashed()->where('nombre', $nombre)->first();
+            $tarifa = Tarifa::withTrashed()->where('nombre', $nombre)->first();
 
             //VALIDACION POR SI EXISTE
             if ($tarifa) {
@@ -67,7 +67,7 @@ class TarifaService{
             }
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
-                $tarifa = tarifa::create($data);
+                $tarifa = Tarifa::create($data);
                 // E importa las tarifas de la tarifa activa si se desea
                 $request = new Request();
                 $request->merge(['confirm' => true]);
@@ -89,7 +89,7 @@ class TarifaService{
                 // se obtienen los conceptos importados de conceptos por tipo de toma
                 // primero los tipos de toma
                 $tarifas_tipo = TipoToma::all();
-                $tarifa_activa = tarifa::where('estado', 'activo')->get()->first();
+                $tarifa_activa = Tarifa::where('estado', 'activo')->get()->first();
                 foreach ($tarifas_tipo as $tipo) {
                     
 
@@ -140,7 +140,7 @@ class TarifaService{
 
         try {
             $tarifa = tarifa::findOrFail($tarifa);
-            return response(new tarifaResource($tarifa), 200);
+            return response(new TarifaResource($tarifa), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar la tarifa'
@@ -160,7 +160,7 @@ class TarifaService{
             $catalogoTiposToma = TipoToma::select('id', 'nombre')->get();
             $catalogoServicioDealle = TarifaServiciosDetalle::select('id_tipo_toma', 'rango')->where('id_tarifa', $id)->get();
             
-            $tarifa = tarifa::findOrFail($id);
+            $tarifa = Tarifa::findOrFail($id);
             //$totalConcepto = count($catalogoConcepto);
             $servicioAsociado = false;
             //return $catalogoServicioDealle;
@@ -194,7 +194,7 @@ class TarifaService{
               
                 $tarifa->update($data);
                 $tarifa->save();
-                return response(new tarifaResource($tarifa), 200);  
+                return response(new TarifaResource($tarifa), 200);  
               
             }
         } catch (Exception $ex) {
@@ -211,11 +211,11 @@ class TarifaService{
             //obtenemos la respuesta
             if ($request->input('confirmUpdate')) {
                 // inactivar todo TODO
-                tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
+                Tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
                 
                 // obtener el fakin id
                 $tarifaId = $request->input('tarifa_id');
-                $tarifa = tarifa::find($tarifaId);
+                $tarifa = Tarifa::find($tarifaId);
                 if ($tarifa) {
                     $tarifa->estado = 'activo';
                     $tarifa->save();
@@ -240,7 +240,7 @@ class TarifaService{
     {
         //$this->authorize('delete', tarifa::class);
         try {
-            $tarifa = tarifa::findOrFail($id);
+            $tarifa = Tarifa::findOrFail($id);
             $tarifa->delete();
             return response("Tarifa eliminada con exito", 200);
         } catch (ModelNotFoundException $ex) {
@@ -255,7 +255,7 @@ class TarifaService{
     {
 
         try {
-            $tarifa = tarifa::withTrashed()->findOrFail($id);
+            $tarifa = Tarifa::withTrashed()->findOrFail($id);
 
             // Verifica si el registro está eliminado
             if ($tarifa->trashed()) {
