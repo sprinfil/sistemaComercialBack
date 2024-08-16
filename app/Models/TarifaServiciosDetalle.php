@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TarifaServiciosDetalle extends Model
@@ -15,15 +16,13 @@ class TarifaServiciosDetalle extends Model
         "id_tarifa",
         "id_tipo_toma",
         "rango",
-        "agua",
-        "alcantarillado",
-        "saneamiento"
+        "monto",
     ];
     
     
     public function tarifa() : BelongsTo
      {
-         return $this->belongsTo(tarifa::class, 'id_tarifa');
+         return $this->belongsTo(Tarifa::class, 'id_tarifa');
      }
 
      // Tipo de toma asociado al concepto detalle de tarifa
@@ -36,6 +35,10 @@ class TarifaServiciosDetalle extends Model
      public function factura() : HasMany
      {
          return $this->HasMany(Factura::class, 'id');
+     }
+     
+     public function tarifaServicio() : BelongsTo {
+        return $this->belongsTo(TarifaServicio::class, 'id_tarifa_servicio');
      }
     
 }

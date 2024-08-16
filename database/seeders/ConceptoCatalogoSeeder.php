@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ConceptoCatalogo;
+use App\Models\TarifaServicio;
 use App\Models\TarifaServiciosDetalle;
 use App\Models\TipoToma;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -102,12 +103,13 @@ class ConceptoCatalogoSeeder extends Seeder
             $rango = 17;
             for ($i = 1; $i <= 10; $i++) {
                 TarifaServiciosDetalle::factory()->create([
-                    'id_tarifa'=>1,
-                    'id_tipo_toma'=>$tipo_toma->id,
                     'rango'=>$rango*$i,
+                    'monto'=> 200,
+                    /*
                     'agua'=>10*17,
                     'alcantarillado'=>2*17,
                     'saneamiento'=>2*17
+                    */
                 ]);
             }
         });

@@ -19,12 +19,9 @@ class TarifaServiciosDetalleFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_tarifa'=>0,
-            'id_tipo_toma'=>0,
-            'rango'=>0,
-            'agua'=>0,
-            'alcantarillado'=>0,
-            'saneamiento'=>0
+            'id_tarifa_servicio' => 1,
+            'rango'=> 0,
+            'monto' => $this->faker->numberBetween(0,300),
         ];
     }
 }

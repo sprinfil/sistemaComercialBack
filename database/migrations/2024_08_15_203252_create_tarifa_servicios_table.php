@@ -11,20 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tarifa_servicios_detalles', function (Blueprint $table) {
+        Schema::create('tarifa_servicios', function (Blueprint $table) {
             $table->id();
-            /*
             $table->unsignedBigInteger('id_tarifa');
             $table->unsignedBigInteger('id_tipo_toma');
-            */
-            $table->unsignedBigInteger('id_tarifa_servicio');
-            $table->integer("rango");
-            $table->decimal("monto", total:9, places:2);
-            /*
-            $table->decimal("agua", total:9, places:2);
-            $table->decimal("alcantarillado", total:9, places:2);
-            $table->decimal("saneamiento", total:9, places:2); 
-            */
+            $table->boolean('genera_iva'); //Alcantarillado y saneamiento genera IVA
+            $table->enum('tipo_servicio', ['agua' , 'alcantarillado' , 'saneamiento']);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -35,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tarifa_servicios_detalles');
+        Schema::dropIfExists('tarifa_servicios');
     }
 };

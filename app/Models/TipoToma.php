@@ -32,4 +32,8 @@ class TipoToma extends Model
     {
         return $this->hasMany(Toma::class, 'tipo_toma', 'nombre');
     }
+
+    public function tarifaServicio() : HasMany {
+        return $this->hasMany(TarifaServicio::class, 'id_tipo_toma');
+    }
 }
