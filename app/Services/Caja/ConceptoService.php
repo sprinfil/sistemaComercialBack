@@ -26,7 +26,8 @@ class ConceptoService{
      // metodo para obtener todos los conceptos registrados
      public function obtenerConceptosCargables(): Collection
      {
-         try{
+         try
+         {
             return ConceptoCatalogo::where('cargo_directo', 1)->orderby("id", "desc")->with('tarifas')->get();
          } catch(Exception $ex){
              throw $ex;
@@ -36,7 +37,8 @@ class ConceptoService{
     // metodo para registrar un concepto
     public function registrarConcepto(StoreConceptoCatalogoRequest $request)
     {
-        try{
+        try
+        {
             //Valida el store
             $data = $request->validated();
             //Busca por nombre a los conceptos eliminados
