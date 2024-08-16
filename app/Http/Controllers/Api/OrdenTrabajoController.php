@@ -61,17 +61,18 @@ class OrdenTrabajoController extends Controller
     {
         DB::beginTransaction();
             $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data) ?? null;
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
             if ($catalogo=="Existe"){
                 return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
             }
             $idcatalogo=$catalogo['id'] ?? null;
-            $acciones=(new OrdenTrabajoAccionService())->store($data['orden_trabajo_accion'],$idcatalogo) ?? NULL;
-            $cargos=(new OrdenTrabajoCatalogoService())->storeCargos($data['orden_trabajo_cargos'],$idcatalogo) ?? NULL;
-            $encadenadas=(new OrdenTrabajoCatalogoService())->storeOTEncadenadas($data['orden_trabajo_encadenadas'],$idcatalogo) ?? NULL;
+            $acciones=(new OrdenTrabajoAccionService())->store($data,$idcatalogo);
+            return $acciones;
+            $cargos=(new OrdenTrabajoCatalogoService())->storeCargos($data,$idcatalogo);
+            $encadenadas=(new OrdenTrabajoCatalogoService())->storeOTEncadenadas($data,$idcatalogo);
            
             DB::commit();
-            return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo),"orden_trabajo_acciones"=>OrdenTrabajoAccionResource::collection($acciones),"orden_trabajo_cargos"=>OrdenesTrabajoCargoResource::collection($cargos),"orden_trabajo_encadenadas"=>OrdenesTrabajoEncadenadaResource::collection($encadenadas)],200);
+            return response(["Orden_Trabajo_Catalogo"=>$catalogo,"orden_trabajo_acciones"=>$acciones,"orden_trabajo_cargos"=>$cargos,"orden_trabajo_encadenadas"=>$encadenadas],200);
         try{
             
         }
@@ -81,20 +82,7 @@ class OrdenTrabajoController extends Controller
                 'message' => 'La orden de trabajo no se pudo registar.'
             ], 200);
         }
-        
-
-        /*
-        try{
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($request->validated());
-            return response(new OrdenTrabajoCatalogoResource($catalogo),200);
-        }
-        catch(Exception $ex){
-            return response()->json([
-                'message' => 'La orden de trabajo no se pudo registar.',
-                'restore' => false
-            ], 200);
-        }
-            */
+            
         
     }
 
