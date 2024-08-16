@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
             $table->enum('accion',['registrar','modificar','quitar']);
             $table->string('modelo'); //ahora es un enum
-            $table->boolean('campo')->nullable();
+            $table->string('campo')->nullable();
             $table->boolean('opcional')->nullable();
             $table->unsignedBigInteger('id_orden_trabajo_acc_encadena')->nullable();
             $table->unsignedBigInteger('id_orden_trabajo_acc_alterna')->nullable();

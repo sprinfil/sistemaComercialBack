@@ -20,8 +20,8 @@ class OrdenesTrabajoEncadenadaResource extends JsonResource
             "id" => $this->id,
             "id_OT_Catalogo_padre" => $this->id_OT_Catalogo_padre,
             "id_OT_Catalogo_encadenada" => $this->id_OT_Catalogo_encadenada,
-            "OT_CatalogoPadre" => new OrdenTrabajoCatalogo($this->whenLoaded('')),
-            "OT_Encadenada" => new OrdenTrabajoCatalogo($this->whenLoaded('')),
+            "OT_CatalogoPadre" => new OrdenTrabajoCatalogoResource($this->whenLoaded('OrdenCatalogoPadre')),
+            "OT_Encadenada" => new OrdenTrabajoCatalogoResource($this->whenLoaded('OrdenCatalogoEncadenadas')),
         ];
     }
 }
