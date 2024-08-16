@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCajasRequest;
 use App\Http\Requests\UpdateCajasRequest;
 use App\Http\Resources\CajaResource;
 use App\Models\Caja;
+use App\Models\OperadorAsignado;
 use App\Services\Caja\CajaService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -37,22 +38,16 @@ class CajasController extends Controller
     public function store(StoreCajasRequest $request)
     {
         try {
-            $data = [];
             $data = $request->validated();
-            return $data;
-            $idOperador = $data['id_operador'];
-            $idCaja = $data['id_caja'];
-            $caja = $data['caja'];
-            $fondo = $data['fondo'];
-            
+        
             DB::beginTransaction();
-            $apertura = (new CajaService())->iniciarCaja($idOperador, $idCaja, $caja, $fondo);
+            $apertura = (new CajaService())->iniciarCaja($data);
             DB::commit();
             return $apertura;
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
-                'error' => 'Ocurrio un error al iniciar la caja.'
+                'error' => 'Ocurrio un error al iniciar la caja.'.$ex
             ], 500);
         }
     }

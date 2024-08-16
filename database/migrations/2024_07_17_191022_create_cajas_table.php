@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_operador');
             $table->unsignedBigInteger('id_caja_catalogo');
             $table->decimal('fondo_inicial', total:8, places:2);
-            $table->decimal('fondo_final', total:8, places:2);
+            $table->decimal('fondo_final', total:8, places:2)->nullable();
             $table->dateTime('fecha_apertura')->nullable();
             $table->dateTime('fecha_cierre')->nullable();
             $table->softDeletes();

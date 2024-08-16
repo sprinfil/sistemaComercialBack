@@ -17,10 +17,14 @@ class CajaCatalogo extends Model
         'hora_cierre',
     ];
 
-
+    //Relacion del catalogo de caja con sus diferentes registros en caja
     public function caja () : HasMany
     {
-        return $this->hasMany(Caja::class , 'id_caja_catalogo'); //ya
+        return $this->hasMany(Caja::class , 'id_caja_catalogo');//ya
     }
-    
+    //Relacion del catalogo de cajas con operador arignado
+    public function operadorAsignado () : HasMany
+    {
+        return $this->hasMany(OperadorAsignado::class , 'id_caja_catalogo');
+    }
 }
