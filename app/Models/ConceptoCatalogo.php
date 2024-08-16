@@ -50,7 +50,7 @@ class ConceptoCatalogo extends Model
 
     public function ordenTrabajoCatalogo() : HasMany
     {
-        return $this->hasMany(ordenTrabajoCatalogo::class, 'id_concepto_catalogo');
+        return $this->hasMany(OrdenTrabajoCatalogo::class, 'id_concepto_catalogo');
     }
 
     // Busqueda por nombre
