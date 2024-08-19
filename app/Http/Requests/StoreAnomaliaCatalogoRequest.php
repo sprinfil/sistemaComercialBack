@@ -26,6 +26,7 @@ class StoreAnomaliaCatalogoRequest extends FormRequest
             "descripcion"=>"nullable|string",
             "estado"=>"nullable|string|max:10|
             in:activo,inactivo",
+            "facturable"=>"nullable|boolean",
         ];
     }
 }
