@@ -70,34 +70,61 @@ class OrdenTrabajoController extends Controller
             return response(["Orden_Trabajo_Catalogo"=>$catalogo],200);
         }
         catch(Exception $ex){
-            DB::commit();
+            DB::rollBack();
             return response()->json([
-                'message' => 'La orden de trabajo no se pudo registar.'
+                'message' => 'La orden de trabajo no se pudo registar/actualizar.'
             ], 200);
         }
             
         
     }
     public function storeAcciones(StoreOrdenTrabajoCatalogoRequest $request){
-        DB::beginTransaction();
-        $data=$request->validated();
-        $acciones=(new OrdenTrabajoAccionService())->store($data);
-        DB::commit();
-        return response(["Orden_Trabajo_Acciones"=>$acciones],200);
+        try{
+            DB::beginTransaction();
+            $data=$request->validated();
+            $acciones=(new OrdenTrabajoAccionService())->store($data);
+            DB::commit();
+            return response(["Orden_Trabajo_Acciones"=>$acciones],200);
+        }
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Las acciones de la OT no se pudieron registar/actualizar.'
+            ], 200);
+        }
+       
     }
     public function storeCargos(StoreOrdenTrabajoCatalogoRequest $request){
-        DB::beginTransaction();
-        $data=$request->validated();
-        $cargos=(new OrdenTrabajoCatalogoService())->storeCargos($data);
-        DB::commit();
-        return response(["Orden_Trabajo_Cargos"=>$cargos],200);
+        try{
+            DB::beginTransaction();
+            $data=$request->validated();
+            $cargos=(new OrdenTrabajoCatalogoService())->storeCargos($data);
+            DB::commit();
+            return response(["Orden_Trabajo_Cargos"=>$cargos],200);
+        }
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Los cargos de la OT no se pudieron registar/actualizar.'
+            ], 200);
+        }
+ 
     }
     public function storeEncadenadas(StoreOrdenTrabajoCatalogoRequest $request){
-        DB::beginTransaction();
-        $data=$request->validated();
-        $encadenadas=(new OrdenTrabajoCatalogoService())->storeOTEncadenadas($data);
-        DB::commit();
-        return response(["Orden_Trabajo_Encadenadas"=>$encadenadas],200);
+        try{
+            DB::beginTransaction();
+            $data=$request->validated();
+            $encadenadas=(new OrdenTrabajoCatalogoService())->storeOTEncadenadas($data);
+            DB::commit();
+            return response(["Orden_Trabajo_Encadenadas"=>$encadenadas],200);
+        }
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'No se pudieron encadenar las OT.'
+            ], 200);
+        }
+
     }
     /**
      * Display the specified resource.
