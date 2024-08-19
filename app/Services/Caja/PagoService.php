@@ -28,7 +28,7 @@ class PagoService{
     }
 
     // metodo para cargar un cargo a un usuario
-    public function k(StorePagoRequest $request): Pago
+    public function registrarPago(StorePagoRequest $request): Pago
     {
         try{
             // se validan los datos
