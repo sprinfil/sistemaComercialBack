@@ -12,8 +12,8 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/usuarios/update/{id}", "update");
         Route::put("/usuarios/updateMoral/{id}", "updateMoral");
         // delete significa borrado logico
-        Route::put("/usuarios/log_delete/{id}", "destroy");
-        Route::delete("/usuarios/restore/{id}", "restaurarDato");//avisar
+        Route::delete("/usuarios/log_delete/{id}", "destroy");
+        Route::put("/usuarios/restore/{id}", "restaurarDato");//avisar
         // consultas
         // codigo
         Route::get("/usuarios/consultaCodigo/{codigo}", "showCodigo");
@@ -39,5 +39,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/usuarios/datos_fiscales/storeOrUpdate/{id}", "storeOrUpdateDatosFiscales");
         //Consultar el saldo de un usuario
         Route::get("/usuarios/consultar/saldo/{id}" , "ConsultarSaldoUsuario");
+        Route::get("/usuarios/consultar/cargos/{id}" , "consultarTodosCargosPendientes");
     });
 });

@@ -10,6 +10,8 @@ use App\Http\Requests\StoreOrdenTrabajoRequest;
 use App\Http\Requests\UpdateOrdenTrabajoCatalogoRequest;
 use App\Http\Requests\UpdateOrdenTrabajoConfRequest;
 use App\Http\Requests\UpdateOrdenTrabajoRequest;
+use App\Http\Resources\OrdenesTrabajoCargoResource;
+use App\Http\Resources\OrdenesTrabajoEncadenadaResource;
 use App\Http\Resources\OrdenTrabajoCatalogoResource;
 use App\Http\Resources\OrdenTrabajoAccionResource;
 use App\Http\Resources\OrdenTrabajoResource;
@@ -32,7 +34,7 @@ class OrdenTrabajoController extends Controller
     public function indexCatalogo()
     {
         return OrdenTrabajoCatalogoResource::collection(
-            OrdenTrabajoCatalogo::with('OrdenTrabajoAccion')->get()
+            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos','ordenTrabajoEncadenado')->get()
         );
        
     }
@@ -59,21 +61,17 @@ class OrdenTrabajoController extends Controller
     {
         DB::beginTransaction();
             $data=$request->validated();
-            $dataConf=$data['orden_trabajo_accion'] ?? null;
-            $orden=null;
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
-            if (!$catalogo){
-                return response()->json(["message"=>"Ya existe una OT con esta configuración",201]);
-                //return $catalogo;
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data) ?? null;
+            if ($catalogo=="Existe"){
+                return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
             }
-            if  ($dataConf){
-                $dataConf['id_orden_trabajo_catalogo']=$catalogo['id'];
-                $orden=(new OrdenTrabajoAccionService())->store($dataConf);
-                $catalogo['orden_trabajo_accion']= $orden;
-               
-            }
+            $idcatalogo=$catalogo['id'] ?? null;
+            $acciones=(new OrdenTrabajoAccionService())->store($data['orden_trabajo_accion'],$idcatalogo) ?? NULL;
+            $cargos=(new OrdenTrabajoCatalogoService())->storeCargos($data['orden_trabajo_cargos'],$idcatalogo) ?? NULL;
+            $encadenadas=(new OrdenTrabajoCatalogoService())->storeOTEncadenadas($data['orden_trabajo_encadenadas'],$idcatalogo) ?? NULL;
+           
             DB::commit();
-            return response(new OrdenTrabajoCatalogoResource($catalogo),200);
+            return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo),"orden_trabajo_acciones"=>OrdenTrabajoAccionResource::collection($acciones),"orden_trabajo_cargos"=>OrdenesTrabajoCargoResource::collection($cargos),"orden_trabajo_encadenadas"=>OrdenesTrabajoEncadenadaResource::collection($encadenadas)],200);
         try{
             
         }
@@ -106,10 +104,13 @@ class OrdenTrabajoController extends Controller
     public function showCatalogo(string $nombre)
     {
         try{
+     
+            
             $ordenTrabajo=OrdenTrabajoCatalogo::BuscarCatalogo($nombre);
             return OrdenTrabajoCatalogoResource::collection(
                 $ordenTrabajo
             );
+            
         }
         catch(Exception $ex){
             return response()->json(['error'=>'No se encontro una orden de trabajo con ese nombre']);
@@ -122,16 +123,7 @@ class OrdenTrabajoController extends Controller
      */
     public function updateCatalogo(UpdateOrdenTrabajoCatalogoRequest $request, OrdenTrabajoCatalogo $ordenTrabajo)
     {
-        try{
-            $data=$request->validated();
-            $ordenTrabajo=OrdenTrabajoCatalogo::find($request->id);
-            $ordenTrabajo->update($data);
-            $ordenTrabajo->save();
-            return new OrdenTrabajoCatalogoResource($ordenTrabajo);
-        }
-        catch(Exception $ex){
-            return response()->json(['error' => 'No se pudo modificar la orden de trabajo, introduzca datos correctos'], 200);
-        }
+
     }
 
     public function destroyCatalogo(OrdenTrabajoCatalogo $ordenTrabajo, Request $request)
@@ -166,7 +158,8 @@ class OrdenTrabajoController extends Controller
     public function storeConf(StoreOrdenTrabajoConfRequest $request) //Ejemplo con service
     {
         try{
-            $orden=(new OrdenTrabajoAccionService())->store($request->validated());
+            $data=$request->validated();
+            $orden=(new OrdenTrabajoAccionService())->store($data,$data['id_orden_trabajo_catalogo']);
             if (!$orden){
                 return response()->json([
                     'message'=>'Ya existe una configuración con las mismas caracteristicas para la orden de trabajo especificada'

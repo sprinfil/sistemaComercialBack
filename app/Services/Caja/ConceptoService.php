@@ -17,7 +17,7 @@ class ConceptoService{
     public function obtenerConceptos(): Collection
     {
         try{
-            return ConceptoCatalogo::orderby("id", "desc")->with('tarifas')->get();
+            return ConceptoCatalogo::orderby("id", "desc")->with(['tarifas', 'ordenAsignada', 'conceptoResago'])->get();
         } catch(Exception $ex){
             throw $ex;
         }
@@ -26,7 +26,8 @@ class ConceptoService{
      // metodo para obtener todos los conceptos registrados
      public function obtenerConceptosCargables(): Collection
      {
-         try{
+         try
+         {
             return ConceptoCatalogo::where('cargo_directo', 1)->orderby("id", "desc")->with('tarifas')->get();
          } catch(Exception $ex){
              throw $ex;
@@ -36,7 +37,8 @@ class ConceptoService{
     // metodo para registrar un concepto
     public function registrarConcepto(StoreConceptoCatalogoRequest $request)
     {
-        try{
+        try
+        {
             //Valida el store
             $data = $request->validated();
             //Busca por nombre a los conceptos eliminados
@@ -112,7 +114,7 @@ class ConceptoService{
             $concepto = ConceptoCatalogo::findOrFail($request["id"]);
 
             // Actualizar los datos del concepto
-            $concepto->update($request->only(['nombre', 'descripcion', 'estado', 'prioridad_abono', 'genera_iva', "abonable", "tarifa_fija", "cargo_directo"]));
+            $concepto->update($request->only(['nombre', 'descripcion', 'estado', 'prioridad_abono', 'genera_iva', "abonable", "tarifa_fija", "cargo_directo", "genera_orden", "genera_recargo", "concepto_rezago", "pide_monto", "bonificable", "recargo"]));
 
             // Actualizar tarifas
             $tarifas = $request->input('tarifas', []);

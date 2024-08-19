@@ -47,7 +47,7 @@ class TomaResource extends JsonResource
             'medidor' => $this->whenLoaded('medidor'),
             'consumo' => $this->whenLoaded('consumo'),
             'ordenes_trabajo' => OrdenTrabajoResource::collection($this->whenLoaded('ordenesTrabajo')),
-            
+            'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes')))
         ];
         //return parent::toArray($request);
     }

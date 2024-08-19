@@ -21,7 +21,12 @@ class ConceptoCatalogo extends Model
         "abonable",
         "tarifa_fija",
         "cargo_directo",
-        "genera_orden"
+        "genera_orden",
+        "genera_recargo",
+        "concepto_rezago",
+        "pide_monto",
+        "bonificable",
+        "recargo"
     ];
 
     // Medidor asociado a la toma
@@ -30,17 +35,27 @@ class ConceptoCatalogo extends Model
         return $this->hasMany(TarifaConceptoDetalle::class, 'id_concepto');
     }
 
+    public function ordenAsignada() : HasOne
+    {
+        return $this->hasOne(OrdenTrabajoCatalogo::class, 'id', 'genera_orden')
+                    ->select(['id', 'nombre']);
+    }
+
+
+    public function conceptoResago() : HasOne
+    {
+        return $this->hasOne(ConceptoCatalogo::class, 'id', 'concepto_rezago')
+                    ->select(['id', 'nombre']);
+    }
+
     public function ordenTrabajoCatalogo() : HasMany
     {
-        return $this->hasMany(ordenTrabajoCatalogo::class, 'id_concepto_catalogo');
+        return $this->hasMany(OrdenTrabajoCatalogo::class, 'id_concepto_catalogo');
     }
 
     // Busqueda por nombre
     public static function buscarPorNombre(string $nombre){
-        
         $data=ConceptoCatalogo::where('nombre',$nombre)->get()->first();
         return $data;
-        
-
     }
 }

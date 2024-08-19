@@ -7,25 +7,22 @@ use App\Models\OrdenTrabajoAccion;
 
 class OrdenTrabajoAccionService{
 
-    public function store(array $ordenCatalogo): ?OrdenTrabajoAccion{ //Ejemplo de service
-       
-        $catalogo=OrdenTrabajoAccion::where('id_orden_trabajo_catalogo',$ordenCatalogo['id_orden_trabajo_catalogo'])->
-        where('accion',$ordenCatalogo['accion'])->
-        where('modelo',$ordenCatalogo['modelo'])->first();
-        //where('id_orden_trabajo_conf_encadenada',$ordenCatalogo['id_orden_trabajo_conf_encadenada'])->
-        //where('id_orden_trabajo_conf_alterna',$ordenCatalogo['id_orden_trabajo_conf_alterna'])->first();
-        if ($catalogo){
-            return null;
+    public function store(array $ordenCatalogo, $idcatalogo){ //Ejemplo de service
+        $id=$idcatalogo ?? $ordenCatalogo['id_orden_trabajo_catalogo'];
+        $OrdenAcciones=[];
+        $OrdenAcciones_id=[];
+        foreach ($ordenCatalogo as $accion){
+            $accion['id_orden_trabajo_catalogo']=$id;
+            $idAccion=$accion['id'] ?? null;
+            $ordenAccion=OrdenTrabajoAccion::updateOrCreate(['id' =>$idAccion],$accion);
+            $OrdenAcciones_id[]=$ordenAccion['id'];
+            $OrdenAcciones[]=$ordenAccion;
+            
         }
-        else{
-            $respuesta=OrdenTrabajoAccion::create($ordenCatalogo);
-            return $respuesta;
-        }  
+        OrdenTrabajoAccion::where('id_orden_trabajo_catalogo', $OrdenAcciones[0]['id_orden_trabajo_catalogo'])
+    ->whereNotIn('id', $OrdenAcciones_id)
+    ->delete();
+        return $OrdenAcciones;
     }
-    /*
-    public function show(array $ordenCatalogo): ?OrdenTrabajoAccion{ //Ejemplo de service
-       
-    
-    }
-    */
+
 }
