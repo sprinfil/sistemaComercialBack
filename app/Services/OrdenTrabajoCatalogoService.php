@@ -38,7 +38,8 @@ class OrdenTrabajoCatalogoService{
         //$id=$idcatalogo ?? $requestCargos[0]['id'];
         foreach ($requestCargos as $cargo){
             $idCargo=$cargo['id'] ?? null;
-            $ordenCargo=OrdenesTrabajoCargo::updateOrCreate(['id' =>$idCargo],$cargo);
+            $OTCatalogo=$cargo['id_orden_trabajo_catalogo'] ?? null;
+            $ordenCargo=OrdenesTrabajoCargo::updateOrCreate(['id' =>$idCargo,'id_orden_trabajo_catalogo' =>$OTCatalogo],$cargo);
             $OrdenCargos[]=$ordenCargo;
             $ordenesCargos_id[]=$ordenCargo['id'];
         }
