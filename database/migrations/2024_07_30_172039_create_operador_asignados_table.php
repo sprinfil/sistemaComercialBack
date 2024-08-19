@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('operador_asignados', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('id_operador');
-            $table->unsignedInteger('id_caja');
+            $table->unsignedInteger('id_caja_catalogo');
             $table->softDeletes();
             $table->timestamps();
         });

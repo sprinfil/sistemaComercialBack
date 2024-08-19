@@ -22,21 +22,18 @@ class StoreCajasRequest extends FormRequest
     public function rules(): array
     {
         return [
-  
-            "id_operador"=>"required|integer|gt:0",
-            "id_caja"=>"required|integer|gt:0",
-            "caja_data"=>"required|array",
-            "caja_data.*.id_operador"=>"required|integer|gt:0",
-            "caja_data.*.fecha_apertura"=>"required|date_format:Y-m-d H:i:s",
-            "caja_data.*.fecha_cierre"=>"required|date_format:Y-m-d H:i:s",
-            "fondo_data"=>"required|array",
-            "fondo_data.*.id_caja"=>"required|integer|gt:0",
-            "fondo_data.*.monto"=>"required|numeric|/^\d+(\.\d{2})$/",
-            "fondo_data.*.monto_inicial"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
-            "fondo_data.*.monto_final"=>"required|numeric|regex:/^\d+(\.\d{2})$/",  
-
+            "id_operador" => "required|integer|gt:0",
+            "id_caja" => "required|integer|gt:0",
+            "caja_data" => "required|array",
+            "caja_data.*.id_operador" => "required|integer|gt:0",
+            "caja_data.*.id_caja_catalogo" => "required|integer|gt:0",
+            "caja_data.*.fondo_inicial" => "required|numeric|regex:/^\d+(\.\d{2})$/",
+            "caja_data.*.fondo_final" => "nullable|numeric|regex:/^\d+(\.\d{2})$/",
+            "caja_data.*.fecha_apertura" => "required|date_format:Y-m-d H:i:s",
+            "caja_data.*.fecha_cierre" => "required|date_format:Y-m-d H:i:s"
         ];
     }
+
 
      /**
          * request 1 este se usa en el store, se crea un registro en cajas y en fondo de caja
