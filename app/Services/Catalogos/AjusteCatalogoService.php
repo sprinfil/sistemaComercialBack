@@ -15,7 +15,7 @@ class AjusteCatalogoService{
        
        try {
         return AjusteCatalogoResource::collection(
-            AjusteCatalogo::all()
+            AjusteCatalogo::orderby("id", "desc")->get()
         );
        } catch (Exception $ex) {
 
