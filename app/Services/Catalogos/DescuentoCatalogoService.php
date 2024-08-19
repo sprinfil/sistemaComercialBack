@@ -15,7 +15,7 @@ class DescuentoCatalogoService{
        
        try {
         return response(DescuentoCatalogoResource::collection(
-            DescuentoCatalogo::all()
+            DescuentoCatalogo::orderby("id", "desc")->get()
         ),200);
        } catch (Exception $ex) {
 
