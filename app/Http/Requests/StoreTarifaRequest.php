@@ -23,7 +23,7 @@ class StoreTarifaRequest extends FormRequest
     {
         return [
             "nombre"=>"required|string|max:55",
-            "descripcion"=>"nullable|string|max:100",
+            "descripcion"=>"nullable|string",
             "fecha"=>"required|date",
             "estado"=>"nullable|string|max:10|
             in:activo,inactivo",

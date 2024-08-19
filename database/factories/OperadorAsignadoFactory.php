@@ -20,7 +20,7 @@ class OperadorAsignadoFactory extends Factory
     {
         return [
            'id_operador'=>Operador::all()->random()->id,
-           'id_caja'=>Caja::all()->random()->id,
+           'id_caja_catalogo'=>Caja::all()->random()->id,
         ];
     }
 }
