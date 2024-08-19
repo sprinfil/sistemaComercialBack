@@ -23,7 +23,7 @@ class StoreOperadorAsignado extends FormRequest
     {
         return [
             "id_operador"=>"required|integer|gt:0",
-            "id_caja"=>"required|integer|gt:0",
+            "id_caja_catalogo"=>"required|integer|gt:0",
         ];
     }
 }

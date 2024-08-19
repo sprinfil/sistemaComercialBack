@@ -18,7 +18,7 @@ class OperadorAsignadoResource extends JsonResource
         return [
             "id" => $this->id,
             "id_operador" => $this->id_operador,
-            "id_caja" => $this->id_caja,
+            "id_caja_catalogo" => $this->id_caja_catalogo,
           
         ];
     }
