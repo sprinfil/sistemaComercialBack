@@ -49,7 +49,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "orden_trabajo_cargos.*.id_concepto_catalogo" => "sometimes|exists:concepto_catalogos,id",
             //encadenados
             "orden_trabajo_encadenadas" => "sometimes|array",
-            "orden_trabajo_encadenadas.*" => "sometimes|array:id,id_OT_Catalogo_encadenada",
+            "orden_trabajo_encadenadas.*" => "sometimes|array:id,id_OT_Catalogo_padre,id_OT_Catalogo_encadenada",
             "orden_trabajo_encadenadas.*.id" => "sometimes|numeric",
             "orden_trabajo_cargos.*.id_OT_Catalogo_padre" => "sometimes|exists:orden_trabajo_catalogos,id",
             "orden_trabajo_encadenadas.*.id_OT_Catalogo_encadenada" => "sometimes|distinct|exists:orden_trabajo_catalogos,id",
