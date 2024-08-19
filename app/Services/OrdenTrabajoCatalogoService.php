@@ -54,7 +54,8 @@ class OrdenTrabajoCatalogoService{
         $OrdenEncadenadas_id=[];
         foreach ($requestEncadenadas as $OT){
             $idEncadenada=$OT['id'] ?? null;
-            $ordenEncadenada=OrdenesTrabajoEncadenada::updateOrCreate(['id' =>$idEncadenada],$OT);
+            $idOTpadre=$OT['id_OT_Catalogo_padre'] ?? null;
+            $ordenEncadenada=OrdenesTrabajoEncadenada::updateOrCreate(['id' =>$idEncadenada,'id_OT_Catalogo_padre' =>$idOTpadre],$OT);
             $OrdenEncadenadas[]=$ordenEncadenada;
             $OrdenEncadenadas_id[]=$ordenEncadenada['id'];
         }
