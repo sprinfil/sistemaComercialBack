@@ -50,7 +50,7 @@ class TomaFactory extends Factory
             'entre_calle_notificaciones_1' => $this->faker->streetName,
             'entre_calle_notificaciones_2' => $this->faker->streetName,
             'tipo_servicio' => $this->faker->randomElement(['promedio', 'lectura']),
-            'tipo_toma' => $this->faker->randomElement(['domestica', 'comercial', 'industrial']),
+            'tipo_toma' => $this->faker->randomElement([1,2,3,4]),
             'c_agua' => null,
             'c_alc' => null,
             'c_san' => null,
