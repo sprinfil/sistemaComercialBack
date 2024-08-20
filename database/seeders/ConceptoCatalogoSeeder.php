@@ -251,8 +251,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "prioridad_abono" => 1,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
-                "abonable" => 1,
-                "tarifa_fija" => 1,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
             ],
             [
                 "nombre" => "ADEL. A CONV. X CONS.",
@@ -271,7 +271,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "prioridad_abono" => 1,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
-                "abonable" => 1,
+                "abonable" => 0,
                 "tarifa_fija" => 1,
             ],
             [
