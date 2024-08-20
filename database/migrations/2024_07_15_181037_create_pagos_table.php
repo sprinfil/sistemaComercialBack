@@ -20,7 +20,8 @@ return new class extends Migration
             $table->decimal('total_pagado');
             $table->string('forma_pago');
             $table->date('fecha_pago');
-            $table->enum("estado",['abonado','pendiente','cancelado'])->default('pendiente');;
+            $table->enum("estado",['abonado','pendiente','cancelado'])->default('pendiente');
+            $table->enum("timbrado",['realizado','pendiente','cancelado'])->default('pendiente');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -12,6 +12,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/bonificacionesCatalogo/show/{id}", "show");
         Route::put("/bonificacionesCatalogo/restaurar/{id}", "restaurarDato");
         //log delete significa borrado logico
-        Route::delete("BonificacionesCatalogo/log_delete/{id}", "destroy");
+        Route::delete("bonificacionesCatalogo/log_delete/{id}", "destroy");
     });
 });

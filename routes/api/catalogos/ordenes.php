@@ -8,18 +8,17 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(OrdenTrabajoController::class)->group(function () {
         Route::get("/OrdenTrabajoCatalogo", "indexCatalogo");
         Route::put("/OrdenTrabajoCatalogo/create", "storeCatalogo");
-        Route::put("/OrdenTrabajoCatalogo/update/{id}", "updateCatalogo");
+        Route::put("/OrdenTrabajoCatalogo/create/cargos", "storeCargos");
+        Route::put("/OrdenTrabajoCatalogo/create/encadenadas", "storeEncadenadas");
+        Route::put("/OrdenTrabajoCatalogo/create/acciones", "storeAcciones");
+
         Route::put("/OrdenTrabajoCatalogo/restore/{id}", "restoreCatalogo");
         Route::delete("/OrdenTrabajoCatalogo/log_delete/{id}", "destroyCatalogo");
-        Route::get("/OrdenTrabajoCatalogo/show/{nombre}", "showCatalogo");
+        Route::get("/OrdenTrabajoCatalogo/show/{id}", "showCatalogo");
 
-        //ORDEN TRABAJO CONFIGURACIONES
-        Route::get("/OrdenTrabajoConf", "indexConf");
-        Route::post("/OrdenTrabajoConf/create", "storeConf");
-        Route::put("/OrdenTrabajoConf/update/{id}", "updateConf");
-        //Route::put("/OrdenTrabajoConf/restore/{id}", "restoreConf");
-        Route::delete("/OrdenTrabajoConf/log_delete/{id}", "destroyConf");
-        Route::post("/OrdenTrabajoConf/show/{nombre}", "showConf");
+
+        //Route::delete("/OrdenTrabajoConf/log_delete/{id}", "destroyConf");
+        //Route::get("/OrdenTrabajoConf/show/{id}", "showConf");
 
         //ORDEN DE TRABAJO
         Route::get("/OrdenTrabajo", "indexOrdenes");

@@ -25,6 +25,7 @@ class Pago extends Model
         "forma_pago",
         "fecha_pago",
         "estado",
+        "timbrado",
     ];
     //Pagos con caja
     public function caja() : BelongsTo {
