@@ -29,6 +29,7 @@ class StoreCargoRequest extends FormRequest
             "id_dueno"=>"required|integer",
             "modelo_dueno"=>"required|string|max:55",
             "monto"=>"nullable|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "iva"=>"nullable|numeric|regex:/^\d+(\.\d{1,2})?$/",
             "estado"=>"nullable|string|max:55",
             "id_convenio"=>"nullable|integer",
             "fecha_cargo"=>"nullable|date|max:55",

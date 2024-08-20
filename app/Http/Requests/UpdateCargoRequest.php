@@ -29,6 +29,7 @@ class UpdateCargoRequest extends FormRequest
             "id_dueno"=>"required|integer",
             "modelo_dueno"=>"required|string|max:55",
             "monto"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "iva"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
             "estado"=>"required|string|max:55",
             "id_convenio"=>"integer",
             "fecha_cargo"=>"required|date|max:55",
