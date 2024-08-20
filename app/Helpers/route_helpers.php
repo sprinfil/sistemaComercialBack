@@ -1,5 +1,5 @@
 <?php
-// apis catalogos
+
 function includeRouteFiles($directory) {
     $routeFiles = glob($directory . '/*.php');
     foreach ($routeFiles as $routeFile) {

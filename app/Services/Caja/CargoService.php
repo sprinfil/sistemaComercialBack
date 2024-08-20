@@ -4,6 +4,8 @@ namespace App\Services\Caja;
 use App\Http\Requests\StoreCargoRequest;
 use App\Http\Requests\UpdateCargoRequest;
 use App\Models\Cargo;
+use App\Models\CargoDirecto;
+use App\Models\ConceptoCatalogo;
 use App\Models\Toma;
 use App\Models\Usuario;
 use Exception;
@@ -166,6 +168,57 @@ class CargoService{
             }else{
                 throw new Exception('modelo no definido');
             }*/
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // metodo para cargar un cargo a un usuario/toma
+    public function generarCargoDirecto(Request $request): Cargo
+    {
+        try{
+            $data = $request->validated();
+
+            $cargo_directo_data = [];
+            $id_concepto_cargado = $data['id_concepto'];
+            $id_dueno = $data['id_dueno'];
+            $modelo_dueno = $data['modelo_dueno'];
+            $monto = $data['monto'];
+            $iva = 0;
+
+            $concepto_cargado = ConceptoCatalogo::findOrFail($id_concepto_cargado);
+            $nombre_cargo = 'CARGO DIRECTO DE '.$concepto_cargado->nombre;
+
+            $cargo_directo = CargoDirecto::create();
+
+            $id_origen = $cargo_directo->id;
+            $modelo_origen = 'cargo_directo';
+
+            if($monto){
+                $iva = $monto * 0.16;
+            } else{
+                $monto = 0;
+            }
+
+            $cargo_directo_data['id_concepto'] = $concepto_cargado->id;
+            $cargo_directo_data['nombre'] = $nombre_cargo;
+            $cargo_directo_data['id_origen'] = $id_origen;
+            $cargo_directo_data['modelo_origen'] = $modelo_origen;
+            $cargo_directo_data['id_dueno'] = $id_dueno;
+            $cargo_directo_data['modelo_dueno'] = $modelo_dueno;
+            $cargo_directo_data['estado'] = 'pendiente';
+            $cargo_directo_data['monto'] = $monto;
+            $cargo_directo_data['iva'] = $iva;
+
+            $cargo = Cargo::create($cargo_directo_data);
+
+            if($cargo){
+                //ok
+            } else{
+                throw new Exception("error");
+            }
+
+            return $cargo;
         } catch(Exception $ex){
             throw $ex;
         }
