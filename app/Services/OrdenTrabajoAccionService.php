@@ -15,7 +15,8 @@ class OrdenTrabajoAccionService{
         $OrdenAcciones_id=[];
         foreach ($ordenAcciones as $accion){
             $idAccion=$accion['id'] ?? null;
-            $ordenAccion=OrdenTrabajoAccion::updateOrCreate(['id' =>$idAccion],$accion);
+            $OTCatalogo=$accion['id_orden_trabajo_catalogo'] ?? null;
+            $ordenAccion=OrdenTrabajoAccion::updateOrCreate(['id' =>$idAccion,'id_orden_trabajo_catalogo' =>$OTCatalogo],$accion);
             $OrdenAcciones_id[]=$ordenAccion['id'];
             $OrdenAcciones[]=$ordenAccion;
             

@@ -47,7 +47,7 @@ class CajasController extends Controller
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
-                'error' => 'Ocurrio un error al iniciar la caja.'.$ex
+                'error' => 'Ocurrio un error al iniciar la caja.'
             ], 500);
         }
     }
@@ -63,9 +63,21 @@ class CajasController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCajasRequest $request, Caja $cajas)
+    public function update(UpdateCajasRequest $request)
     {
-        //
+        try {
+            $data = $request->validated();
+            DB::beginTransaction();
+            $corte = (new CajaService())->corteCaja($data);
+            DB::commit();
+            return $corte;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al realizar el cierre de caja.'
+            ], 500);
+        }
+        
     }
 
     /**
@@ -82,5 +94,10 @@ class CajasController extends Controller
     public function cargosPorModelo (Request $request)
     {
         // si es por 
+    }
+
+    public function test()
+    {
+        $pagos = Caja::find(1)->pagosPorTipo('efectivo');
     }
 }
