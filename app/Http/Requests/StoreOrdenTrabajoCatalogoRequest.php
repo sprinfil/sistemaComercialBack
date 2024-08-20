@@ -43,7 +43,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "orden_trabajo_accion.*.id_orden_trabajo_acc_alterna"=>"sometimes|string",
             //cargos
             "orden_trabajo_cargos" => "sometimes|array",
-            "orden_trabajo_cargos.*" => "sometimes|array:id,id_concepto_catalogo",
+            "orden_trabajo_cargos.*" => "sometimes|array:id,id_orden_trabajo_catalogo,id_concepto_catalogo",
             "orden_trabajo_cargos.*.id" => "sometimes|numeric",
             "orden_trabajo_cargos.*.id_orden_trabajo_catalogo" => "sometimes|exists:orden_trabajo_catalogos,id",
             "orden_trabajo_cargos.*.id_concepto_catalogo" => "sometimes|exists:concepto_catalogos,id",
