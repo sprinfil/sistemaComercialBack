@@ -141,7 +141,7 @@ class ContratoFactory extends Factory
 
                 Cargo::factory()->create([
                     'id_concepto' => 1,
-                    'concepto' => 'factibilidad '.$contrato->tipo_toma, 
+                    'nombre' => 'factibilidad '.$contrato->tipo_toma, 
                     'id_origen' => $factibilidad->id,
                     'modelo_origen' => 'factibilidad',
                     'id_dueno' => $contrato->id_toma,
@@ -182,7 +182,7 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'concepto' => 'factibilidad '.$contrato->tipo_toma, 
+                        'nombre' => 'factibilidad '.$contrato->tipo_toma, 
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
@@ -198,7 +198,7 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'concepto' => 'derechos de conexion '.$contrato->tipo_toma, 
+                        'nombre' => 'derechos de conexion '.$contrato->tipo_toma, 
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
@@ -226,7 +226,7 @@ class ContratoFactory extends Factory
                 $concepto = ConceptoCatalogo::buscarPorNombre('Contrato agua 1" comun');
                 Cargo::factory()->create([
                     'id_concepto' => $concepto->id ?? 1,
-                    'concepto' => $concepto->nombre ?? "", 
+                    'nombre' => $concepto->nombre ?? "", 
                     'id_origen' => $contrato->id,
                     'modelo_origen' => 'contrato',
                     'id_dueno' => $contrato->id_toma,
