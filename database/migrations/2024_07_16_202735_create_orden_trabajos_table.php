@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('evidencia')->nullable();
             $table->string('material_utilizado')->nullable();
             $table->point('posicion_OT')->nullable();
+            $table->boolean('genera_OT_encadenadas')->default('0');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -158,8 +158,14 @@ class OrdenTrabajoController extends Controller
     {
         try
         {
-            (new OrdenTrabajoCatalogoService())->delete($request["id"]);
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
+            $OT=(new OrdenTrabajoCatalogoService())->delete($request["id"]);
+            if  ($OT=="No valido"){
+                return response()->json(['message' => 'No se puede elimninar el tipo de OT. Existen Ordenes de trabajo vigentes ya vinculadas'], 200);
+            }
+            else{
+                return response()->json(['message' => 'Eliminado correctamente'], 200);
+            }
+            
         }
         catch (Exception $e) {
 
@@ -279,7 +285,9 @@ class OrdenTrabajoController extends Controller
     }
     public function cerrarOrden(Request $request)
     {
+       
        try{
+        
         DB::beginTransaction();
         $data=$request->all();
         $OT=$data['orden_trabajo'];
@@ -294,10 +302,9 @@ class OrdenTrabajoController extends Controller
             DB::commit();
             return $Acciones;
         }
-      
        }
        catch(Exception $ex){
-        Return response()->json(["error"=>"Ha ocurrido un error al cerrar la orden de trabajo ".$ex->getMessage()]);
+        return response()->json(["error"=>"Ha ocurrido un error al cerrar la orden de trabajo ".$ex->getMessage()]);
        }
        
     }
