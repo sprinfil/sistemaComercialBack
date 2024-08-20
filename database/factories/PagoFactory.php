@@ -30,6 +30,7 @@ class PagoFactory extends Factory
             'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
             'fecha_pago'=>now(),
             'estado'=> $this->faker->randomElement(['abonado', 'pendiente', 'cancelado']),
+            "timbrado"=>$this->faker->randomElement(['realizado', 'pendiente', 'cancelado']),
         ];
     }
 }
