@@ -75,7 +75,7 @@ class ContratoFactory extends Factory
             ]),
             'nombre_contrato' => $nombrec,
             'clave_catastral' => Toma::find($tomaId)->clave_catastral ?? $this->faker->regexify('[A-Z0-9]{10}'),
-            'tipo_toma' => Toma::find($tomaId)->tipo_toma ?? $this->faker->randomElement(['1', '2', '3', "4"]),
+            'tipo_toma' => Toma::find($tomaId)->tipo_toma ?? $this->faker->randomElement([1, 2, 3,4]),
             'servicio_contratado' => $servicio,
             'colonia' => $this->faker->streetName,
             'municipio' => $this->faker->city,
