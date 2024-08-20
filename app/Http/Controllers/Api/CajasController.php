@@ -83,4 +83,9 @@ class CajasController extends Controller
     {
         // si es por 
     }
+
+    public function test()
+    {
+        $pagos = Caja::find(1)->pagosPorTipo('efectivo');
+    }
 }
