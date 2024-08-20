@@ -25,6 +25,7 @@ class ConceptoResource extends JsonResource
             "descripcion" => $this->descripcion,
             "estado" => $this->estado,
             "prioridad_abono" => $this->prioridad_abono,
+            "prioridad_por_antiguedad" => $this->prioridad_por_antiguedad,
             "genera_iva" => $this->genera_iva,
             "abonable"=>$this->abonable,
             "tarifa_fija"=>$this->tarifa_fija,

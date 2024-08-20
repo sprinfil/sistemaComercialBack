@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cargos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_concepto');
-            $table->string('concepto');
+            $table->string('nombre');
             $table->unsignedBigInteger('id_origen');
             $table->string('modelo_origen');
             $table->unsignedBigInteger('id_dueno'); 
