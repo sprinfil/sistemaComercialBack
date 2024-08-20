@@ -23,7 +23,7 @@ class UpdateCargoRequest extends FormRequest
     {
         return [
             "id_concepto"=>"required|integer",
-            "concepto"=>"required|string|max:55",
+            "nombre"=>"required|string|max:55",
             "id_origen"=>"required|integer",
             "modelo_origen"=>"required|string|max:55",
             "id_dueno"=>"required|integer",

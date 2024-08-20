@@ -22,7 +22,7 @@ class CargoFactory extends Factory
     {
         return [
             'id_concepto' => 1,
-            'concepto' => 'ninguno',
+            'nombre' => 'ninguno',
             'id_origen' => $this->faker->numberBetween(1, 100),
             'modelo_origen' => $this->faker->word,
             'id_dueno' => $this->faker->numberBetween(1, 100),

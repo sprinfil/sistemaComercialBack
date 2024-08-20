@@ -15,7 +15,7 @@ class Cargo extends Model
     
     protected $fillable = [
         "id_concepto",
-        "concepto",
+        "nombre",
         "id_origen",
         "modelo_origen",
         "id_dueno",
