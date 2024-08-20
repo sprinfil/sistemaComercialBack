@@ -27,7 +27,7 @@ class OrdenTrabajoService{
     //un operador crea la orden de trabajo y su tipo
     public function crearOrden(array $ordenTrabajoPeticion){ //Ejemplo de service
         
-        $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->orWhereNot('estado','Cancelada')->first();
+        $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->first();
         if ($ordenTrabajo){
             return null;
         }
@@ -59,30 +59,34 @@ class OrdenTrabajoService{
 
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
-        $OrdenCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajo['id_orden_trabajo_catalogo']);
-        $OrdenConf=OrdenTrabajoAccion::find($ordenTrabajo['id_orden_trabajo_catalogo']);
+        $OT=OrdenTrabajo::find($ordenTrabajo['id']);
+       
+        $OrdenCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
+        $OrdenConf=OrdenTrabajoAccion::find($OT['id_orden_trabajo_catalogo']);
         $ordenTrabajo['estado']="Concluida";
         $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
-        $OT=OrdenTrabajo::find($ordenTrabajo['id']);
+     
 
         if ($OT['estado']=="Concluida"){
             return null;
         }
+       
         $OT->update($ordenTrabajo);
         $OT->save($ordenTrabajo);
+     
+        if ($OrdenCatalogo['momento_cargo']=="concluir"){
 
-        if ($OrdenConf['momento']=="concluir"){
-
-            //generar cargo
+            //$cargo=$this->generarCargo();
         }
-
-        $OTAcciones=$this->Acciones($ordenTrabajo, $OrdenCatalogo,$modelos);
+        //return $modelos;
+        $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
         return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones];
         //return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT)];
     }
     //metodo que maneja el tipo de accion de la ot a realizar
-    public function Acciones(array $ordenTrabajo, $OtCatalogo, $modelos){
+    public function Acciones(OrdenTrabajo $ordenTrabajo, $OtCatalogo, $modelos){
         $acciones=$OtCatalogo->ordenTrabajoAccion;
+
         foreach ($acciones as $accion){
             $resultado=match($accion['accion'])
             {

@@ -141,12 +141,13 @@ class ContratoFactory extends Factory
 
                 Cargo::factory()->create([
                     'id_concepto' => 1,
-                    'concepto' => 'factibilidad '.$contrato->tipo_toma, 
+                    'nombre' => 'factibilidad '.$contrato->tipo_toma, 
                     'id_origen' => $factibilidad->id,
                     'modelo_origen' => 'factibilidad',
                     'id_dueno' => $contrato->id_toma,
                     'modelo_dueno' => 'toma',
                     'monto' => 500.00,
+                    'iva' => (0.16*500.00),
                     'estado' => 'pagado',
                     'fecha_cargo' => now(),
                     'fecha_liquidacion' => now(),
@@ -182,12 +183,13 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'concepto' => 'factibilidad '.$contrato->tipo_toma, 
+                        'nombre' => 'factibilidad '.$contrato->tipo_toma, 
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
                         'modelo_dueno' => 'toma',
                         'monto' => 351.20,
+                        'iva' => (0.16*351.20),
                         'estado' => 'pagado',
                         'fecha_cargo' => now(),
                         'fecha_liquidacion' => now(),
@@ -198,12 +200,13 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'concepto' => 'derechos de conexion '.$contrato->tipo_toma, 
+                        'nombre' => 'derechos de conexion '.$contrato->tipo_toma, 
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
                         'modelo_dueno' => 'toma',
                         'monto' => $derechos_conexion,
+                        'iva' => (0.16*$derechos_conexion),
                         'estado' => 'pagado',
                         'fecha_cargo' => now(),
                         'fecha_liquidacion' => now(),
@@ -224,14 +227,16 @@ class ContratoFactory extends Factory
 
             if ($contrato->estatus == 'pendiente de pago' || $contrato->estatus == 'contratado' || $contrato->estatus == 'terminado') {
                 $concepto = ConceptoCatalogo::buscarPorNombre('Contrato agua 1" comun');
+                $monto = $this->faker->randomFloat(2, 0, 9999);
                 Cargo::factory()->create([
                     'id_concepto' => $concepto->id ?? 1,
-                    'concepto' => $concepto->nombre ?? "", 
+                    'nombre' => $concepto->nombre ?? "", 
                     'id_origen' => $contrato->id,
                     'modelo_origen' => 'contrato',
                     'id_dueno' => $contrato->id_toma,
                     'modelo_dueno' => 'toma',
                     'monto' => $this->faker->randomFloat(2, 0, 9999),
+                    'iva' => (0.16*$monto),
                     'estado' => $estado_pago,
                     'fecha_cargo' => now(),
                     'fecha_liquidacion' => $fecha_liquidacion,
