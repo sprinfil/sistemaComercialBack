@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Hamcrest\Type\IsNumeric;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -87,15 +88,21 @@ class Usuario extends Model
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
 
-    public static function ConsultarPorNombres(string $usuario){
-        $nuvUsuario=str_replace(" ","%",$usuario);
-        $data = Usuario::whereRaw("
-        CONCAT(
-            COALESCE(nombre, ''), ' ', 
-            COALESCE(apellido_paterno, ''), ' ', 
-            COALESCE(apellido_materno, '')
-        )  LIKE ?", ['%'.$nuvUsuario.'%'])->paginate(10);
-          return $data;
+    public static function ConsultarPorNombresCodigo(string $usuario){
+        if (is_numeric($usuario)){
+            return Usuario::ConsultarPorCodigo($usuario);
+        }
+        else{
+            $nuvUsuario=str_replace(" ","%",$usuario);
+            $data = Usuario::whereRaw("
+            CONCAT(
+                COALESCE(nombre, ''), ' ', 
+                COALESCE(apellido_paterno, ''), ' ', 
+                COALESCE(apellido_materno, '')
+            )  LIKE ?", ['%'.$nuvUsuario.'%'])->with('tomas')->paginate(10);
+              return $data;
+        }
+       
     }
     public static function ConsultarPorNombreContacto(string $usuario){
         $data = Usuario::where('nombre_contacto','like','%'.$usuario.'%')->paginate(10);
@@ -112,7 +119,7 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::where("codigo_usuario",$usuario)->first();
+        $data = Usuario::where("codigo_usuario",$usuario)->with('tomas')->get();
           return $data;
     }
 
