@@ -21,6 +21,7 @@ class Cargo extends Model
         "id_dueno",
         "modelo_dueno",
         "monto",
+        "iva",
         "estado",
         "id_convenio",
         "fecha_cargo",

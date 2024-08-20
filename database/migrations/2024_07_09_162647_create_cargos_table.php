@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_dueno'); 
             $table->string('modelo_dueno');
             $table->decimal('monto', 8, 2);
+            $table->decimal('iva', 8, 2);
             $table->enum('estado', ['pendiente', 'pagado', 'conveniado', 'cancelado']);
             $table->unsignedBigInteger('id_convenio')->nullable();
             $table->date('fecha_cargo');

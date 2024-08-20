@@ -28,6 +28,7 @@ class CargoFactory extends Factory
             'id_dueno' => $this->faker->numberBetween(1, 100),
             'modelo_dueno' => $this->faker->word,
             'monto' => $this->faker->randomFloat(2, 0, 9999),
+            'iva' => $this->faker->randomFloat(2, 0, 10),
             'estado' => $this->faker->randomElement(['pendiente', 'pagado', 'conveniado', 'cancelado']),
             'id_convenio' => null,
             'fecha_cargo' => now(),
