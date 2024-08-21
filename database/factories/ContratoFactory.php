@@ -46,7 +46,7 @@ class ContratoFactory extends Factory
                 $toma->c_alc = $numContratos + 1;
                 $toma->c_san = $numContratos + 1;
             }
-            
+
             // Guarda el objeto
             $toma->save();
         }
@@ -56,7 +56,7 @@ class ContratoFactory extends Factory
         // Obtén la toma correspondiente
         $toma = Usuario::find($usuarioId);
         if ($toma) {
-            $nombrec = Usuario::find($usuarioId)->nombre.' '.Usuario::find($usuarioId)->apellido_paterno.' '.Usuario::find($usuarioId)->apellido_materno;
+            $nombrec = Usuario::find($usuarioId)->nombre . ' ' . Usuario::find($usuarioId)->apellido_paterno . ' ' . Usuario::find($usuarioId)->apellido_materno;
         }
 
 
@@ -75,7 +75,7 @@ class ContratoFactory extends Factory
             ]),
             'nombre_contrato' => $nombrec,
             'clave_catastral' => Toma::find($tomaId)->clave_catastral ?? $this->faker->regexify('[A-Z0-9]{10}'),
-            'tipo_toma' => Toma::find($tomaId)->tipo_toma ?? $this->faker->randomElement(['domestica', 'comercial', 'industrial']),
+            'tipo_toma' => Toma::find($tomaId)->tipo_toma ?? $this->faker->randomElement([1, 2, 3,4]),
             'servicio_contratado' => $servicio,
             'colonia' => $this->faker->streetName,
             'municipio' => $this->faker->city,
@@ -106,32 +106,32 @@ class ContratoFactory extends Factory
                     'id_toma' => $contrato->id_toma,
                     'id_usuario' => $contrato->id_usuario,
                     'nombre_contrato' => $contrato->nombre_contrato,
-                    'clave_catastral'=> $contrato->clave_catastral,
-                    'tipo_toma'=> $contrato->tipo_toma,
+                    'clave_catastral' => $contrato->clave_catastral,
+                    'tipo_toma' => $contrato->tipo_toma,
                     'servicio_contratado' => 'agua',
                 ]);
             }
             $estado_pago = 'ninguno';
             $fecha_liquidacion = null;
 
-            if($contrato->estatus == 'pendiente de pago'){
+            if ($contrato->estatus == 'pendiente de pago') {
                 $estado_pago = 'pendiente';
-            } else if($contrato->estatus == 'contratado' || $contrato->estatus == 'terminado'){
+            } else if ($contrato->estatus == 'contratado' || $contrato->estatus == 'terminado') {
                 $estado_pago = 'pagado';
                 $fecha_liquidacion = now();
             }
 
             $derechos_conexion = 0;
 
-            if($contrato->tipo_toma == 'domestica'){
+            if ($contrato->tipo_toma == 'domestica') {
                 $derechos_conexion = 0.00;
-            }else if($contrato->tipo_toma == 'industrial'){
+            } else if ($contrato->tipo_toma == 'industrial') {
                 $derechos_conexion = 500.00;
-            }else if($contrato->tipo_toma == 'comercial'){
+            } else if ($contrato->tipo_toma == 'comercial') {
                 $derechos_conexion = 250.00;
             }
 
-            if($contrato->estatus == 'contrato no factible'){
+            if ($contrato->estatus == 'contrato no factible') {
                 $factibilidad = Factibilidad::factory()->create([
                     'id_contrato' => $contrato->id,
                     'agua_estado_factible' => 'no_factible',
@@ -141,12 +141,13 @@ class ContratoFactory extends Factory
 
                 Cargo::factory()->create([
                     'id_concepto' => 1,
-                    'concepto' => 'factibilidad '.$contrato->tipo_toma, 
+                    'nombre' => 'factibilidad ' . $contrato->tipo_toma,
                     'id_origen' => $factibilidad->id,
                     'modelo_origen' => 'factibilidad',
                     'id_dueno' => $contrato->id_toma,
                     'modelo_dueno' => 'toma',
                     'monto' => 500.00,
+                    'iva' => (0.16 * 500.00),
                     'estado' => 'pagado',
                     'fecha_cargo' => now(),
                     'fecha_liquidacion' => now(),
@@ -155,15 +156,15 @@ class ContratoFactory extends Factory
                     'updated_at' => now(),
                 ]);
             } else {
-                if($contrato_alc != null){
+                if ($contrato_alc != null) {
                     $cotizacion_alc = Cotizacion::factory()->create([
-                        'id_contrato'=>$contrato_alc->id
+                        'id_contrato' => $contrato_alc->id
                     ]);
                 }
                 $cotizacion = Cotizacion::factory()->create([
-                    'id_contrato'=>$contrato->id,
+                    'id_contrato' => $contrato->id,
                 ]);
-                if($contrato->estatus != 'pendiente de inspeccion'){
+                if ($contrato->estatus != 'pendiente de inspeccion') {
                     $factibilidad = Factibilidad::factory()->create([
                         'id_contrato' => $contrato->id,
                         'agua_estado_factible' => 'factible',
@@ -175,19 +176,20 @@ class ContratoFactory extends Factory
                         'id_toma' => $contrato->id_toma,
                         'numero_cuenta' => $this->faker->creditCardNumber,
                         'fecha_vencimiento' => date('Y-m-d H:i:s', (strtotime('+1 year', time()))),
-                        'tipo_tarjeta' => $this->faker->randomElement(['credito','debito']),
+                        'tipo_tarjeta' => $this->faker->randomElement(['credito', 'debito']),
                         'limite_cobro' => $this->faker->randomFloat(2, 0, 9999),
                         'domicilio_tarjeta' => Toma::find($contrato->id_toma)->getDireccionCompleta(),
                     ]);
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'concepto' => 'factibilidad '.$contrato->tipo_toma, 
+                        'nombre' => 'factibilidad ' . $contrato->tipo_toma,
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
                         'modelo_dueno' => 'toma',
                         'monto' => 351.20,
+                        'iva' => (0.16 * 351.20),
                         'estado' => 'pagado',
                         'fecha_cargo' => now(),
                         'fecha_liquidacion' => now(),
@@ -198,12 +200,13 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'concepto' => 'derechos de conexion '.$contrato->tipo_toma, 
+                        'nombre' => 'derechos de conexion ' . $contrato->tipo_toma,
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
                         'modelo_dueno' => 'toma',
                         'monto' => $derechos_conexion,
+                        'iva' => (0.16 * $derechos_conexion),
                         'estado' => 'pagado',
                         'fecha_cargo' => now(),
                         'fecha_liquidacion' => now(),
@@ -211,8 +214,7 @@ class ContratoFactory extends Factory
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
-
-                } else{
+                } else {
                     Factibilidad::factory()->create([
                         'id_contrato' => $contrato->id,
                         'agua_estado_factible' => 'factible',
@@ -224,14 +226,16 @@ class ContratoFactory extends Factory
 
             if ($contrato->estatus == 'pendiente de pago' || $contrato->estatus == 'contratado' || $contrato->estatus == 'terminado') {
                 $concepto = ConceptoCatalogo::buscarPorNombre('Contrato agua 1" comun');
+                $monto = $this->faker->randomFloat(2, 0, 9999);
                 Cargo::factory()->create([
                     'id_concepto' => $concepto->id ?? 1,
-                    'concepto' => $concepto->nombre ?? "", 
+                    'nombre' => $concepto->nombre ?? "",
                     'id_origen' => $contrato->id,
                     'modelo_origen' => 'contrato',
                     'id_dueno' => $contrato->id_toma,
                     'modelo_dueno' => 'toma',
                     'monto' => $this->faker->randomFloat(2, 0, 9999),
+                    'iva' => (0.16 * $monto),
                     'estado' => $estado_pago,
                     'fecha_cargo' => now(),
                     'fecha_liquidacion' => $fecha_liquidacion,
@@ -269,9 +273,7 @@ class ContratoFactory extends Factory
                     'numero_exterior' => $this->faker->numerify('###'),
                     'codigo_postal' => $this->faker->postcode
                 ]);
-
             }
         });
     }
-
 }

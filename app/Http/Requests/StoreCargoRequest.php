@@ -23,12 +23,13 @@ class StoreCargoRequest extends FormRequest
     {
         return [
             "id_concepto"=>"required|integer",
-            "concepto"=>"nullable|string|max:55",
+            "nombre"=>"nullable|string|max:55",
             "id_origen"=>"required|integer",
             "modelo_origen"=>"required|string|max:55",
             "id_dueno"=>"required|integer",
             "modelo_dueno"=>"required|string|max:55",
             "monto"=>"nullable|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "iva"=>"nullable|numeric|regex:/^\d+(\.\d{1,2})?$/",
             "estado"=>"nullable|string|max:55",
             "id_convenio"=>"nullable|integer",
             "fecha_cargo"=>"nullable|date|max:55",

@@ -31,7 +31,7 @@ Route::middleware(['api', 'audit'])->group(function () {
     // tarifa Servicio detalle
     Route::controller(TarifaController::class)->group(function(){
         Route::post("/tarifaServicioDetalle/create","storeTarifaServicioDetalle");
-        Route::get("/tarifaServicioDetalle/{tarifa_id}","get_servicios_detalles_by_tarifa_id");
+
         Route::get("/tarifaServicioDetalle/show/{id}","showTarifaServicioDetalle");
         Route::put("/tarifaServicioDetalle/update/{id}","updateTarifaServicioDetalle");
     });

@@ -271,12 +271,12 @@ class ContratoController extends Controller
          }
          
      }
-     public function destroyCot(Cotizacion $Cotizacion, Request $request)
+     public function destroyCot(Cotizacion $cotizacion, Request $request)
     {
         try
         {
-            $Cotizacion = Cotizacion::findOrFail($request["id"]);
-            $Cotizacion->delete();
+            $cotizacion = Cotizacion::findOrFail($request["id"]);
+            $cotizacion->delete();
             return response()->json(['message' => 'Eliminado correctamente'], 200);
         }
         catch (\Exception $e) {

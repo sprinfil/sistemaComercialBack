@@ -59,6 +59,8 @@ class OrdenTrabajoCatalogo extends Model
 
         static::restoring(function ($parent) {
             $parent->ordenTrabajoAccion()->withTrashed()->restore();
+            $parent->ordenTrabajoCargos()->withTrashed()->restore();
+            $parent->ordenTrabajoEncadenado()->withTrashed()->restore();
         });
     }
         

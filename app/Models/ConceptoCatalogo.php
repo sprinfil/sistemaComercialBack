@@ -17,6 +17,7 @@ class ConceptoCatalogo extends Model
         "descripcion",
         "estado",
         "prioridad_abono",
+        "prioridad_por_antiguedad",
         "genera_iva",
         "abonable",
         "tarifa_fija",

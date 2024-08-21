@@ -30,7 +30,7 @@ class StorePagoRequest extends FormRequest
             "fecha_pago"=>"required|date",
             "estado"=>"nullable|string|max:55",
             "timbrado"=>"nullable|string|max:55",
-            "abonos.*"=>"nullable|array",
+            "cargos.*"=>"nullable|array",
             "bonificaciones.*"=>"nullable|array"
         ];
     }

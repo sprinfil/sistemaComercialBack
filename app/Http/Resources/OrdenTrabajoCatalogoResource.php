@@ -27,9 +27,9 @@ class OrdenTrabajoCatalogoResource extends JsonResource
             "vigencias" => $this->vigencias,
             "momento_cargo" => $this->momento_cargo,
             "genera_masiva" => $this->genera_masiva,
-            'orden_trabajo_accion' => $this->orden_trabajo_acciones==null ?OrdenTrabajoAccionResource::collection($this->whenLoaded('ordenTrabajoAccion')) :OrdenTrabajoAccionResource::collection($this->orden_trabajo_acciones),
-            'ordenes_trabajo_cargos' => $this->ordenes_trabajo_cargos==null ?OrdenesTrabajoCargoResource::collection($this->whenLoaded('ordenTrabajoCargos')) :OrdenesTrabajoCargoResource::collection($this->ordenes_trabajo_cargos),
-            'ordenes_trabajo_encadenadas' => $this->ordenes_trabajo_encadenadas==null ?OrdenesTrabajoEncadenadaResource::collection($this->whenLoaded('ordenTrabajoEncadenado')) :OrdenesTrabajoEncadenadaResource::collection($this->ordenes_trabajo_encadenadas),
+            'orden_trabajo_accion' => OrdenTrabajoAccionResource::collection($this->whenLoaded('ordenTrabajoAccion')), //$this->orden_trabajo_acciones==null ?OrdenTrabajoAccionResource::collection($this->whenLoaded('ordenTrabajoAccion')) :OrdenTrabajoAccionResource::collection($this->orden_trabajo_acciones),
+            'ordenes_trabajo_cargos' => OrdenesTrabajoCargoResource::collection($this->whenLoaded('ordenTrabajoCargos')), //$this->ordenes_trabajo_cargos==null ?OrdenesTrabajoCargoResource::collection($this->whenLoaded('ordenTrabajoCargos')) :OrdenesTrabajoCargoResource::collection($this->ordenes_trabajo_cargos),
+            'ordenes_trabajo_encadenadas' =>OrdenesTrabajoEncadenadaResource::collection($this->whenLoaded('ordenTrabajoEncadenado'))// $this->ordenes_trabajo_encadenadas==null ?OrdenesTrabajoEncadenadaResource::collection($this->whenLoaded('ordenTrabajoEncadenado')) :OrdenesTrabajoEncadenadaResource::collection($this->ordenes_trabajo_encadenadas),
             
         ];
     }
