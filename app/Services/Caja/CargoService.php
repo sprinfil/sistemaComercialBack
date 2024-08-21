@@ -226,7 +226,7 @@ class CargoService{
                 }
             }
         
-            return response()->json(['message' => 'Cargos creados exitosamente'], 201);
+            return response()->json(['data' => $cargo], 201);
         
         } catch (Exception $ex) {
             throw $ex;
