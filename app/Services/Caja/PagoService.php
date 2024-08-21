@@ -31,25 +31,37 @@ class PagoService{
     public function registrarPago(StorePagoRequest $request): Pago
     {
         try{
+        // 1. Llega la información del pago (Bloque 1)
+
+            // 1.1 Se comprueba la información del pago
             $data = $request->validated();
 
             DB::beginTransaction();
 
-            // se procesa el pago
-            $pago = Pago::create($data);
-            $monto_pagado = $pago->total_pagado;
-
-            // se obtiene el dueño
+            // 1.2 Se obtiene el dueño del pago
             $modelo = $data['modelo_dueno'];
             $id_modelo = $data['id_dueno'];
             $dueno = helperGetOwner($modelo, $id_modelo);
 
+            // 1.3 Se registra el pago
+            $pago = Pago::create($data);
+            $monto_pagado = $pago->total_pagado;
+            $monto_pagos_pendientes = 0;
+
+            // 1.4 Se obtienen los cargos a pagar
+            // 1.4.1 Se ordenan en orden de prioridad
             $cargosSelecionados = $data['cargos'];
+            // 1.5 Se obtienen todos los cargos pendientes
+            // 1.5.1 Se ordenan en orden de prioridad
+            $cargosPendientes = 0;
+
+            // 1.6 Se obtiene el total de los cargos a pagar
+            // 1.7 Se obtienen los pagos pendientes de aplicar
             
             DB::commit();
-
             return $pago;
-        } catch(Exception $ex){
+        } 
+        catch(Exception $ex){
             DB::rollBack();
             throw $ex;
         }
