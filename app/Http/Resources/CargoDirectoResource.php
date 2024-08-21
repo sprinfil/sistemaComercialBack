@@ -17,6 +17,8 @@ class CargoDirectoResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "id_origen" => $this->id_origen,
+            "modelo_origen" => $this->modelo_origen,
             "cargos" =>TarifaConceptoDetalleResource::collection($this->whenLoaded('cargos'))
         ];
     }

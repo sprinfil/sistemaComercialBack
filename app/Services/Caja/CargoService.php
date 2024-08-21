@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Caja;
 
+use App\Http\Requests\StoreCargoDirectoRequest;
 use App\Http\Requests\StoreCargoRequest;
 use App\Http\Requests\UpdateCargoRequest;
 use App\Models\Cargo;
@@ -174,52 +175,60 @@ class CargoService{
     }
 
     // metodo para cargar un cargo a un usuario/toma
-    public function generarCargoDirecto(Request $request): Cargo
+    public function generarCargoDirecto(StoreCargoDirectoRequest $request)
     {
-        try{
+        try {
             $data = $request->validated();
-
-            $cargo_directo_data = [];
-            $id_concepto_cargado = $data['id_concepto'];
+        
             $id_dueno = $data['id_dueno'];
             $modelo_dueno = $data['modelo_dueno'];
-            $monto = $data['monto'];
-            $iva = 0;
-
-            $concepto_cargado = ConceptoCatalogo::findOrFail($id_concepto_cargado);
-            $nombre_cargo = 'CARGO DIRECTO DE '.$concepto_cargado->nombre;
-
-            $cargo_directo = CargoDirecto::create();
-
-            $id_origen = $cargo_directo->id;
-            $modelo_origen = 'cargo_directo';
-
-            if($monto){
-                $iva = $monto * 0.16;
-            } else{
-                $monto = 0;
-            }
-
-            $cargo_directo_data['id_concepto'] = $concepto_cargado->id;
-            $cargo_directo_data['nombre'] = $nombre_cargo;
+            $id_origen = $data['id_origen'];
+            $modelo_origen = $data['modelo_origen'];
+        
+            $cargo_directo_data = [];
             $cargo_directo_data['id_origen'] = $id_origen;
             $cargo_directo_data['modelo_origen'] = $modelo_origen;
-            $cargo_directo_data['id_dueno'] = $id_dueno;
-            $cargo_directo_data['modelo_dueno'] = $modelo_dueno;
-            $cargo_directo_data['estado'] = 'pendiente';
-            $cargo_directo_data['monto'] = $monto;
-            $cargo_directo_data['iva'] = $iva;
-
-            $cargo = Cargo::create($cargo_directo_data);
-
-            if($cargo){
-                //ok
-            } else{
-                throw new Exception("error");
+        
+            // Crear la entrada en CargoDirecto
+            $cargo_directo = CargoDirecto::create($cargo_directo_data);
+        
+            // Obtener el ID del origen y modelo después de la creación
+            $id_origen = $cargo_directo->id;
+            $modelo_origen = 'cargo_directo';
+        
+            // Procesar cada cargo en la lista de "cargos"
+            foreach ($data['cargos'] as $cargo_item) {
+                $id_concepto_cargado = $cargo_item['id_concepto'];
+                $monto = $cargo_item['monto'];
+        
+                $concepto_cargado = ConceptoCatalogo::findOrFail($id_concepto_cargado);
+                $nombre_cargo = 'CARGO DIRECTO DE ' . $concepto_cargado->nombre;
+        
+                $iva = $monto ? $monto * 0.16 : 0;
+        
+                $cargo_directo_data = [
+                    'id_concepto' => $id_concepto_cargado,
+                    'nombre' => $nombre_cargo,
+                    'id_origen' => $id_origen,
+                    'modelo_origen' => $modelo_origen,
+                    'id_dueno' => $id_dueno,
+                    'modelo_dueno' => $modelo_dueno,
+                    'estado' => 'pendiente',
+                    'monto' => $monto,
+                    'iva' => $iva,
+                    'fecha_cargo' => now()
+                ];
+        
+                $cargo = Cargo::create($cargo_directo_data);
+        
+                if (!$cargo) {
+                    throw new Exception("Error al crear el cargo");
+                }
             }
-
-            return $cargo;
-        } catch(Exception $ex){
+        
+            return response()->json(['message' => 'Cargos creados exitosamente'], 201);
+        
+        } catch (Exception $ex) {
             throw $ex;
         }
     }
