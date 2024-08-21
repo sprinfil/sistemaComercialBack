@@ -27,6 +27,7 @@ class UpdateConceptoCatalogoRequest extends FormRequest
             "estado"=>"nullable|string|max:10|
             in:activo,inactivo",
             "prioridad_abono"=>"required|int",
+            "prioridad_por_antiguedad"=>"nullable|boolean",
             "genera_iva"=>"required|boolean",
             "abonable"=>"required|boolean",
             "tarifa_fija"=>"required|boolean",

@@ -111,7 +111,7 @@ class UsuarioController extends Controller
     public function show(string $usuario)
     {
         try{
-            $data = Usuario::ConsultarPorNombres($usuario);
+            $data = Usuario::ConsultarPorNombresCodigo($usuario);
         return UsuarioResource::collection(
             $data
         );

@@ -29,7 +29,15 @@ class OrdenTrabajoCatalogoService{
    
     public static function delete($idOrden){
         $ordenTrabajo=OrdenTrabajoCatalogo::findOrFail($idOrden);
-        $ordenTrabajo->delete();
+        $OT=$ordenTrabajo->ordenTrabajo;
+        if (count($OT)!=0){
+            return "No valido";
+        }
+        else{
+            $ordenTrabajo->delete();
+            return "Valido";
+        }
+ 
     }
     public function storeCargos(array $ordenCatalogo){
         $requestCargos=$ordenCatalogo['orden_trabajo_cargos'];
