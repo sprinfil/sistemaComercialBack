@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCargoDirectoRequest;
 use App\Http\Requests\StoreCargoRequest;
+use App\Http\Resources\CargoDirectoResource;
 use App\Http\Resources\CargoResource;
 use App\Services\Caja\CargoService as CajaCargoService;
 use App\Services\CargoService;
@@ -115,6 +117,20 @@ class CargoController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudieron encontrar los cargos'
+            ], 500);
+        }
+    }
+
+    /**
+     * Registra el cargo directo de un concepto a un usuario/toma.
+     */
+    public function cargoDirecto(StoreCargoDirectoRequest $request)
+    {
+        try{
+            return $this->cargoService->generarCargoDirecto($request);
+        } catch(Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo cargar el cargo'.$e
             ], 500);
         }
     }

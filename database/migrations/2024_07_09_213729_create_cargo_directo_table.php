@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('cargo_directo', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_cargo')->default('1');
+            $table->unsignedBigInteger('id_origen')->default('1');
+            $table->string("modelo_origen")->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

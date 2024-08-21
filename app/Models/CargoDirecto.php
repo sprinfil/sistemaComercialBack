@@ -16,9 +16,8 @@ class CargoDirecto extends Model
     protected $table = "cargo_directo";
        
     protected $fillable = [
-        "id_cargo",
-        "modelo_origen",
-        "id_origen"
+        "id_origen",
+        "modelo_origen"
     ];
 
     public function cargos(): MorphMany
