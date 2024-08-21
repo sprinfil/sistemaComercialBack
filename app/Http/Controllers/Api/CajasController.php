@@ -80,6 +80,12 @@ class CajasController extends Controller
         
     }
 
+    public function asignarOperador(Caja $cajas)
+    {
+        
+    }
+
+
     /**
      * Remove the specified resource from storage.
      */

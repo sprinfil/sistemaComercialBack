@@ -2,9 +2,13 @@
 namespace App\Services\Caja;
 
 use App\Http\Resources\CajaResource;
+use App\Http\Resources\CorteCajaResource;
+use App\Http\Resources\PagoResource;
 use App\Models\Caja;
 use App\Models\CajaCatalogo;
+use App\Models\CorteCaja;
 use App\Models\OperadorAsignado;
+use App\Models\Pago;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -82,40 +86,94 @@ class CajaService{
    }
 
    public function corteCaja(array $data)
-   {//aqui estoy
+   {
+    //var_dump($cajaData);
       try {
-        $cajaData = $data['caja_data'][0];
-        $corteData = $data['corte_data'][0];
 
-        //$corteDataArr = json_decode($cajaData, true);
-        //var_dump($cajaData);
-        //return var_dump($cajaData);;
+        $discrepancia = "no";
+        $discrepanciaMonto = 0;
+        
+
+        //Valida que la suma de los totales coincida con el total general
+        if (($data['corte_data'][0]['total_efectivo_real'] + 
+             $data['corte_data'][0]['total_tarjetas_real'] + 
+             $data['corte_data'][0]['total_cheques_real']) != $data['corte_data'][0]['total_real'] )
+        {
+             return response()->json([
+            'error' => 'La suma de los totales no coincide con el total real.'
+             ]);
+        }
+        
         //Consulta de registro de caja por idOperador,idCajaCatalogo donde el registro sea del dia actual y no cuente con fecha de cierre
         $cajaHisto = Caja::where('id_operador',$data['caja_data'][0]['id_operador'])
         ->where('id_caja_catalogo',$data['caja_data'][0]['id_caja_catalogo'])
         ->whereDate('fecha_apertura',Carbon::today())
         ->where('fecha_cierre',null)
         ->first();
-
-        $corteReg = [$cajaHisto->id, $data['caja_data'][0]['id_operador'],$data['corte_data'][0]['estatus']]; 
-
-        return $corteData;
-
-
-
-        if ($data['caja_data'][0]['id_operador'] == $data['corte_data'][0]['id_operador'] ) {
-
-          //$cajaHisto->update($data['caja_data'][0]);
+        
+        //Verifica que exista un registro caja el cual finalizar 
+        if ($cajaHisto) {
+          //Obtiene el total de dinero registrado en los pagos
+          $totalRegistrado = $cajaHisto->totalPorTipo("efectivo") + $cajaHisto->totalPorTipo("tarjeta") + $cajaHisto->totalPorTipo("cheque");
+          
+          //Verifica diferencias en el total de los registros y el total enviado por el cajero
+          if ($totalRegistrado != $data['corte_data'][0]['total_real']) {
+            $discrepancia = "si";
+            $discrepanciaMonto = abs($totalRegistrado - $data['corte_data'][0]['total_real']);
+          }
+                
+          //Crea el registro de corte de caja
+          $corteReg = [
+            "id_caja" => $cajaHisto->id, 
+            "id_operador" =>$data['caja_data'][0]['id_operador'],
+            "estatus" => "pendiente",
+            "total_efectivo_registrado" =>  $cajaHisto->totalPorTipo("efectivo"),
+            "total_efectivo_real" => $data['corte_data'][0]['total_efectivo_real'],
+            "total_tarjetas_registrado" => $cajaHisto->totalPorTipo("tarjeta"),
+            "total_tarjetas_real" =>$data['corte_data'][0]['total_tarjetas_real'],
+            "total_cheques_registrado" => $cajaHisto->totalPorTipo("cheque"),
+            "total_cheques_real" =>$data['corte_data'][0]['total_cheques_real'],
+            "total_registrado" => $totalRegistrado,
+            "total_real" => $data['corte_data'][0]['total_real'],
+            "discrepancia" => $discrepancia,
+            "discrepancia_monto" => $discrepanciaMonto,
+            "fecha_corte" => $data['corte_data'][0]['fecha_corte']
+          ]; 
+          //return  $corteReg;
+          
+          //El operador debe ser igual en el registro de caja y en el corte
+          if ($data['caja_data'][0]['id_operador'] == $data['corte_data'][0]['id_operador'] ) {
+            //Registra el corte y actualiza el cierre de caja
+             $cajaHisto->update($data['caja_data'][0]);
+             $corte = CorteCaja::create($corteReg);
+             $corte->save();
+             //Mensaje de exito
+             return response()->json([
+              'Se ha finalizado el cierre de caja y se registro el corte.'
+             ]);
+          }
+          else{
+            return response()->json([
+              'error' => 'El operador no en la caja y en el corte no coincide.'
+             ]);
+          }
+        }else{
+          return response()->json([
+            'error' => 'No existen cajas abiertas.'
+           ]);
         }
-        else{
-
-        }
-       
+  
       } catch (Exception $ex) {
         return response()->json([
-          'error' => 'Ocurrio un error al realizar el cierre de caja.'
+          'error' => 'Ocurrio un error al realizar el cierre de caja.'.$ex
       ]);
       }
      
    }
+
+   public function asignaciorOperador(array $data)
+   {
+    
+   }
+
 }
