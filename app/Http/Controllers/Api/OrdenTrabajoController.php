@@ -79,12 +79,13 @@ class OrdenTrabajoController extends Controller
         
     }
     public function storeAcciones(StoreOrdenTrabajoCatalogoRequest $request){
+        DB::beginTransaction();
+        $data=$request->validated();
+        $acciones=(new OrdenTrabajoAccionService())->store($data);
+        DB::commit();
+        return response(["Orden_Trabajo_Acciones"=>$acciones],200);
         try{
-            DB::beginTransaction();
-            $data=$request->validated();
-            $acciones=(new OrdenTrabajoAccionService())->store($data);
-            DB::commit();
-            return response(["Orden_Trabajo_Acciones"=>$acciones],200);
+           
         }
         catch(Exception $ex){
             DB::rollBack();
