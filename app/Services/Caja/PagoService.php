@@ -31,109 +31,23 @@ class PagoService{
     public function registrarPago(StorePagoRequest $request): Pago
     {
         try{
-            // se validan los datos
             $data = $request->validated();
-            $data['estado'] = 'pendiente';
 
             DB::beginTransaction();
 
-            // crea el registro del pago con los datos ingresados
+            // se procesa el pago
             $pago = Pago::create($data);
             $monto_pagado = $pago->total_pagado;
-            $total_abonado = 0;
-            $total_bonificado = 0; //TO DO
 
-            // tipo pago
+            // se obtiene el dueño
             $modelo = $data['modelo_dueno'];
             $id_modelo = $data['id_dueno'];
-            // si el modelo contiene un valor, entonces se determina
-            // el tipo de modelo al que pertenece el pago
-            $dueno = null;
-            if($modelo == 'usuario'){
-                $dueno = Usuario::findOrFail($id_modelo);
-                // TO DO
-                // $dueno>datosFiscales == true
-                // generaTimbrado
-            }else if($modelo == 'toma'){
-                $dueno = Toma::findOrFail($id_modelo);
-                // TO DO
-                // $dueno>datosFiscales == true
-                // generaTimbrado
-            }else{
-                throw new Exception('modelo no definido');
-            }
+            $dueno = helperGetOwner($modelo, $id_modelo);
 
-            // valida si el pago cuenta con abonos cargados directamente
-            if (isset($data['abonos']) && !is_null($data['abonos'])) {
-                // se consultan los cargos pendientes
-                $cargos = $dueno->cargosVigentes;
-
-                if ($cargos) {
-                    // se registran los abonos cargados al pago
-                    foreach ($data['abonos'] as $abono) {
-                        $nuevo_abono = new Abono();
-                        // se define el cargo al que abona el pago
-                        $nuevo_abono->id_cargo = $abono['id_cargo'];
-
-                        // valida que el cargo al que se abona pertenezca al usuario
-                        // y su estado sea pendiente de pago
-                        $cargo_valido = false;
-                        foreach ($cargos as $cargo) {
-                            if ((int) $cargo->id === (int) $abono['id_cargo']) {
-                                $cargo_valido = true;
-                                break; // Salimos del bucle si encontramos un cargo válido
-                            }
-                        }
-                        if ($cargo_valido == false) {
-                            throw new Exception('El cargo ya esta saldado o no corresponde a ' . $modelo . ': ' . $id_modelo);
-                        }
-
-                        // se define el origen del abono (en este caso un pago)
-                        $nuevo_abono->id_origen = $pago->id;
-                        $nuevo_abono->modelo_origen = 'pago';
-                        // se valida que el total del pago no sea menor que el abono
-                        if ($total_abonado + $abono['total_abonado'] <= $monto_pagado) {
-                            $total_abonado += $abono['total_abonado'];
-                            $nuevo_abono->total_abonado = $abono['total_abonado'];
-                        } else {
-                            throw new Exception('El monto del abono excede el monto del pago.');
-                        }
-                        // si nada falló, se guarda el abono
-                        $nuevo_abono->save();
-                    }
-                } else {
-                    throw new Exception('No hay cargos para abonar.');
-                }
-            } else {
-                // no hay abonos en el pago ingresado
-            }
-
-
-            // valida si el pago aplica alguna bonificacion
-            if(isset($data['bonificacion']) && !is_null($data['bonificacion'])){
-                //TO DO
-            } else{
-                // no hay bonificaciones
-            }
-
-            if($monto_pagado > $total_abonado){ // + bonificaciones
-                $this->consolidarEstados($id_modelo, $modelo);
-                /*$data['estado'] = 'pendiente';
-                $pago_modificado = Pago::findOrFail($pago->id);
-                $pago_modificado->update($data);
-                $pago_modificado->save();*/
-            } else if($monto_pagado == $total_abonado){ // + bonificaciones
-                $this->consolidarEstados($id_modelo, $modelo);
-                /*$data['estado'] = 'abonado';
-                $pago_modificado = Pago::findOrFail($pago->id);
-                $pago_modificado->update($data);
-                $pago_modificado->save();*/
-            } else if($monto_pagado < $total_abonado){ // + bonificaciones
-                throw new Exception("calculo de saldos");
-            }
-
+            $cargosSelecionados = $data['cargos'];
+            
             DB::commit();
-            $pago->total_abonado = $total_abonado;
+
             return $pago;
         } catch(Exception $ex){
             DB::rollBack();
