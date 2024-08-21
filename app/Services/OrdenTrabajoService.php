@@ -52,6 +52,9 @@ class OrdenTrabajoService{
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
         $OT['estado']="En proceso";
         $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
+        if ($OT['estado']=="En proceso"){
+            return null;
+        }
         $OT->update();
         $OT->save();
         return $OT;
@@ -76,7 +79,7 @@ class OrdenTrabajoService{
      
         if ($OrdenCatalogo['momento_cargo']=="concluir"){
 
-            //$cargo=$this->generarCargo();
+            $cargo=$this->generarCargo();
         }
         //return $modelos;
         $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
