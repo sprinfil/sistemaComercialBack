@@ -15,6 +15,7 @@ class AjusteCatalogo extends Model
         "nombre",
         "descripcion",
         "estado",
+        "facturable"
     ];
 
     public function conceptosAplicables(): MorphMany

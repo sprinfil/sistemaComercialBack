@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("nombre");
             $table->string("descripcion")->nullable();
             $table->enum('estado', ['activo', 'inactivo'])->nullable();
+            $table->boolean('facturable')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

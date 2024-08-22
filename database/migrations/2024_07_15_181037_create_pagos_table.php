@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('id_caja');
+            $table->unsignedBigInteger('id_dueno'); 
+            $table->string('modelo_dueno');
+            //$table->unsignedInteger('id_corte_caja');
             $table->decimal('total_pagado');
             $table->string('forma_pago');
             $table->date('fecha_pago');
-            $table->enum("estado",['abonado','pendiente','cancelado']);
+            $table->enum("estado",['abonado','pendiente','cancelado'])->default('pendiente');
+            $table->enum("timbrado",['realizado','pendiente','cancelado'])->default('pendiente');
             $table->softDeletes();
             $table->timestamps();
         });

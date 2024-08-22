@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CotizacionDetalle extends Model
@@ -18,7 +19,11 @@ class CotizacionDetalle extends Model
     ];
     public function cotizacion(): BelongsTo
     {
-        return $this->belongsTo(cotizacion::class, 'id_cotizacion');
+        return $this->belongsTo(Cotizacion::class, 'id_cotizacion');
+    }
+    public function contratoDetalle(): HasOneThrough
+    {
+        return $this->HasOneThrough(Contrato::class, Cotizacion::class,'id','id','id_cotizacion','id_contrato');
     }
     #TODO
     /*

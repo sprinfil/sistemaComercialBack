@@ -14,15 +14,19 @@ use App\Http\Resources\CotizacionDetalleResource;
 use App\Http\Resources\CotizacionResource;
 use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
+use App\Models\Cargo;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
+use App\Models\Tarifa;
 use App\Models\Toma;
 use App\Models\Usuario;
+use App\Services\CotizacionService;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ContratoController extends Controller
 {
@@ -148,8 +152,6 @@ class ContratoController extends Controller
      */
     public function update(UpdateContratoRequest $request, Contrato $contrato)
     {
-       
-        
         try{
         $data=$request->validated();
         $contrato=Contrato::find($request->id);
@@ -269,12 +271,12 @@ class ContratoController extends Controller
          }
          
      }
-     public function destroyCot(Cotizacion $Cotizacion, Request $request)
+     public function destroyCot(Cotizacion $cotizacion, Request $request)
     {
         try
         {
-            $Cotizacion = Cotizacion::findOrFail($request["id"]);
-            $Cotizacion->delete();
+            $cotizacion = Cotizacion::findOrFail($request["id"]);
+            $cotizacion->delete();
             return response()->json(['message' => 'Eliminado correctamente'], 200);
         }
         catch (\Exception $e) {
@@ -312,14 +314,25 @@ class ContratoController extends Controller
     } 
     public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
     {
+        DB::beginTransaction();
         $data=$request->validated();
-        //$detallito=CotizacionDetalle::create($data[0]);
-        $detalleCot=$data['monto'];
-       $detalleCot=new Collection();
-       
-        
-        
+        $detalleCot=new Collection();
+        $costoContrato=new Collection();
+    
         $i=0;
+        $a=0;
+        $tarifas=(new CotizacionService())->TarifaPorContrato($data['id_cotizacion']);
+        foreach ($tarifas as $tarifa){
+            $existe=Cargo::where('id_origen',$tarifa['id_contrato'])->where('modelo_origen','contrato')->first();
+            
+            if($existe)
+            {
+                //return $existe;
+                return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no sten cargados unicamente'], 200);
+            }
+         
+        }
+
         while ($i<count($data['monto'])){
             $detalleCot->push(CotizacionDetalle::create([
                 'id_cotizacion' => $data['id_cotizacion'][$i],
@@ -327,14 +340,31 @@ class ContratoController extends Controller
                 'nombre_concepto' => $data['nombre_concepto'][$i],
                 'monto' => $data['monto'][$i],
             ]));
+            //guarda y actualiza los cargos por cotización
+            foreach ($tarifas as $tarifa){
+                if($tarifa['id_cotizacion']== $data['id_cotizacion'][$i])
+                {
+                    $tarifas[$a]['montoDetalle']+=$data['monto'][$i];
+                    //break;
+                    
+                }
+                $a++;
+            }
+            $a=0;
+            
             $i++;
         }
-            
-        //return  $detalleCot;
+        //return $tarifas;
+        //Genera los cargos por cotizacion
+        $cargos=(new CotizacionService())->CargoContratos($tarifas);
+        //return  $cargos;
         
-        return CotizacionDetalleResource::collection(
+        $detalle=CotizacionDetalleResource::collection(
             $detalleCot
         );
+       
+        DB::commit();
+        return[$detalle,$cargos];
         
        
     }

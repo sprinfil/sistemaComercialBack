@@ -40,20 +40,20 @@ class CotizacionFactory extends Factory
 
             // calculo de costos
             $conceptos = [
-                "rompimiento y levantamiento de banqueta",
-                "rompimiento y levantamiento de pavimento asfalto",
-                "tipo de suelo A (común)",
-                "registro a red sanitaria"
+                "Rompimiento de banqueta (ml)",
+                "Rompimiento de pavimento asfalto (ml)",
+                "Tipo de suelo a (comun) ml adicional a 9m.",
+                "Registro a la red sanitaria"
             ];
             
 
             // registro detalles
-            for ($i = 1; $i <= 4; $i++) {
+            for ($i = 0; $i <= 3; $i++) {
                 $concepto = ConceptoCatalogo::buscarPorNombre($conceptos[$i]);
                 CotizacionDetalle::factory()->create([
                     'id_cotizacion'=>$cotizacion->id,
                     'nombre_concepto'=>$conceptos[$i],
-                    'monto'=>$concepto->tarifa->monto,
+                    'monto'=>$concepto->tarifas()->first()->monto,
                 ]);
             }            
         });

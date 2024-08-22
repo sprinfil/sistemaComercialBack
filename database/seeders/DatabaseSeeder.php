@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\CorteCaja;
 use App\Models\Cotizacion;
+use App\Models\Factura;
 use Illuminate\Database\Seeder;
 use Database\Seeders\AnomaliaSeeder;
 use Database\Seeders\ConvenioSeeder;
@@ -37,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $this->call(GiroComercialSeeder::class);
         $this->call(TipoTomasSeeder::class);
         $this->call(ConceptoCatalogoSeeder::class);
+        //$this->call(OrdenesTrabajoSeeder::class);
         //
         $this->call(TomaSeeder::class);
         //
@@ -49,9 +52,27 @@ class DatabaseSeeder extends Seeder
         $this->call(ConstanciaSeeder::class);
         $this->call(BonificacionCatalogoSeeder::class);
         //
+        $this->call(CajaSeeder::class);
+        $this->call(OperadorAsignadoSeeder::class);
+        $this->call(CajaCatalogoSeeder::class);
+        $this->call(PagoSeeder::class);
+        //$this->call(CorteCajaSeeder::class);
+        //
+        $this->call(RutaSeeder::class);
+        $this->call(LibroSeeder::class);
+        //
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
         $this->call(TipoTomaSeeder::class);
+        //
+        $this->call(PeriodoSeeder::class);
+        $this->call(CargaTrabajoSeeder::class);
+        $this->call(LecturaSeeder::class);
+        $this->call(ConsumoSeeder::class);
+        $this->call(FacturaSeeder::class);
+        $this->call(AsignacionGeograficaSeeder::class);
+        //
+        //$this->call(OrdenesTrabajoSeeder::class);
         //
     }
 }

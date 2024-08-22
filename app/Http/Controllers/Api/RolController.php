@@ -72,6 +72,21 @@ class RolController extends Controller
         return json_encode($rol->getPermissionNames());
     }
 
+    //DARLE PERMISOS A UN USUARIO
+    public function give_user_permissions(Request $request, string $id)
+    {
+        $user = User::find($id);
+        $data = json_decode($request->getContent(), true);
+
+        foreach ($data as $permission => $value) {
+            $permission_temp = Permission::where("name", $permission)->first();
+            $value === true ?
+                $user->givePermissionTo($permission_temp->name) :
+                $user->revokePermissionTo($permission_temp->name);
+        }
+        return json_encode($user->getPermissionNames());
+    }
+
     //OBTENER PERMISOS DE UN ROL
     public function get_all_permissions_by_rol_id(string $id)
     {
@@ -86,12 +101,41 @@ class RolController extends Controller
         $user = User::find($user_id);
 
         foreach ($data as $rol => $value) {
-            $rol = ModelsRole::where("name", $rol)->first();
-            $value === "true" ?
-                $user->assignRole($rol->name)
-                :
-                $user->removeRole($rol->name);
+            $rolModel = ModelsRole::where("name", $rol)->first();
+
+            if ($value === "true") {
+                $user->assignRole($rolModel->name);
+            } else {
+                $user->removeRole($rolModel->name);
+                $permissions = $rolModel->permissions;
+                foreach($permissions as $permission){
+                    $user->revokePermissionTo($permission);
+                }
+            }
         }
+
+        return $user->getRoleNames();
+    }
+
+    //OBTENER PERMISOS DE UN USER
+    public function get_all_permissions_by_user_id(string $id)
+    {
+        $user = User::find($id);
+
+        $permissions = $user->getAllPermissions();
+        $data = [];
+
+        foreach ($permissions as $permission) {
+            $data[] = $permission["name"];
+        }
+
+        return $data;
+    }
+
+    //OBTENER ROLES DE UN OPERADOR
+    public function get_all_rol_names_by_user_id(string $id)
+    {
+        $user = User::find($id);
         return $user->getRoleNames();
     }
 }

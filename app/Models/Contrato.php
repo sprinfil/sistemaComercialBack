@@ -32,7 +32,7 @@ class Contrato extends Model
         'domicilio',
         'diametro_de_la_toma',
         'codigo_postal',
-        'coordenada',
+        'coordenada'
     ];
 
     // Toma asociada al contrato
@@ -59,17 +59,39 @@ class Contrato extends Model
     }
     public function cotizaciones(): HasMany
     {
-        return $this->hasMany(cotizacion::class, 'id_contrato');
+        return $this->hasMany(Cotizacion::class, 'id_contrato');
     }
     public function cotizacionesVigentes(): HasOne
     {
         $fecha=Carbon::now()->format('Y-m-d');
-        return $this->HasOne(cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
+        return $this->HasOne(Cotizacion::class, 'id_contrato')->where('vigencia','>=',$fecha);
     }
 
-    public function origen(): MorphMany
+    public function cargos(): MorphMany
     {
-        return $this->morphMany(Cargo::class, 'origen', 'modelo', 'id_modelo');
+        return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
+    }
+    public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
+    {
+        
+        switch($this->servicio_contratado){
+            case 'agua':
+                $servicio=1; //id del concepto del contrato
+                break;
+            case 'alcantarillado y saneamiento':
+                $servicio=2; //id del concepto del contrato
+                break;
+        }
+        $conceptoContrato=ConceptoCatalogo::find($servicio);
+        return $conceptoContrato;
+    }
+    public function tarifaContrato() //Obtiene el concepto dependiendo del nombre del servicio
+    {
+        
+        $concepto=$this->conceptoContrato();
+        $tipotoma=$this->tipoToma;
+        $tarifa=TarifaConceptoDetalle::where('id_tipo_toma',$tipotoma['id'])->where('id_concepto',$concepto['id'])->first();
+        return $tarifa;
     }
 
     public static function contratoRepetido($id_usuario, $servicios,$toma_id){
@@ -113,13 +135,10 @@ class Contrato extends Model
         return $folio;
     }
 
-    public static function ConsultarPorFolio(string $folio, string $año){
+    public static function ConsultarPorFolio(string $folio, string $ano){
         
-        $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$año)->get();
+        $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$ano)->get();
         return $data;
         
-    }
-   
-    
-    
+    }   
 }

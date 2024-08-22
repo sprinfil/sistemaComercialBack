@@ -23,12 +23,13 @@ class UpdateCargoRequest extends FormRequest
     {
         return [
             "id_concepto"=>"required|integer",
-            "concepto"=>"required|string|max:55",
+            "nombre"=>"required|string|max:55",
             "id_origen"=>"required|integer",
             "modelo_origen"=>"required|string|max:55",
-            "id_dueño"=>"required|integer",
-            "modelo_dueño"=>"required|string|max:55",
+            "id_dueno"=>"required|integer",
+            "modelo_dueno"=>"required|string|max:55",
             "monto"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "iva"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
             "estado"=>"required|string|max:55",
             "id_convenio"=>"integer",
             "fecha_cargo"=>"required|date|max:55",

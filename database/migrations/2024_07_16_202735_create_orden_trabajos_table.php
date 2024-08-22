@@ -15,13 +15,17 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_toma');
             $table->unsignedBigInteger('id_empleado_asigno');
-            $table->unsignedBigInteger('id_empleado_encargado');
+            $table->unsignedBigInteger('id_empleado_encargado')->nullable();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
-            $table->enum('estado',['No asignada','Concluida','En proceso']);
-            $table->string('fecha_finalizada');
-            $table->string('obervaciones');
-            $table->string('evidencia');
-            $table->string('material_utilizado');
+            $table->enum('estado',['No asignada','Concluida','En proceso','Cancelada']);
+            $table->date('fecha_finalizada')->nullable();
+            $table->date('fecha_vigencia')->nullable();
+            $table->string('obervaciones')->nullable();
+            $table->string('evidencia')->nullable();
+            $table->string('material_utilizado')->nullable();
+            $table->point('posicion_OT')->nullable();
+            $table->boolean('genera_OT_encadenadas')->default('0');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -7,8 +7,10 @@ use App\Models\Calle;
 use App\Http\Requests\StoreCalleRequest;
 use App\Http\Requests\UpdateCalleRequest;
 use App\Http\Resources\CalleResource;
+use App\Models\Colonia;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class CalleController extends Controller
 {
@@ -29,18 +31,64 @@ class CalleController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     */
+    public function getCallesPorColonia($id)
+    {
+        try{
+            return response(CalleResource::collection(
+                Colonia::find($id)->calles
+            ),200);
+        } catch(Exception $e) {
+            return response()->json([
+                'error' => 'No fue posible consultar la calle'.$e
+            ], 500);
+        }
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreCalleRequest $request)
     {
         try{
             $data = $request->validated();
-            $calle = Calle::create($data);
-            return response(new CalleResource($calle), 201);
+            //valida trash
+            $calle = Calle::withTrashed()->where('nombre', $request->input('nombre'))->first();
+
+            //validacion en caso de que la calle ya este registrado en le base de datos
+            if ($calle) {
+                if ($calle->trashed()) {
+                    return response()->json([
+                        'message' => 'La colonia ya existe pero ha sido eliminada. ¿Desea restaurarla?',
+                        'restore' => true,
+                        'calle_id' => $calle->id
+                    ], 200);
+                }
+                return response()->json([
+                    'message' => 'La calle ya existe.',
+                    'restore' => false
+                ], 200);
+            } else {
+                // si la calle no existe, la crea
+                $calle = Calle::create($data);
+                return response(new CalleResource($calle), 201);
+            }
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar la calle'
             ], 500);
+        }
+    }
+
+    public function restaurarDato(Calle $calle, Request $request)
+    {
+        $calle = Calle::withTrashed()->findOrFail($request->id);
+        //verifica si el registro está eliminado
+        if ($calle->trashed()) {
+            //restaura el registro
+            $calle->restore();
+            return response()->json(['message' => 'La calle ha sido restaurado'], 200);
         }
     }
 

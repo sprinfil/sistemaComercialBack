@@ -11,32 +11,26 @@ class TarifaConceptoDetalle extends Model
 {
     use HasFactory, SoftDeletes;
     
+    
     protected $fillable = [
-        "id_tarifa",
         "id_tipo_toma",
         "id_concepto",
         "monto"
     ];
-    
-     // Tarifa asociada al concepto detalle de tarifa
-     public function tarifa() : BelongsTo
-     {
-         return $this->belongsTo(tarifa::class, 'id_tarifa');
-     }
 
-     // Tipo de toma asociado al concepto detalle de tarifa
-     public function tipoToma() : BelongsTo
-     {
-         return $this->belongsTo(TipoToma::class, 'id_tipo_toma');
-     }
+    // Tipo de toma asociado al concepto detalle de tarifa
+    public function tipoToma() : BelongsTo
+    {
+        return $this->belongsTo(TipoToma::class, 'id_tipo_toma');
+    }
 
-     // Concepto asociado al concepto detalle de tarifa
-     public function concepto() : BelongsTo
-     {
-         return $this->belongsTo(ConceptoCatalogo::class, 'id_concepto');
-     }
+    // Concepto asociado al concepto detalle de tarifa
+    public function concepto() : BelongsTo
+    {
+        return $this->belongsTo(ConceptoCatalogo::class, 'id_concepto');
+    }
 
-     public function getNombreConceptoAttribute(){
+    public function getNombreConcepto(){
         
-     }
+    }
 }

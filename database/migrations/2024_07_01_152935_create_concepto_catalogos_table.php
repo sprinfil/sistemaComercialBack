@@ -17,6 +17,17 @@ return new class extends Migration
             $table->text("descripcion")->nullable();
             $table->enum('estado', ['activo', 'inactivo'])->nullable();
             $table->integer("prioridad_abono");
+            $table->boolean("prioridad_por_antiguedad")->nullable();
+            $table->boolean("genera_iva")->nullable();
+            $table->boolean("abonable")->nullable();
+            $table->boolean("tarifa_fija")->nullable();
+            $table->boolean("cargo_directo")->nullable();
+            $table->unsignedBigInteger("genera_orden")->nullable();
+            $table->boolean("genera_recargo")->nullable();
+            $table->unsignedBigInteger("concepto_rezago")->nullable();
+            $table->boolean("pide_monto")->nullable();
+            $table->boolean("bonificable")->nullable();
+            $table->decimal("recargo", 8, 2)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -24,8 +24,10 @@ class UpdateOrdenTrabajoConfRequest extends FormRequest
         return [
             "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id",
             "id_concepto_catalogo" => "required|exists:concepto_catalogos,id",
-            "accion"=>"required|in:generar,quitar",
+            "accion"=>"required|in:generar,modificar,quitar",
             "momento"=>"required|in:generar,asignar,concluir",
+            "atributo"=>"required|string",
+            "valor"=>"required|string",
         ];
     }
 }

@@ -22,12 +22,13 @@ class CargoFactory extends Factory
     {
         return [
             'id_concepto' => 1,
-            'concepto' => 'ninguno',
+            'nombre' => 'ninguno',
             'id_origen' => $this->faker->numberBetween(1, 100),
             'modelo_origen' => $this->faker->word,
-            'id_dueño' => $this->faker->numberBetween(1, 100),
-            'modelo_dueño' => $this->faker->word,
+            'id_dueno' => $this->faker->numberBetween(1, 100),
+            'modelo_dueno' => $this->faker->word,
             'monto' => $this->faker->randomFloat(2, 0, 9999),
+            'iva' => $this->faker->randomFloat(2, 0, 10),
             'estado' => $this->faker->randomElement(['pendiente', 'pagado', 'conveniado', 'cancelado']),
             'id_convenio' => null,
             'fecha_cargo' => now(),
@@ -55,6 +56,8 @@ class CargoFactory extends Factory
                 {
                     $total_abonado = $cargo->monto;
                     $pago = Pago::factory()->create([
+                        'id_dueno' => $cargo->id_dueno,
+                        'modelo_dueno' => $cargo->modelo_dueno,
                         'total_pagado'=>$total_abonado,
                         //'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
                         //'fecha_pago'=>$this->faker->randomFloat(2, 0, 9999),

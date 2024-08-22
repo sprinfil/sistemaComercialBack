@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Toma;
 use App\Http\Requests\StoreTomaRequest;
 use App\Http\Requests\UpdateTomaRequest;
+use App\Http\Resources\CargoResource;
+use App\Http\Resources\OrdenTrabajoResource;
 use App\Http\Resources\TomaResource;
+use App\Services\UsuarioService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class TomaController extends Controller
 {
@@ -92,5 +96,100 @@ class TomaController extends Controller
         }
     }
 
-   
+    /**
+     * Display the specified resource.
+     */
+    public function buscarCodigoToma($codigo)
+    {
+        try {
+            $toma = Toma::where('id_codigo_toma', $codigo)->first();
+            return response(new TomaResource($toma), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar la toma'
+            ], 500);
+        }
+        //
+    }
+    public function buscarCodigoTomas($codigo)
+    {
+        try {
+            $toma = Toma::where('id_codigo_toma', $codigo)->get();
+            return response(TomaResource::collection($toma), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar la toma'
+            ], 500);
+        }
+        //
+    }
+
+    /**
+     * Cargos por toma
+     */
+    public function cargosPorToma($id)
+    {
+        try {
+            
+            $toma = Toma::where("id_codigo_toma",$id)->first();
+            return CargoResource::collection($toma->cargos);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Pagos por toma
+     */
+    public function pagosPorToma($id)
+    {
+        try {
+            $toma = Toma::where("id_codigo_toma",$id)->first();
+            return $toma->pagos;
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar los pagos'
+            ], 500);
+        }
+    }
+
+    /**
+     * guardar posicion
+     */
+
+     public function save_position(Request $request, $toma_id){
+        $data = $request["data"];
+        $point = new Point($data["latitud"], $data["longitud"]);
+        $toma = Toma::find($toma_id);
+        $toma->posicion = $point;
+        $toma->save();
+    }
+    
+    
+    public function ordenesToma($id)
+    {
+        try {
+            $toma = Toma::findOrFail($id);
+            $ordenes=$toma->ordenesTrabajo;
+            return OrdenTrabajoResource::collection($ordenes);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar las ordenes de trabajo'
+            ], 500);
+        }
+    }
+    public function general($id)
+    {
+        try {
+            $toma = (new UsuarioService())->ConsultaGeneralToma($id);
+            return $toma;
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar las ordenes de trabajo'
+            ], 500);
+        }
+    }
 }

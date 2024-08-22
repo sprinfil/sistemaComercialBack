@@ -11,7 +11,7 @@ class StoreOrdenTrabajoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,14 +23,10 @@ class StoreOrdenTrabajoRequest extends FormRequest
     {
         return [
             "id_toma" => "required|exists:toma,id",
-            "id_empleado_asigno" => "sometimes|exists:operadores,id",
+            "id_empleado_asigno" => "required|exists:operadores,id",
             "id_empleado_encargado" => "sometimes|exists:operadores,id",
             "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id",
-            "estado"=>"required|in:no asignada,concluida,En proceso",
-            "fecha_finalizada"=>"sometimes|date",
-            "obervaciones"=>"nullable|string",
-            "evidencia"=>"nullable|string",
-            "material_utilizado"=>"nullable|string",
+            "posicion_OT" => "sometimes|point",
         ];
     }
 }

@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('cargos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_concepto');
-            $table->string('concepto');
+            $table->string('nombre');
             $table->unsignedBigInteger('id_origen');
             $table->string('modelo_origen');
-            $table->unsignedBigInteger('id_dueño'); 
-            $table->string('modelo_dueño');
+            $table->unsignedBigInteger('id_dueno'); 
+            $table->string('modelo_dueno');
             $table->decimal('monto', 8, 2);
+            $table->decimal('iva', 8, 2);
             $table->enum('estado', ['pendiente', 'pagado', 'conveniado', 'cancelado']);
             $table->unsignedBigInteger('id_convenio')->nullable();
             $table->date('fecha_cargo');

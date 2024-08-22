@@ -23,7 +23,7 @@ class UpdateGiroComercialCatalogoRequest extends FormRequest
     {
         return [
             "nombre"=>"required|string|max:55|unique:giro_comercial_catalogos,nombre,".$this->id,
-            "descripcion"=>"nullable|string|max:100",
+            "descripcion"=>"nullable|string",
             "estado"=>"nullable|string|max:10|
             in:activo,inactivo",
         ];

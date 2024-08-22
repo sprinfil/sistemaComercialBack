@@ -17,11 +17,11 @@ class TomaResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "posicion" => $this->posicion,
             "id_usuario" => $this->id_usuario,
             "id_giro_comercial" => $this->id_giro_comercial,
             "id_libro" => $this->id_libro,
             "id_codigo_toma" => $this->id_codigo_toma,
-            
             "estatus" => $this->estatus,
             "clave_catastral" => $this->clave_catastral,
             "calle" => $this->calle,
@@ -29,6 +29,7 @@ class TomaResource extends JsonResource
             "entre_calle_2" => $this->entre_calle_2,
             "colonia" => $this->colonia,
             "codigo_postal" => $this->codigo_postal,
+            "numero_casa" => $this->numero_casa,
             "localidad" => $this->localidad,
             "diametro_toma" => $this->diametro_toma,
             "calle_notificaciones" => $this->calle_notificaciones,
@@ -37,9 +38,16 @@ class TomaResource extends JsonResource
             "tipo_servicio" => $this->tipo_servicio,
             "tipo_toma" => $this->tipo_toma,
             "tipo_contratacion" => $this->tipo_contratacion,
+            "c_agua" => $this->c_agua,
+            "c_alc" => $this->c_alc,
+            "c_san" => $this->c_san,
+            'usuario' => new UsuarioResource($this->usuario),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
+            'giroComercial' => new GiroComercialCatalogoResource($this->whenLoaded('giroComercial')),
+            'medidor' => $this->whenLoaded('medidor'),
+            'consumo' => $this->whenLoaded('consumo'),
             'ordenes_trabajo' => OrdenTrabajoResource::collection($this->whenLoaded('ordenesTrabajo')),
-            
+            'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes')))
         ];
         //return parent::toArray($request);
     }

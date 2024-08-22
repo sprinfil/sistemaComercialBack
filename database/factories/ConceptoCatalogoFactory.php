@@ -25,6 +25,16 @@ class ConceptoCatalogoFactory extends Factory
             'descripcion'=> $this->faker->sentence,
             'estado'=> $this->faker->randomElement(['activo', 'inactivo']),
             'prioridad_abono'=>$this->faker->numberBetween(0, 5),
+            'prioridad_por_antiguedad'=>0,
+            'genera_iva'=>0,
+            'abonable'=>0,
+            'tarifa_fija'=>0,
+            'genera_orden'=>0,
+            "genera_recargo"=>0,
+            "concepto_rezago"=>0,
+            "pide_monto"=>0,
+            "bonificable"=>0,
+            "recargo"=>3,
         ];
     }
 
@@ -59,7 +69,6 @@ class ConceptoCatalogoFactory extends Factory
 
                 $tipo_tomas->each(function ($tipo_toma) use ($concepto){
                     TarifaConceptoDetalle::factory()->create([
-                        'id_tarifa' => 1,
                         'id_tipo_toma' => $tipo_toma->id,
                         'id_concepto' => $concepto->id,
                         'monto' => $this->faker->numberBetween(50, 500),

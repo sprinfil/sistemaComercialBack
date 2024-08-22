@@ -26,10 +26,18 @@ class AppServiceProvider extends ServiceProvider
             'usuario' => 'App\Models\Usuario',
             'user' => 'App\Models\User',
             'cargo' => 'App\Models\Cargo',
+            'cargo_directo' => 'App\Models\CargoDirecto',
             'concepto_aplicable' => 'App\Models\ConceptoAplicable',
             'convenio_catalogo' => 'App\Models\ConvenioCatalogo',
             'descuento_catalogo' => 'App\Models\DescuentoCatalogo',
             'ajuste_catalogo' => 'App\Models\AjusteCatalogo',
+            'libro' => 'App\Models\Libro',
+            'ruta' => 'App\Models\Ruta',
+            'datos_fiscales' => 'App\Models\DatoFiscal',
+            'asignacion_geografica' => 'App\Models\AsignacionGeografica',
+            'factibilidad' => 'App\Models\Factibilidad',
+            'pago' => 'App\Models\Pago',
+            'abono' => 'App\Models\Abono'
         ]);
     }
 }
