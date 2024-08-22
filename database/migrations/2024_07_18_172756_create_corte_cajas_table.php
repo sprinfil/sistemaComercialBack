@@ -16,14 +16,14 @@ return new class extends Migration
             $table->unsignedInteger('id_caja');
             $table->unsignedInteger('id_operador');
             $table->enum('estatus', ['aprobado', 'rechazado','pendiente']);
-            $table->decimal('total_registrado' , total: 8 , places: 2);
-            $table->decimal('total_real', total: 8 , places:2);
             $table->decimal('total_efectivo_registrado', total: 8 , places:2);
             $table->decimal('total_efectivo_real', total: 8 , places:2);
             $table->decimal('total_tarjetas_registrado', total: 8 , places:2);
             $table->decimal('total_tarjetas_real', total: 8 , places:2);
             $table->decimal('total_cheques_registrado', total: 8 , places:2);
             $table->decimal('total_cheques_real', total: 8 , places:2);
+            $table->decimal('total_registrado' , total: 8 , places: 2);
+            $table->decimal('total_real', total: 8 , places:2);
             $table->enum('discrepancia' , ['si' , 'no']);
             $table->decimal('discrepancia_monto', total: 8 , places: 2);
             $table->dateTime('fecha_corte'); //datetime?         
