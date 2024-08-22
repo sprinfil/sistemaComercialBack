@@ -27,13 +27,11 @@ class PagoService{
         }
     }
 
-    // metodo para cargar un cargo a un usuario
+    // método para cargar un cargo a un usuario
     public function registrarPago(StorePagoRequest $request): Pago
     {
-        try{
-        // 1. Llega la información del pago (Bloque 1)
-
-            // 1.1 Se comprueba la información del pago
+        try {
+            // 1. Llega la información del pago
             $data = $request->validated();
 
             DB::beginTransaction();
@@ -46,25 +44,72 @@ class PagoService{
             // 1.3 Se registra el pago
             $pago = Pago::create($data);
             $monto_pagado = $pago->total_pagado;
-            $monto_pagos_pendientes = 0;
+
+            // 1.3.1 Se obtienen los pagos pendientes y su total
+            $pagos_pendientes = $this->pagosPorModeloPendiente($request);
+            $monto_pagos_pendientes = $this->totalPendiente($request);
 
             // 1.4 Se obtienen los cargos a pagar
-            // 1.4.1 Se ordenan en orden de prioridad
-            $cargosSelecionados = $data['cargos'];
-            // 1.5 Se obtienen todos los cargos pendientes
-            // 1.5.1 Se ordenan en orden de prioridad
-            $cargosPendientes = 0;
+            $cargos_selecionados = $data['cargos'];
+            $total_a_pagar = 0;
 
-            // 1.6 Se obtiene el total de los cargos a pagar
-            // 1.7 Se obtienen los pagos pendientes de aplicar
-            
+            if($cargos_selecionados){
+                foreach ($cargos_selecionados as $cargo) {
+                    $cargo_selecionado = Cargo::findOrFail($cargo['id_cargo']); // Asumiendo que cargo es un array
+                    $total_a_pagar += $cargo_selecionado->monto + $cargo_selecionado->iva; // Asumiendo que las propiedades existen
+                }
+
+                if($total_a_pagar <= $monto_pagado){
+                    $total_abonado = 0;
+                    foreach ($cargos_selecionados as $cargo) {
+                        $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_selecionado->monto + $cargo_selecionado->iva);
+                        $this->consolidarEstados($id_modelo, $modelo);
+                        $total_abonado += $cargo_selecionado->monto + $cargo_selecionado->iva; // Actualizar el total abonado
+                    }
+                    // Consolidar estados fuera del bucle para optimizar
+                    
+
+                    if($total_abonado < $monto_pagado){
+                        //$this->procesarPagos($id_modelo, $modelo);
+                    }
+                } else {
+                    throw new Exception("El monto a pagar es mayor que el monto pagado ".$total_a_pagar." <= ".$monto_pagado);
+                }
+            } else {
+                throw new Exception("No hay cargos a pagar");
+            }
+
             DB::commit();
-            return $pago;
+            return Pago::findOrFail($pago->id);;
         } 
         catch(Exception $ex){
             DB::rollBack();
             throw $ex;
         }
+    }
+
+
+    //
+    public function registrarAbono($id_cargo, $modelo_origen, $id_origen, $monto)
+    {
+        try {
+            $nuevo_abono_data = [];
+            $nuevo_abono_data['id_cargo'] = $id_cargo;
+            $nuevo_abono_data['id_origen'] = $id_origen;
+            $nuevo_abono_data['modelo_origen'] = $modelo_origen;
+            $nuevo_abono_data['total_abonado'] = $monto;
+            
+            return Abono::create($nuevo_abono_data);
+        }
+        catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    //
+    public function procesarPagos($_id_modelo, $_modelo)
+    {
+        DB::beginTransaction();
     }
 
     // metodo para consolidar estados de cargos, pagos y abonos
@@ -93,7 +138,7 @@ class PagoService{
                     DB::commit();
                 }
                 else{
-                    throw new Exception('QPD');
+                    throw new Exception('error en la consolidacion de estados');
                 }
             }
             else{
@@ -143,7 +188,7 @@ class PagoService{
                             $pago_modificado->save();
                         }
                         else{
-                            throw new Exception('qpd abono'.$total_abonado.'pago'.$total_pagado);
+                            throw new Exception('error abono'.$total_abonado.'pago'.$total_pagado);
                         }
                     }else{
                         throw new Exception('no hay abonos');
@@ -167,7 +212,7 @@ class PagoService{
                 foreach ($cargos as $cargo) {
                     // cada cargo puede tener abonos
                     $total_abonado_al_cargo = 0;
-                    $total_cargo = $cargo->monto;
+                    $total_cargo = $cargo->monto + $cargo->iva;
                     $abonos_al_cargo = $cargo->abonos;
                     if($abonos_al_cargo){
                         foreach ($abonos_al_cargo as $abono) {
@@ -253,7 +298,8 @@ class PagoService{
     }
 
     // metodo para buscar todos los pagos de un modelo especifico
-    public function pagosPorModeloPendiente(Request $request){
+    public function pagosPorModeloPendiente(Request $request)
+    {
         try{
             $data = $request->all();
 
@@ -314,4 +360,17 @@ class PagoService{
     }
 
     // aplicación del pago sobre abono en los cargos
+    public function totalPendiente(Request $request)
+    {
+        try{
+            $pagos = $this->pagosPorModeloPendiente($request);
+            $total_pendiente = 0;
+            foreach ($pagos as $pago) {
+                $total_pendiente = $pago->total_pagado;
+            }
+            return $total_pendiente;
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
 }
