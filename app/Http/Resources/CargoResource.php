@@ -23,6 +23,7 @@ class CargoResource extends JsonResource
             "modelo_origen" => $this->modelo_origen,
             "id_dueno" => $this->id_dueno,
             "modelo_dueno" => $this->modelo_dueno,
+            "concepto" => $this->concepto,
             "monto" => $this->monto,
             "iva" => $this->iva,
             "estado" => $this->estado,

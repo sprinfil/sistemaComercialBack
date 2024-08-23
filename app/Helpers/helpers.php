@@ -20,3 +20,17 @@ if (!function_exists('helperGetOwner')) {
         }
     }
 }
+
+if (!function_exists('helperCalcularIVA')) {
+    function helperCalcularIVA($monto)
+    {
+        try{
+            $tarifaIVA=0.16;
+            $total=$monto*$tarifaIVA;
+            return $total;
+        }
+        catch(Exception $ex) {
+            return null;
+        }
+    }
+}

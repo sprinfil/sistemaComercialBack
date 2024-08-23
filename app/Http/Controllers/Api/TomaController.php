@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Toma;
 use App\Http\Requests\StoreTomaRequest;
 use App\Http\Requests\UpdateTomaRequest;
+use App\Http\Resources\CargoResource;
 use App\Http\Resources\OrdenTrabajoResource;
 use App\Http\Resources\TomaResource;
 use App\Services\UsuarioService;
@@ -129,9 +130,10 @@ class TomaController extends Controller
     public function cargosPorToma($id)
     {
         try {
-            $toma = Toma::where("id_codigo_toma",$id)->first();
             
-            return $toma->cargos;
+            $toma = Toma::where("id_codigo_toma",$id)->first();
+            return CargoResource::collection($toma->cargos);
+
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => $e->getMessage()
