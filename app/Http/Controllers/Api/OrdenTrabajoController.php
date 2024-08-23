@@ -10,6 +10,7 @@ use App\Http\Requests\StoreOrdenTrabajoRequest;
 use App\Http\Requests\UpdateOrdenTrabajoCatalogoRequest;
 use App\Http\Requests\UpdateOrdenTrabajoConfRequest;
 use App\Http\Requests\UpdateOrdenTrabajoRequest;
+use App\Http\Resources\CargoResource;
 use App\Http\Resources\OrdenesTrabajoCargoResource;
 use App\Http\Resources\OrdenesTrabajoEncadenadaResource;
 use App\Http\Resources\OrdenTrabajoCatalogoResource;
@@ -240,13 +241,14 @@ class OrdenTrabajoController extends Controller
        try{
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        return $data;
         if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
         else
         {
             DB::commit();
-            return response(new OrdenTrabajoResource($data),200);
+            return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
        }
        catch(Exception $ex){
@@ -310,13 +312,13 @@ class OrdenTrabajoController extends Controller
     }
 
 
-    public function deleteOrden(StoreOrdenTrabajoRequest $request)
+    public function deleteOrden(Request $request)
     {
         
-        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        $data=(new OrdenTrabajoService())->cancelar($request);
         //$catalogo=OrdenTrabajo::create($data);
         //return response(new OrdenTrabajoResource($catalogo),200);
-        return $data;
+        return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
         
     }
 

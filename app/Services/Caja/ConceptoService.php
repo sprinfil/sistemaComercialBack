@@ -5,6 +5,7 @@ use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
 use App\Http\Resources\ConceptoResource;
 use App\Models\ConceptoCatalogo;
+use App\Models\Tarifa;
 use App\Models\TarifaConceptoDetalle;
 use App\Models\TipoToma;
 use Exception;
@@ -157,5 +158,10 @@ class ConceptoService{
         } catch(Exception $ex){
             throw $ex;
         }
+    }
+    public function obtenerTarifaToma($id_tipo_toma,$id_concepto): ?TarifaConceptoDetalle{
+        $tarifaDetalle=TarifaConceptoDetalle::where('id_tipo_toma',$id_tipo_toma)->where('id_concepto',$id_concepto)->first();
+        return $tarifaDetalle;
+
     }
 }
