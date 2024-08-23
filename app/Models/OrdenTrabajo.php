@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrdenTrabajo extends Model
@@ -36,7 +37,11 @@ class OrdenTrabajo extends Model
         return $this->belongsTo(Operador::class,'id_empleado_encargado');;
     }
     public function ordenTrabajoCatalogo():BelongsTo{
-        return $this->belongsTo(OrdenTrabajoCatalogo::class,'id_orden_trabajo_catalogo');;
+        return $this->belongsTo(OrdenTrabajoCatalogo::class,'id_orden_trabajo_catalogo');
+    }
+    public function cargos(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
     }
    
     

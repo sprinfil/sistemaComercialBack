@@ -241,7 +241,6 @@ class OrdenTrabajoController extends Controller
        try{
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->crearOrden($request->validated());
-        return $data;
         if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
@@ -253,7 +252,7 @@ class OrdenTrabajoController extends Controller
        }
        catch(Exception $ex){
         DB::rollBack();
-        return response()->json(["error"=>"No se pudo generar la Orden de trabajo"],202);
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],202);
        }
    
         
@@ -314,11 +313,17 @@ class OrdenTrabajoController extends Controller
 
     public function deleteOrden(Request $request)
     {
-        
-        $data=(new OrdenTrabajoService())->cancelar($request);
-        //$catalogo=OrdenTrabajo::create($data);
-        //return response(new OrdenTrabajoResource($catalogo),200);
-        return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
+        try{
+            DB::beginTransaction();
+            $data=(new OrdenTrabajoService())->cancelar($request);
+            DB::commit();
+            //return $data;
+            return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
+        }
+        catch(Exception $ex){
+            return response()->json(["error"=>"No se pudo cancelar la orden de trabajo"],201);
+        }
+    
         
     }
 
