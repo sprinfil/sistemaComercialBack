@@ -123,7 +123,7 @@ class TarifaController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo editar la tarifa'
+                'error' => 'No se pudo editar la tarifa' .$e
             ], 500);
         }
     }
@@ -272,46 +272,16 @@ class TarifaController extends Controller
     }
 
     public function storeTarifaServicioDetalle(StoreTarifaServiciosDetalleRequest $request)
-    { //pendiente, eliminar si ya no se usa
-        /*
-               try{
-            
-            $registro = TarifaServiciosDetalle::select('rango','agua','alcantarillado','saneamiento')->where('id_tarifa',$request->id_tarifa)->orderBy('rango')->get();
-            //return $registro;
-            //next $rangoRegistrado
-            foreach ($registro as $rangoRegistrado) {
-
-              if ($rangoRegistrado->rango == $request->rango) {
-                return response()->json([
-                    'error' => 'No se puede repetir el rango en la misma tarifa'
-                ], 500);
-              }
-
-              else{
-                 //VALIDA EL STORE
-                 $data = $request->validated();
-                 $tarifaServicioDetalle = TarifaServiciosDetalle::create($data);
-                 return response(new TarifaServiciosDetalleResource ($tarifaServicioDetalle), 201);
-                }
-            }
-            
-           
-        }catch(Exception $e) {
-            return response()->json([
-                'error' => 'No se pudo guardar el detalle de servicio'
-            ], 500);
-        }
-       */
+    { 
         try {
-
-            //VALIDA EL STORE
             $data = $request->validated();
-            $tarifaServicioDetalle = TarifaServiciosDetalle::create($data);
-            return response(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 201);
-            
+            DB::beginTransaction();
+            $storeTarifaServicioDetalle = (new TarifaService())->storeTarifaServicioDetalle($data);
+            DB::commit();
+            return $storeTarifaServicioDetalle;       
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'No se pudo guardar el detalle de servicio'
+                'error' => 'No se pudo guardar el detalle de servicio ' .$e
             ], 500);
         }
     }
@@ -319,7 +289,7 @@ class TarifaController extends Controller
     public function showTarifaServicioDetalle($tarifaDetalle)
     {
         try {
-            DB::beginTransaction();
+           DB::beginTransaction();
            $tarifaServicioDetalle = (new TarifaService())->showTarifaServicioDetalleService($tarifaDetalle);
            DB::commit();
            return $tarifaServicioDetalle;

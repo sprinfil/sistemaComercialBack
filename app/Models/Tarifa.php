@@ -21,13 +21,13 @@ class Tarifa extends Model
     ];
     public function servicio() : HasMany
     {
-        return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa');
+        return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa_servicio');
     }
     public function conceptos()
     {
         return TarifaConceptoDetalle::all();
     }
-    public function tarifaServicio() : HasOne {
-        return $this->hasOne(TarifaServicio::class , 'id_tarifa');
+    public function tarifaServicio() : HasMany {
+        return $this->hasMany(TarifaServicio::class , 'id_tarifa');
     }
 }

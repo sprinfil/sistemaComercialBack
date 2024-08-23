@@ -22,12 +22,16 @@ class UpdateTarifaServiciosDetalleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_tarifa"=> "required|int",
-            "id_tipo_toma"=> "required|int",
+            //"id_tarifa"=> "required|int",
+            //"id_tipo_toma"=> "required|int",
+            "id_tarifa_servicio"=> "required|int",
             "rango"=> "required|int|gt:0",
+            "monto"=> "required|numeric|gt:0",
+            /*
             "agua"=> "required|numeric|gt:0",
             "alcantarillado"=> "required|numeric|gt:0",
             "saneamiento"=> "required|numeric|gt:0",
+            */
         ];
     }
 }

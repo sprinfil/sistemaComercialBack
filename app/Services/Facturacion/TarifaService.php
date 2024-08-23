@@ -16,6 +16,7 @@ use App\Http\Resources\TarifaResource;
 use App\Http\Resources\TarifaServiciosDetalleResource;
 use App\Models\ConceptoCatalogo;
 use App\Models\TarifaConceptoDetalle;
+use App\Models\TarifaServicio;
 use App\Models\TarifaServiciosDetalle;
 use App\Models\TipoToma;
 use Exception;
@@ -102,9 +103,10 @@ class TarifaService{
                         $detalle_servicio->id_tarifa = $id_tarifa_nueva;
                         $detalle_servicio->id_tipo_toma = $tipo->id;
                         $detalle_servicio->rango = $servicio['rango'];
-                        $detalle_servicio->agua = $servicio['agua'];
-                        $detalle_servicio->alcantarillado = $servicio['alcantarillado'];
-                        $detalle_servicio->saneamiento = $servicio['saneamiento'];
+                        $detalle_servicio->monto = $servicio['monto'];
+                        //$detalle_servicio->agua = $servicio['agua'];
+                        //$detalle_servicio->alcantarillado = $servicio['alcantarillado'];
+                        //$detalle_servicio->saneamiento = $servicio['saneamiento'];
                         $detalle_servicio->save();
                     }
 
@@ -156,22 +158,22 @@ class TarifaService{
     {
                
         try {            
-              
+              //To do 
             $catalogoTiposToma = TipoToma::select('id', 'nombre')->get();
-            $catalogoServicioDealle = TarifaServiciosDetalle::select('id_tipo_toma', 'rango')->where('id_tarifa', $id)->get();
-            
-            $tarifa = tarifa::findOrFail($id);
+            $catalogoServicioDealle = TarifaServiciosDetalle::select('id_tarifa_servicio', 'rango')
+            ->where('id_tarifa_servicio', $id)
+            ->get();
+            $tarifa = Tarifa::findOrFail($id);
             //$totalConcepto = count($catalogoConcepto);
             $servicioAsociado = false;
             //return $catalogoServicioDealle;
-            if ($tarifa) {
-                if ($tarifa->estado == 'inactivo' && $estado == 'activo') {
-
+            if (isset($tarifa)) {
+                if ($tarifa->estado == 'inactivo' && $tarifa->estado == 'activo') {
                     foreach ($catalogoTiposToma as $TipoToma) {
 
                         foreach ($catalogoServicioDealle as $servicioDetalle) {
     
-                            if ($TipoToma->id == $servicioDetalle->id_tipo_toma) {
+                            if ($TipoToma->id == $servicioDetalle->id_tarifa_servicio) {
                                 $servicioAsociado = true;
                             }
                         }
@@ -194,12 +196,12 @@ class TarifaService{
               
                 $tarifa->update($data);
                 $tarifa->save();
-                return response(new tarifaResource($tarifa), 200);  
+                return response(new TarifaResource($tarifa), 200);  
               
             }
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'No se pudo editar la tarifa'
+                'error' => 'No se pudo editar la tarifa ' .$ex
             ], 400);
         }        
               
@@ -211,11 +213,10 @@ class TarifaService{
             //obtenemos la respuesta
             if ($request->input('confirmUpdate')) {
                 // inactivar todo TODO
-                tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
-                
+                Tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
                 // obtener el fakin id
                 $tarifaId = $request->input('tarifa_id');
-                $tarifa = tarifa::find($tarifaId);
+                $tarifa = Tarifa::find($tarifaId);
                 if ($tarifa) {
                     $tarifa->estado = 'activo';
                     $tarifa->save();
@@ -346,6 +347,27 @@ class TarifaService{
         }
        
     }
+    public function storeTarifaServicioDetalle($id_tarifa_servicio) 
+    {
+        try {
+            //Verifica que exista un servicio para poder añadir una tarfa servicio detalle
+             $tarifaServicio = TarifaServicio::where('id' , $id_tarifa_servicio)->first();
+             //Si existe una tarifa servicio, hace el store
+            if ($tarifaServicio->tarifaDetalle) {
+                $tarifaServicioDetalle = TarifaServiciosDetalle::create($id_tarifa_servicio);
+                return response(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 201);
+            }
+            else{
+                return response()->json([
+                    'message' => 'El servicio de la tarifa no existe'
+                ]);
+            }
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No se pudo guardar el servicio detalle. '
+            ], 500);
+        }
+    }
 
     public function showTarifaServicioDetalleService($tarifaDetalle)
     {
@@ -400,19 +422,20 @@ class TarifaService{
 
     public function get_servicios_detalles_by_tarifa_idService($tarifa_id)
     {
-
+        //fix to do
         try {
-            $tarifa = Tarifa::find($tarifa_id);
+            $tarifa = Tarifa::findOrFail($tarifa_id);
             $servicio = [];
               foreach ($tarifa->servicio as $servicios) {
                  $servicio[] = [
                  "id" => $servicios->id,
-                 "id_tarifa" => $servicios->id_tarifa,
-                 "id_tipo_toma" => $servicios->id_tipo_toma,
+                 "id_tarifa_servicio" => $servicios->id_tarifa_servicio,
                  "rango" => $servicios->rango,
-                 "agua" => $servicios->agua,
+                 "monto" => $servicios->monto,
+                 /*"agua" => $servicios->agua,
                  "alcantarillado" => $servicios->alcantarillado,
                  "saneamiento" => $servicios->saneamiento,
+                 */
                ];
            }
 
@@ -422,7 +445,7 @@ class TarifaService{
         return json_encode($servicio);
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'Ocurrio un error en la busqueda.'
+                'error' => 'Ocurrio un error en la busqueda. ' .$ex
             ], 500);
         }
         

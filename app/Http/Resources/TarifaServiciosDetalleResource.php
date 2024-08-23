@@ -17,12 +17,9 @@ class TarifaServiciosDetalleResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "id_tarifa" => $this->id_tarifa,
-            "id_tipo_toma" => $this->id_tipo_toma,
+            "id_tarifa_servicio" => $this->id_tarifa_servicio,
             "rango" => $this->rango,
-            "agua" => $this->agua,
-            "alcantarillado" => $this->alcantarillado,
-            "saneamiento" => $this->saneamiento,
+            "monto" => $this->monto,
         ];
     }
 }

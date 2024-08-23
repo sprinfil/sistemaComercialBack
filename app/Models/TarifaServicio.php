@@ -20,7 +20,7 @@ class TarifaServicio extends Model
     
     public function tarifaDetalle() : HasMany
     {
-        return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa_servicios_detalle'); //detalles
+        return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa_servicio'); //detalles
     }
 
     public function tipotoma() : BelongsTo {

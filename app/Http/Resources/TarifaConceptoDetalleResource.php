@@ -20,8 +20,8 @@ class TarifaConceptoDetalleResource extends JsonResource
             "id" => $this->id,
             "id_tipo_toma" => $this->id_tipo_toma,
             "id_concepto" => $this->id_concepto,
-            "nombre_concepto" => $this->concepto->nombre,
             "monto" => $this->monto,
+            //"nombre_concepto" => $this->concepto->nombre,
         ];
     }
 }

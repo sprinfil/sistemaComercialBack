@@ -13,8 +13,7 @@ class TarifaServiciosDetalle extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
-        "id_tarifa",
-        "id_tipo_toma",
+        "id_tarifa_servicio",
         "rango",
         "monto",
     ];
@@ -22,7 +21,7 @@ class TarifaServiciosDetalle extends Model
     
     public function tarifa() : BelongsTo
      {
-         return $this->belongsTo(Tarifa::class, 'id_tarifa');
+         return $this->belongsTo(Tarifa::class, 'id_tarifa_servicio');
      }
 
      // Tipo de toma asociado al concepto detalle de tarifa
