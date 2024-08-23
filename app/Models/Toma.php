@@ -33,6 +33,7 @@ class Toma extends Model
         "id_giro_comercial",
         "id_libro",
         "id_codigo_toma",
+        "id_tipo_toma",
         "clave_catastral",
         "estatus",
         "calle",
@@ -64,7 +65,7 @@ class Toma extends Model
     // Tipo de toma asociado a la toma
     public function tipoToma() : BelongsTo
     {
-        return $this->belongsTo(TipoToma::class, 'tipo_toma', 'nombre');
+        return $this->belongsTo(TipoToma::class, 'id_tipo_toma');
     }
 
     // Usuario asociado a la toma
@@ -101,7 +102,7 @@ class Toma extends Model
     }
 
     public function ordenesTrabajo():HasMany{
-        return $this->hasMany(ordenTrabajo::class,'id_toma');
+        return $this->hasMany(OrdenTrabajo::class,'id_toma');
     }
 
     public function datos_fiscales(): MorphOne
