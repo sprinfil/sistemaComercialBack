@@ -237,6 +237,8 @@ class OrdenTrabajoController extends Controller
     //// ORDEN DE TRABAJO
     public function storeOrden(StoreOrdenTrabajoRequest $request)
     {
+       
+       try{
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->crearOrden($request->validated());
         return $data;
@@ -248,8 +250,6 @@ class OrdenTrabajoController extends Controller
             DB::commit();
             return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
-       try{
-        
        }
        catch(Exception $ex){
         DB::rollBack();
