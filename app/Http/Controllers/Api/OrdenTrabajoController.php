@@ -245,7 +245,7 @@ class OrdenTrabajoController extends Controller
         }
         else
         {
-            DB::rollBack();
+            DB::commit();
             return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
        try{
