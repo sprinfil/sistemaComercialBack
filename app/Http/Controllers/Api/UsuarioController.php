@@ -176,7 +176,7 @@ class UsuarioController extends Controller
     {
         try{
             $data = Usuario::ConsultarPorCodigo($usuario);
-            return new UsuarioResource(
+            return UsuarioResource::collection(
                 $data
             );
         }
