@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class OrdenTrabajo extends Model
 {
     use HasFactory, SoftDeletes;
-
+    //protected $table="orden_trabajos";
     protected $fillable=[
         "id_toma",
         "id_empleado_asigno",

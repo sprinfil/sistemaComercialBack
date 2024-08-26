@@ -265,7 +265,7 @@ class OrdenTrabajoController extends Controller
         $datos=$request->validated();
         $datos['id']=$request->id;
         $data=(new OrdenTrabajoService())->asignar($datos);
-        if (!$data){
+        if ($data==null){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
         else

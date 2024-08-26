@@ -59,14 +59,15 @@ class OrdenTrabajoService{
             //:?OrdenTrabajo
         } 
     }
-    public function asignar(array $ordenTrabajo): OrdenTrabajo{ //Ejemplo de service
+    public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
         
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        $OT['estado']="En proceso";
-        $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
         if ($OT['estado']=="En proceso"){
             return null;
         }
+        $OT['estado']="En proceso";
+        $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
+       
         $OT->update();
         $OT->save();
         return $OT;
