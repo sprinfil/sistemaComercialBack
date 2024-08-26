@@ -144,6 +144,41 @@ class CargoService{
     }
 
     // metodo para buscar todos los pagos de un modelo especifico
+    public function cargosPorModeloPendientesFormateados(Request $request){
+        try{
+            $data = $request->all();
+
+            // tipo pago
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
+            $dueno = null;
+            if($modelo == 'usuario'){
+                $dueno = Usuario::findOrFail($id_modelo);
+                $cargos = $dueno->cargosVigentes()->with('concepto')->get();
+                if($cargos){
+                    return $cargos;
+                } else{
+                    throw new Exception('el modelo no contiene cargos');
+                }
+            }else if($modelo == 'toma'){
+                $dueno = Toma::findOrFail($id_modelo);
+                $cargos = $dueno->cargosVigentes()->with('concepto')->get();
+                if($cargos){
+                    return $cargos;
+                } else{
+                    throw new Exception('el modelo no contiene cargos');
+                }
+            }else{
+                throw new Exception('modelo no definido');
+            }
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
+    // metodo para buscar todos los pagos de un modelo especifico
     public function cargosDeTomasDeUsuario($id){
         try{
             $id_usuario = $id;
