@@ -67,7 +67,6 @@ class OrdenTrabajoService{
         }
         $OT['estado']="En proceso";
         $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
-       
         $OT->update();
         $OT->save();
         return $OT;
@@ -79,32 +78,34 @@ class OrdenTrabajoService{
        
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
         $OrdenConf=OrdenTrabajoAccion::find($OT['id_orden_trabajo_catalogo']);
-        $ordenTrabajo['estado']="Concluida";
-        $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
-        $cargo=null;
-
         if ($OT['estado']=="Concluida"){
            
         }
+        $ordenTrabajo['estado']="Concluida";
+        $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
+        $cargo=null;
+    
+       
        
         $OT->update($ordenTrabajo);
         $OT->save($ordenTrabajo);
-     
+        $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
         if ($OrdenCatalogo['momento_cargo']=="concluir"){
 
             $conceptos=OrdenTrabajoCatalogo::where('id',$OrdenCatalogo['id'])
             ->with('ordenTrabajoCargos')->first()['ordenTrabajoCargos']
             ->pluck('OTConcepto');
             
-        $toma=Toma::find($OT['id_toma']);
+            $toma=Toma::find($OT['id_toma']);
             $origen="orden_trabajo";
             $dueno="toma";
             $cargo=$this->generarCargo($OrdenCatalogo,$origen,$toma,$dueno,$conceptos);
+            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo)];
         }
-        //return $modelos;
-        $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
-        return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo)];
-        //return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT)];
+        else{
+            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>$cargo];
+        }
+  
     }
 
     public function Masiva(){
