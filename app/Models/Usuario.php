@@ -94,12 +94,12 @@ class Usuario extends Model
         }
         else{
             $nuvUsuario=str_replace(" ","%",$usuario);
-            $data = Usuario::whereRaw("
+            $data = Usuario::with('tomas')->whereRaw("
             CONCAT(
                 COALESCE(nombre, ''), ' ', 
                 COALESCE(apellido_paterno, ''), ' ', 
                 COALESCE(apellido_materno, '')
-            )  LIKE ?", ['%'.$nuvUsuario.'%'])->with('tomas')->paginate(10);
+            )  LIKE ?", ['%'.$nuvUsuario.'%'])->paginate(10);
               return $data;
         }
        
@@ -119,7 +119,7 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::where("codigo_usuario",$usuario)->with('tomas')->get();
+        $data = Usuario::with("tomas")->where("codigo_usuario",$usuario)->paginate(10);
           return $data;
     }
 
