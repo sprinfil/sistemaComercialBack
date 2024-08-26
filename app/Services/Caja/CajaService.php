@@ -260,9 +260,12 @@ class CajaService{
   public function consultarCajasCatalogo()
   {
     try {
+      //return CajaCatalogo::with('operadorAsignado.operador')->orderby("id", "desc")->get();
+      
       return response(CajaCatalogoResource::collection(
-        CajaCatalogo::orderby("id", "desc")->get()
+        CajaCatalogo::with('operadorAsignado.operador')->orderby("id", "desc")->get()
     ));
+    
     } catch (Exception $ex) {
       return response()->json([
         'error' => 'Ocurrio un error al retirar la asignacion.'
@@ -396,6 +399,18 @@ class CajaService{
       return response()->json([
         'error' => 'Ocurrio un error durante la busqueda de la caja.'
     ], 500);
+    }
+  }
+
+  public function buscarSesionCajaService(Request $data)
+  {
+    try {
+     // return $data->fecha_apertura;
+      $cajaSesion = Caja::where('id_operador',$data->id_operador)
+      ->get();
+      return $cajaSesion;
+    } catch (Exception $ex) {
+      
     }
   }
 

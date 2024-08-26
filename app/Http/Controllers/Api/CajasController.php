@@ -212,6 +212,21 @@ class CajasController extends Controller
         }
     }
 
+    public function buscarSesionCaja(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $cajaSesion = (new CajaService())->buscarSesionCajaService($request);
+            DB::commit();
+            return response()->json(["operador"=>$cajaSesion]) ;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No se encontro sesion activa de la caja asociada a este operador.'
+            ], 500);
+        }
+    }
+
 
 
     /**
