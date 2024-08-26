@@ -154,30 +154,30 @@ class TarifaService{
 
     
 
-    public function updateTarifaService(array $data, string $id, string $estado)
+    public function updateTarifaService(array $data, string $id, string $estado, string $descripcion)
     {
-               
-        try {            
-              //To do 
-            $catalogoTiposToma = TipoToma::select('id', 'nombre')->get();
-            $catalogoServicioDealle = TarifaServiciosDetalle::select('id_tarifa_servicio', 'rango')
+        //$updateEstado = $this->actualizarEstadoTarifaService($request);    
+        try {
+            $tarifa = Tarifa::findOrFail($id);
+            $CatalogoTiposToma = TipoToma::with('tarifaServicio')->first();
+            $CatalogoServicioDetalle = TarifaServiciosDetalle::with('tarifaServicio')
+            ->select('id_tarifa_servicio', 'rango')
             ->where('id_tarifa_servicio', $id)
             ->get();
-            $tarifa = Tarifa::findOrFail($id);
-            //$totalConcepto = count($catalogoConcepto);
+           
             $servicioAsociado = false;
+            //$totalConcepto = count($catalogoConcepto);
             //return $catalogoServicioDealle;
             if (isset($tarifa)) {
-                if ($tarifa->estado == 'inactivo' && $tarifa->estado == 'activo') {
-                    foreach ($catalogoTiposToma as $TipoToma) {
+                    foreach ($CatalogoTiposToma as $TipoToma) {
 
-                        foreach ($catalogoServicioDealle as $servicioDetalle) {
-    
-                            if ($TipoToma->id == $servicioDetalle->id_tarifa_servicio) {
+                        foreach ($CatalogoServicioDetalle as $servicioDetalle) {
+                            if ($TipoToma->id == $servicioDetalle->id_tarifa_servicio) { //Corregir esta condicion
+
                                 $servicioAsociado = true;
                             }
                         }
-    
+
                         if ($servicioAsociado == false) {
                             return response()->json([
                                 'error' => 'No se activo la tarifa, existen tomas sin servicio asociado'
@@ -191,15 +191,21 @@ class TarifaService{
                         'message' => 'Existen tarifas anteriores activas. ¿Desea inactivarlas?',
                         'confirmUpdate' => true,
                     ], 200);
-                }
+                
                 //valida que exista almenos 1 rango de servicio asociado a la tarifa a activar
               
                 $tarifa->update($data);
                 $tarifa->save();
                 return response(new TarifaResource($tarifa), 200);  
-              
+
+            }
+            else{
+                return response()->json([
+                    'error' => 'No se pudo editar la tarifa '
+                ], 400);
             }
         } catch (Exception $ex) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'No se pudo editar la tarifa ' .$ex
             ], 400);
@@ -211,24 +217,25 @@ class TarifaService{
     {
         try {
             //obtenemos la respuesta
-            if ($request->input('confirmUpdate')) {
+            $tarifaId = $request->input('tarifa_id');
+            $tarifa = Tarifa::find($tarifaId);
+            if ($tarifa) {
+              if ($request->input('confirmUpdate')) {
                 // inactivar todo TODO
                 Tarifa::where('estado', 'activo')->update(['estado' => 'inactivo']);
-                // obtener el fakin id
-                $tarifaId = $request->input('tarifa_id');
-                $tarifa = Tarifa::find($tarifaId);
-                if ($tarifa) {
+                // obtener el fakin id                
                     $tarifa->estado = 'activo';
                     $tarifa->save();
-                }
-    
                 return response()->json([
                     'message' => 'Actualización realizada con éxito.',
                 ], 200);
             }
-            return response()->json([
-                'message' => 'No se realizó ninguna actualización.',
-            ], 200);
+        }
+            else{
+                return response()->json([
+                    'message' => 'No se realizó ninguna actualización.' 
+                ], 200);
+            }
         } catch (Exception $ex) {
             return response()->json([
                 'error' => 'No se pudo editar la tarifa: ' . $ex->getMessage(),

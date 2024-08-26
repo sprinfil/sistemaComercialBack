@@ -114,9 +114,10 @@ class TarifaController extends Controller
 
         try {
             $data = $request->validated();
+            $descripcion = $request->input('descripcion');
             $estado = $request->input('estado');
             DB::beginTransaction();
-            $tarifa = (new TarifaService())->updateTarifaService($data, $id, $estado);
+            $tarifa = (new TarifaService())->updateTarifaService($data, $id, $estado, $descripcion);
             DB::commit();
             return $tarifa;  
            
