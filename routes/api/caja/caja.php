@@ -10,6 +10,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/cajas/store","store");
         Route::get("/cajas/test","test");  
         Route::put("/cajas/update","update");
+        Route::get("/cajas/buscarSesionCaja","buscarSesionCaja");
 
         //AsignarOperadorCaja
         Route::post("/cajas/asignarOperador","asignarOperador");
