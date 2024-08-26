@@ -228,7 +228,7 @@ class CajasController extends Controller
             DB::beginTransaction();
             $cajaSesion = (new CajaService())->buscarSesionCajaService($request);
             DB::commit();
-            return response()->json(["operador"=>$cajaSesion]) ;
+            return  $cajaSesion;
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
