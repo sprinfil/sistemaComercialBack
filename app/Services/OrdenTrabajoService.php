@@ -42,7 +42,7 @@ class OrdenTrabajoService{
           
             $ordenTrabajoPeticion['fecha_vigencia']=Carbon::today()->addDays($OtCatalogo['vigencias']);
             $ordenTrabajoPeticion['estado']="No asignada";
-            $OrdenCatalogo=OrdenTrabajo::create($ordenTrabajoPeticion);
+            $ordenTrabajo=OrdenTrabajo::create($ordenTrabajoPeticion);
             if($OtCatalogo['momento_cargo']=="generar"){
                 $conceptos=OrdenTrabajoCatalogo::where('id',$OtCatalogo['id'])
                 ->with('ordenTrabajoCargos')->first()['ordenTrabajoCargos']
@@ -52,21 +52,22 @@ class OrdenTrabajoService{
                 $toma=Toma::find($ordenTrabajoPeticion['id_toma']);
                 $origen="orden_trabajo";
                 $dueno="toma";
-                $cargo=$this->generarCargo($OrdenCatalogo,$origen,$toma,$dueno,$conceptos);
+                $cargo=$this->generarCargo($ordenTrabajo,$origen,$toma,$dueno,$conceptos);
             }
             
-            return [$OrdenCatalogo,$cargo];
+            return [$ordenTrabajo,$cargo];
             //:?OrdenTrabajo
         } 
     }
-    public function asignar(array $ordenTrabajo): OrdenTrabajo{ //Ejemplo de service
+    public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
         
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        $OT['estado']="En proceso";
-        $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
         if ($OT['estado']=="En proceso"){
             return null;
         }
+        $OT['estado']="En proceso";
+        $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
+       
         $OT->update();
         $OT->save();
         return $OT;
@@ -105,6 +106,11 @@ class OrdenTrabajoService{
         return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo)];
         //return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT)];
     }
+
+    public function Masiva(){
+        
+    }
+
     //metodo que maneja el tipo de accion de la ot a realizar
     public function Acciones(OrdenTrabajo $ordenTrabajo, $OtCatalogo, $modelos){
         $acciones=$OtCatalogo->ordenTrabajoAccion;
@@ -233,7 +239,15 @@ class OrdenTrabajoService{
         return $cargos;
     }
     public function cancelar(Request $request){
-        
+        $OT=OrdenTrabajo::find($request['id']);
+        $OTCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
+        if ($OTCatalogo['momento_cargo']=="generar"){
+            $OtCargos=$OT->cargos;
+            foreach ($OtCargos as $cargo){
+                $cargo->delete();
+            }
+        }
+        $OT->delete();
     }
     public function restore(){
         
