@@ -316,14 +316,15 @@ class OrdenTrabajoController extends Controller
        
        try{
         DB::beginTransaction();
-        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        $data=(new OrdenTrabajoService())->Masiva($request->validated());
         if (!$data){
-            return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
         }
         else
         {
-            DB::commit();
-            return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+            DB::rollBack();
+            return $data;
+            //return response()->json(["Orden de trabajo"=>OrdenTrabajoResource::collection($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
        }
        catch(Exception $ex){

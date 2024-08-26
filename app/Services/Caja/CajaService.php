@@ -190,7 +190,7 @@ class CajaService{
               $operadorRepetido->restore();
 
               return response()->json([
-                'Asignacion exitosa.'
+                $operadorRepetido
                ]);
           }
           //este mensaje se envia en caso de que el operador previamente ya estuviera asignado a la caja
@@ -205,7 +205,7 @@ class CajaService{
              $operadorAsignado->save();
 
              return response()->json([
-              'Asignacion exitosa.'
+              $operadorAsignado
              ]);
 
         }

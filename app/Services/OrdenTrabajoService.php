@@ -108,8 +108,12 @@ class OrdenTrabajoService{
   
     }
 
-    public function Masiva(){
-        
+    public function Masiva(array $OrdenesMasivas){
+        $ordenes=new Collection();
+        foreach ($OrdenesMasivas as $OT){
+            $ordenes->push($this->crearOrden($OT));
+        }
+        return $ordenes;
     }
 
     //metodo que maneja el tipo de accion de la ot a realizar
