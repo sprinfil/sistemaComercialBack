@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('action');
             $table->string('url');
             $table->text('comment')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

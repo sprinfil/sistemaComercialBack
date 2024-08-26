@@ -10,6 +10,7 @@ use App\Models\CajaCatalogo;
 use App\Models\CorteCaja;
 use App\Models\OperadorAsignado;
 use App\Models\Pago;
+use App\Models\SolicitudCancelacionPago;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -171,6 +172,41 @@ class CajaService{
       }
      
    }
+
+
+  public function pagosPorCaja(Request $request)
+  {
+    try{
+      $data = $request->all();
+      $id_caja = $data['id_caja'];
+      $pagos = Caja::findOrFail($id_caja)->pagos;
+      return $pagos;
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
+  public function cargoPorCaja(Request $request)
+  {
+    try{
+      $data = $request->all();
+      $id_caja = $data['id_caja'];
+      $cargos = Caja::findOrFail($id_caja)->cargos;
+      return $cargos;
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
+  public function solicitudCancelacionPago(Request $request)
+  {  
+    try{
+      $data = $request->all();
+      return SolicitudCancelacionPago::create($data);
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
 
    public function asignarOperadorService(array $data)
    {
