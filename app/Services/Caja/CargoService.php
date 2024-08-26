@@ -4,6 +4,7 @@ namespace App\Services\Caja;
 use App\Http\Requests\StoreCargoDirectoRequest;
 use App\Http\Requests\StoreCargoRequest;
 use App\Http\Requests\UpdateCargoRequest;
+use App\Http\Resources\CargoResource;
 use App\Models\Cargo;
 use App\Models\CargoDirecto;
 use App\Models\ConceptoCatalogo;
@@ -226,7 +227,7 @@ class CargoService{
                 }
             }
         
-            return response()->json(['data' => $cargo], 201);
+            return response()->json(['data' => new CargoResource($cargo)], 201);
         
         } catch (Exception $ex) {
             throw $ex;
