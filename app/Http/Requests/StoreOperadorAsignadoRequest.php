@@ -24,7 +24,7 @@ class StoreOperadorAsignadoRequest extends FormRequest
         return [
             "operadores_asignados"=>"required|array",
             "operadores_asignados.*"=>"required|array:id,id_operador,id_caja_catalogo",
-            "id.*."=>"sometimes|integer",
+            "id.*."=>"sometimes|numeric",
             "id_operador.*."=>"required|integer|gt:0",
             "id_caja_catalogo.*."=>"required|integer|gt:0",
         ];
