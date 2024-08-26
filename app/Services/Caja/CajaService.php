@@ -155,7 +155,7 @@ class CajaService{
           }
           else{
             return response()->json([
-              'error' => 'El operador no en la caja y en el corte no coincide.'
+              'error' => 'El operador en la caja y en el corte no coincide.'
              ]);
           }
         }else{
@@ -261,7 +261,7 @@ class CajaService{
   {
     try {
       return response(CajaCatalogoResource::collection(
-        CajaCatalogo::all()
+        CajaCatalogo::orderby("id", "desc")->get()
     ));
     } catch (Exception $ex) {
       return response()->json([
