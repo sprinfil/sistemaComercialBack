@@ -10,5 +10,8 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/cajas/store","store") ;
         Route::get("/cajas/test","test");  
         Route::put("/cajas/update","update");
+        Route::get("/cajas/pagos","pagosPorCaja");  
+        Route::get("/cajas/cargos","cargosPorCaja"); 
+        Route::post("/cajas/solicitudCancelacion","solicitarCancelacionPago");  
     });
 });

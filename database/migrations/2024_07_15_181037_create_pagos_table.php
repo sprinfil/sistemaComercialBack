@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
+            $table->string('folio');
             $table->unsignedInteger('id_caja');
             $table->unsignedBigInteger('id_dueno'); 
             $table->string('modelo_dueno');

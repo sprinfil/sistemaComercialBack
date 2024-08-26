@@ -5,6 +5,7 @@ use App\Http\Requests\StorePagoRequest;
 use App\Http\Requests\UpdatePagoRequest;
 use App\Http\Resources\PagoResource;
 use App\Models\Abono;
+use App\Models\Caja;
 use App\Models\Cargo;
 use App\Models\CatalogoBonificacion;
 use App\Models\Pago;
@@ -40,6 +41,18 @@ class PagoService{
             $modelo = $data['modelo_dueno'];
             $id_modelo = $data['id_dueno'];
             $dueno = helperGetOwner($modelo, $id_modelo);
+
+            // Supongamos que $data tiene una clave 'caja_id' para identificar la caja
+            $caja = Caja::find($data['id_caja']); // Ajusta según cómo identifiques la caja
+
+            // Cuenta el número de pagos en esa caja
+            $numeroPagos = $caja->pagos()->count() + 1;
+
+            // Genera el folio
+            $folio = strtoupper('C'.str_pad($caja->id, 2, '0', STR_PAD_LEFT).'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT));
+
+            // Agrega el folio al array $data
+            $data['folio'] = $folio;
 
             // 1.3 Se registra el pago
             $pago = Pago::create($data);
@@ -87,7 +100,6 @@ class PagoService{
             throw $ex;
         }
     }
-
 
     //
     public function registrarAbono($id_cargo, $modelo_origen, $id_origen, $monto)
