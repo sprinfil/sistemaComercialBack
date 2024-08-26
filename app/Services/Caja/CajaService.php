@@ -4,6 +4,7 @@ namespace App\Services\Caja;
 use App\Http\Resources\CajaCatalogoResource;
 use App\Http\Resources\CajaResource;
 use App\Http\Resources\CorteCajaResource;
+use App\Http\Resources\OperadorAsignadoResource;
 use App\Http\Resources\PagoResource;
 use App\Models\Caja;
 use App\Models\CajaCatalogo;
@@ -174,46 +175,36 @@ class CajaService{
 
    public function asignarOperadorService(array $data)
    {
-      try {
-        //Consulta si el operador esta o estuvo asignado a la caja
+    $operadores=new Collection();
+    $operadorer_id=[];
+        foreach ($data as $operador){
+
+          //Consulta si el operador esta o estuvo asignado a la caja
+          /*
         $operadorRepetido = OperadorAsignado::withTrashed()
-        ->where('id_caja_catalogo',$data['id_caja_catalogo'])
-        ->where('id_operador',$data['id_operador'])
+        ->where('id_caja_catalogo',$operador['id_caja_catalogo'])
+        ->where('id_operador',$operador['id_operador'])
         ->first();
-        //Verifica si este operador ya esta asignado a esta caja.
-        if ($operadorRepetido) 
-        {
-          //Verifica si el operador estuvo asignado a esta caja pero dicha asignacion le fue revocada
-          if ($operadorRepetido->trashed()) {
-
-            //Reactiva la asignacion del operador a la caja seleccionada
-              $operadorRepetido->restore();
-
-              return response()->json([
-                'Asignacion exitosa.'
-               ]);
-          }
-          //este mensaje se envia en caso de que el operador previamente ya estuviera asignado a la caja
-          return response()->json([
-            'El operador ya esta asignado a esta caja.'
-           ]);
-
+        */
+          //En caso de que el operador nunca hubiese estado asignado a esta caja, lo asigna
+          $operador_id=$operador['id'] ?? null;
+          $operadorAsignado = OperadorAsignado::updateOrCreate(['id'=>$operador_id],$operador);
+          //$operadorAsignado->save();
+          $operadores->push($operadorAsignado);
+          $operadorer_id[]=$operador['id'];
+        
         }
-        else{
-             //En caso de que el operador nunca hubiese estado asignado a esta caja, lo asigna
-             $operadorAsignado = OperadorAsignado::create($data);
-             $operadorAsignado->save();
-
-             return response()->json([
-              'Asignacion exitosa.'
-             ]);
-
-        }
+        return OperadorAsignadoResource::collection($operadores);
+        
+        /*
+      try {
+        
       } catch (Exception $ex) {
         return response()->json([
           'error' => 'Ocurrio un error durante la asignacion del operador.'
       ], 500);
       }
+      */
    }
 
    public function retirarAsignacionService(array $data)

@@ -88,12 +88,13 @@ class CajasController extends Controller
 
     public function asignarOperador(StoreOperadorAsignadoRequest $request)
     {
+        $data = $request->validated();
+        DB::beginTransaction();
+        $operadorAsignado = (new CajaService())->asignarOperadorService($data['operadores_asignados']);
+        DB::rollBack();
+        return $operadorAsignado;
         try {
-            $data = $request->validated();
-            DB::beginTransaction();
-            $operadorAsignado = (new CajaService())->asignarOperadorService($data);
-            DB::commit();
-            return $operadorAsignado;
+           
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
