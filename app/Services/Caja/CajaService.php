@@ -213,35 +213,22 @@ class CajaService{
    public function asignarOperadorService(array $data)
    {
     $operadores=new Collection();
-    $operadorer_id=[];
+    $operadores_id=[];
         foreach ($data as $operador){
 
-          //Consulta si el operador esta o estuvo asignado a la caja
-          /*
-        $operadorRepetido = OperadorAsignado::withTrashed()
-        ->where('id_caja_catalogo',$operador['id_caja_catalogo'])
-        ->where('id_operador',$operador['id_operador'])
-        ->first();
-        */
+ 
           //En caso de que el operador nunca hubiese estado asignado a esta caja, lo asigna
           $operador_id=$operador['id'] ?? null;
-          $operadorAsignado = OperadorAsignado::updateOrCreate(['id'=>$operador_id],$operador);
+          $operadorAsignado = OperadorAsignado::updateOrCreate(['id_caja_catalogo'=>$operador['id_caja_catalogo'],'id_operador'=>$operador['id_operador']],$operador);
           //$operadorAsignado->save();
           $operadores->push($operadorAsignado);
-          $operadorer_id[]=$operador['id'];
+          $operadores_id[]=$operadorAsignado['id'];
         
         }
+        OperadorAsignado::where('id_caja_catalogo', $operadores[0]['id_caja_catalogo'])
+        ->whereNotIn('id', $operadores_id)
+        ->delete();
         return OperadorAsignadoResource::collection($operadores);
-        
-        /*
-      try {
-        
-      } catch (Exception $ex) {
-        return response()->json([
-          'error' => 'Ocurrio un error durante la asignacion del operador.'
-      ], 500);
-      }
-      */
    }
 
    public function retirarAsignacionService(array $data)
