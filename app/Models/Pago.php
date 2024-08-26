@@ -17,6 +17,7 @@ class Pago extends Model
     protected $table = "pagos";
 
     protected $fillable = [
+        "folio",
         "id_caja",
         "id_dueno",
         "modelo_dueno",

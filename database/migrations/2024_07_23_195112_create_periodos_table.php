@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('facturacion_fecha_final');
             $table->date('lectura_inicio');
             $table->date('lectura_final');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

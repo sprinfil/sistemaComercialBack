@@ -12,6 +12,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/cargos/show/{id}", "show");
         Route::get("/cargos/porModelo","cargosPorModelo");
         Route::get("/cargos/porModelo/pendientes","cargosPorModeloPendientes");
+        Route::get("/cargos/porModelo/pendientesFormateado","cargosPorModeloPendientesFormateados");
         Route::post("/cargo/generarDirecto","cargoDirecto");
     });
     // cargo directo

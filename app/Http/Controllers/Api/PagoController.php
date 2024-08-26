@@ -86,4 +86,18 @@ class PagoController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Consulta historial de pagos por modelo
+     */
+    public function totalPendiente(Request $request)
+    {
+        try {
+            return response($this->pagoService->totalPendiente($request),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los pagos'
+            ], 500);
+        }
+    }
 }

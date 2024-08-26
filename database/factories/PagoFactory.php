@@ -20,8 +20,10 @@ class PagoFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {
+    {   
+        $numeroPagos = Pago::count() + 1;
         return [
+            'folio'=>strtoupper('C'.str_pad(1, 2, '0', STR_PAD_LEFT).'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT)),
             'id_caja'=>$this->faker->numberBetween(1,4),
             'id_dueno' => 0,
             'modelo_dueno' => '',

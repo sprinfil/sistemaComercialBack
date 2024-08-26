@@ -11,10 +11,12 @@ use App\Models\CajaCatalogo;
 use App\Models\CorteCaja;
 use App\Models\OperadorAsignado;
 use App\Models\Pago;
+use App\Models\SolicitudCancelacionPago;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CajaService{
 
@@ -173,6 +175,41 @@ class CajaService{
      
    }
 
+
+  public function pagosPorCaja(Request $request)
+  {
+    try{
+      $data = $request->all();
+      $id_caja = $data['id_caja'];
+      $pagos = Caja::findOrFail($id_caja)->pagos;
+      return $pagos;
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
+  public function cargoPorCaja(Request $request)
+  {
+    try{
+      $data = $request->all();
+      $id_caja = $data['id_caja'];
+      $cargos = Caja::findOrFail($id_caja)->cargos;
+      return $cargos;
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
+  public function solicitudCancelacionPago(Request $request)
+  {  
+    try{
+      $data = $request->all();
+      return SolicitudCancelacionPago::create($data);
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
    public function asignarOperadorService(array $data)
    {
     $operadores=new Collection();
@@ -248,7 +285,7 @@ class CajaService{
     }
   }
 
-  public function consultarCajasCatalogo()
+  public function consultarCajasCatalogo() //pendiente modificar resource
   {
     try {
       //return CajaCatalogo::with('operadorAsignado.operador')->orderby("id", "desc")->get();
@@ -396,10 +433,13 @@ class CajaService{
   public function buscarSesionCajaService(Request $data)
   {
     try {
-     // return $data->fecha_apertura;
+     // return $data->fecha_apertura; new CajaResource($cajaSesion);
       $cajaSesion = Caja::where('id_operador',$data->id_operador)
-      ->get();
-      return $cajaSesion;
+      ->where('id_caja_catalogo',$data->id_caja_catalogo)
+      ->where(DB::raw('DATE(fecha_apertura)'),$data->fecha_apertura)
+      ->where('fecha_cierre',null)
+      ->first();
+      return (new CajaResource($cajaSesion));
     } catch (Exception $ex) {
       
     }

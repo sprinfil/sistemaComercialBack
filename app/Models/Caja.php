@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Caja extends Model
@@ -85,5 +86,10 @@ class Caja extends Model
     public function catalogoCaja () : BelongsTo
     {
         return $this->belongsTo(CajaCatalogo::class , 'id_caja_catalogo'); //ya
+    }
+
+    public function cargos(): MorphMany
+    {
+        return $this->morphMany(CargoDirecto::class, 'origen', 'modelo_origen', 'id_origen');
     }
 }
