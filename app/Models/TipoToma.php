@@ -30,6 +30,6 @@ class TipoToma extends Model
     // Tomas asociadas a tipo de toma
     public function tomas() : HasMany
     {
-        return $this->hasMany(Toma::class, 'tipo_toma', 'nombre');
+        return $this->hasMany(Toma::class, 'id_tipo_toma');
     }
 }

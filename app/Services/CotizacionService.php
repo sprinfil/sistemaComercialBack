@@ -53,7 +53,4 @@ class CotizacionService{
         return $conceptos;
         //return $concepto;
     }
-    public function Existe($contratro){
-        
-    }
 }

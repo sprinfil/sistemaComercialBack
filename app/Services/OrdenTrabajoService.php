@@ -1,7 +1,9 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\CargoResource;
 use App\Http\Resources\OrdenTrabajoResource;
+use App\Models\Cargo;
 use App\Models\Consumo;
 use App\Models\Contrato;
 use App\Models\Lectura;
@@ -12,10 +14,13 @@ use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
 use App\Models\Toma;
 use App\Models\Usuario;
+use App\Services\Caja\ConceptoService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+
 
 class OrdenTrabajoService{
 
@@ -28,6 +33,7 @@ class OrdenTrabajoService{
     public function crearOrden(array $ordenTrabajoPeticion){ //Ejemplo de service
         
         $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->first();
+        $cargo=null;
         if ($ordenTrabajo){
             return null;
         }
@@ -36,20 +42,29 @@ class OrdenTrabajoService{
           
             $ordenTrabajoPeticion['fecha_vigencia']=Carbon::today()->addDays($OtCatalogo['vigencias']);
             $ordenTrabajoPeticion['estado']="No asignada";
-            $OrdenCatalogo=OrdenTrabajo::create($ordenTrabajoPeticion);
+            $ordenTrabajo=OrdenTrabajo::create($ordenTrabajoPeticion);
             if($OtCatalogo['momento_cargo']=="generar"){
-                $cargo=$this->generarCargo();
-            }
-            else{
+                $conceptos=OrdenTrabajoCatalogo::where('id',$OtCatalogo['id'])
+                ->with('ordenTrabajoCargos')->first()['ordenTrabajoCargos']
+                ->pluck('OTConcepto');
+                //LOOOOOOOOOOL  una atalacha que me ahorra un foreach????
 
+                $toma=Toma::find($ordenTrabajoPeticion['id_toma']);
+                $origen="orden_trabajo";
+                $dueno="toma";
+                $cargo=$this->generarCargo($ordenTrabajo,$origen,$toma,$dueno,$conceptos);
             }
-            return $OrdenCatalogo;
+            
+            return [$ordenTrabajo,$cargo];
             //:?OrdenTrabajo
         } 
     }
-    public function asignar(array $ordenTrabajo): OrdenTrabajo{ //Ejemplo de service
+    public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
         
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
+        if ($OT['estado']=="En proceso"){
+            return null;
+        }
         $OT['estado']="En proceso";
         $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
         $OT->update();
@@ -63,26 +78,40 @@ class OrdenTrabajoService{
        
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
         $OrdenConf=OrdenTrabajoAccion::find($OT['id_orden_trabajo_catalogo']);
+        if ($OT['estado']=="Concluida"){
+           
+        }
         $ordenTrabajo['estado']="Concluida";
         $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
-     
-
-        if ($OT['estado']=="Concluida"){
-            return null;
-        }
+        $cargo=null;
+    
+       
        
         $OT->update($ordenTrabajo);
         $OT->save($ordenTrabajo);
-     
+        $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
         if ($OrdenCatalogo['momento_cargo']=="concluir"){
 
-            //$cargo=$this->generarCargo();
+            $conceptos=OrdenTrabajoCatalogo::where('id',$OrdenCatalogo['id'])
+            ->with('ordenTrabajoCargos')->first()['ordenTrabajoCargos']
+            ->pluck('OTConcepto');
+            
+            $toma=Toma::find($OT['id_toma']);
+            $origen="orden_trabajo";
+            $dueno="toma";
+            $cargo=$this->generarCargo($OrdenCatalogo,$origen,$toma,$dueno,$conceptos);
+            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo)];
         }
-        //return $modelos;
-        $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
-        return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones];
-        //return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT)];
+        else{
+            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>$cargo];
+        }
+  
     }
+
+    public function Masiva(){
+        
+    }
+
     //metodo que maneja el tipo de accion de la ot a realizar
     public function Acciones(OrdenTrabajo $ordenTrabajo, $OtCatalogo, $modelos){
         $acciones=$OtCatalogo->ordenTrabajoAccion;
@@ -189,11 +218,37 @@ class OrdenTrabajoService{
     public function Quitar($Accion,$ordenTrabajo,$modelos){
         
     }
-    public function generarCargo(){
+    public function generarCargo($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){
 
+        $cargos=new Collection();
+        foreach($conceptos as $concepto){
+            $tarifa=(new ConceptoService())->obtenerTarifaToma($dueno['id_tipo_toma'],$concepto['id']);
+            $iva=helperCalcularIVA($tarifa['monto']);
+            $cargos->push(Cargo::create([
+                'id_concepto' => $concepto['id'],
+                'nombre' => $concepto['nombre'],
+                'id_origen' =>  $origen['id'],
+                'modelo_origen' => $tipoOrigen,
+                'id_dueno' => $dueno['id'],
+                'modelo_dueno' => $tipoDueno,
+                'monto' => $tarifa['monto'],
+                'iva' => $iva,
+                'estado' => "pendiente",
+                'fecha_cargo' => Carbon::today()->format('Y-m-d'),
+            ]));
+        }
+        return $cargos;
     }
-    public function delete(){
-
+    public function cancelar(Request $request){
+        $OT=OrdenTrabajo::find($request['id']);
+        $OTCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
+        if ($OTCatalogo['momento_cargo']=="generar"){
+            $OtCargos=$OT->cargos;
+            foreach ($OtCargos as $cargo){
+                $cargo->delete();
+            }
+        }
+        $OT->delete();
     }
     public function restore(){
         

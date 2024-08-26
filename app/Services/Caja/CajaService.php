@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Caja;
 
+use App\Http\Resources\CajaCatalogoResource;
 use App\Http\Resources\CajaResource;
 use App\Http\Resources\CorteCajaResource;
 use App\Http\Resources\PagoResource;
@@ -155,7 +156,7 @@ class CajaService{
           }
           else{
             return response()->json([
-              'error' => 'El operador no en la caja y en el corte no coincide.'
+              'error' => 'El operador en la caja y en el corte no coincide.'
              ]);
           }
         }else{
@@ -172,10 +173,6 @@ class CajaService{
      
    }
 
-  public function asignaciorOperador(Request $request)
-  {
-    
-  }
 
   public function pagosPorCaja(Request $request)
   {
@@ -210,4 +207,247 @@ class CajaService{
       throw $ex;
     }
   }
+
+   public function asignarOperadorService(array $data)
+   {
+      try {
+        //Consulta si el operador esta o estuvo asignado a la caja
+        $operadorRepetido = OperadorAsignado::withTrashed()
+        ->where('id_caja_catalogo',$data['id_caja_catalogo'])
+        ->where('id_operador',$data['id_operador'])
+        ->first();
+        //Verifica si este operador ya esta asignado a esta caja.
+        if ($operadorRepetido) 
+        {
+          //Verifica si el operador estuvo asignado a esta caja pero dicha asignacion le fue revocada
+          if ($operadorRepetido->trashed()) {
+
+            //Reactiva la asignacion del operador a la caja seleccionada
+              $operadorRepetido->restore();
+
+              return response()->json([
+                'Asignacion exitosa.'
+               ]);
+          }
+          //este mensaje se envia en caso de que el operador previamente ya estuviera asignado a la caja
+          return response()->json([
+            'El operador ya esta asignado a esta caja.'
+           ]);
+
+        }
+        else{
+             //En caso de que el operador nunca hubiese estado asignado a esta caja, lo asigna
+             $operadorAsignado = OperadorAsignado::create($data);
+             $operadorAsignado->save();
+
+             return response()->json([
+              'Asignacion exitosa.'
+             ]);
+
+        }
+      } catch (Exception $ex) {
+        return response()->json([
+          'error' => 'Ocurrio un error durante la asignacion del operador.'
+      ], 500);
+      }
+   }
+
+   public function retirarAsignacionService(array $data)
+   {
+    try {
+      //return $data;
+        //Consulta si el operador esta o estuvo asignado a la caja
+        $operadorAsignado = OperadorAsignado::withTrashed()
+        ->where('id_caja_catalogo',$data['id_caja_catalogo'])
+        ->where('id_operador',$data['id_operador'])
+        ->first();
+
+        //Comprueba que exista registro el operador
+        if ($operadorAsignado) {
+
+          //Comprueba que el operador no cuente con un retiro de asignacion previo
+          if ($operadorAsignado->trashed()) {
+
+            return response()->json([
+              'El operador seleccionado no cuenta con asignacion a esta caja.'
+            ]);
+          }
+          else{
+            //Si el operador no cuenta con asignacion retirada previa retira su asignacion
+            $operadorAsignado->delete();
+            return response()->json([
+              'Se retiro la asignacion del operador.'
+            ]);
+          }
+        }
+        else{
+          //Si el operador nunca ha estado asignado a esta caja, muestra este mensaje
+          return response()->json([
+            'El operador seleccionado no cuenta con asignacion a esta caja.'
+          ]);
+        }
+    } catch (Exception $ex) {
+       return response()->json([
+          'error' => 'Ocurrio un error al retirar la asignacion.'
+      ], 500);
+    }
+  }
+
+  public function consultarCajasCatalogo()
+  {
+    try {
+      //return CajaCatalogo::with('operadorAsignado.operador')->orderby("id", "desc")->get();
+      
+      return response(CajaCatalogoResource::collection(
+        CajaCatalogo::with('operadorAsignado.operador')->orderby("id", "desc")->get()
+    ));
+    
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error al retirar la asignacion.'
+    ], 500);
+    }
+  }
+
+  public function guardarCajaCatalogoService(array $data)
+  {
+ 
+    //$caja->save();
+    try {
+     
+      $cajaPrevia = CajaCatalogo::withTrashed()
+      ->where('nombre_caja',$data["nombre_caja"])
+      ->first();
+
+      //return $cajaPrevia;
+
+      if ($cajaPrevia) {
+
+          if ($cajaPrevia->trashed()) {
+              return response()->json([
+              'message' => 'La caja ya existe pero ha sido eliminada, ¿Desea restaurarla?',
+              'restore' => true,
+              'caja_id' => $cajaPrevia->id
+             ], 200);
+          }
+
+          return response()->json([
+           'error' => 'La caja ya existe.'
+          ], 500); 
+
+      }else{
+        
+      //return $data;
+        $caja = CajaCatalogo::create($data);
+        return response(new CajaCatalogoResource($caja), 200);;
+        return $caja;
+
+        return response()->json([
+          'Se ha registrado la caja en el catalogo.'
+        ]);
+      }
+    } catch (Exception $ex) {
+      return response()->json([
+                'error' => 'Ocurrio un error durante el registro de la caja.'.$ex
+            ], 500);
+    }
+  }
+
+  public function eliminarCajaCatalogoService(string $id)
+  {
+    try {
+      $caja = CajaCatalogo::find($id);
+     
+      if ($caja) {
+
+        $caja->delete();
+        return response()->json([
+         'Se ha eliminado la caja.'
+       ]);
+
+      }else{
+        
+       return response()->json([
+         'No se ha encontrado la caja.'
+      ]);
+      }
+      //$caja->restore();
+    } catch (Exception $ex) {
+      return response()->json([
+          'error' => 'No se ha eliminado la caja.'
+      ]);
+    }
+  }
+  public function restaurarCajaCatalogoService($id)
+  {
+    try {
+      $caja = CajaCatalogo::withTrashed()->findOrFail($id);
+      //Condicion para verificar si el registro esta eliminado
+      if ($caja->trashed()) {
+         //Restaura el registro
+         $caja->restore();
+
+           return response()->json([
+            'Se ha restaurado la caja.'
+           ]);
+       }
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error al restaurar la caja.'
+      ]);
+    }
+  }
+
+
+  public function modificarCajaCatalogoService(array $data, string $id)
+  {
+    try {
+      $caja = CajaCatalogo::find($id);
+      if ($caja) {
+        $caja->update($data);
+        $caja->save();
+        return new CajaCatalogoResource($caja);
+      }
+      else{
+        return response()->json([
+          'error' => 'No se encontro la caja que desea modificar.'
+        ]);
+      }
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error al modificar la caja.'
+      ]);
+    }
+  }
+
+  public function mostrarCajaService(string $id)
+  {
+    try {
+      $caja = CajaCatalogo::find($id);
+      if ($caja) {
+        return new CajaCatalogoResource($caja);
+      }else{
+        return response()->json([
+          'error' => 'No se encontro la caja en el catalogo.'
+        ]);
+      }
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda de la caja.'
+    ], 500);
+    }
+  }
+
+  public function buscarSesionCajaService(Request $data)
+  {
+    try {
+     // return $data->fecha_apertura;
+      $cajaSesion = Caja::where('id_operador',$data->id_operador)
+      ->get();
+      return $cajaSesion;
+    } catch (Exception $ex) {
+      
+    }
+  }
+
 }

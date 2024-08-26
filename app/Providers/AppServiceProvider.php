@@ -38,7 +38,8 @@ class AppServiceProvider extends ServiceProvider
             'factibilidad' => 'App\Models\Factibilidad',
             'pago' => 'App\Models\Pago',
             'abono' => 'App\Models\Abono',
-            'caja' => 'App\Models\Caja'
+            'caja' => 'App\Models\Caja',
+            'orden_trabajo' => 'App\Models\OrdenTrabajo'
         ]);
     }
 }
