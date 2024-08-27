@@ -18,6 +18,6 @@ class OrdenesTrabajoEncadenada extends Model
         return $this->belongsTo(OrdenTrabajoCatalogo::class,'id_OT_Catalogo_padre');
     }
     public function OrdenCatalogoEncadenadas():BelongsTo{
-        return $this->belongsTo(OrdenTrabajoCatalogo::class,'id_OT_Catalogo_padre');
+        return $this->belongsTo(OrdenTrabajoCatalogo::class,'id_OT_Catalogo_encadenada');
     }
 }
