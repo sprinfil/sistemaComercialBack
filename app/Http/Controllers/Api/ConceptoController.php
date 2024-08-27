@@ -49,9 +49,11 @@ class ConceptoController extends Controller
     {
         try {
             $this->authorize('viewAny', ConceptoCatalogo::class);
+
             return response(ConceptoResource::collection(
                 $this->conceptoService->obtenerConceptosCargables()
             ),200);
+            
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar los conceptos'

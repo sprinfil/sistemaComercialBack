@@ -22,11 +22,13 @@ class StoreOrdenTrabajoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_toma" => "required|exists:toma,id",
-            "id_empleado_asigno" => "required|exists:operadores,id",
-            "id_empleado_encargado" => "sometimes|exists:operadores,id",
-            "id_orden_trabajo_catalogo" => "required|exists:orden_trabajo_catalogos,id",
-            "posicion_OT" => "sometimes|point",
+            "ordenes_trabajo"=> "required|array",
+            "ordenes_trabajo.*"=> "required|array:id_toma,id_empleado_asigno,id_empleado_encargado,id_orden_trabajo_catalogo,posicion_OT",
+            "id_toma.*." => "required|exists:toma,id",
+            "id_empleado_asigno.*." => "required|exists:operadores,id",
+            "id_empleado_encargado.*." => "sometimes|exists:operadores,id",
+            "id_orden_trabajo_catalogo.*." => "required|exists:orden_trabajo_catalogos,id",
+            "posicion_OT.*." => "sometimes|point",
         ];
     }
 }

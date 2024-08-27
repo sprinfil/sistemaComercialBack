@@ -106,6 +106,22 @@ class CargoController extends Controller
     }
 
     /**
+     * Consulta todos los cargos de un modelo
+     */
+    public function cargosPorModeloPendientesFormateados(Request $request)
+    {
+        try {
+            return response(CargoResource::collection(
+                $this->cargoService->cargosPorModeloPendientesFormateados($request)
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los cargos'
+            ], 500);
+        }
+    }
+
+    /**
      * Consulta todos los cargos pendientes de un usuario y sus tomas
      */
     public function cargosDeTomasPorUsuario(Request $request)

@@ -5,6 +5,7 @@ use App\Http\Requests\StoreRetiroCajaRequest;
 use App\Http\Resources\CajaCatalogoResource;
 use App\Http\Resources\CajaResource;
 use App\Http\Resources\CorteCajaResource;
+use App\Http\Resources\OperadorAsignadoResource;
 use App\Http\Resources\PagoResource;
 use App\Http\Resources\RetiroCajaResource;
 use App\Models\Caja;
@@ -13,6 +14,7 @@ use App\Models\CorteCaja;
 use App\Models\OperadorAsignado;
 use App\Models\Pago;
 use App\Models\RetiroCaja;
+use App\Models\SolicitudCancelacionPago;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -194,48 +196,60 @@ class CajaService{
      
    }
 
+
+  public function pagosPorCaja(Request $request)
+  {
+    try{
+      $data = $request->all();
+      $id_caja = $data['id_caja'];
+      $pagos = Caja::findOrFail($id_caja)->pagos;
+      return $pagos;
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
+  public function cargoPorCaja(Request $request)
+  {
+    try{
+      $data = $request->all();
+      $id_caja = $data['id_caja'];
+      $cargos = Caja::findOrFail($id_caja)->cargos;
+      return $cargos;
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
+  public function solicitudCancelacionPago(Request $request)
+  {  
+    try{
+      $data = $request->all();
+      return SolicitudCancelacionPago::create($data);
+    } catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
    public function asignarOperadorService(array $data)
    {
-      try {
-        //Consulta si el operador esta o estuvo asignado a la caja
-        $operadorRepetido = OperadorAsignado::withTrashed()
-        ->where('id_caja_catalogo',$data['id_caja_catalogo'])
-        ->where('id_operador',$data['id_operador'])
-        ->first();
-        //Verifica si este operador ya esta asignado a esta caja.
-        if ($operadorRepetido) 
-        {
-          //Verifica si el operador estuvo asignado a esta caja pero dicha asignacion le fue revocada
-          if ($operadorRepetido->trashed()) {
+    $operadores=new Collection();
+    $operadores_id=[];
+        foreach ($data as $operador){
 
-            //Reactiva la asignacion del operador a la caja seleccionada
-              $operadorRepetido->restore();
-
-              return response()->json([
-                'Asignacion exitosa.'
-               ]);
-          }
-          //este mensaje se envia en caso de que el operador previamente ya estuviera asignado a la caja
-          return response()->json([
-            'El operador ya esta asignado a esta caja.'
-           ]);
-
+ 
+          //En caso de que el operador nunca hubiese estado asignado a esta caja, lo asigna
+          $operador_id=$operador['id'] ?? null;
+          $operadorAsignado = OperadorAsignado::updateOrCreate(['id_caja_catalogo'=>$operador['id_caja_catalogo'],'id_operador'=>$operador['id_operador']],$operador);
+          //$operadorAsignado->save();
+          $operadores->push($operadorAsignado);
+          $operadores_id[]=$operadorAsignado['id'];
+        
         }
-        else{
-             //En caso de que el operador nunca hubiese estado asignado a esta caja, lo asigna
-             $operadorAsignado = OperadorAsignado::create($data);
-             $operadorAsignado->save();
-
-             return response()->json([
-              'Asignacion exitosa.'
-             ]);
-
-        }
-      } catch (Exception $ex) {
-        return response()->json([
-          'error' => 'Ocurrio un error durante la asignacion del operador.'
-      ], 500);
-      }
+        OperadorAsignado::where('id_caja_catalogo', $operadores[0]['id_caja_catalogo'])
+        ->whereNotIn('id', $operadores_id)
+        ->delete();
+        return OperadorAsignadoResource::collection($operadores);
    }
 
    public function retirarAsignacionService(array $data)

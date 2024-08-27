@@ -34,6 +34,8 @@ class Cargo extends Model
         return $this->morphTo(__FUNCTION__, 'modelo_origen', 'id_origen');
     }
 
+    
+
     public function dueno(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo_dueno', 'id_dueno');

@@ -240,8 +240,7 @@ class OrdenTrabajoController extends Controller
        
        try{
         DB::beginTransaction();
-        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
-        return $data;
+        $data=(new OrdenTrabajoService())->crearOrden($request->validated()['ordenes_trabajo']);
         if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
@@ -253,7 +252,7 @@ class OrdenTrabajoController extends Controller
        }
        catch(Exception $ex){
         DB::rollBack();
-        return response()->json(["error"=>"No se pudo generar la Orden de trabajo"],202);
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],202);
        }
    
         
@@ -265,8 +264,8 @@ class OrdenTrabajoController extends Controller
         
         $datos=$request->validated();
         $datos['id']=$request->id;
-        $data=(new OrdenTrabajoService())->asignar($datos);
-        if (!$data){
+        $data=(new OrdenTrabajoService())->asignar($datos['ordenes_trabajo'][0]);
+        if ($data==null){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
         else
@@ -296,6 +295,7 @@ class OrdenTrabajoController extends Controller
         $modelos=$data['modelos'];
         
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
+        return $Acciones;
         if (!$Acciones){
             return response()->json(["message"=>"la OT especificada ya se cerro"]);
             DB::rollBack();
@@ -311,14 +311,42 @@ class OrdenTrabajoController extends Controller
        
     }
 
-
+    public function storeOrdenMasiva(StoreOrdenTrabajoRequest $request)
+    {
+       
+       try{
+        DB::beginTransaction();
+        $data=(new OrdenTrabajoService())->crearOrden($request->validated());
+        if (!$data){
+            return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
+        }
+        else
+        {
+            DB::commit();
+            return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+        }
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],202);
+       }
+   
+        
+        
+    }
     public function deleteOrden(Request $request)
     {
-        
-        $data=(new OrdenTrabajoService())->cancelar($request);
-        //$catalogo=OrdenTrabajo::create($data);
-        //return response(new OrdenTrabajoResource($catalogo),200);
-        return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
+        try{
+            DB::beginTransaction();
+            $data=(new OrdenTrabajoService())->cancelar($request);
+            DB::commit();
+            //return $data;
+            return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
+        }
+        catch(Exception $ex){
+            return response()->json(["error"=>"No se pudo cancelar la orden de trabajo"],201);
+        }
+    
         
     }
 

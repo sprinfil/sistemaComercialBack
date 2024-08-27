@@ -37,7 +37,9 @@ class AppServiceProvider extends ServiceProvider
             'asignacion_geografica' => 'App\Models\AsignacionGeografica',
             'factibilidad' => 'App\Models\Factibilidad',
             'pago' => 'App\Models\Pago',
-            'abono' => 'App\Models\Abono'
+            'abono' => 'App\Models\Abono',
+            'caja' => 'App\Models\Caja',
+            'orden_trabajo' => 'App\Models\OrdenTrabajo'
         ]);
     }
 }

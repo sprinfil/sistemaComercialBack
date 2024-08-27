@@ -21,6 +21,16 @@ use Illuminate\Support\Facades\DB;
 
 class CajasController extends Controller
 {
+    protected $cajaService;
+
+    /**
+     * Constructor del controller
+     */
+    public function __construct(CajaService $_cajaService)
+    {
+        $this->cajaService = $_cajaService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -89,10 +99,12 @@ class CajasController extends Controller
 
     public function asignarOperador(StoreOperadorAsignadoRequest $request)
     {
+      
+        
         try {
-            $data = $request->validated();
             DB::beginTransaction();
-            $operadorAsignado = (new CajaService())->asignarOperadorService($data);
+            $data = $request->validated();
+            $operadorAsignado = (new CajaService())->asignarOperadorService($data['operadores_asignados']);
             DB::commit();
             return $operadorAsignado;
         } catch (Exception $ex) {
@@ -264,5 +276,38 @@ class CajasController extends Controller
     public function test()
     {
         $pagos = Caja::find(1)->pagosPorTipo('efectivo');
+    }
+
+    public function cargosPorCaja(Request $request)
+    {
+        try {
+            return response($this->cajaService->cargoPorCaja($request));
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron consultar los cargos de la caja'
+            ], 500);
+        }
+    }
+
+    public function pagosPorCaja(Request $request)
+    {
+        try {
+            return response($this->cajaService->pagosPorCaja($request));
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo consultar los pagos de esta caja'
+            ], 500);
+        }
+    }
+
+    public function solicitarCancelacionPago(Request $request)
+    {
+        try {
+            return response($this->cajaService->solicitudCancelacionPago($request));
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo solicitar la cancelacion del pago'
+            ], 500);
+        }
     }
 }
