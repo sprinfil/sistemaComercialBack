@@ -86,4 +86,8 @@ class Caja extends Model
     {
         return $this->belongsTo(CajaCatalogo::class , 'id_caja_catalogo'); //ya
     }
+     //Retiro de un corte de caja
+     public function retiro() : HasMany {
+        return $this->hasMany(RetiroCaja::class , 'id_sesion_caja');
+    }
 }
