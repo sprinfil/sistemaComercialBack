@@ -315,7 +315,7 @@ class OrdenTrabajoController extends Controller
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->Masiva($request->validated()['ordenes_trabajo']);
         if (!$data){
-            return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
         }
         else
         {
