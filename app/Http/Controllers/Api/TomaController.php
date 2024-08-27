@@ -127,18 +127,15 @@ class TomaController extends Controller
     /**
      * Cargos por toma
      */
-    public function cargosPorToma($id)
+    public function cargosPorToma($id_codigo_toma)
     {
         try {
-            $toma = Toma::where("id", $id)->first();
-            
+            $toma = Toma::where("id_codigo_toma", $id_codigo_toma)->first();
             // Ordena los cargos por el atributo 'prioridad' del concepto asociado
             $cargosOrdenados = $toma->cargos()->with('concepto')->get()->sortBy(function($cargo) {
                 return $cargo->concepto->prioridad_abono;
             });
-
             return CargoResource::collection($cargosOrdenados);
-
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => $e->getMessage()
