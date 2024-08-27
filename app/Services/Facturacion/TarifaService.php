@@ -34,7 +34,7 @@ class TarifaService{
        
        try {
         return TarifaResource::collection(
-            tarifa::all()
+            Tarifa::all()
         );
        } catch (Exception $ex) {
 
@@ -50,7 +50,7 @@ class TarifaService{
     {
         try {       
              //Busca por nombre las tarifas eliminadas
-            $tarifa = tarifa::withTrashed()->where('nombre', $nombre)->first();
+            $tarifa = Tarifa::withTrashed()->where('nombre', $nombre)->first();
 
             //VALIDACION POR SI EXISTE
             if ($tarifa) {
@@ -68,7 +68,7 @@ class TarifaService{
             }
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
-                $tarifa = tarifa::create($data);
+                $tarifa = Tarifa::create($data);
                 // E importa las tarifas de la tarifa activa si se desea
                 $request = new Request();
                 $request->merge(['confirm' => true]);
@@ -90,18 +90,17 @@ class TarifaService{
                 // se obtienen los conceptos importados de conceptos por tipo de toma
                 // primero los tipos de toma
                 $tarifas_tipo = TipoToma::all();
-                $tarifa_activa = tarifa::where('estado', 'activo')->get()->first();
+                $tarifa_activa = Tarifa::where('estado', 'activo')->get()->first();
                 foreach ($tarifas_tipo as $tipo) {
                     
 
                     // y al final los servicios por tipo de toma, en la tarifa activa
-                    $tarifas_servicios = TarifaServiciosDetalle::where('id_tipo_toma', $tipo->id)
-                    ->where('id_tarifa', $tarifa_activa->id)->get();
+                    $tarifas_servicios = TarifaServiciosDetalle::where('id_tarifa_servicio', $tipo->id)
+                    ->where('id_tarifa_servicio', $tarifa_activa->id)->get();
 
                     foreach ($tarifas_servicios as $servicio) {
                         $detalle_servicio = new TarifaServiciosDetalle();
-                        $detalle_servicio->id_tarifa = $id_tarifa_nueva;
-                        $detalle_servicio->id_tipo_toma = $tipo->id;
+                        $detalle_servicio->id_tarifa_servicio = $id_tarifa_nueva;
                         $detalle_servicio->rango = $servicio['rango'];
                         $detalle_servicio->monto = $servicio['monto'];
                         //$detalle_servicio->agua = $servicio['agua'];
@@ -141,76 +140,50 @@ class TarifaService{
     {
 
         try {
-            $tarifa = tarifa::findOrFail($tarifa);
-            return response(new tarifaResource($tarifa), 200);
+            $tarifa = Tarifa::findOrFail($tarifa);
+            return response(new TarifaResource($tarifa), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar la tarifa'
             ], 500);
         }
-        //
 
     }
 
     
 
-    public function updateTarifaService(array $data, string $id, string $estado, string $descripcion)
-    {
-        //$updateEstado = $this->actualizarEstadoTarifaService($request);    
+    public function updateTarifaService(Request $request, $id)
+    { 
         try {
+            $data = $request->all();
+            $estado = $request->input('ConfirmUpdate');
             $tarifa = Tarifa::findOrFail($id);
-            $CatalogoTiposToma = TipoToma::with('tarifaServicio')->first();
-            $CatalogoServicioDetalle = TarifaServiciosDetalle::with('tarifaServicio')
-            ->select('id_tarifa_servicio', 'rango')
-            ->where('id_tarifa_servicio', $id)
-            ->get();
-           
-            $servicioAsociado = false;
-            //$totalConcepto = count($catalogoConcepto);
-            //return $catalogoServicioDealle;
-            if (isset($tarifa)) {
-                    foreach ($CatalogoTiposToma as $TipoToma) {
-
-                        foreach ($CatalogoServicioDetalle as $servicioDetalle) {
-                            if ($TipoToma->id == $servicioDetalle->id_tarifa_servicio) { //Corregir esta condicion
-
-                                $servicioAsociado = true;
-                            }
-                        }
-
-                        if ($servicioAsociado == false) {
-                            return response()->json([
-                                'error' => 'No se activo la tarifa, existen tomas sin servicio asociado'
-                            ], 400);
-                        } else {
-                            $servicioAsociado = false;
-                        }
-                    }
-
-                    return response()->json([
-                        'message' => 'Existen tarifas anteriores activas. ¿Desea inactivarlas?',
-                        'confirmUpdate' => true,
-                    ], 200);
-                
-                //valida que exista almenos 1 rango de servicio asociado a la tarifa a activar
-              
-                $tarifa->update($data);
-                $tarifa->save();
-                return response(new TarifaResource($tarifa), 200);  
-
-            }
-            else{
+            $tarifa->update($data);
+            if ($estado == 'activo') {
+                Tarifa::where('estado', 'activo')
+                ->where('id', '!=', $tarifa->id)
+                ->update(['estado' => 'inactivo']);
+                $tarifa->estado = 'activo';
                 return response()->json([
-                    'error' => 'No se pudo editar la tarifa '
-                ], 400);
+                    'id' => $tarifa->id,
+                    'nombre' => $tarifa->nombre,
+                    'descripcion' => $tarifa->descripcion,
+                    'fecha' => $tarifa->fecha,
+                    'estado' => $tarifa->estado,
+                    'message' => 'Se ha actualizado el estado de la tarifa.',
+                ], 200);
             }
+            elseif($estado == 'inactivo'){
+                $tarifa->estado = 'inactivo';
+            }
+            $tarifa->save();
+            return response(new TarifaResource($tarifa), 200);
         } catch (Exception $ex) {
-            DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo editar la tarifa ' .$ex
+                'error' => 'No se pudo editar la tarifa ' . $ex
             ], 400);
-        }        
-              
+        }
+           
     }
 
     public function actualizarEstadoTarifaService(Request $request)
@@ -248,7 +221,7 @@ class TarifaService{
     {
         //$this->authorize('delete', tarifa::class);
         try {
-            $tarifa = tarifa::findOrFail($id);
+            $tarifa = Tarifa::findOrFail($id);
             $tarifa->delete();
             return response("Tarifa eliminada con exito", 200);
         } catch (ModelNotFoundException $ex) {
@@ -263,7 +236,7 @@ class TarifaService{
     {
 
         try {
-            $tarifa = tarifa::withTrashed()->findOrFail($id);
+            $tarifa = Tarifa::withTrashed()->findOrFail($id);
 
             // Verifica si el registro está eliminado
             if ($tarifa->trashed()) {

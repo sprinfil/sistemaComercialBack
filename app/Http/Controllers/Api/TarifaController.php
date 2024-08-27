@@ -111,16 +111,12 @@ class TarifaController extends Controller
     public function update(UpdateTarifaRequest $request,  string $id)
     {
         ////$this->authorize('update', tarifa::class);
-
         try {
-            $data = $request->validated();
-            $descripcion = $request->input('descripcion');
-            $estado = $request->input('estado');
+            //$data = $request->validated();
             DB::beginTransaction();
-            $tarifa = (new TarifaService())->updateTarifaService($data, $id, $estado, $descripcion);
+            $tarifa = (new TarifaService())->updateTarifaService($request, $id);
             DB::commit();
-            return $tarifa;  
-           
+            return $tarifa;
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
