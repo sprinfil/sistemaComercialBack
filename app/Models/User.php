@@ -46,7 +46,7 @@ class User extends Authenticatable
     ];
 
     public function operador(){
-        return $this->hasOne(Operador::class, "id_user");
+        return $this->belongsTo(Operador::class, "id", "id_user");
     }
 
     public function getRoles2Attribute(){
