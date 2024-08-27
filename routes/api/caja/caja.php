@@ -23,6 +23,10 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::delete("/cajas/eliminarCajaCatalogo/{id}","eliminarCajaCatalogo");
         Route::put("/cajas/restaurarCajaCatalogo/{id}","restaurarCajaCatalogo");
         Route::put("/cajas/modificarCajaCatalogo/{id}","modificarCajaCatalogo");
-        Route::get("/caja/mostrarCaja/{id}","mostrarCaja");
+        Route::get("/cajas/mostrarCaja/{id}","mostrarCaja");
+
+        //Retiro Cajas
+        Route::post("/cajas/retiro/registrarRetiro","registrarRetiro");
+
     });
 });

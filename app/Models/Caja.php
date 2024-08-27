@@ -88,6 +88,10 @@ class Caja extends Model
         return $this->belongsTo(CajaCatalogo::class , 'id_caja_catalogo'); //ya
     }
 
+    public function retiro() : HasMany {
+        return $this->hasMany(RetiroCaja::class , 'id_sesion_caja');
+    }
+
     public function cargos(): MorphMany
     {
         return $this->morphMany(CargoDirecto::class, 'origen', 'modelo_origen', 'id_origen');
