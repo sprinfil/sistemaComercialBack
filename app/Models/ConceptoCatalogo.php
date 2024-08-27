@@ -37,10 +37,6 @@ class ConceptoCatalogo extends Model
     {
         return $this->hasMany(TarifaConceptoDetalle::class, 'id_concepto');
     }
-    public function tarifasToma($cac) : HasMany
-    {
-        return $this->hasMany(TarifaConceptoDetalle::class, 'id_concepto')->all();
-    }
     public function ordenAsignada() : HasOne
     {
         return $this->hasOne(OrdenTrabajoCatalogo::class, 'id', 'genera_orden')
