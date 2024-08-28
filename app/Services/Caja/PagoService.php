@@ -49,7 +49,6 @@ class PagoService{
             $monto_pagado = $pago->total_pagado;
 
             $pagos_pendientes = $this->pagosPorModeloPendiente($request);
-            $monto_pagos_pendientes = $this->totalPendiente($request);
 
             $cargos_selecionados = $data['cargos'];
             $total_a_pagar = 0;
@@ -60,7 +59,8 @@ class PagoService{
                     $total_a_pagar += $cargo_selecionado->monto + $cargo_selecionado->iva; // Asumiendo que las propiedades existen
                 }
 
-                if($total_a_pagar <= $monto_pagado){
+                $diferencia = abs($monto_pagado - $total_a_pagar);
+                if($total_a_pagar < $monto_pagado || $diferencia < 1){
                     $total_abonado = 0;
                     foreach ($cargos_selecionados as $cargo) {
                         $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_selecionado->monto + $cargo_selecionado->iva);
@@ -68,23 +68,21 @@ class PagoService{
                         $total_abonado += $cargo_selecionado->monto + $cargo_selecionado->iva; // Actualizar el total abonado
                     }                    
                 } else {
-                    if($total_a_pagar < $monto_pagos_pendientes){
-                        foreach ($cargos_selecionados as $cargo) {
-                            $cargo_real = Cargo::findOrFail($cargo['id_cargo']);
-                            foreach($pagos_pendientes as $pago) {
-                                $diferencia = abs($pago->pendiente() - $cargo_real->monto);
-                                if($pago->pendiente() > $cargo_real->monto && $diferencia < 1){
-                                    $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $pago->pendiente());
-                                } else if($cargo_real->concepto->abonable == 'true' && $pago->pendiente() < $cargo_real->monto) {
-                                    $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $pago->pendiente());
-                                }else{
-                                    //throw new Exception("No se puede abonar a ese cargo");
-                                }
+                    foreach ($cargos_selecionados as $cargo) {
+                        $cargo_real = Cargo::findOrFail($cargo['id_cargo']);
+                        foreach($pagos_pendientes as $pago) {
+                            $diferencia = abs($pago->pendiente() - $cargo_real->monto);
+                            if($pago->pendiente() > $cargo_real->monto || $diferencia < 1){
+                                $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_real->monto);
+                            } else if($cargo_real->concepto->abonable == true && $pago->pendiente() < $cargo_real->monto) {
+                                $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $pago->pendiente());
+                            }else{
+                                //throw new Exception("No se puede abonar a ese cargo");
                             }
-                            $this->consolidarEstados($id_modelo, $modelo);
-                        }   
-                    }
-                }
+                        }
+                        $this->consolidarEstados($id_modelo, $modelo);
+                    }  
+                } 
             } else {
                 throw new Exception("No hay cargos a pagar");
             }
@@ -324,7 +322,7 @@ class PagoService{
             $dueno = null;
             if($modelo == 'usuario'){
                 $dueno = Usuario::findOrFail($id_modelo);
-                $pagos = $dueno->pagos;
+                $pagos = $dueno->pagosPendientes;
                 if($pagos){
                     return $pagos;
                 } else{
@@ -332,7 +330,7 @@ class PagoService{
                 }
             }else if($modelo == 'toma'){
                 $dueno = Toma::findOrFail($id_modelo);
-                $pagos = $dueno->pagos;
+                $pagos = $dueno->pagosPendientes;
                 if($pagos){
                     return $pagos;
                 } else{
