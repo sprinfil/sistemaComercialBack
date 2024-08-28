@@ -146,5 +146,25 @@ class Toma extends Model
     {
         return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
     }
+
+    public function saldoToma(){
+        $total_final = 0;
+        $cargos_pendientes = $this->cargosVigentes;
+        foreach($cargos_pendientes as $cargo)
+        {
+            $total_final += $cargo->montoPendiente();
+        }
+        return $total_final;
+    }
+
+    public function saldoSinAplicar(){
+        $total_final = 0;
+        $pagos_pendientes = $this->pagosPendientes;
+        foreach($pagos_pendientes as $pago)
+        {
+            $total_final += $pago->pendiente();
+        }
+        return $total_final;
+    }
 }
 

@@ -27,7 +27,10 @@ class PagoResource extends JsonResource
             "timbrado" => $this->timbrado,
             "total_abonado" => $this->total_abonado,
             "abonos" => AbonoResource::collection($this->whenLoaded('abonos')),
-            "cargos" => CargoResource::collection($this->whenLoaded('cargos'))
+            "cargos" => CargoResource::collection($this->whenLoaded('cargos')),
+            "saldo_anterior" => $this->saldo_anterior ? $this->saldo_anterior : 0,
+            "saldo_actual" => $this->saldo_actual ? $this->saldo_actual : 0,
+            "saldo_no_aplicado" => $this->saldo_no_aplicado ? $this->saldo_no_aplicado : 0,
             //,"bonificaciones" => AbonoResource::collection($this->whenLoaded('bonificaciones')),
         ];
     }

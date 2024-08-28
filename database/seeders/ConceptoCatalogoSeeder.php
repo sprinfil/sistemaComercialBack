@@ -1569,6 +1569,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "descripcion" => "Facturacion",
                 "estado" => "activo",
                 "prioridad_abono" => 2,
+                "prioridad_por_antiguedad" => 1,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
                 "abonable" => 1,
