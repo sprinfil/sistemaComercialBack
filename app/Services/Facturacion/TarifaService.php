@@ -50,8 +50,7 @@ class TarifaService{
     {
         try {       
              //Busca por nombre las tarifas eliminadas
-            $tarifa = Tarifa::withTrashed()->where('nombre', $nombre)->first();
-
+            $tarifa = Tarifa::withTrashed()->orWhere('nombre', $nombre)->first();
             //VALIDACION POR SI EXISTE
             if ($tarifa) {
                 if ($tarifa->trashed()) {
@@ -60,11 +59,12 @@ class TarifaService{
                         'restore' => true,
                         'tarifa' => $tarifa->id
                     ], 200);
+                    $tarifa->restore();
                 }
                 return response()->json([
                     'message' => 'La tarifa ya existe.',
                     'restore' => false
-                ], 200);
+                ], 500);
             }
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
@@ -79,21 +79,21 @@ class TarifaService{
         } catch (Exception $ex) {
              return response()->json([
                  'message' => 'Ocurrio un error al registrar la tarifa.'
-             ], 200);
+             ], 500);
         }              
     }
 
     public function importarTipoTomaTarifas(Request $request){
         try{
-            if($request->input('confirm') == true && $request->input('tarifa_id') != null){
-                $id_tarifa_nueva = $request->input('tarifa_id');
-                // se obtienen los conceptos importados de conceptos por tipo de toma
-                // primero los tipos de toma
-                $tarifas_tipo = TipoToma::all();
-                $tarifa_activa = Tarifa::where('estado', 'activo')->get()->first();
+            //input con un tarifa_id
+            $id_tarifa_nueva = $request->input('tarifa_id');
+            $confirm = $request->input('confirm');
+            //Si el Confirm del request es true y la tarifa_id es diferente de null entra a la condicion
+            if($confirm && $id_tarifa_nueva != null){
+                $tarifas_tipo = TipoToma::all(); //Consulta todos los tipos de tomas que hay registrados
+                $tarifa_activa = Tarifa::where('estado', 'activo')->get()->first(); //Busca la tarifa que tenga el estado = activo
                 foreach ($tarifas_tipo as $tipo) {
                     
-
                     // y al final los servicios por tipo de toma, en la tarifa activa
                     $tarifas_servicios = TarifaServiciosDetalle::where('id_tarifa_servicio', $tipo->id)
                     ->where('id_tarifa_servicio', $tarifa_activa->id)->get();
@@ -103,9 +103,6 @@ class TarifaService{
                         $detalle_servicio->id_tarifa_servicio = $id_tarifa_nueva;
                         $detalle_servicio->rango = $servicio['rango'];
                         $detalle_servicio->monto = $servicio['monto'];
-                        //$detalle_servicio->agua = $servicio['agua'];
-                        //$detalle_servicio->alcantarillado = $servicio['alcantarillado'];
-                        //$detalle_servicio->saneamiento = $servicio['saneamiento'];
                         $detalle_servicio->save();
                     }
 
@@ -114,7 +111,7 @@ class TarifaService{
                         return response()->json([
                             'error' => 'No hay servicios importables de tipo '.$tipo->id,
                             'import' => false
-                        ], 200);
+                        ], 500);
                     }
                 }
                 return response()->json([
@@ -132,7 +129,7 @@ class TarifaService{
             return response()->json([
                 'error' => 'Error al crear las tarifas'.$ex,
                 'import' => false
-            ], 200);
+            ], 500);
         }
     }
 
@@ -155,32 +152,35 @@ class TarifaService{
     public function updateTarifaService(Request $request, $id)
     { 
         try {
+            $tarifa = Tarifa::findOrFail($id);
             $data = $request->all();
             $estado = $request->input('ConfirmUpdate');
-            $tarifa = Tarifa::findOrFail($id);
-            $tarifa->update($data);
-            if ($estado == 'activo') {
-                Tarifa::where('estado', 'activo')
-                ->where('id', '!=', $tarifa->id)
-                ->update(['estado' => 'inactivo']);
-                $tarifa->estado = 'activo';
-                return response()->json([
-                    'id' => $tarifa->id,
-                    'nombre' => $tarifa->nombre,
-                    'descripcion' => $tarifa->descripcion,
-                    'fecha' => $tarifa->fecha,
-                    'estado' => $tarifa->estado,
-                    'message' => 'Se ha actualizado el estado de la tarifa.',
-                ], 200);
+            if ($tarifa) {
+                $tarifa->update($data);
+                if ($estado == 'activo') {
+                    Tarifa::where('estado', 'activo')
+                    ->where('id', '!=', $tarifa->id)
+                    ->update(['estado' => 'inactivo']);
+                    $tarifa->estado = 'activo';
+                    return response()->json([
+                        'id' => $tarifa->id,
+                        'nombre' => $tarifa->nombre,
+                        'descripcion' => $tarifa->descripcion,
+                        'fecha' => $tarifa->fecha,
+                        'estado' => $tarifa->estado,
+                        'ConfirmUpdate' => true,
+                        'message' => 'Se actualizo el estado de la tarifa',
+                    ], 200);
+                }
+                elseif($estado == 'inactivo'){
+                    $tarifa->estado = 'inactivo';
+                }
+                $tarifa->save();
+                return response(new TarifaResource($tarifa), 200);
             }
-            elseif($estado == 'inactivo'){
-                $tarifa->estado = 'inactivo';
-            }
-            $tarifa->save();
-            return response(new TarifaResource($tarifa), 200);
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'No se pudo editar la tarifa ' . $ex
+                'error' => 'No se pudo editar la tarifa '
             ], 400);
         }
            
