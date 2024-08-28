@@ -28,4 +28,6 @@ class Abono extends Model
     {
         return $this->belongsTo(Cargo::class,'id_cargo');
     }
+
+    
 }
