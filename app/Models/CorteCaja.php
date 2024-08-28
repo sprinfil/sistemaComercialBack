@@ -18,6 +18,20 @@ class CorteCaja extends Model
         'id_caja',
         'id_operador',
         'estatus',
+        'cantidad_centavo_10',
+        'cantidad_centavo_20',
+        'cantidad_centavo_50',
+        'cantidad_moneda_1',
+        'cantidad_moneda_2',
+        'cantidad_moneda_5',
+        'cantidad_moneda_10',
+        'cantidad_moneda_20',
+        'cantidad_billete_20',
+        'cantidad_billete_50',
+        'cantidad_billete_100',
+        'cantidad_billete_200',
+        'cantidad_billete_500',
+        'cantidad_billete_1000',
         'total_efectivo_registrado',
         'total_efectivo_real',
         'total_tarjetas_registrado',
@@ -38,8 +52,5 @@ class CorteCaja extends Model
     {
         return $this->belongsTo(Caja::class , 'id_caja'); 
     }
-    //Retiro de un corte de caja
-    public function retiro() : HasMany {
-        return $this->hasMany(RetiroCaja::class , 'id_corte_caja');
-    }
+   
 }

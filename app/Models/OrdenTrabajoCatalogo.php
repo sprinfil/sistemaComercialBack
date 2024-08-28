@@ -23,6 +23,7 @@ class OrdenTrabajoCatalogo extends Model
         "vigencias",
         "momento_cargo",
         "genera_masiva",
+        "limite_ordenes",
 
     ];
     public function ordenTrabajoAccion():HasMany{ 

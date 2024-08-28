@@ -25,6 +25,7 @@ class OrdenTrabajo extends Model
         "material_utilizado",
         "evidencia",
         "posicion_OT",
+        "genera_OT_encadenadas",
     ];
 
     public function toma():BelongsTo{
@@ -42,6 +43,10 @@ class OrdenTrabajo extends Model
     public function cargos(): MorphMany
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
+    }
+    public function cargosVigentes(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen')->where('estado','pendiente');
     }
    
     

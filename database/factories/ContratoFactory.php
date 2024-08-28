@@ -244,6 +244,27 @@ class ContratoFactory extends Factory
                     'updated_at' => now(),
                 ]);
 
+                for ($i = 0; $i < 3; $i++) {
+                    $monto = $this->faker->randomFloat(2, 0, 500); // Generar el monto dentro del loop para calcular el IVA correctamente
+                
+                    Cargo::factory()->create([
+                        'id_concepto' => $concepto->id ?? 1,
+                        'nombre' => "facturacion",
+                        'id_origen' => 0,
+                        'modelo_origen' => 'facturacion',
+                        'id_dueno' => $contrato->id_toma,
+                        'modelo_dueno' => 'toma',
+                        'monto' => $monto,
+                        'iva' => (0.16 * $monto),
+                        'estado' => 'pendiente',
+                        'fecha_cargo' => now(),
+                        'fecha_liquidacion' => $fecha_liquidacion,
+                        'deleted_at' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }                
+
                 DatoFiscal::factory()->create([
                     'id_modelo' => $contrato->id_toma,
                     'modelo' => 'toma',

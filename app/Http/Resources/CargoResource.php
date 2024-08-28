@@ -31,6 +31,9 @@ class CargoResource extends JsonResource
             "id_convenio" => $this->id_convenio,
             "fecha_cargo" => $this->fecha_cargo,
             "fecha_liquidacion" => $this->fecha_liquidacion,
+            "monto_pendiente" => $this->when(true, function () {
+                return $this->montoPendiente(); // Suponiendo que el método en el modelo se llama montoPendiente()
+            }),
         ];
     }
 }
