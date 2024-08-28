@@ -144,11 +144,18 @@ class PagoService{
                 // consolidar estados pagos y cargos
                 $estado_pagos = $this->consolidarEstadosDePago($dueno);
                 $estado_cargos = $this->consolidarEstadosDeCargo($dueno);
-                if($estado_pagos == 1 && $estado_cargos == 1){
+                if($estado_pagos == null && $estado_cargos == null){
                     DB::commit();
                 }
                 else{
-                    throw new Exception('error en la consolidacion de estados');
+                    $error = " ";
+                    if($estado_pagos){
+                        $error = $error . " " . $estado_pagos;
+                    }
+                    if($estado_cargos){
+                        $error = $error . " " . $estado_cargos;
+                    }
+                    throw new Exception('error en la consolidacion de estados: '.$error);
                 }
             }
             else{
@@ -198,7 +205,7 @@ class PagoService{
                             $pago_modificado->save();
                         }
                         else{
-                            throw new Exception('error abono'.$total_abonado.'pago'.$total_pagado);
+                            //throw new Exception('error abono'.$total_abonado.'pago'.$total_pagado);
                         }
                     }else{
                         throw new Exception('no hay abonos');
@@ -207,9 +214,9 @@ class PagoService{
             }else{
                 throw new Exception('no hay pagos');
             }
-            return 1;
+            return null;
         }catch(Exception $ex){
-            return 0;
+            return $ex;
         }
     }
 
@@ -253,9 +260,9 @@ class PagoService{
             }else{
                 throw new Exception('no hay cargos');
             }
-            return 1;
+            return null;
         }catch(Exception $ex){
-            return 0;
+            return $ex;
         }
     }
 
