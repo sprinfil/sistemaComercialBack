@@ -34,6 +34,11 @@ class OrdenTrabajoService{
     public function crearOrden(array $ordenTrabajoPeticion){ //Ejemplo de service
         
         $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->first();
+        $id_empleado_asigno=auth()->user()->operador->id;
+    
+        $ordenTrabajoPeticion['id_empleado_asigno']=$id_empleado_asigno;
+      
+
         $cargo=null;
         if ($ordenTrabajo){
             return null;
@@ -268,7 +273,7 @@ class OrdenTrabajoService{
         $OT=OrdenTrabajo::find($request['id']);
         $OTCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
         if ($OTCatalogo['momento_cargo']=="generar"){
-            $OtCargos=$OT->cargos;
+            $OtCargos=$OT->cargosVigentes;
             foreach ($OtCargos as $cargo){
                 $cargo->delete();
             }

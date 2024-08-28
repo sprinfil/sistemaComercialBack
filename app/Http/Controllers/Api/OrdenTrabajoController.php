@@ -63,12 +63,12 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
             if ($catalogo=="Existe"){
                 return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
             }
             DB::commit();
-            return response(["Orden_Trabajo_Catalogo"=>$catalogo],200);
+            return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo)],200);
         }
         catch(Exception $ex){
             DB::rollBack();
@@ -79,6 +79,7 @@ class OrdenTrabajoController extends Controller
             
         
     }
+    
     public function storeAcciones(StoreOrdenTrabajoCatalogoRequest $request){
         try{
             DB::beginTransaction();
@@ -152,7 +153,8 @@ class OrdenTrabajoController extends Controller
     public function updateCatalogo(UpdateOrdenTrabajoCatalogoRequest $request, OrdenTrabajoCatalogo $ordenTrabajo)
     {
         $data=$request->validated();
-        $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
+        $catalogo=(new OrdenTrabajoCatalogoService())->update($data['orden_trabajo_catalogo']);
+        return $catalogo;
     }
 
     public function destroyCatalogo(OrdenTrabajoCatalogo $ordenTrabajo, Request $request)

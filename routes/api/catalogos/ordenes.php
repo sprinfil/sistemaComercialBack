@@ -8,6 +8,7 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(OrdenTrabajoController::class)->group(function () {
         Route::get("/OrdenTrabajoCatalogo", "indexCatalogo");
         Route::put("/OrdenTrabajoCatalogo/create", "storeCatalogo");
+        Route::put("/OrdenTrabajoCatalogo/update", "updateCatalogo");
         Route::put("/OrdenTrabajoCatalogo/create/cargos", "storeCargos");
         Route::put("/OrdenTrabajoCatalogo/create/encadenadas", "storeEncadenadas");
         Route::put("/OrdenTrabajoCatalogo/create/acciones", "storeAcciones");
