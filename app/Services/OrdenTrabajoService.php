@@ -32,20 +32,22 @@ class OrdenTrabajoService{
     //Agregar el metodo de cargo en los 3 momentos que sufre una OT
     //un operador crea la orden de trabajo y su tipo
     public function crearOrden(array $ordenTrabajoPeticion){ //Ejemplo de service
-        
-        $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->first();
-        $id_empleado_asigno=auth()->user()->operador->id;
+        $OtCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajoPeticion['id_orden_trabajo_catalogo']);
+        $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->get();
+      
+        $id_empleado_asigno=auth()->user()->operador->id;//auth()->user()->operador->id
     
         $ordenTrabajoPeticion['id_empleado_asigno']=$id_empleado_asigno;
       
-
         $cargo=null;
-        if ($ordenTrabajo){
+        if (count($ordenTrabajo)>=$OtCatalogo['limite_ordenes']){
+           
             return null;
         }
         else{
-            $OtCatalogo=OrdenTrabajoCatalogo::find($ordenTrabajoPeticion['id_orden_trabajo_catalogo']);
-          
+
+            
+            
             $ordenTrabajoPeticion['fecha_vigencia']=Carbon::today()->addDays($OtCatalogo['vigencias']);
             $ordenTrabajoPeticion['estado']="No asignada";
             $ordenTrabajo=OrdenTrabajo::create($ordenTrabajoPeticion);
@@ -133,10 +135,19 @@ class OrdenTrabajoService{
     }
 //validar terminar ot si pagos saldados 
     public function Masiva(array $ordenesTrabajo){
-
+        $catalogo=OrdenTrabajoCatalogo::find($ordenesTrabajo[0]['id_orden_trabajo_catalogo']);
         $Ordenes=new Collection();
+        $i=1;
         foreach ($ordenesTrabajo as $OT){
-            $Ordenes->push($this->crearOrden($OT));
+           
+            $data=$this->crearOrden($OT);
+            if (!$data){
+                $Ordenes->push(["Error"=>"La orden de trabajo para la toma ".$OT['id_toma']." no se pudo crear, debido, a que ya supera el limite del tipo de orden de trabajo: ".$catalogo['nombre']]);
+            }
+            else{
+                $Ordenes->push($data);
+            }
+          $i++;
         }
         return $Ordenes;
 
