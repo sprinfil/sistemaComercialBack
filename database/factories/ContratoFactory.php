@@ -248,7 +248,7 @@ class ContratoFactory extends Factory
                     $monto = $this->faker->randomFloat(2, 0, 500); // Generar el monto dentro del loop para calcular el IVA correctamente
                 
                     Cargo::factory()->create([
-                        'id_concepto' => $concepto->id ?? 1,
+                        'id_concepto' => 146,
                         'nombre' => "facturacion",
                         'id_origen' => 0,
                         'modelo_origen' => 'facturacion',
@@ -258,7 +258,7 @@ class ContratoFactory extends Factory
                         'iva' => (0.16 * $monto),
                         'estado' => 'pendiente',
                         'fecha_cargo' => now(),
-                        'fecha_liquidacion' => $fecha_liquidacion,
+                        'fecha_liquidacion' => null,//$fecha_liquidacion,
                         'deleted_at' => null,
                         'created_at' => now(),
                         'updated_at' => now(),
