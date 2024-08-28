@@ -77,8 +77,9 @@ class PagoService{
                             } else if($cargo_real->concepto->abonable == true && $pago->pendiente() < $cargo_real->monto) {
                                 $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $pago->pendiente());
                             }else{
-                                //throw new Exception("No se puede abonar a ese cargo");
+                                throw new Exception("No se puede abonar a ese cargo");
                             }
+                            $this->consolidarEstados($id_modelo, $modelo);
                         }
                         $this->consolidarEstados($id_modelo, $modelo);
                     }  
@@ -144,11 +145,18 @@ class PagoService{
                 // consolidar estados pagos y cargos
                 $estado_pagos = $this->consolidarEstadosDePago($dueno);
                 $estado_cargos = $this->consolidarEstadosDeCargo($dueno);
-                if($estado_pagos == 1 && $estado_cargos == 1){
+                if($estado_pagos == null && $estado_cargos == null){
                     DB::commit();
                 }
                 else{
-                    throw new Exception('error en la consolidacion de estados');
+                    $error = " ";
+                    if($estado_pagos){
+                        $error = $error . " " . $estado_pagos;
+                    }
+                    if($estado_cargos){
+                        $error = $error . " " . $estado_cargos;
+                    }
+                    throw new Exception('error en la consolidacion de estados: '.$error);
                 }
             }
             else{
@@ -180,7 +188,7 @@ class PagoService{
                         }
                         // después de recorrer todos los abonos
                         $diferencia = abs($total_abonado - $total_pagado);
-                        if($diferencia < 1){
+                        if($diferencia < 1 || $total_abonado == $total_pagado){
                             // si la diferencia es menor a 1
                             $pago_modificado = Pago::findOrFail($pago->id);
                             $pago_modificado->update([
@@ -207,9 +215,9 @@ class PagoService{
             }else{
                 throw new Exception('no hay pagos');
             }
-            return 1;
+            return null;
         }catch(Exception $ex){
-            return 0;
+            return $ex;
         }
     }
 
@@ -253,9 +261,9 @@ class PagoService{
             }else{
                 throw new Exception('no hay cargos');
             }
-            return 1;
+            return null;
         }catch(Exception $ex){
-            return 0;
+            return $ex;
         }
     }
 
