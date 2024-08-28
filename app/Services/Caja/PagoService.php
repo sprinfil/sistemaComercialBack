@@ -65,6 +65,7 @@ class PagoService{
             // se obtienen los cargos a pagar (si hay) y cuanto se va pagar
             $cargos_selecionados = $data['cargos'];
             $total_a_pagar = number_format($this->totalPagos($cargos_selecionados), 2, '.', '');
+            $abono_acumulado = 0;
 
             // valida si hay cargos selecionados
             if($cargos_selecionados){
@@ -75,14 +76,19 @@ class PagoService{
                     foreach ($cargos_selecionados as $cargo) {
                         $cargo_selecionado = Cargo::findOrFail($cargo['id_cargo']);
                         $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
+                        $abono_acumulado += number_format($cargo_selecionado->montoPendiente(), 2, '.', '');
                         $this->consolidarEstados($id_modelo, $modelo);
                     }
                     // si lo pagado no consume todo lo pagado
                     // -> llama la funcion de pago y se aplica el saldo a favor
+                    if($abono_acumulado < $monto_pagado){
+                        $this->pagoAutomatico($id_modelo, $modelo);
+                    }
                 } else {
                     // si no hay cargos a pagar
                     // -> llama la funcion de pago y se aplica el saldo a favor
-                    throw new Exception("Lo pagado es menor que el adeudo total ".$total_a_pagar ."<". $monto_pagado);
+                    $this->pagoAutomatico($id_modelo, $modelo);
+                    //throw new Exception("Lo pagado es menor que el adeudo total ".$total_a_pagar ."<". $monto_pagado);
                 } 
             } else {
                 throw new Exception("No hay cargos a pagar");
@@ -109,11 +115,44 @@ class PagoService{
             $pagos_pendientes = $dueno->pagosPendientes;
             $cargos_vigentes = $dueno->cargosVigentesConConcepto;
 
-            if ($cargos_vigentes) {
-                $cargos_ordenados = $this->clasificarPorPrioridad($cargos_vigentes);
-                
-            } else {
-                throw new Exception("No hay cargos por pagar");
+            if($pagos_pendientes)
+            {
+                foreach($pagos_pendientes as $pago)
+                {
+                    $total_por_prioridad = 0;
+                    $total_pendiente = $pago->pendiente();
+                    if ($cargos_vigentes) {
+                        $cargos_ordenados = $this->clasificarPorPrioridad($cargos_vigentes);
+                        foreach ($cargos_ordenados as $prioridad => $grupo) {
+                            $total_por_prioridad = number_format($grupo['total'], 2, '.', '');
+                            //$cantidad_de_cargos = count($grupo['cargos']);
+                        
+                            foreach ($grupo['cargos'] as $cargo) {
+                                $cargo_selecionado = Cargo::findOrFail($cargo['id']);
+                                $monto_con_iva = number_format($cargo['monto'] + $cargo['iva'], 2, '.', '');
+                                $pago_porcentual = number_format((($monto_con_iva) * 100) / $total_por_prioridad, 2, '.', '');
+                                if($pago >= $monto_con_iva){
+                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
+                                    $this->consolidarEstados($_id_modelo, $_modelo);
+                                } else{
+                                    // Validar si el cargo es abonable
+                                    if ($cargo_selecionado->concepto->abonable) {
+                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
+                                        $this->consolidarEstados($_id_modelo, $_modelo);
+                                    } else {
+                                        // El cargo no es abonable, puedes manejar este caso.
+                                        break 2;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            else{
+
             }
             
             return $cargos_ordenados; // Convertir la colección a JSON
@@ -127,61 +166,44 @@ class PagoService{
     {
         $clasificado = collect();
     
-        $cargos->each(function ($cargo) use ($clasificado) {
-            $prioridad = $cargo->concepto->prioridad_abono;
-            $monto_total = $cargo->monto + $cargo->iva;
+        // Agrupar los cargos por prioridad
+        $cargos->groupBy(function ($cargo) {
+            return (string)$cargo->concepto->prioridad_abono;
+        })->each(function ($cargosConMismaPrioridad, $prioridad) use ($clasificado) {
     
-            // Inicializar la entrada para esta prioridad si no existe
-            if (!$clasificado->has($prioridad)) {
-                $clasificado->put($prioridad, [
-                    'cargos' => collect(),
-                    'total' => 0,
-                ]);
-            }
+            // Ordenar los cargos dentro de cada prioridad
+            $cargosOrdenados = $cargosConMismaPrioridad->sort(function ($a, $b) {
+                // Ordenar por abonable (abonable = 1 primero)
+                if ($a->concepto->abonable !== $b->concepto->abonable) {
+                    return $a->concepto->abonable ? -1 : 1;
+                }
     
-            // Acceder al valor actual de la prioridad
-            $prioridadData = $clasificado->get($prioridad);
+                // Si ambos tienen la misma prioridad por antigüedad, ordenar por fecha
+                if ($a->concepto->prioridad_por_antiguedad && $b->concepto->prioridad_por_antiguedad) {
+                    return strtotime($a->fecha_cargo) - strtotime($b->fecha_cargo);
+                }
     
-            // Sumar al total por prioridad
-            $prioridadData['total'] += $monto_total;
-    
-            // Agregar el cargo a la colección de la prioridad, manejando abonable
-            if ($cargo->concepto->abonable == 0) {
-                $prioridadData['cargos']->push($cargo);
-            } else {
-                $prioridadData['cargos']->prepend($cargo);
-            }
-    
-            // Actualizar la entrada en la colección clasificado
-            $clasificado->put($prioridad, $prioridadData);
-        });
-    
-        // Ordenar los elementos de prioridad 2 con prioridad_por_antiguedad en base a la fecha_cargo
-        if ($clasificado->has(2)) {
-            $prioridadData = $clasificado->get(2);
-            $prioridadData['cargos'] = $prioridadData['cargos']->sortBy(function ($cargo) {
-                return strtotime($cargo->fecha_cargo);
+                // Mantener el orden original si no hay criterios de ordenación adicionales
+                return 0;
             });
     
-            // Actualizar la entrada en la colección clasificado
-            $clasificado->put(2, $prioridadData);
-        }
+            // Calcular el total de monto e IVA
+            $total = $cargosOrdenados->sum(function ($cargo) {
+                return $cargo->monto + $cargo->iva;
+            });
     
-        // Asegurar que las prioridades estén ordenadas
-        $clasificado = $clasificado->sortKeys();
-    
-        // Convertir las colecciones de cargos en arrays y devolver los resultados
-        $clasificado = $clasificado->map(function ($item) {
-            return [
-                'cargos' => $item['cargos']->values()->all(), // Asegura que los índices sean correctos
-                'total' => $item['total'],
-            ];
+            // Añadir los cargos ordenados y el total a la colección clasificada
+            $clasificado->put($prioridad, [
+                'cargos' => $cargosOrdenados->values()->toArray(),  // Guardamos la colección ordenada
+                'total' => $total,
+            ]);
         });
     
-        return $clasificado->all();
-    }
+        // Ordenar el clasificado por prioridad ascendente para que se mantenga el orden correcto
+        $clasificado = $clasificado->sortKeys();
     
-
+        return $clasificado->toArray();
+    }
     
     //
     public function registrarAbono($id_cargo, $modelo_origen, $id_origen, $monto)
