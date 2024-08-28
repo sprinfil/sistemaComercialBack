@@ -63,8 +63,15 @@ class PagoService{
             // se obtiene el monto pagado
             $monto_pagado =  number_format($pago->total_pagado, 2, '.', '');
             // se obtienen los cargos a pagar (si hay) y cuanto se va pagar
-            $cargos_selecionados = $data['cargos'];
-            $total_a_pagar = number_format($this->totalPagos($cargos_selecionados), 2, '.', '');
+            if (isset($data['cargos']) && !empty($data['cargos'])) {
+                $cargos_selecionados = $data['cargos'];
+                // Proceder con la lógica cuando cargos existe y no está vacío
+                $total_a_pagar = number_format($this->totalPagos($cargos_selecionados), 2, '.', '');
+            }else{
+                $cargos_selecionados = null;
+                $total_a_pagar = 0;
+            }
+            
             $abono_acumulado = 0;
 
             // valida si hay cargos selecionados
@@ -91,7 +98,7 @@ class PagoService{
                     //throw new Exception("Lo pagado es menor que el adeudo total ".$total_a_pagar ."<". $monto_pagado);
                 } 
             } else {
-                throw new Exception("No hay cargos a pagar");
+                $this->pagoAutomatico($id_modelo, $modelo);
             }
 
             $this->consolidarEstados($id_modelo, $modelo);
