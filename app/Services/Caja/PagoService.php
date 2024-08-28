@@ -77,8 +77,9 @@ class PagoService{
                             } else if($cargo_real->concepto->abonable == true && $pago->pendiente() < $cargo_real->monto) {
                                 $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $pago->pendiente());
                             }else{
-                                //throw new Exception("No se puede abonar a ese cargo");
+                                throw new Exception("No se puede abonar a ese cargo");
                             }
+                            $this->consolidarEstados($id_modelo, $modelo);
                         }
                         $this->consolidarEstados($id_modelo, $modelo);
                     }  
@@ -187,7 +188,7 @@ class PagoService{
                         }
                         // después de recorrer todos los abonos
                         $diferencia = abs($total_abonado - $total_pagado);
-                        if($diferencia < 1){
+                        if($diferencia < 1 || $total_abonado == $total_pagado){
                             // si la diferencia es menor a 1
                             $pago_modificado = Pago::findOrFail($pago->id);
                             $pago_modificado->update([
@@ -205,7 +206,7 @@ class PagoService{
                             $pago_modificado->save();
                         }
                         else{
-                            //throw new Exception('error abono'.$total_abonado.'pago'.$total_pagado);
+                            throw new Exception('error abono'.$total_abonado.'pago'.$total_pagado);
                         }
                     }else{
                         throw new Exception('no hay abonos');
