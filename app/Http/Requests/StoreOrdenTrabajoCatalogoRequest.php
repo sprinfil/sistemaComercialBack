@@ -29,6 +29,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "orden_trabajo_catalogo.vigencias" => "sometimes|integer",
             "orden_trabajo_catalogo.momento_cargo" => "sometimes|in:generar,asignar,concluir,No genera",
             "orden_trabajo_catalogo.genera_masiva" => "sometimes|boolean",
+            "orden_trabajo_catalogo.limite_ordenes" => "sometimes|integer",
             //acciones
             "orden_trabajo_accion" => "sometimes|array",
             "orden_trabajo_accion.*" => "sometimes|array:id,id_orden_trabajo_catalogo,id_concepto_catalogo,accion,modelo,campo,opcional,id_orden_trabajo_acc_encadena,id_orden_trabajo_acc_alterna",
