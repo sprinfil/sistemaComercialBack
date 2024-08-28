@@ -119,6 +119,13 @@ class Toma extends Model
     {
         return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
+    public function cargosVigentesConConcepto(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->where('estado', 'pendiente')
+                    ->with('concepto'); // Cargar la relación 'concepto' junto con los cargos
+    }
+
     public function pagos(): MorphMany
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->orderBy('fecha_pago', 'desc');;

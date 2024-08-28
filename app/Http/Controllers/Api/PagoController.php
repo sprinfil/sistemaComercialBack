@@ -100,4 +100,20 @@ class PagoController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Consulta un cargo especifico por su id
+     */
+    public function test($id)
+    {
+        try {
+            return response(
+                $this->pagoService->pagoAutomatico($id, 'toma')
+            );
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el pago por su id '.$id
+            ], 500);
+        }
+    }
 }

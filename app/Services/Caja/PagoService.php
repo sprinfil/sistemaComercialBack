@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class PagoService{
 
@@ -60,16 +61,16 @@ class PagoService{
             $saldo_inicial = $dueno->saldoToma();
 
             // se obtiene el monto pagado
-            $monto_pagado = $pago->total_pagado;
+            $monto_pagado =  number_format($pago->total_pagado, 2, '.', '');
             // se obtienen los cargos a pagar (si hay) y cuanto se va pagar
             $cargos_selecionados = $data['cargos'];
-            $total_a_pagar = $this->totalPagos($cargos_selecionados);
+            $total_a_pagar = number_format($this->totalPagos($cargos_selecionados), 2, '.', '');
 
             // valida si hay cargos selecionados
             if($cargos_selecionados){
                 // se calcula la diferencia entre el total de los cargos a pagar y el pago
                 //$diferencia = abs($monto_pagado - $total_a_pagar);
-                if($total_a_pagar < $monto_pagado){
+                if($total_a_pagar <= $monto_pagado){
                     // si la diferencia de lo pagado es menor o la diferencia es poca se hacen los cargos
                     foreach ($cargos_selecionados as $cargo) {
                         $cargo_selecionado = Cargo::findOrFail($cargo['id_cargo']);
@@ -77,10 +78,10 @@ class PagoService{
                         $this->consolidarEstados($id_modelo, $modelo);
                     }
                     // si lo pagado no consume todo lo pagado
-                    // -> llama la funcion de pago
+                    // -> llama la funcion de pago y se aplica el saldo a favor
                 } else {
                     // si no hay cargos a pagar
-                    // -> llama la funcion de pago
+                    // -> llama la funcion de pago y se aplica el saldo a favor
                     throw new Exception("Lo pagado es menor que el adeudo total ".$total_a_pagar ."<". $monto_pagado);
                 } 
             } else {
@@ -90,9 +91,9 @@ class PagoService{
             $this->consolidarEstados($id_modelo, $modelo);
             DB::commit();
             $pago_final = Pago::with('abonos')->findOrFail($pago->id);
-            $pago_final->saldo_anterior = $saldo_inicial;
-            $pago_final->saldo_actual = $dueno->saldoToma();
-            $pago_final->saldo_no_aplicado = $dueno->saldoSinAplicar();
+            $pago_final->saldo_anterior = number_format($saldo_inicial, 2, '.', '');
+            $pago_final->saldo_actual = number_format($dueno->saldoToma(), 2, '.', '');
+            $pago_final->saldo_no_aplicado = number_format($dueno->saldoSinAplicar(), 2, '.', '');
             return $pago_final;
         } 
         catch(Exception $ex){
@@ -101,19 +102,80 @@ class PagoService{
         }
     }
 
-    public function pagoRecursivo($_id_modelo, $_modelo)
+    public function pagoAutomatico($_id_modelo, $_modelo)
     {
         try {
             $dueno = helperGetOwner($_modelo, $_id_modelo);
             $pagos_pendientes = $dueno->pagosPendientes;
-            //$cargos_pendientes = $dueno->pagosPendientes;
+            $cargos_vigentes = $dueno->cargosVigentesConConcepto;
 
+            if ($cargos_vigentes) {
+                $cargos_ordenados = $this->clasificarPorPrioridad($cargos_vigentes);
+                
+            } else {
+                throw new Exception("No hay cargos por pagar");
+            }
+            
+            return $cargos_ordenados; // Convertir la colección a JSON
         } 
-        catch(Exception $ex) {
-            throw new Exception("Error al procesar pago");
+        catch (Exception $ex) {
+            throw new Exception("Error al procesar pago: " . $ex->getMessage());
         }
     }
+    
 
+function clasificarPorPrioridad(EloquentCollection $cargos): array
+{
+    $clasificado = collect([
+        1 => collect(),
+        2 => collect(),
+        3 => collect(),
+        // Agrega más si hay más prioridades
+    ]);
+
+    $totales = [
+        1 => 0,
+        2 => 0,
+        3 => 0,
+        // Agrega más si hay más prioridades
+    ];
+
+    $cargos->each(function ($cargo) use ($clasificado, &$totales) {
+        $prioridad = $cargo->concepto->prioridad_abono;
+        $monto_total = $cargo->monto + $cargo->iva;
+
+        // Sumar al total por prioridad
+        $totales[$prioridad] += $monto_total;
+
+        // Si abonable es 0, lo añadimos al final de la colección
+        if ($cargo->concepto->abonable == 0) {
+            $clasificado[$prioridad]->push($cargo);
+        } else {
+            // Si abonable es 1, lo añadimos al principio de la colección
+            $clasificado[$prioridad]->prepend($cargo);
+        }
+    });
+
+    // Ordenar los elementos de prioridad 2 con prioridad_por_antiguedad en base a la fecha_cargo
+    if ($clasificado->has(2)) {
+        $clasificado[2] = $clasificado[2]->sortBy(function ($cargo) {
+            return strtotime($cargo->fecha_cargo);
+        });
+    }
+
+    // Combina las colecciones de cada prioridad en una sola colección
+    $result = collect();
+    foreach ([1, 2, 3] as $priority) {
+        $result = $result->merge($clasificado[$priority]);
+    }
+
+    return [
+        'cargos' => $result->all(),
+        'totales' => $totales,
+    ];
+}
+
+    
     //
     public function registrarAbono($id_cargo, $modelo_origen, $id_origen, $monto)
     {
