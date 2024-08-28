@@ -91,7 +91,7 @@ class PagoService{
           //  $pago = Pago::findOrFail($pago->id);
           $this->consolidarEstados($id_modelo, $modelo);
             DB::commit();
-            return Pago::findOrFail($pago->id);
+            return Pago::with('abonos')->findOrFail($pago->id);
         } 
         catch(Exception $ex){
             DB::rollBack();

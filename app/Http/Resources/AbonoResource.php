@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Cargo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,8 @@ class AbonoResource extends JsonResource
             "id_origen" => $this->id_origen,
             "modelo_origen" => $this->modelo_origen,
             "total_abonado" => $this->total_abonado,
+            "cargo" => Cargo::find($this->id_cargo)->nombre,
+            "estado" => Cargo::find($this->id_cargo)->estado  
         ];
     }
 }
