@@ -123,57 +123,64 @@ class PagoService{
         }
     }
     
-
-function clasificarPorPrioridad(EloquentCollection $cargos): array
-{
-    $clasificado = collect([
-        1 => collect(),
-        2 => collect(),
-        3 => collect(),
-        // Agrega más si hay más prioridades
-    ]);
-
-    $totales = [
-        1 => 0,
-        2 => 0,
-        3 => 0,
-        // Agrega más si hay más prioridades
-    ];
-
-    $cargos->each(function ($cargo) use ($clasificado, &$totales) {
-        $prioridad = $cargo->concepto->prioridad_abono;
-        $monto_total = $cargo->monto + $cargo->iva;
-
-        // Sumar al total por prioridad
-        $totales[$prioridad] += $monto_total;
-
-        // Si abonable es 0, lo añadimos al final de la colección
-        if ($cargo->concepto->abonable == 0) {
-            $clasificado[$prioridad]->push($cargo);
-        } else {
-            // Si abonable es 1, lo añadimos al principio de la colección
-            $clasificado[$prioridad]->prepend($cargo);
-        }
-    });
-
-    // Ordenar los elementos de prioridad 2 con prioridad_por_antiguedad en base a la fecha_cargo
-    if ($clasificado->has(2)) {
-        $clasificado[2] = $clasificado[2]->sortBy(function ($cargo) {
-            return strtotime($cargo->fecha_cargo);
+    function clasificarPorPrioridad(EloquentCollection $cargos): array
+    {
+        $clasificado = collect();
+    
+        $cargos->each(function ($cargo) use ($clasificado) {
+            $prioridad = $cargo->concepto->prioridad_abono;
+            $monto_total = $cargo->monto + $cargo->iva;
+    
+            // Inicializar la entrada para esta prioridad si no existe
+            if (!$clasificado->has($prioridad)) {
+                $clasificado->put($prioridad, [
+                    'cargos' => collect(),
+                    'total' => 0,
+                ]);
+            }
+    
+            // Acceder al valor actual de la prioridad
+            $prioridadData = $clasificado->get($prioridad);
+    
+            // Sumar al total por prioridad
+            $prioridadData['total'] += $monto_total;
+    
+            // Agregar el cargo a la colección de la prioridad, manejando abonable
+            if ($cargo->concepto->abonable == 0) {
+                $prioridadData['cargos']->push($cargo);
+            } else {
+                $prioridadData['cargos']->prepend($cargo);
+            }
+    
+            // Actualizar la entrada en la colección clasificado
+            $clasificado->put($prioridad, $prioridadData);
         });
+    
+        // Ordenar los elementos de prioridad 2 con prioridad_por_antiguedad en base a la fecha_cargo
+        if ($clasificado->has(2)) {
+            $prioridadData = $clasificado->get(2);
+            $prioridadData['cargos'] = $prioridadData['cargos']->sortBy(function ($cargo) {
+                return strtotime($cargo->fecha_cargo);
+            });
+    
+            // Actualizar la entrada en la colección clasificado
+            $clasificado->put(2, $prioridadData);
+        }
+    
+        // Asegurar que las prioridades estén ordenadas
+        $clasificado = $clasificado->sortKeys();
+    
+        // Convertir las colecciones de cargos en arrays y devolver los resultados
+        $clasificado = $clasificado->map(function ($item) {
+            return [
+                'cargos' => $item['cargos']->values()->all(), // Asegura que los índices sean correctos
+                'total' => $item['total'],
+            ];
+        });
+    
+        return $clasificado->all();
     }
-
-    // Combina las colecciones de cada prioridad en una sola colección
-    $result = collect();
-    foreach ([1, 2, 3] as $priority) {
-        $result = $result->merge($clasificado[$priority]);
-    }
-
-    return [
-        'cargos' => $result->all(),
-        'totales' => $totales,
-    ];
-}
+    
 
     
     //
