@@ -49,9 +49,9 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenes()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::all()
+            OrdenTrabajo::paginate(20)
         );
-       
+       //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
 
 
@@ -63,7 +63,7 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo'][0]);
             if ($catalogo=="Existe"){
                 return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
             }
@@ -321,7 +321,7 @@ class OrdenTrabajoController extends Controller
         }
         else
         {
-            DB::commit();
+            DB::rollBack();
             return $data;
             //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }

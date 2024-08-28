@@ -29,6 +29,21 @@ class StoreOrdenTrabajoRequest extends FormRequest
             "id_empleado_encargado.*." => "sometimes|exists:operadores,id",
             "id_orden_trabajo_catalogo.*." => "required|exists:orden_trabajo_catalogos,id",
             "posicion_OT.*." => "sometimes|point",
+            /*
+            "modelos"=> "required|array:toma,medidores,contratos,usuarios",
+            
+            "toma"=> "sometimes|array",
+            "toma.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
+
+            "medidores"=> "sometimes|array",
+            "medidores.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
+
+            "usuarios"=> "sometimes|array",
+            "usuarios.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
+
+            "contratos"=> "sometimes|array",
+            "contratos.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
+            */
         ];
     }
 }
