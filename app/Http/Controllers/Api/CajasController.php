@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCajaCatalogoRequest;
 use App\Http\Requests\StoreCajasRequest;
 use App\Http\Requests\StoreOperadorAsignadoRequest;
+use App\Http\Requests\StoreRetiroCajaRequest;
 use App\Http\Requests\UpdateCajaCatalogoRequest;
 use App\Http\Requests\UpdateCajasRequest;
 use App\Http\Resources\CajaResource;
@@ -239,7 +240,22 @@ class CajasController extends Controller
         }
     }
 
-
+    //RetiroMetodos
+    public function registrarRetiro(StoreRetiroCajaRequest $request)
+  {
+    try {
+        $data = $request->validated();
+        DB::beginTransaction();
+        $retiro = (new CajaService())->registrarRetiroService($data);
+        Db::commit();
+        return $retiro;
+    } catch (Exception $ex) {
+        DB::rollBack();
+        return response()->json([
+            'Ocurrio un error durante el registro del retiro.'.$ex
+        ]);
+    }
+  }
 
     /**
      * Remove the specified resource from storage.

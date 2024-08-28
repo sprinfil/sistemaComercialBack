@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -13,35 +14,22 @@ return new class extends Migration
     {
         Schema::create('retiro_cajas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('id_corte_caja');
-            $table->decimal('monto_total');
-            $table->string('moneda_extranjera');
-            $table->string('moneda_nacional');
-
+            $table->unsignedInteger('id_sesion_caja');
+            $table->integer('cantidad_centavo_10');
+            $table->integer('cantidad_centavo_20');
+            $table->integer('cantidad_centavo_50');
+            $table->integer('cantidad_moneda_1');
+            $table->integer('cantidad_moneda_2');
+            $table->integer('cantidad_moneda_5');
+            $table->integer('cantidad_moneda_10');
+            $table->integer('cantidad_moneda_20');
             $table->integer('cantidad_billete_20');
             $table->integer('cantidad_billete_50');
             $table->integer('cantidad_billete_100');
             $table->integer('cantidad_billete_200');
             $table->integer('cantidad_billete_500');
             $table->integer('cantidad_billete_1000');
-
-            $table->integer('cantidad_moneda_1');
-            $table->integer('cantidad_moneda_2');
-            $table->integer('cantidad_moneda_5');
-            $table->integer('cantidad_moneda_10');
-            $table->integer('cantidad_moneda_20');
-
-            $table->integer('cantidad_centavo_10');
-            $table->integer('cantidad_centavo_20');
-            $table->integer('cantidad_centavo_50');
-
-            $table->integer('cantidad_billete_dolar_1');
-            $table->integer('cantidad_billete_dolar_2');
-            $table->integer('cantidad_billete_dolar_5');
-            $table->integer('cantidad_billete_dolar_10');
-            $table->integer('cantidad_billete_dolar_20');
-            $table->integer('cantidad_billete_dolar_50');
-            $table->integer('cantidad_billete_dolar_100');
+            $table->decimal('monto_total');
             $table->softDeletes();
             $table->timestamps();
         });

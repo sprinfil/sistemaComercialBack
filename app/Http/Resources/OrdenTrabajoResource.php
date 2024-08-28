@@ -29,6 +29,7 @@ class OrdenTrabajoResource extends JsonResource
             "material_utilizado" => $this->material_utilizado,
             "evidencia" => $this->evidencia,
             "posicion_OT" => $this->posicion_OT,
+            "genera_OT_encadenadas" => $this->genera_OT_encadenadas,
             'orden_trabajo_catalogo' => OrdenTrabajoCatalogoResource::collection($this->whenLoaded('ordenTrabajoCatalogo')),
         ];
     }

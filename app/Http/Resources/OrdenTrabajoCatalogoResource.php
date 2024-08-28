@@ -26,6 +26,7 @@ class OrdenTrabajoCatalogoResource extends JsonResource
             "descripcion" => $this->descripcion,
             "vigencias" => $this->vigencias,
             "momento_cargo" => $this->momento_cargo,
+            "limite_ordenes"=>$this->limite_ordenes,
             "genera_masiva" => $this->genera_masiva,
             'orden_trabajo_accion' => OrdenTrabajoAccionResource::collection($this->whenLoaded('ordenTrabajoAccion')), //$this->orden_trabajo_acciones==null ?OrdenTrabajoAccionResource::collection($this->whenLoaded('ordenTrabajoAccion')) :OrdenTrabajoAccionResource::collection($this->orden_trabajo_acciones),
             'ordenes_trabajo_cargos' => OrdenesTrabajoCargoResource::collection($this->whenLoaded('ordenTrabajoCargos')), //$this->ordenes_trabajo_cargos==null ?OrdenesTrabajoCargoResource::collection($this->whenLoaded('ordenTrabajoCargos')) :OrdenesTrabajoCargoResource::collection($this->ordenes_trabajo_cargos),

@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isNull;
 
 class OrdenTrabajoService{
 
@@ -33,6 +34,11 @@ class OrdenTrabajoService{
     public function crearOrden(array $ordenTrabajoPeticion){ //Ejemplo de service
         
         $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->first();
+        $id_empleado_asigno=auth()->user()->operador->id;
+    
+        $ordenTrabajoPeticion['id_empleado_asigno']=$id_empleado_asigno;
+      
+
         $cargo=null;
         if ($ordenTrabajo){
             return null;
@@ -75,12 +81,30 @@ class OrdenTrabajoService{
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-       
+        if ($OT['estado']=="Concluida"){
+           return null;
+        }
+        
+        $OTencadenadas=new Collection();
         $OrdenCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
         $OrdenConf=OrdenTrabajoAccion::find($OT['id_orden_trabajo_catalogo']);
-        if ($OT['estado']=="Concluida"){
-           
+
+        $IniciarEncadenadas=$ordenTrabajo['genera_OT_encadenadas'];
+   
+        //Checa si hay ordenes encadenadas y las ejecuta
+        $OrdenesEncadenadas=OrdenTrabajoCatalogo::where('id', $OrdenCatalogo['id'])
+        ->with('ordenTrabajoEncadenado.OrdenCatalogoEncadenadas')
+        ->first()['ordenTrabajoEncadenado']->pluck('OrdenCatalogoEncadenadas'); //CONSULTA INSANOTA
+        if (count($OrdenesEncadenadas)!=0 && $IniciarEncadenadas==true){
+            $OTencadenadas=new Collection();
+            foreach ($OrdenesEncadenadas as $encade){
+                $NuevasOt=['id_toma'=>$ordenTrabajo['id_toma'],'id_empleado_asigno'=>$ordenTrabajo['id_empleado_asigno'],'id_orden_trabajo_catalogo'=>$encade['id']];
+                $OTencadenadas->push($this->crearOrden($NuevasOt));
+            }
         }
+        //return "no";
+
+        
         $ordenTrabajo['estado']="Concluida";
         $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
         $cargo=null;
@@ -100,16 +124,22 @@ class OrdenTrabajoService{
             $origen="orden_trabajo";
             $dueno="toma";
             $cargo=$this->generarCargo($OrdenCatalogo,$origen,$toma,$dueno,$conceptos);
-            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo)];
+            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo),"OT_encadenadas"=>$OTencadenadas];
         }
         else{
-            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>$cargo];
+            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>$cargo,"OT_encadenadas"=>$OTencadenadas];
         }
   
     }
+//validar terminar ot si pagos saldados 
+    public function Masiva(array $ordenesTrabajo){
 
-    public function Masiva(){
-        
+        $Ordenes=new Collection();
+        foreach ($ordenesTrabajo as $OT){
+            $Ordenes->push($this->crearOrden($OT));
+        }
+        return $Ordenes;
+
     }
 
     //metodo que maneja el tipo de accion de la ot a realizar
@@ -243,7 +273,7 @@ class OrdenTrabajoService{
         $OT=OrdenTrabajo::find($request['id']);
         $OTCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
         if ($OTCatalogo['momento_cargo']=="generar"){
-            $OtCargos=$OT->cargos;
+            $OtCargos=$OT->cargosVigentes;
             foreach ($OtCargos as $cargo){
                 $cargo->delete();
             }

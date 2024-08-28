@@ -1,48 +1,55 @@
 <?php
 namespace App\Services\Caja;
 
+use App\Http\Requests\StoreRetiroCajaRequest;
 use App\Http\Resources\CajaCatalogoResource;
 use App\Http\Resources\CajaResource;
 use App\Http\Resources\CorteCajaResource;
 use App\Http\Resources\OperadorAsignadoResource;
 use App\Http\Resources\PagoResource;
+use App\Http\Resources\RetiroCajaResource;
 use App\Models\Caja;
 use App\Models\CajaCatalogo;
 use App\Models\CorteCaja;
 use App\Models\OperadorAsignado;
 use App\Models\Pago;
+use App\Models\RetiroCaja;
 use App\Models\SolicitudCancelacionPago;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Return_;
 
 class CajaService{
 
    public function iniciarCaja(array $data)
    {
      try {
+        $usuario = auth()->user();
+       
         //Obtencion de datos del arreglo
-        $idOperador = $data['id_operador'];
+        $idOperador = $usuario->operador->id;
         $idCajaCatalogo = $data['id_caja_catalogo'];
         $horaApertura = $data['fecha_apertura'];
+
 
         //formateo de la hora de apertura a horas-minutos-segundos
         $horaApertura = Carbon::parse($horaApertura);
         $horaApertura = $horaApertura->format('H:i:s');
         
-
+        
         //Consulta para obtener si el operador esta asignado a la caja en la que se desea registrar
         $cajaAsignada = OperadorAsignado::where('id_caja_catalogo',$idCajaCatalogo)->where('id_operador',$idOperador)->first();
 
+        
         //Obtencion de la informacion de la caja en la que se va a registrar
         $CajaCatalogo = CajaCatalogo::FindOrFail($cajaAsignada->id_caja_catalogo);
-
+       
         //Obtencion de un registro previo en caso de existir uno en el mismo dia y que no se haya cerrado el corte
         $cajaPreviaReg = Caja::where('id_caja_catalogo',$idCajaCatalogo)
-        ->where('id_operador',$idOperador)
-        ->whereDate('fecha_apertura', Carbon::today())
+        ->whereDate('fecha_apertura',  Carbon::today())
         ->where('fecha_cierre', null)
         ->get();
 
@@ -55,7 +62,14 @@ class CajaService{
             //No debe existir un registro previo de la caja en el mismo dia a menos que este registro ya cuente con una fecha de cierre
            if (count($cajaPreviaReg) == 0) {
 
-                $caja = Caja::create($data);
+            $sesionCaja = [
+              "id_operador" =>$idOperador,
+              "id_caja_catalogo" => $data['id_caja_catalogo'], 
+              "fondo_inicial" => $data['fondo_inicial'],
+              "fecha_apertura" => $data['fecha_apertura'],
+            ]; 
+
+                $caja = Caja::create($sesionCaja);
                 return response(new CajaResource($caja));;
            }
            //condicion en caso de que la caja ya cuente con un registro abierto el dia actual
@@ -94,6 +108,10 @@ class CajaService{
     //var_dump($cajaData);
       try {
 
+        //Obtencion del usuario y de su operador asociado
+        $usuario = auth()->user();
+        $idOperador = $usuario->operador->id;
+
         $discrepancia = "no";
         $discrepanciaMonto = 0;
         
@@ -109,7 +127,7 @@ class CajaService{
         }
         
         //Consulta de registro de caja por idOperador,idCajaCatalogo donde el registro sea del dia actual y no cuente con fecha de cierre
-        $cajaHisto = Caja::where('id_operador',$data['caja_data'][0]['id_operador'])
+        $cajaHisto = Caja::where('id_operador',$idOperador)
         ->where('id_caja_catalogo',$data['caja_data'][0]['id_caja_catalogo'])
         ->whereDate('fecha_apertura',Carbon::today())
         ->where('fecha_cierre',null)
@@ -129,8 +147,24 @@ class CajaService{
           //Crea el registro de corte de caja
           $corteReg = [
             "id_caja" => $cajaHisto->id, 
-            "id_operador" =>$data['caja_data'][0]['id_operador'],
+            "id_operador" => $idOperador,
             "estatus" => "pendiente",
+
+            "cantidad_centavo_10" => $data['corte_data'][0]['cantidad_centavo_10'],
+            "cantidad_centavo_20" => $data['corte_data'][0]['cantidad_centavo_20'],
+            "cantidad_centavo_50" => $data['corte_data'][0]['cantidad_centavo_50'],
+            "cantidad_moneda_1" => $data['corte_data'][0]['cantidad_moneda_1'],
+            "cantidad_moneda_2" => $data['corte_data'][0]['cantidad_moneda_2'],
+            "cantidad_moneda_5" => $data['corte_data'][0]['cantidad_moneda_5'],
+            "cantidad_moneda_10" => $data['corte_data'][0]['cantidad_moneda_10'],
+            "cantidad_moneda_20" => $data['corte_data'][0]['cantidad_moneda_20'],
+            "cantidad_billete_20" => $data['corte_data'][0]['cantidad_billete_20'],
+            "cantidad_billete_50" => $data['corte_data'][0]['cantidad_billete_50'],
+            "cantidad_billete_100" => $data['corte_data'][0]['cantidad_billete_100'],
+            "cantidad_billete_200" => $data['corte_data'][0]['cantidad_billete_200'],
+            "cantidad_billete_500" => $data['corte_data'][0]['cantidad_billete_500'],
+            "cantidad_billete_1000" => $data['corte_data'][0]['cantidad_billete_1000'],
+
             "total_efectivo_registrado" =>  $cajaHisto->totalPorTipo("efectivo"),
             "total_efectivo_real" => $data['corte_data'][0]['total_efectivo_real'],
             "total_tarjetas_registrado" => $cajaHisto->totalPorTipo("tarjeta"),
@@ -144,23 +178,17 @@ class CajaService{
             "fecha_corte" => $data['corte_data'][0]['fecha_corte']
           ]; 
           //return  $corteReg;
+
+           //Registra el corte y actualiza el cierre de caja
+           $cajaHisto->update($data['caja_data'][0]);
+           $corte = CorteCaja::create($corteReg);
+           $corte->save();
+           //Mensaje de exito
+           return response()->json([
+            'Se ha finalizado el cierre de caja y se registro el corte.'
+           ]);
           
-          //El operador debe ser igual en el registro de caja y en el corte
-          if ($data['caja_data'][0]['id_operador'] == $data['corte_data'][0]['id_operador'] ) {
-            //Registra el corte y actualiza el cierre de caja
-             $cajaHisto->update($data['caja_data'][0]);
-             $corte = CorteCaja::create($corteReg);
-             $corte->save();
-             //Mensaje de exito
-             return response()->json([
-              'Se ha finalizado el cierre de caja y se registro el corte.'
-             ]);
-          }
-          else{
-            return response()->json([
-              'error' => 'El operador en la caja y en el corte no coincide.'
-             ]);
-          }
+         
         }else{
           return response()->json([
             'error' => 'No existen cajas abiertas.'
@@ -419,17 +447,73 @@ class CajaService{
 
   public function buscarSesionCajaService(Request $data)
   {
+    //Utilizar Sanctum en lugar del data
     try {
+      $usuario = auth()->user();
+      $idOperador = $usuario->operador->id;
+      
      // return $data->fecha_apertura; new CajaResource($cajaSesion);
-      $cajaSesion = Caja::where('id_operador',$data->id_operador)
+     
+      $cajaSesion = Caja::where('id_operador',$idOperador)
       ->where('id_caja_catalogo',$data->id_caja_catalogo)
       ->where(DB::raw('DATE(fecha_apertura)'),$data->fecha_apertura)
       ->where('fecha_cierre',null)
       ->first();
-      return (new CajaResource($cajaSesion));
-    } catch (Exception $ex) {
       
+      if ($cajaSesion) {
+        return (new CajaResource($cajaSesion));
+      }
+      else{
+        return response()->json([
+          'error' => 'No se encontro sesion de caja asociada a este operador.'
+        ]);
+      }
+
+      
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda de  sesion de la caja.'
+    ], 500);
     }
   }
+
+  //RetiroMetodos
+  public function registrarRetiroService(array $data)
+  {
+    
+   
+    try {
+      if ($data) {
+        
+        $cajaSesion = Caja::find($data['id_sesion_caja']);
+        //return $cajaSesion->fecha_cierre;
+
+        if ($cajaSesion->fecha_cierre == null) {
+          
+          //return $data;
+          $retiroCaja = RetiroCaja::create($data);
+          return response(new RetiroCajaResource($retiroCaja));
+
+        }else{
+
+          return response()->json([
+            "error"=>'No existe sesion activa asociada a este retiro.'
+          ]);
+        }
+      }
+      else{
+        return response()->json([
+          "error"=>'No existen datos a registrar.'
+        ]);
+      }
+      
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante el registro del retiro.'
+    ], 500);
+    }
+  }
+
+
 
 }
