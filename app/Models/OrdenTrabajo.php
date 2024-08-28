@@ -25,6 +25,7 @@ class OrdenTrabajo extends Model
         "material_utilizado",
         "evidencia",
         "posicion_OT",
+        "genera_OT_encadenadas",
     ];
 
     public function toma():BelongsTo{

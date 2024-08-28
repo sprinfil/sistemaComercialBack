@@ -48,4 +48,19 @@ class Pago extends Model
     {
         return $this->morphMany(Abono::class, 'origen', 'modelo_origen', 'id_origen');
     }
+
+    public function cargos()
+    {
+        return $this->abonos()->with('cargo')->get();
+    }
+
+    public function pendiente()
+    {
+        $abonos = $this->abonos;
+        $total_aplicado = 0;
+        foreach($abonos as $abono){
+            $total_aplicado += $abono->total_abonado;
+        }
+        return $this->total_pagado - $total_aplicado;
+    }
 }
