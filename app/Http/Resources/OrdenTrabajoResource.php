@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Operador;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,8 +31,8 @@ class OrdenTrabajoResource extends JsonResource
             "evidencia" => $this->evidencia,
             "posicion_OT" => $this->posicion_OT,
             "genera_OT_encadenadas" => $this->genera_OT_encadenadas,
-            'empleadoAsigno' =>new OrdenTrabajoCatalogoResource($this->whenLoaded('empleadoAsigno')),
-            'empleadoEncargado' =>new OrdenTrabajoCatalogoResource($this->whenLoaded('empleadoEncargado')),
+            'empleadoAsigno' =>new OperadorResource($this->whenLoaded('empleadoAsigno')),
+            'empleadoEncargado' =>new OperadorResource($this->whenLoaded('empleadoEncargado')),
             'orden_trabajo_catalogo' =>new OrdenTrabajoCatalogoResource($this->whenLoaded('ordenTrabajoCatalogo')),
             'cargos' => CargoResource::collection($this->whenLoaded('cargosVigentes')),
         ];

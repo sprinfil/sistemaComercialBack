@@ -27,6 +27,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/OrdenTrabajo/cerrar", "cerrarOrden");
         Route::put("/OrdenTrabajo/update", "asignarOrden");
         Route::post("/OrdenTrabajo/generar/masiva", "storeOrdenMasiva");
+        Route::put("/OrdenTrabajo/asigna/masiva", "storeOrdenMasivaAsignacion");
         Route::put("/OrdenTrabajo/restore/{id}", "restoreOrden");
         Route::delete("/OrdenTrabajo/log_delete/{id}", "deleteOrden");
         Route::get("/OrdenTrabajo/show/{id}", "showOrden");
