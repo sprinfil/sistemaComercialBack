@@ -56,6 +56,7 @@ class PagoService{
             $numeroPagos = $caja->pagos()->count() + 1;
             $folio = strtoupper('C'.str_pad($caja->id, 2, '0', STR_PAD_LEFT).'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT));
             $data['folio'] = $folio;
+            $data['fecha_pago'] = date('Y-m-d');
             $pago = Pago::create($data);
             // se obtiene el saldo
             $saldo_inicial = $dueno->saldoToma();
@@ -108,6 +109,7 @@ class PagoService{
             $pago_final->saldo_anterior = number_format($saldo_inicial, 2, '.', '');
             $pago_final->saldo_actual = number_format($dueno->saldoToma(), 2, '.', '');
             $pago_final->saldo_no_aplicado = number_format($dueno->saldoSinAplicar(), 2, '.', '');
+            //throw new Exception("L");
             return $pago_final;
         } 
         catch(Exception $ex){
@@ -192,7 +194,7 @@ class PagoService{
                 // no hay pagos
             }
             
-            return $cargos_ordenados; // Convertir la colección a JSON
+            //return $cargos_ordenados; // Convertir la colección a JSON
         } 
         catch (Exception $ex) {
             throw new Exception("Error al procesar pago: " . $ex->getMessage());
