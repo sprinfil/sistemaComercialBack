@@ -136,7 +136,8 @@ class PagoService{
                             //$cantidad_de_cargos = count($grupo['cargos']);
                         
                             foreach ($grupo['cargos'] as $cargo) {
-                                $total_pendiente = $pago->pendiente();
+                                $pago_real = Pago::find($pago->id);
+                                $total_pendiente = $pago_real->pendiente();
                                 if($total_pendiente > 0){
                                     $cargo_selecionado = Cargo::findOrFail($cargo['id']);
                                     $monto_con_iva = number_format($cargo_selecionado->montoPendiente(), 2, '.', '');
