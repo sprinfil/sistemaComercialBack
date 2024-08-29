@@ -24,7 +24,6 @@ class StoreCajasRequest extends FormRequest
         return [
             "id_caja_catalogo" => "required|integer|gt:0",
             "fondo_inicial" => "required|numeric|regex:/^\d+(\.\d{2})$/",
-            "fecha_apertura" => "required|date_format:Y-m-d H:i",
         ];
     }
 

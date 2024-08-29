@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OrdenTrabajoCatalogo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

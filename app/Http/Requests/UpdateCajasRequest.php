@@ -28,7 +28,6 @@ class UpdateCajasRequest extends FormRequest
           //  "caja_data.*.fondo_inicial" => "nullable|numeric|regex:/^\d+(\.\d{2})$/",//esto no debe estar lleno en el cierre
             "caja_data.*.fondo_final" => "required|numeric|regex:/^\d+(\.\d{2})$/",
            // "caja_data.*.fecha_apertura" => "nullable|date_format:Y-m-d H:i:s", //esto no debe estar lleno en el cierre
-            "caja_data.*.fecha_cierre" => "required|date_format:Y-m-d H:i:s", 
 
             "corte_data"=>"required|array",
             //"corte_data.*.id_caja"=>"required|integer|gt:0",
@@ -59,7 +58,6 @@ class UpdateCajasRequest extends FormRequest
              "corte_data.*.total_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
             //"corte_data.*.discrepancia"=>"required|string|in:si,no",//Este lo calcula el sistema
             //"corte_data.*.discrepancia_monto"=>"required|numeric|regex:/^\d+(\.\d{2})$/",//Este lo calcula el sistema
-            "corte_data.*.fecha_corte"=>"required|date_format:Y-m-d H:i:s",
         ];
     }
 }

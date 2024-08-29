@@ -30,7 +30,10 @@ class OrdenTrabajoResource extends JsonResource
             "evidencia" => $this->evidencia,
             "posicion_OT" => $this->posicion_OT,
             "genera_OT_encadenadas" => $this->genera_OT_encadenadas,
-            'orden_trabajo_catalogo' => OrdenTrabajoCatalogoResource::collection($this->whenLoaded('ordenTrabajoCatalogo')),
+            'empleadoAsigno' =>new OrdenTrabajoCatalogoResource($this->whenLoaded('empleadoAsigno')),
+            'empleadoEncargado' =>new OrdenTrabajoCatalogoResource($this->whenLoaded('empleadoEncargado')),
+            'orden_trabajo_catalogo' =>new OrdenTrabajoCatalogoResource($this->whenLoaded('ordenTrabajoCatalogo')),
+            'cargos' => CargoResource::collection($this->whenLoaded('cargosVigentes')),
         ];
     }
 }

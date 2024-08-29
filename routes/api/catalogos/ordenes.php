@@ -22,7 +22,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         //Route::get("/OrdenTrabajoConf/show/{id}", "showConf");
 
         //ORDEN DE TRABAJO
-        Route::get("/OrdenTrabajo", "indexOrdenes");
+        Route::post("/OrdenTrabajo", "indexOrdenes");
         Route::post("/OrdenTrabajo/create", "storeOrden");
         Route::put("/OrdenTrabajo/cerrar", "cerrarOrden");
         Route::put("/OrdenTrabajo/update", "asignarOrden");

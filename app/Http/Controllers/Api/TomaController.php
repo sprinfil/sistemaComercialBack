@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateTomaRequest;
 use App\Http\Resources\CargoResource;
 use App\Http\Resources\OrdenTrabajoResource;
 use App\Http\Resources\TomaResource;
+use App\Models\OrdenTrabajo;
 use App\Services\UsuarioService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -175,9 +176,11 @@ class TomaController extends Controller
     public function ordenesToma($id)
     {
         try {
-            $toma = Toma::findOrFail($id);
-            $ordenes=$toma->ordenesTrabajo;
-            return OrdenTrabajoResource::collection($ordenes);
+            //$toma = Toma::findOrFail($id);
+            //$ordenes=$toma->ordenesTrabajo;
+            //return OrdenTrabajoResource::collection($ordenes);
+            $ordenes=OrdenTrabajo::where('id_toma',$id)->with(['ordenTrabajoCatalogo','empleadoAsigno','empleadoEncargado','cargos'])->get();
+           return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Error al consultar las ordenes de trabajo'
