@@ -54,11 +54,12 @@ class CajaService{
         $CajaCatalogo = CajaCatalogo::FindOrFail($cajaAsignada->id_caja_catalogo);
        
         //Obtencion de un registro previo en caso de existir uno en el mismo dia y que no se haya cerrado el corte
-        $cajaPreviaReg = Caja::where('id_caja_catalogo',$idCajaCatalogo)
+        $cajaPreviaReg = Caja::where('id_operador',$idOperador) //'id_caja_catalogo',$idCajaCatalogo
         ->whereDate('fecha_apertura',  $fechaApertura)
         ->where('fecha_cierre', null)
         ->get();
 
+        //return $cajaPreviaReg;
 
             //El id_operador ingresado debe ser igual al de la caja en la que se quiere logear
         if($cajaAsignada->id_operador == $idOperador)
@@ -464,7 +465,7 @@ class CajaService{
     }
   }
 
-  public function buscarSesionCajaService(Request $data)
+  public function buscarSesionCajaService(Request $data)//aqui
   {
     
     try {
@@ -472,10 +473,18 @@ class CajaService{
       $idOperador = $usuario->operador->id;
       
      // return $data->fecha_apertura; new CajaResource($cajaSesion);
+     //Fecha hora base
+     $fechaHoraBase = Carbon::now();
+     $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+     $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
+    
+     //formateo de la fecha años-meses-dias
+     $fechaApertura = Carbon::parse($fechaHoraLocalFormateada);
+     $fechaApertura = $fechaApertura->format('Y-m-d');
      
       $cajaSesion = Caja::where('id_operador',$idOperador)
       ->where('id_caja_catalogo',$data->id_caja_catalogo)
-      ->where(DB::raw('DATE(fecha_apertura)'),$data->fecha_apertura)
+      ->where(DB::raw('DATE(fecha_apertura)'),$fechaApertura)
       ->where('fecha_cierre',null)
       ->first();
       
@@ -500,17 +509,53 @@ class CajaService{
   public function registrarRetiroService(array $data)
   {
     
-   
     try {
+      $usuario = auth()->user();
+      $idOperador = $usuario->operador->id;
+
+      //Fecha hora base
+      $fechaHoraBase = Carbon::now();
+      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+      $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
+     
+      //formateo de la fecha años-meses-dias
+      $fechaApertura = Carbon::parse($fechaHoraLocalFormateada);
+      $fechaApertura = $fechaApertura->format('Y-m-d');
+      
+     
+
       if ($data) {
         
-        $cajaSesion = Caja::find($data['id_sesion_caja']);
-        //return $cajaSesion->fecha_cierre;
-
+        $cajaSesion = Caja::where('id_operador',$idOperador)
+        ->where('id_caja_catalogo',$data['id_caja_catalogo'])
+        ->where(DB::raw('DATE(fecha_apertura)'),$fechaApertura)
+        ->where('fecha_cierre',null)
+        ->first();
+  
+        //return $cajaSesion;
         if ($cajaSesion->fecha_cierre == null) {
           
-          //return $data;
-          $retiroCaja = RetiroCaja::create($data);
+          $retiroArray = [
+             "id_sesion_caja"=> $cajaSesion->id,
+             "cantidad_centavo_10"=>$data['cantidad_centavo_10'],
+             "cantidad_centavo_20"=>$data['cantidad_centavo_20'],
+             "cantidad_centavo_50"=>$data['cantidad_centavo_50'],
+             "cantidad_moneda_1"=>$data['cantidad_moneda_1'],
+             "cantidad_moneda_2"=>$data['cantidad_moneda_2'],
+             "cantidad_moneda_5"=>$data['cantidad_moneda_5'],
+             "cantidad_moneda_10"=>$data['cantidad_moneda_10'],
+             "cantidad_moneda_20"=>$data['cantidad_moneda_20'],
+             "cantidad_billete_20"=>$data['cantidad_billete_20'],
+             "cantidad_billete_50"=>$data['cantidad_billete_50'],
+             "cantidad_billete_100"=>$data['cantidad_billete_100'],
+             "cantidad_billete_200"=>$data['cantidad_billete_200'],
+             "cantidad_billete_500"=>$data['cantidad_billete_500'],
+             "cantidad_billete_1000"=>$data['cantidad_billete_1000'],
+             "monto_total"=>$data['monto_total'],
+
+          ];
+
+          $retiroCaja = RetiroCaja::create($retiroArray);
           return response(new RetiroCajaResource($retiroCaja));
 
         }else{

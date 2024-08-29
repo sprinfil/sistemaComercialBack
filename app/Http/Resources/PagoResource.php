@@ -30,7 +30,7 @@ class PagoResource extends JsonResource
             "saldo_anterior" => $this->saldo_anterior ? $this->saldo_anterior : 0,
             "saldo_actual" => $this->saldo_actual ? $this->saldo_actual : 0,
             "saldo_no_aplicado" => $this->saldo_no_aplicado ? $this->saldo_no_aplicado : 0,
-            "total_abonado" => $this->total_abonado(),
+            "total_abonado" => number_format($this->total_abonado(), 2, '.', ''),
             //,"bonificaciones" => AbonoResource::collection($this->whenLoaded('bonificaciones')),
         ];
     }
