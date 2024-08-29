@@ -238,7 +238,7 @@ class CargoService{
                 $monto = $cargo_item['monto'];
         
                 $concepto_cargado = ConceptoCatalogo::findOrFail($id_concepto_cargado);
-                $nombre_cargo = 'CARGO DIRECTO DE ' . $concepto_cargado->nombre;
+                $nombre_cargo = '' . $concepto_cargado->nombre;
         
                 $iva = $monto ? $monto * 0.16 : 0;
         

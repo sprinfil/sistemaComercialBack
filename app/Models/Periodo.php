@@ -14,6 +14,8 @@ class Periodo extends Model
     protected $fillable = [
         "id_ruta",
         "id_tarifa",
+        "nombre",
+        "periodo",
         "facturacion_fecha_inicio",
         "facturacion_fecha_final",
         "lectura_inicio",

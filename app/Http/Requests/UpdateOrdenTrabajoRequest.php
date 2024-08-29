@@ -22,14 +22,18 @@ class UpdateOrdenTrabajoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_toma" => "sometimes|exists:toma,id",
-            "id_empleado_asigno" => "sometimes|exists:operadores,id",
-            "id_empleado_encargado" => "required|exists:operadores,id",
-            "id_orden_trabajo_catalogo" => "sometimes|exists:orden_trabajo_catalogos,id",
-            "fecha_finalizada"=>"sometimes|date",
-            "obervaciones"=>"nullable|string",
-            "evidencia"=>"nullable|string",
-            "material_utilizado"=>"nullable|string",
+            "ordenes_trabajo"=>"required|array",
+            "ordenes_trabajo.*"=>"required|array",
+            "id_toma.*." => "sometimes|exists:toma,id",
+            "id_empleado_asigno.*." => "sometimes|exists:operadores,id",
+            "id_empleado_encargado.*." => "required|exists:operadores,id",
+            "id_orden_trabajo_catalogo.*." => "sometimes|exists:orden_trabajo_catalogos,id",
+            "fecha_finalizada.*."=>"sometimes|date",
+            "obervaciones.*."=>"nullable|string",
+            "evidencia.*."=>"nullable|string",
+            "material_utilizado.*."=>"nullable|string",
+
+            
         ];
     }
 }

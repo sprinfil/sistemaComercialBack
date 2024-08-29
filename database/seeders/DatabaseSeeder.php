@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CargaTrabajoSeeder::class);
         $this->call(LecturaSeeder::class);
         $this->call(ConsumoSeeder::class);
-        $this->call(FacturaSeeder::class);
+        //$this->call(FacturaSeeder::class);
         $this->call(AsignacionGeograficaSeeder::class);
         //
         //$this->call(OrdenesTrabajoSeeder::class);

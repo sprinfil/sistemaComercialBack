@@ -27,19 +27,25 @@ class CajaService{
    public function iniciarCaja(array $data)
    {
      try {
+      
         $usuario = auth()->user();
-       
         //Obtencion de datos del arreglo
         $idOperador = $usuario->operador->id;
         $idCajaCatalogo = $data['id_caja_catalogo'];
-        $horaApertura = $data['fecha_apertura'];
 
+        //Fecha hora base
+        $fechaHoraBase = Carbon::now();
+        $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+        $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
 
         //formateo de la hora de apertura a horas-minutos-segundos
-        $horaApertura = Carbon::parse($horaApertura);
+        $horaApertura = Carbon::parse($fechaHoraLocalFormateada);
         $horaApertura = $horaApertura->format('H:i:s');
-        
-        
+       
+        //formateo de la fecha años-meses-dias
+        $fechaApertura = Carbon::parse($fechaHoraLocalFormateada);
+        $fechaApertura = $fechaApertura->format('Y-m-d');
+
         //Consulta para obtener si el operador esta asignado a la caja en la que se desea registrar
         $cajaAsignada = OperadorAsignado::where('id_caja_catalogo',$idCajaCatalogo)->where('id_operador',$idOperador)->first();
 
@@ -49,9 +55,10 @@ class CajaService{
        
         //Obtencion de un registro previo en caso de existir uno en el mismo dia y que no se haya cerrado el corte
         $cajaPreviaReg = Caja::where('id_caja_catalogo',$idCajaCatalogo)
-        ->whereDate('fecha_apertura',  Carbon::today())
+        ->whereDate('fecha_apertura',  $fechaApertura)
         ->where('fecha_cierre', null)
         ->get();
+
 
             //El id_operador ingresado debe ser igual al de la caja en la que se quiere logear
         if($cajaAsignada->id_operador == $idOperador)
@@ -66,7 +73,7 @@ class CajaService{
               "id_operador" =>$idOperador,
               "id_caja_catalogo" => $data['id_caja_catalogo'], 
               "fondo_inicial" => $data['fondo_inicial'],
-              "fecha_apertura" => $data['fecha_apertura'],
+              "fecha_apertura" => $fechaHoraLocalFormateada ,
             ]; 
 
                 $caja = Caja::create($sesionCaja);
@@ -115,6 +122,14 @@ class CajaService{
         $discrepancia = "no";
         $discrepanciaMonto = 0;
         
+         //Fecha hora base
+         $fechaHoraBase = Carbon::now();
+         $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+         $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
+        
+         //formateo de la fecha años-meses-dias
+         $fechaApertura = Carbon::parse($fechaHoraLocalFormateada);
+         $fechaApertura = $fechaApertura->format('Y-m-d');
 
         //Valida que la suma de los totales coincida con el total general
         if (($data['corte_data'][0]['total_efectivo_real'] + 
@@ -129,7 +144,7 @@ class CajaService{
         //Consulta de registro de caja por idOperador,idCajaCatalogo donde el registro sea del dia actual y no cuente con fecha de cierre
         $cajaHisto = Caja::where('id_operador',$idOperador)
         ->where('id_caja_catalogo',$data['caja_data'][0]['id_caja_catalogo'])
-        ->whereDate('fecha_apertura',Carbon::today())
+        ->whereDate('fecha_apertura',$fechaApertura)
         ->where('fecha_cierre',null)
         ->first();
         
@@ -175,12 +190,16 @@ class CajaService{
             "total_real" => $data['corte_data'][0]['total_real'],
             "discrepancia" => $discrepancia,
             "discrepancia_monto" => $discrepanciaMonto,
-            "fecha_corte" => $data['corte_data'][0]['fecha_corte']
+            "fecha_corte" => $fechaHoraLocalFormateada
           ]; 
-          //return  $corteReg;
-
+          $cajaReg = [
+            "id_caja_catalogo" => $data['caja_data'][0]['id_caja_catalogo'],
+            "fondo_final" => $data['caja_data'][0]['fondo_final'],
+            "fecha_cierre" => $fechaHoraLocalFormateada
+          ];
+          
            //Registra el corte y actualiza el cierre de caja
-           $cajaHisto->update($data['caja_data'][0]);
+           $cajaHisto->update($cajaReg);
            $corte = CorteCaja::create($corteReg);
            $corte->save();
            //Mensaje de exito
@@ -447,7 +466,7 @@ class CajaService{
 
   public function buscarSesionCajaService(Request $data)
   {
-    //Utilizar Sanctum en lugar del data
+    
     try {
       $usuario = auth()->user();
       $idOperador = $usuario->operador->id;
@@ -514,6 +533,65 @@ class CajaService{
     }
   }
 
+  public function estadoSesionCobroService()
+  {
+    try {
+        $usuario = auth()->user();
+        $montoTotal = 0;
+        if ($usuario->operador) {
+          $sesionCaja = Caja::where('id_operador',$usuario->operador->id)
+          ->where('fecha_cierre',null)
+          ->first();
 
+          if ($sesionCaja) {
+            
+            //Consulta del nombre de la caja
+            $cataCajaNombre = CajaCatalogo::select('nombre_caja') 
+            ->where('id',$sesionCaja->id_caja_catalogo)
+            ->first();
+
+            //Consulta de los montos de los retiros
+            $retiro = RetiroCaja::select('monto_total')
+            ->where('id_sesion_caja',$sesionCaja->id)
+            ->get();
+
+            //Nombre del operador
+            $NombreOperador = $usuario->operador->nombre . " "  
+            . $usuario->operador->apellido_paterno . " " 
+            . $usuario->operador->apellido_materno;
+
+            $fondoInicial = $sesionCaja->fondo_inicial; 
+            
+            //Proceso para sumar los totales de todos los retiros asociados a la sesion de cobro
+            $retirosMonto = $retiro->toArray();
+            foreach ($retirosMonto as $monto)
+            {
+              $montoTotal += $monto['monto_total'];
+            }
+          
+            //Datos a retornar
+            $estadoSesion = [
+              "caja_nombre" => $cataCajaNombre->nombre_caja, 
+              "nombre_operador" => $NombreOperador,
+              "fondo_inicial" => $fondoInicial,
+              "Total_retirado" => $montoTotal,
+            ];
+
+            return $estadoSesion;
+
+          }
+          
+        }else{
+          return response()->json([
+            'error'=>'Este usuario no es un operador '
+          ]);
+        }
+            
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda.'
+    ], 500);
+    }
+  }
 
 }

@@ -11,5 +11,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/pagos/show/{id}", "show");
         Route::get("/pagos/porModelo", "pagosPorModelo");
         Route::get("/pagos/porModelo/totalPendiente", "totalPendiente");
+        Route::get("/pagos/test/{id}", "test");
     });
 });
