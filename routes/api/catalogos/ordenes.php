@@ -18,17 +18,16 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/OrdenTrabajoCatalogo/show/{id}", "showCatalogo");
 
 
-        //Route::delete("/OrdenTrabajoConf/log_delete/{id}", "destroyConf");
-        //Route::get("/OrdenTrabajoConf/show/{id}", "showConf");
-
         //ORDEN DE TRABAJO
         Route::post("/OrdenTrabajo", "indexOrdenes");
         Route::post("/OrdenTrabajo/create", "storeOrden");
         Route::put("/OrdenTrabajo/cerrar", "cerrarOrden");
         Route::put("/OrdenTrabajo/update", "asignarOrden");
         Route::post("/OrdenTrabajo/generar/masiva", "storeOrdenMasiva");
+        Route::put("/OrdenTrabajo/asigna/masiva", "storeOrdenMasivaAsignacion");
         Route::put("/OrdenTrabajo/restore/{id}", "restoreOrden");
         Route::delete("/OrdenTrabajo/log_delete/{id}", "deleteOrden");
         Route::get("/OrdenTrabajo/show/{id}", "showOrden");
+        Route::get("/OrdenTrabajo/filtros", "filtradoOrdenes");
     });
 });

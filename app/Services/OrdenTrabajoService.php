@@ -16,6 +16,8 @@ use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\ConceptoService;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -70,14 +72,19 @@ class OrdenTrabajoService{
     public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
         
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        if ($OT['estado']=="En proceso"){
+        if ($OT['estado']=="Concluida" || $OT['estado']=="Cancelada"){
             return null;
         }
-        $OT['estado']="En proceso";
-        $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
-        $OT->update();
-        $OT->save();
-        return $OT;
+        else{
+            $OT['estado']="En proceso";
+            $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
+            $OT->update();
+            $OT->save();
+            $OT->empleadoAsigno;
+            $OT->empleadoEncargado;
+            return $OT;
+        }
+        
     }
 
     ///El operador encargado termina la orden de trabajo
@@ -86,51 +93,54 @@ class OrdenTrabajoService{
         if ($OT['estado']=="Concluida"){
            return null;
         }
-        
-        $OTencadenadas=new Collection();
-        $OrdenCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
-        $OrdenConf=OrdenTrabajoAccion::find($OT['id_orden_trabajo_catalogo']);
+        else{
 
-        $IniciarEncadenadas=$ordenTrabajo['genera_OT_encadenadas'];
-   
-        //Checa si hay ordenes encadenadas y las ejecuta
-        $OrdenesEncadenadas=OrdenTrabajoCatalogo::where('id', $OrdenCatalogo['id'])
-        ->with('ordenTrabajoEncadenado.OrdenCatalogoEncadenadas')
-        ->first()['ordenTrabajoEncadenado']->pluck('OrdenCatalogoEncadenadas'); //CONSULTA INSANOTA
-        if (count($OrdenesEncadenadas)!=0 && $IniciarEncadenadas==true){
             $OTencadenadas=new Collection();
-            foreach ($OrdenesEncadenadas as $encade){
-                $NuevasOt=['id_toma'=>$ordenTrabajo['id_toma'],'id_empleado_asigno'=>$ordenTrabajo['id_empleado_asigno'],'id_orden_trabajo_catalogo'=>$encade['id']];
-                $OTencadenadas->push($this->crearOrden($NuevasOt));
+            $OrdenCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
+            $OrdenConf=OrdenTrabajoAccion::find($OT['id_orden_trabajo_catalogo']);
+    
+            $IniciarEncadenadas=$ordenTrabajo['genera_OT_encadenadas'];
+       
+            //Checa si hay ordenes encadenadas y las ejecuta
+            $OrdenesEncadenadas=OrdenTrabajoCatalogo::where('id', $OrdenCatalogo['id'])
+            ->with('ordenTrabajoEncadenado.OrdenCatalogoEncadenadas')
+            ->first()['ordenTrabajoEncadenado']->pluck('OrdenCatalogoEncadenadas'); //CONSULTA INSANOTA
+            if (count($OrdenesEncadenadas)!=0 && $IniciarEncadenadas==true){
+                $OTencadenadas=new Collection();
+                foreach ($OrdenesEncadenadas as $encade){
+                    $NuevasOt=['id_toma'=>$ordenTrabajo['id_toma'],'id_empleado_asigno'=>$ordenTrabajo['id_empleado_asigno'],'id_orden_trabajo_catalogo'=>$encade['id']];
+                    $OTencadenadas->push($this->crearOrden($NuevasOt));
+                }
+            }
+            //return "no";
+    
+            
+            $ordenTrabajo['estado']="Concluida";
+            $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
+            $cargo=null;
+        
+           
+           
+            $OT->update($ordenTrabajo);
+            $OT->save($ordenTrabajo);
+            $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
+            if ($OrdenCatalogo['momento_cargo']=="concluir"){
+    
+                $conceptos=OrdenTrabajoCatalogo::where('id',$OrdenCatalogo['id'])
+                ->with('ordenTrabajoCargos')->first()['ordenTrabajoCargos']
+                ->pluck('OTConcepto');
+                
+                $toma=Toma::find($OT['id_toma']);
+                $origen="orden_trabajo";
+                $dueno="toma";
+                $cargo=$this->generarCargo($OrdenCatalogo,$origen,$toma,$dueno,$conceptos);
+                return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo),"OT_encadenadas"=>$OTencadenadas];
+            }
+            else{
+                return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>$cargo,"OT_encadenadas"=>$OTencadenadas];
             }
         }
-        //return "no";
-
         
-        $ordenTrabajo['estado']="Concluida";
-        $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
-        $cargo=null;
-    
-       
-       
-        $OT->update($ordenTrabajo);
-        $OT->save($ordenTrabajo);
-        $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
-        if ($OrdenCatalogo['momento_cargo']=="concluir"){
-
-            $conceptos=OrdenTrabajoCatalogo::where('id',$OrdenCatalogo['id'])
-            ->with('ordenTrabajoCargos')->first()['ordenTrabajoCargos']
-            ->pluck('OTConcepto');
-            
-            $toma=Toma::find($OT['id_toma']);
-            $origen="orden_trabajo";
-            $dueno="toma";
-            $cargo=$this->generarCargo($OrdenCatalogo,$origen,$toma,$dueno,$conceptos);
-            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>CargoResource::collection($cargo),"OT_encadenadas"=>$OTencadenadas];
-        }
-        else{
-            return ["OrdenTrabajo"=>new OrdenTrabajoResource($OT),"Modelo"=>$OTAcciones,"cargos"=>$cargo,"OT_encadenadas"=>$OTencadenadas];
-        }
   
     }
 //validar terminar ot si pagos saldados 
@@ -142,7 +152,8 @@ class OrdenTrabajoService{
            
             $data=$this->crearOrden($OT);
             if (!$data){
-                $Ordenes->push(["Error"=>"La orden de trabajo para la toma ".$OT['id_toma']." no se pudo crear, debido, a que ya supera el limite del tipo de orden de trabajo: ".$catalogo['nombre']]);
+                $toma=Toma::find($OT['id_toma']);
+                $Ordenes->push(["Error"=>"La orden de trabajo para la toma con clave catastral ".$toma['clave_catastral']." no se pudo crear, debido, a que ya supera el limite del tipo de orden de trabajo: ".$catalogo['nombre']]);
             }
             else{
                 $Ordenes->push($data);
@@ -152,21 +163,47 @@ class OrdenTrabajoService{
         return $Ordenes;
 
     }
+    public function AsignarMasiva(array $ordenesTrabajo){
+        
+        $Ordenes=new Collection();
+        $i=1;
+        foreach ($ordenesTrabajo as $OT){
+            
+            $data=$this->asignar($OT);
+            if (!$data){
+                $toma=Toma::find($OT['id_toma']);
+                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
+                $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo asignar, debido a que ya poseia un operador asignado"]);
+            }
+            else{
+                $Ordenes->push($data);
+            }
+          $i++;
+        }
+        return $Ordenes;
+    }
 
     //metodo que maneja el tipo de accion de la ot a realizar
     public function Acciones(OrdenTrabajo $ordenTrabajo, $OtCatalogo, $modelos){
-        $acciones=$OtCatalogo->ordenTrabajoAccion;
-
-        foreach ($acciones as $accion){
-            $resultado=match($accion['accion'])
-            {
-                'modificar'=>$this->Modificar($accion,$ordenTrabajo,$modelos),
-                'registrar'=>$this->Registrar($accion,$ordenTrabajo,$modelos),
-                'quitar'=>$this->Quitar($accion,$ordenTrabajo,$modelos),
-            };
+        $acciones=$OtCatalogo->ordenTrabajoAccion ?? null;
+        if (isNull($acciones)){
+            return null;
+        }
+        else{
+            foreach ($acciones as $accion){
+                $resultado=match($accion['accion'])
+                {
+                    'modificar'=>$this->Modificar($accion,$ordenTrabajo,$modelos),
+                    'registrar'=>$this->Registrar($accion,$ordenTrabajo,$modelos),
+                    'quitar'=>$this->Quitar($accion,$ordenTrabajo,$modelos),
+                };
+            }
+            return $resultado;
         }
         
-        return $resultado;
+        
+ 
     }
     //metodos que ejecutan los casos de acciones especificas
     public function Modificar($Accion,$ordenTrabajo,$modelos){
@@ -231,7 +268,7 @@ class OrdenTrabajoService{
                 $OTModelo=Toma::create($dato);
                 break;
             case "medidor":
-                $dato=$modelos['toma'];
+                $dato=$modelos['medidor'];
                 $OTModelo=Medidor::create($dato);
                 break;
             case "contrato":
@@ -243,7 +280,7 @@ class OrdenTrabajoService{
                 $OTModelo=Usuario::create($dato);
                 break;
             case "consumo":
-                $dato=$modelos['usuario'];
+                $dato=$modelos['consumo'];
                 $OTModelo=Consumo::create($dato);
                 break;
             case "lectura":
@@ -293,5 +330,39 @@ class OrdenTrabajoService{
     }
     public function restore(){
         
+    }
+    public function FiltrarOT($ruta, $toma,$libro,$saldo,$estadoOT){
+        //$query=OrdenTrabajo::query();
+        $query=OrdenTrabajo::when($estadoOT, function (EloquentBuilder $q, $estadoOT)  {
+            return $q->where('estado', $estadoOT);
+        })->when($ruta, function (EloquentBuilder $q) use($ruta)  {
+           $q->with('toma')->whereHas('toma', function($a)use($ruta){
+                $a->with('libro')->whereHas('libro', function($b)use($ruta){
+                    //$b->with('tieneRuta')->whereHas('tieneRuta');
+                    //return $b->where('id',10);
+                    $b->with('tieneRuta')->whereHas('tieneRuta', function($c)use($ruta){
+                        return $c->where('id',$ruta);
+                        
+                    });
+                });
+            });
+            return $q;
+        })->get();
+        /*
+        ->when($ruta, function (EloquentBuilder $q, $ruta)  {
+            return OrdenTrabajo::with('toma')->whereHas('toma', function($a){
+                $a->with('libro')->whereHas('libro', function($b){
+                    $b->with('tieneRuta')->whereHas('tieneRuta');
+                });
+            });
+        })
+        ->when($libro, function (EloquentBuilder $q, $libro)  {
+            return $q->where('estado', $libro);
+        })->when($estadoOT, function (EloquentBuilder $q, $estadoOT)  {
+            return $q->where('estado', $estadoOT);
+        })
+         */
+        $OT = $query;
+        return $OT;
     }
 }
