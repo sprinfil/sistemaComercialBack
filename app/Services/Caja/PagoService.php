@@ -82,13 +82,14 @@ class PagoService{
                     // si la diferencia de lo pagado es menor o la diferencia es poca se hacen los cargos
                     foreach ($cargos_selecionados as $cargo) {
                         $cargo_selecionado = Cargo::findOrFail($cargo['id_cargo']);
-                        $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
                         $abono_acumulado += number_format($cargo_selecionado->montoPendiente(), 2, '.', '');
+                        $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
                         $this->consolidarEstados($id_modelo, $modelo);
                     }
                     // si lo pagado no consume todo lo pagado
                     // -> llama la funcion de pago y se aplica el saldo a favor
                     if($abono_acumulado < $monto_pagado){
+                        //throw new Exception("Lo pagado es menor que el adeudo total ".$abono_acumulado ."<". $monto_pagado);
                         $this->pagoAutomatico($id_modelo, $modelo);
                     }
                 } else {
@@ -138,13 +139,14 @@ class PagoService{
                                 $cargo_selecionado = Cargo::findOrFail($cargo['id']);
                                 $monto_con_iva = number_format($cargo['monto'] + $cargo['iva'], 2, '.', '');
                                 $pago_porcentual = number_format((($monto_con_iva) * 100) / $total_por_prioridad, 2, '.', '');
-                                if($pago >= $monto_con_iva){
+                                $abono_final = number_format($total_pendiente * $pago_porcentual, 2, '.', '');
+                                if($abono_final >= $monto_con_iva){
                                     $this->registrarAbono($cargo['id'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
                                     $this->consolidarEstados($_id_modelo, $_modelo);
                                 } else{
                                     // Validar si el cargo es abonable
                                     if ($cargo_selecionado->concepto->abonable) {
-                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
+                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $abono_final);
                                         $this->consolidarEstados($_id_modelo, $_modelo);
                                     } else {
                                         // El cargo no es abonable, puedes manejar este caso.
@@ -318,7 +320,7 @@ class PagoService{
                             $pago_modificado->save();
                         }
                         else{
-                            throw new Exception('error abono'.$total_abonado.'pago'.$total_pagado);
+                            throw new Exception('error abono '.$total_abonado.' > pago '.$total_pagado.' '.$abonos_aplicados);
                         }
                     }else{
                         throw new Exception('no hay abonos');

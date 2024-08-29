@@ -9,6 +9,7 @@ use App\Models\Cotizacion;
 use App\Models\DatoFiscal;
 use App\Models\DatosDomiciliacion;
 use App\Models\Factibilidad;
+use App\Models\TipoToma;
 use App\Models\Toma;
 use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -141,7 +142,7 @@ class ContratoFactory extends Factory
 
                 Cargo::factory()->create([
                     'id_concepto' => 1,
-                    'nombre' => 'factibilidad ' . $contrato->tipo_toma,
+                    'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
                     'id_origen' => $factibilidad->id,
                     'modelo_origen' => 'factibilidad',
                     'id_dueno' => $contrato->id_toma,
@@ -183,7 +184,7 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'nombre' => 'factibilidad ' . $contrato->tipo_toma,
+                        'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
@@ -200,7 +201,7 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'nombre' => 'derechos de conexion ' . $contrato->tipo_toma,
+                        'nombre' => 'Derechos de conexion ' . TipoToma::find($contrato->tipo_toma)->nombre,
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
@@ -243,41 +244,6 @@ class ContratoFactory extends Factory
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                
-                $mesesUsados = [];
-
-                for ($i = 0; $i < 3; $i++) {
-                    // Generar un mes único que no se haya usado antes
-                    do {
-                        $mes = $this->faker->monthName;
-                        $numeroMes = $this->faker->dateTimeBetween("first day of $mes", "last day of $mes")->format('m');
-                    } while (in_array($mes, $mesesUsados));
-                    
-                    // Agregar el mes a la lista de meses usados
-                    $mesesUsados[] = $mes;
-                    
-                    $monto = $this->faker->randomFloat(2, 0, 500); // Generar el monto dentro del loop para calcular el IVA correctamente
-
-                    // Generar una fecha de cargo basada en el mes
-                    $fechaCargo = now()->setMonth($numeroMes)->setDay($this->faker->numberBetween(1, 28));
-
-                    Cargo::factory()->create([
-                        'id_concepto' => 146,
-                        'nombre' => "facturacion " . $mes,
-                        'id_origen' => 0,
-                        'modelo_origen' => 'facturacion',
-                        'id_dueno' => $contrato->id_toma,
-                        'modelo_dueno' => 'toma',
-                        'monto' => $monto,
-                        'iva' => (0.16 * $monto),
-                        'estado' => 'pendiente',
-                        'fecha_cargo' => $fechaCargo,
-                        'fecha_liquidacion' => null, //$fecha_liquidacion,
-                        'deleted_at' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
 
                 DatoFiscal::factory()->create([
                     'id_modelo' => $contrato->id_toma,
