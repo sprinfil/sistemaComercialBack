@@ -128,7 +128,7 @@ class PagoService{
                 foreach($pagos_pendientes as $pago)
                 {
                     $total_por_prioridad = 0;
-                    $total_pendiente = $pago->pendiente();
+                    
                     if ($cargos_vigentes) {
                         $cargos_ordenados = $this->clasificarPorPrioridad($cargos_vigentes);
                         foreach ($cargos_ordenados as $prioridad => $grupo) {
@@ -136,22 +136,32 @@ class PagoService{
                             //$cantidad_de_cargos = count($grupo['cargos']);
                         
                             foreach ($grupo['cargos'] as $cargo) {
-                                $cargo_selecionado = Cargo::findOrFail($cargo['id']);
-                                $monto_con_iva = number_format($cargo['monto'] + $cargo['iva'], 2, '.', '');
-                                $pago_porcentual = number_format((($monto_con_iva) * 100) / $total_por_prioridad, 2, '.', '');
-                                $abono_final = number_format($total_pendiente * $pago_porcentual, 2, '.', '');
-                                if($abono_final >= $monto_con_iva){
-                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
-                                    $this->consolidarEstados($_id_modelo, $_modelo);
-                                } else{
-                                    // Validar si el cargo es abonable
-                                    if ($cargo_selecionado->concepto->abonable) {
-                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $abono_final);
+                                $total_pendiente = $pago->pendiente();
+                                if($total_pendiente > 0){
+                                    $cargo_selecionado = Cargo::findOrFail($cargo['id']);
+                                    $monto_con_iva = number_format($cargo['monto'] + $cargo['iva'], 2, '.', '');
+                                    $pago_porcentual = number_format((($monto_con_iva) * 100) / $total_por_prioridad, 2, '.', '');
+                                    $abono_final = number_format($pago_porcentual * $total_pendiente / 100, 2, '.', '');
+                                    if($abono_final >= $monto_con_iva){
+                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
                                         $this->consolidarEstados($_id_modelo, $_modelo);
-                                    } else {
-                                        // El cargo no es abonable, puedes manejar este caso.
-                                        break 2;
+                                    } else if($abono_final < $monto_con_iva){
+                                        // Validar si el cargo es abonable
+                                        if ($cargo_selecionado->concepto->abonable) {
+                                            if ($cargo_selecionado->concepto->prioridad_por_antiguedad) {
+                                                $this->registrarAbono($cargo['id'], 'pago', $pago->id, $total_pendiente);
+                                                $this->consolidarEstados($_id_modelo, $_modelo);
+                                            } else{
+                                                $this->registrarAbono($cargo['id'], 'pago', $pago->id, $abono_final);
+                                                $this->consolidarEstados($_id_modelo, $_modelo);
+                                            }
+                                        } else {
+                                            // El cargo no es abonable, puedes manejar este caso.
+                                            break 2;
+                                        }
                                     }
+                                } else {
+                                    break;
                                 }
                             }
                         }
@@ -161,7 +171,7 @@ class PagoService{
                 }
             }
             else{
-
+                // no hay pagos
             }
             
             return $cargos_ordenados; // Convertir la colección a JSON
