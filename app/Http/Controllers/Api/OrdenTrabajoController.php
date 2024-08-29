@@ -266,7 +266,7 @@ class OrdenTrabajoController extends Controller
         
         $datos=$request->validated();
         $datos['id']=$request->id;
-        $data=(new OrdenTrabajoService())->asignar($datos);
+        $data=(new OrdenTrabajoService())->asignar($datos['ordenes_trabajo'][0]);
         if ($data==null){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
@@ -314,6 +314,8 @@ class OrdenTrabajoController extends Controller
 
     public function storeOrdenMasiva(StoreOrdenTrabajoRequest $request)
     {
+        
+       try{
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->Masiva($request->validated()['ordenes_trabajo']);
         if (!$data){
@@ -321,20 +323,39 @@ class OrdenTrabajoController extends Controller
         }
         else
         {
-            DB::rollBack();
+            DB::commit();
             return $data;
             //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
-       try{
-       
        }
        catch(Exception $ex){
         DB::rollBack();
         return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],202);
        }
-   
+    }
+    public function storeOrdenMasivaAsignacion(UpdateOrdenTrabajoRequest $request)
+    {
         
-        
+       try{
+        DB::beginTransaction();
+        $data=(new OrdenTrabajoService())->AsignarMasiva($request->validated()['ordenes_trabajo']);
+        if (!$data){
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
+        }
+        else
+        {
+            DB::commit();
+            return $data;
+            //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+        }
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+        return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],202);
+       }
+    }
+    public function filtradoOrdenes(Request $request){
+
     }
     public function deleteOrden(Request $request)
     {
