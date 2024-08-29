@@ -60,6 +60,10 @@ class Cargo extends Model
 
     public function montoPendiente()
     {
-        return ($this->monto + $this->iva) - $this->abonosTotal();
+        $monto_pendiente = ($this->monto + $this->iva) - $this->abonosTotal();
+        if($monto_pendiente < 1){
+            $monto_pendiente = 0;
+        }
+        return $monto_pendiente;
     }
 }
