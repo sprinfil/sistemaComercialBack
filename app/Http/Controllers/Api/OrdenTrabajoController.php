@@ -355,7 +355,25 @@ class OrdenTrabajoController extends Controller
        }
     }
     public function filtradoOrdenes(Request $request){
-
+        try{
+            DB::beginTransaction();
+            //$filtros=$request->validated();
+            $filtros=$request;
+            $data=(new OrdenTrabajoService())->FiltrarOT($filtros['ruta_id'] ?? null,$filtros['libro_id'] ?? null,$filtros['toma_id'] ?? null,$filtros['saldo'] ?? null, $filtros['estado'] ?? null);
+            if (!$data){
+                return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
+            }
+            else
+            {
+                DB::commit();
+                return $data;
+                //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+            }
+           }
+           catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],202);
+           }
     }
     public function deleteOrden(Request $request)
     {
