@@ -46,7 +46,7 @@ class TarifaService{
 
     }
 
-    public function storeTarifaService(array $data, string $nombre)
+    public function storeTarifaService(array $data, string $nombre, Request $request)
     {
         try {       
              //Busca por nombre las tarifas eliminadas
@@ -54,13 +54,13 @@ class TarifaService{
             //VALIDACION POR SI EXISTE
             if ($tarifa) {
                 if ($tarifa->trashed()) {
+                     $tarifa->restore(); //Restaura la tarifa
                     return response()->json([
                         'message' => 'La tarifa ya existe pero ha sido eliminada. ¿Desea restaurarla?',
                         'restore' => true,
                         'tarifa' => $tarifa->id
                     ], 200);
-                    $tarifa->restore();
-                }
+                 }
                 return response()->json([
                     'message' => 'La tarifa ya existe.',
                     'restore' => false
@@ -68,11 +68,11 @@ class TarifaService{
             }
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
-                $tarifa = Tarifa::create($data);
+                //$tarifa = Tarifa::create($data);
                 // E importa las tarifas de la tarifa activa si se desea
                 $request = new Request();
                 $request->merge(['confirm' => true]);
-                $request->merge(['tarifa_id' => $tarifa->id]);
+                //$request->merge(['tarifa_id' => $tarifa->id]);
                 $respuesta = $this->importarTipoTomaTarifas($request);
                 return response($respuesta, 201);
             }
@@ -86,28 +86,31 @@ class TarifaService{
     public function importarTipoTomaTarifas(Request $request){
         try{
             //input con un tarifa_id
-            $id_tarifa_nueva = $request->input('tarifa_id');
+            //$id_tarifa_nueva = $request->input('tarifa_id');
             $confirm = $request->input('confirm');
             //Si el Confirm del request es true y la tarifa_id es diferente de null entra a la condicion
-            if($confirm && $id_tarifa_nueva != null){
+            if($confirm != null){
                 $tarifas_tipo = TipoToma::all(); //Consulta todos los tipos de tomas que hay registrados
-                $tarifa_activa = Tarifa::where('estado', 'activo')->get()->first(); //Busca la tarifa que tenga el estado = activo
+                $tarifa_activa = Tarifa::where('estado', 'activo')->first(); //Busca la tarifa que tenga el estado = activo
                 foreach ($tarifas_tipo as $tipo) {
                     
                     // y al final los servicios por tipo de toma, en la tarifa activa
-                    $tarifas_servicios = TarifaServiciosDetalle::where('id_tarifa_servicio', $tipo->id)
-                    ->where('id_tarifa_servicio', $tarifa_activa->id)->get();
+                    return $servicios = TarifaServiciosDetalle::with('tarifaServicio', 'tarifaServicio.tipotoma' ,
+                     'tarifaServicio.tarifa',
+                     'tarifaServicio.tarifa.conceptos')
+                    ->where('id_tarifa_servicio' , $tarifa_activa->id)
+                    ->get();
 
-                    foreach ($tarifas_servicios as $servicio) {
+                    foreach ($servicios as $servicio) {
                         $detalle_servicio = new TarifaServiciosDetalle();
-                        $detalle_servicio->id_tarifa_servicio = $id_tarifa_nueva;
+                        //$detalle_servicio->id_tarifa_servicio = $id_tarifa_nueva;
                         $detalle_servicio->rango = $servicio['rango'];
                         $detalle_servicio->monto = $servicio['monto'];
-                        $detalle_servicio->save();
+                        //$detalle_servicio->save();
                     }
 
                     // valida si hay tarifas para ese tipo de toma
-                    if(count($tarifas_servicios) < 1){
+                    if(count($servicios) < 1){
                         return response()->json([
                             'error' => 'No hay servicios importables de tipo '.$tipo->id,
                             'import' => false
@@ -223,7 +226,7 @@ class TarifaService{
         try {
             $tarifa = Tarifa::findOrFail($id);
             $tarifa->delete();
-            return response("Tarifa eliminada con exito", 200);
+            return response()->json(['message' => 'La tarifa se ha eliminado con exito. ']);
         } catch (ModelNotFoundException $ex) {
             return response()->json([
                 'error' => 'No se ha removido la tarifa'

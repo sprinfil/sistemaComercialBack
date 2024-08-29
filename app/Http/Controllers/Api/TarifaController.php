@@ -57,7 +57,7 @@ class TarifaController extends Controller
             $data = $request->validated();
             $nombre = $request->nombre;
             DB::beginTransaction();
-            $tarifa = (new TarifaService())->storeTarifaService($data, $nombre);
+            $tarifa = (new TarifaService())->storeTarifaService($data, $nombre, $request);
             DB::commit();
             return $tarifa;
             
