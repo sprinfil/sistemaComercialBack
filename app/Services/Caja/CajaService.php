@@ -533,6 +533,65 @@ class CajaService{
     }
   }
 
+  public function estadoSesionCobroService()
+  {
+    try {
+        $usuario = auth()->user();
+        $montoTotal = 0;
+        if ($usuario->operador) {
+          $sesionCaja = Caja::where('id_operador',$usuario->operador->id)
+          ->where('fecha_cierre',null)
+          ->first();
 
+          if ($sesionCaja) {
+            
+            //Consulta del nombre de la caja
+            $cataCajaNombre = CajaCatalogo::select('nombre_caja') 
+            ->where('id',$sesionCaja->id_caja_catalogo)
+            ->first();
+
+            //Consulta de los montos de los retiros
+            $retiro = RetiroCaja::select('monto_total')
+            ->where('id_sesion_caja',$sesionCaja->id)
+            ->get();
+
+            //Nombre del operador
+            $NombreOperador = $usuario->operador->nombre . " "  
+            . $usuario->operador->apellido_paterno . " " 
+            . $usuario->operador->apellido_materno;
+
+            $fondoInicial = $sesionCaja->fondo_inicial; 
+            
+            //Proceso para sumar los totales de todos los retiros asociados a la sesion de cobro
+            $retirosMonto = $retiro->toArray();
+            foreach ($retirosMonto as $monto)
+            {
+              $montoTotal += $monto['monto_total'];
+            }
+          
+            //Datos a retornar
+            $estadoSesion = [
+              "caja_nombre" => $cataCajaNombre->nombre_caja, 
+              "nombre_operador" => $NombreOperador,
+              "fondo_inicial" => $fondoInicial,
+              "Total_retirado" => $montoTotal,
+            ];
+
+            return $estadoSesion;
+
+          }
+          
+        }else{
+          return response()->json([
+            'error'=>'Este usuario no es un operador '
+          ]);
+        }
+            
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda.'
+    ], 500);
+    }
+  }
 
 }
