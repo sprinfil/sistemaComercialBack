@@ -56,6 +56,11 @@ class Toma extends Model
         'posicion'
     ];
     
+    // Libro
+    public function libro():BelongsTo{
+        return $this->belongsTo(libro::class,"id_libro");
+    }
+
     // Giro comercial asociado a la toma
     public function giroComercial() : BelongsTo
     {
@@ -104,7 +109,7 @@ class Toma extends Model
     public function ordenesTrabajo():HasMany{
         return $this->hasMany(OrdenTrabajo::class,'id_toma');
     }
-
+   
     public function datos_fiscales(): MorphOne
     {
         return $this->MorphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');

@@ -16,6 +16,8 @@ use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\ConceptoService;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -266,7 +268,7 @@ class OrdenTrabajoService{
                 $OTModelo=Toma::create($dato);
                 break;
             case "medidor":
-                $dato=$modelos['toma'];
+                $dato=$modelos['medidor'];
                 $OTModelo=Medidor::create($dato);
                 break;
             case "contrato":
@@ -278,7 +280,7 @@ class OrdenTrabajoService{
                 $OTModelo=Usuario::create($dato);
                 break;
             case "consumo":
-                $dato=$modelos['usuario'];
+                $dato=$modelos['consumo'];
                 $OTModelo=Consumo::create($dato);
                 break;
             case "lectura":
@@ -328,5 +330,39 @@ class OrdenTrabajoService{
     }
     public function restore(){
         
+    }
+    public function FiltrarOT($ruta, $toma,$libro,$saldo,$estadoOT){
+        //$query=OrdenTrabajo::query();
+        $query=OrdenTrabajo::when($estadoOT, function (EloquentBuilder $q, $estadoOT)  {
+            return $q->where('estado', $estadoOT);
+        })->when($ruta, function (EloquentBuilder $q) use($ruta)  {
+           $q->with('toma')->whereHas('toma', function($a)use($ruta){
+                $a->with('libro')->whereHas('libro', function($b)use($ruta){
+                    //$b->with('tieneRuta')->whereHas('tieneRuta');
+                    //return $b->where('id',10);
+                    $b->with('tieneRuta')->whereHas('tieneRuta', function($c)use($ruta){
+                        return $c->where('id',$ruta);
+                        
+                    });
+                });
+            });
+            return $q;
+        })->get();
+        /*
+        ->when($ruta, function (EloquentBuilder $q, $ruta)  {
+            return OrdenTrabajo::with('toma')->whereHas('toma', function($a){
+                $a->with('libro')->whereHas('libro', function($b){
+                    $b->with('tieneRuta')->whereHas('tieneRuta');
+                });
+            });
+        })
+        ->when($libro, function (EloquentBuilder $q, $libro)  {
+            return $q->where('estado', $libro);
+        })->when($estadoOT, function (EloquentBuilder $q, $estadoOT)  {
+            return $q->where('estado', $estadoOT);
+        })
+         */
+        $OT = $query;
+        return $OT;
     }
 }
