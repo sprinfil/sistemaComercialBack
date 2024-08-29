@@ -139,7 +139,7 @@ class PagoService{
                                 $total_pendiente = $pago->pendiente();
                                 if($total_pendiente > 0){
                                     $cargo_selecionado = Cargo::findOrFail($cargo['id']);
-                                    $monto_con_iva = number_format($cargo['monto'] + $cargo['iva'], 2, '.', '');
+                                    $monto_con_iva = number_format($cargo_selecionado->montoPendiente(), 2, '.', '');
                                     $pago_porcentual = number_format((($monto_con_iva) * 100) / $total_por_prioridad, 2, '.', '');
                                     $abono_final = number_format($pago_porcentual * $total_pendiente / 100, 2, '.', '');
                                     if($abono_final >= $monto_con_iva){
@@ -149,8 +149,12 @@ class PagoService{
                                         // Validar si el cargo es abonable
                                         if ($cargo_selecionado->concepto->abonable) {
                                             if ($cargo_selecionado->concepto->prioridad_por_antiguedad) {
-                                                $this->registrarAbono($cargo['id'], 'pago', $pago->id, $total_pendiente);
-                                                $this->consolidarEstados($_id_modelo, $_modelo);
+                                                if($total_pendiente >= $monto_con_iva){
+                                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $total_pendiente);
+                                                    $this->consolidarEstados($_id_modelo, $_modelo);
+                                                }else{
+                                                    break 2;
+                                                }
                                             } else{
                                                 $this->registrarAbono($cargo['id'], 'pago', $pago->id, $abono_final);
                                                 $this->consolidarEstados($_id_modelo, $_modelo);
