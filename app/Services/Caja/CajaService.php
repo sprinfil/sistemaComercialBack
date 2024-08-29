@@ -622,7 +622,7 @@ class CajaService{
               "Total_retirado" => $montoTotal,
             ];
 
-            return $estadoSesion;
+            return $json = json_encode($estadoSesion);
 
           }
           
