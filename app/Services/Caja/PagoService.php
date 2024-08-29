@@ -143,19 +143,32 @@ class PagoService{
                                     $pago_porcentual = number_format((($monto_con_iva) * 100) / $total_por_prioridad, 2, '.', '');
                                     $abono_final = number_format($pago_porcentual * $total_pendiente / 100, 2, '.', '');
                                     if($abono_final >= $monto_con_iva){
-                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
+                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $monto_con_iva);
                                         $this->consolidarEstados($_id_modelo, $_modelo);
                                     } else if($abono_final < $monto_con_iva){
                                         // Validar si el cargo es abonable
                                         if ($cargo_selecionado->concepto->abonable) {
                                             if ($cargo_selecionado->concepto->prioridad_por_antiguedad) {
-                                                if($total_pendiente >= $monto_con_iva){
+                                                // Primero verifica si el pago pendiente puede saldar el cargo completo
+                                                if ($total_pendiente > $monto_con_iva) {
+                                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $monto_con_iva);
+                                                    $this->consolidarEstados($_id_modelo, $_modelo);
+                                                    // No hacemos break aquí, ya que queremos continuar abonando los siguientes cargos si es posible
+                                                } else if ($total_pendiente == $monto_con_iva) {
+                                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $monto_con_iva);
+                                                    $this->consolidarEstados($_id_modelo, $_modelo);
+                                                    break 2;
+                                                    // No hacemos break aquí, ya que queremos continuar abonando los siguientes cargos si es posible
+                                                } else if($total_pendiente > 0) {
+                                                    // Si no puede saldar el cargo, abonar lo que se pueda del total pendiente
                                                     $this->registrarAbono($cargo['id'], 'pago', $pago->id, $total_pendiente);
                                                     $this->consolidarEstados($_id_modelo, $_modelo);
-                                                }else{
+                                                    // Aquí se hace break para evitar continuar si el pendiente se ha agotado
                                                     break 2;
+                                                } else{
+                                                    break 3;
                                                 }
-                                            } else{
+                                            } else {
                                                 $this->registrarAbono($cargo['id'], 'pago', $pago->id, $abono_final);
                                                 $this->consolidarEstados($_id_modelo, $_modelo);
                                             }
@@ -165,7 +178,7 @@ class PagoService{
                                         }
                                     }
                                 } else {
-                                    break;
+                                    break 2;
                                 }
                             }
                         }
