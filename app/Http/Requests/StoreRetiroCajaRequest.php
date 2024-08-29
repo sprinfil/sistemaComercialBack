@@ -22,7 +22,7 @@ class StoreRetiroCajaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_sesion_caja"=>"required|integer|gt:0",
+            "id_caja_catalogo"=>"required|integer|gt:0",
             "cantidad_centavo_10"=>"required|integer|min:0",
             "cantidad_centavo_20"=>"required|integer|min:0",
             "cantidad_centavo_50"=>"required|integer|min:0",
