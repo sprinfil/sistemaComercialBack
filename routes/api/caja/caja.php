@@ -28,5 +28,8 @@ Route::middleware(['api', 'audit'])->group(function () {
         //Retiro Cajas
         Route::post("/cajas/retiro/registrarRetiro","registrarRetiro");
 
+        //ConsultaSesion
+        Route::get("/cajas/estadoSesionCobro","estadoSesionCobro");
+
     });
 });

@@ -9,6 +9,7 @@ use App\Models\Cotizacion;
 use App\Models\DatoFiscal;
 use App\Models\DatosDomiciliacion;
 use App\Models\Factibilidad;
+use App\Models\TipoToma;
 use App\Models\Toma;
 use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -141,7 +142,7 @@ class ContratoFactory extends Factory
 
                 Cargo::factory()->create([
                     'id_concepto' => 1,
-                    'nombre' => 'factibilidad ' . $contrato->tipo_toma,
+                    'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
                     'id_origen' => $factibilidad->id,
                     'modelo_origen' => 'factibilidad',
                     'id_dueno' => $contrato->id_toma,
@@ -183,7 +184,7 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'nombre' => 'factibilidad ' . $contrato->tipo_toma,
+                        'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
@@ -200,7 +201,7 @@ class ContratoFactory extends Factory
 
                     Cargo::factory()->create([
                         'id_concepto' => 1,
-                        'nombre' => 'derechos de conexion ' . $contrato->tipo_toma,
+                        'nombre' => 'Derechos de conexion ' . TipoToma::find($contrato->tipo_toma)->nombre,
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,

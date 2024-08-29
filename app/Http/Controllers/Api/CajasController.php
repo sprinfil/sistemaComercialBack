@@ -14,6 +14,7 @@ use App\Models\Caja;
 use App\Models\CajaCatalogo;
 use App\Models\OperadorAsignado;
 use App\Services\Caja\CajaService;
+use Database\Seeders\CajaSeeder;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -307,6 +308,21 @@ class CajasController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo solicitar la cancelacion del pago'
+            ], 500);
+        }
+    }
+
+    public function estadoSesionCobro()
+    {
+        try {
+            DB::beginTransaction();
+            $cajaSesion = (new CajaService())->estadoSesionCobroService();
+            DB::commit();
+            return $cajaSesion;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error durante la busqueda de la sesion'
             ], 500);
         }
     }
