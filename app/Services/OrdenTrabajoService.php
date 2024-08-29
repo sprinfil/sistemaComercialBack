@@ -381,11 +381,13 @@ class OrdenTrabajoService{
             });
             */
         },function (EloquentBuilder $q) {
+            /*
             $q->with('toma')->whereHas('toma', function($a){
                 $a->with('libro')->whereHas('libro', function($b){
                     $b->with('tieneRuta')->whereHas('tieneRuta');
                 });
             });
+            */
             return $q;
         }
         )
