@@ -53,6 +53,11 @@ class Cargo extends Model
         return $this->hasOne(ConceptoCatalogo::class, "id", "id_concepto");
     }
 
+    public function montoOriginal()
+    {
+        return ($this->monto + $this->iva);
+    }
+
     public function montoPendiente()
     {
         return ($this->monto + $this->iva) - $this->abonosTotal();

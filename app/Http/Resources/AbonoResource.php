@@ -23,7 +23,13 @@ class AbonoResource extends JsonResource
             "modelo_origen" => $this->modelo_origen,
             "total_abonado" => $this->total_abonado,
             "cargo" => Cargo::find($this->id_cargo)->nombre,
-            "estado" => Cargo::find($this->id_cargo)->estado  
+            "estado" => Cargo::find($this->id_cargo)->estado,
+            "monto_inicial" => $this->when(true, function () {
+                return Cargo::find($this->id_cargo)->montoOriginal(); // Suponiendo que el método en el modelo se llama montoPendiente()
+            }),
+            "monto_pendiente" => $this->when(true, function () {
+                return Cargo::find($this->id_cargo)->montoPendiente(); // Suponiendo que el método en el modelo se llama montoPendiente()
+            }),
         ];
     }
 }
