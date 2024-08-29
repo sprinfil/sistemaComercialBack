@@ -63,4 +63,14 @@ class Pago extends Model
         }
         return $this->total_pagado - $total_aplicado;
     }
+
+    public function total_abonado()
+    {
+        $abonos = $this->abonos;
+        $total_aplicado = 0;
+        foreach($abonos as $abono){
+            $total_aplicado += $abono->total_abonado;
+        }
+        return $total_aplicado;
+    }
 }
