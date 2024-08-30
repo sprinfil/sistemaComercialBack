@@ -7,6 +7,7 @@ Route::middleware(['api', 'audit'])->group(function () {
     // gestion de ordenes de trabajo
     Route::controller(OrdenTrabajoController::class)->group(function () {
         Route::get("/OrdenTrabajoCatalogo", "indexCatalogo");
+        Route::get("/OrdenTrabajoCatalogo/masiva", "indexMasivas");
         Route::put("/OrdenTrabajoCatalogo/create", "storeCatalogo");
         Route::put("/OrdenTrabajoCatalogo/update", "updateCatalogo");
         Route::put("/OrdenTrabajoCatalogo/create/cargos", "storeCargos");
@@ -19,7 +20,7 @@ Route::middleware(['api', 'audit'])->group(function () {
 
 
         //ORDEN DE TRABAJO
-        Route::post("/OrdenTrabajo", "indexOrdenes");
+        Route::get("/OrdenTrabajo", "indexOrdenes");
         Route::post("/OrdenTrabajo/create", "storeOrden");
         Route::put("/OrdenTrabajo/cerrar", "cerrarOrden");
         Route::put("/OrdenTrabajo/update", "asignarOrden");
