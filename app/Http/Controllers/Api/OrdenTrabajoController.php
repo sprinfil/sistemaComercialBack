@@ -22,7 +22,7 @@ use App\Services\OrdenTrabajoCatalogoService;
 use App\Services\OrdenTrabajoAccionService;
 use App\Services\OrdenTrabajoService;
 use Exception;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Return_;
@@ -54,7 +54,11 @@ class OrdenTrabajoController extends Controller
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
 
-
+    public function indexMasivas(){
+        return OrdenTrabajoCatalogoResource::collection(
+            OrdenTrabajoCatalogo::where('genera_masiva',1)->get()
+        );
+    }
     /**
      * Store a newly created resource in storage.
      */
