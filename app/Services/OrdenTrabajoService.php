@@ -347,7 +347,7 @@ class OrdenTrabajoService{
         })
         ->when($ruta, function (EloquentBuilder $q) use($ruta,$libro)  {
 
-           $q->with('toma')->whereHas('toma', function($a)use($ruta,$libro){
+           $q->with('toma.tipoToma')->whereHas('toma', function($a)use($ruta,$libro){
                 $a->when($libro, function (EloquentBuilder $a2) use($ruta,$libro){
                     $a2->with('libro')->whereHas('libro', function($b)use($ruta,$libro){
                         $b->where('id',$libro)->with('tieneRuta')->whereHas('tieneRuta', function($c)use($ruta){
@@ -367,7 +367,7 @@ class OrdenTrabajoService{
             });
             return $q;
         },function (EloquentBuilder $q) {
-            $q->with('toma')->whereHas('toma', function($a){
+            $q->with('toma.tipoToma')->whereHas('toma', function($a){
                 $a->with('libro')->whereHas('libro', function($b){
                     $b->with('tieneRuta')->whereHas('tieneRuta');
                 });
