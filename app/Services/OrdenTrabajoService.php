@@ -402,8 +402,10 @@ class OrdenTrabajoService{
                 });
                    
                });
-        })->when($saldo, function (EloquentBuilder $q){
-            
+        })->when($saldo, function (EloquentBuilder $q) use($saldo){
+            $q->whereHas('toma', function($a) use ($saldo){
+                $a->first()->saldoToma<=$saldo;
+            });
         })
         ->get();
         //CONSULTAR POR TOMA, RUTA Y LIBRO SIEMPRE
