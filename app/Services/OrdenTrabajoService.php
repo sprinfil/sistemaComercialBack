@@ -39,7 +39,7 @@ class OrdenTrabajoService{
         $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->get();
       
         $id_empleado_asigno=auth()->user()->operador->id;//auth()->user()->operador->id
-    
+  
         $ordenTrabajoPeticion['id_empleado_asigno']=$id_empleado_asigno;
       
         $cargo=null;
@@ -334,10 +334,9 @@ class OrdenTrabajoService{
     }
     public function FiltrarOT($ruta, $libro,$toma,$saldo,$Asignada,$NoAsignada,$Concluida,$Cancelada,$domestica,$industrial,$comercial,$especial){
         //$query=OrdenTrabajo::query();
-
         // HIPER MEGA QUERY INSANO
         $query=OrdenTrabajo::when($Asignada, function (EloquentBuilder $q)  {
-            return $q->where('estado', 'Asignada');
+            return $q->where('estado', 'En proceso');
         })->when($NoAsignada, function (EloquentBuilder $q)  {
             return $q->where('estado', 'No asignada');
         })->when($Concluida, function (EloquentBuilder $q)  {
