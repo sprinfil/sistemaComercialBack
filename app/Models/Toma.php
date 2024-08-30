@@ -32,7 +32,7 @@ class Toma extends Model
         "id_usuario",
         "id_giro_comercial",
         "id_libro",
-        "id_codigo_toma",
+        "codigo_toma",
         "id_tipo_toma",
         "clave_catastral",
         "estatus",

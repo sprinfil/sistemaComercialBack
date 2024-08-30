@@ -15,7 +15,7 @@ class UsuarioSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('usuarios')->insert([
+        /*DB::table('usuarios')->insert([
             [
                 'nombre' => 'Miguel Angel',
                 'codigo_usuario' => '1',
@@ -38,7 +38,7 @@ class UsuarioSeeder extends Seeder
                 'rfc' => 'RORA840910MN0',
                 'correo' => 'kou4_alan@gmail.com',
             ],
-        ]);
+        ]);*/
 
         Usuario::factory()->count(30)->create();
         Operador::factory()->count(30)->create();

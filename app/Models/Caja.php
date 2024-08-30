@@ -28,7 +28,9 @@ class Caja extends Model
     //Caja con pagos
     public function pagos() : HasMany
     {
-        return $this->hasMany(Pago::class , 'id_caja'); 
+        return $this->hasMany(Pago::class, 'id_caja')
+                ->with('abonos')
+                ->orderBy('created_at', 'desc');
     }
 
     public function pagosPorTipo(string $tipo)

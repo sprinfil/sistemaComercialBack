@@ -20,7 +20,7 @@ class UsuarioFactory extends Factory
     public function definition(): array
     {
         static $count = 0;
-        $codigo = date('Ym', (time())).($count++);
+        $codigo = date('Ym', (time())).str_pad($count++, 3, '0', STR_PAD_LEFT);
         return [
             'codigo_usuario' => intval($codigo),
             'nombre' => $this->faker->firstName,

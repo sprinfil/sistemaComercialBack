@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Toma;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,6 +21,7 @@ class PagoResource extends JsonResource
             "id_caja" => $this->id_caja,
             "id_dueno" => $this->id_dueno,
             "modelo_dueno" => $this->modelo_dueno,
+            'dueno' => $this->formatDueno(),
             "id_corte_caja" => $this->id_corte_caja,
             "total_pagado" => $this->total_pagado,
             "forma_pago" => $this->forma_pago,
@@ -33,5 +36,22 @@ class PagoResource extends JsonResource
             "total_abonado" => number_format($this->total_abonado(), 2, '.', ''),
             //,"bonificaciones" => AbonoResource::collection($this->whenLoaded('bonificaciones')),
         ];
+    }
+
+    /**
+     * Format the dueno information based on the model type.
+     *
+     * @return array|null
+     */
+    private function formatDueno()
+    {
+        // Always return the formatted 'dueno'
+        if ($this->modelo_dueno === 'toma') {
+            return $this->dueno->codigo_toma;
+        } elseif ($this->modelo_dueno === 'usuario') {
+            return $this->dueno->codigo_usuario;
+        }
+
+        return null;
     }
 }
