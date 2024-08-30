@@ -133,7 +133,7 @@ class Toma extends Model
 
     public function pagos(): MorphMany
     {
-        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->orderBy('fecha_pago', 'desc');;
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->orderBy('id', 'desc');;
     }
     public function pagosPendientes(): MorphMany
     {

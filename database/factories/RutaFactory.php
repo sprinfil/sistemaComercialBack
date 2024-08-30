@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Libro;
+use App\Models\Ruta;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,5 +23,23 @@ class RutaFactory extends Factory
             'nombre' => 'Ruta ' .$num++,
             'color' => $this->faker->hexColor,
         ];
+    }
+
+    /**
+     * Configure the factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Ruta $ruta) 
+        {
+            for ($i = 0; $i < 12; $i++) {
+                Libro::factory()->create([
+                    'id_ruta'=>$ruta->id,
+                    'nombre' => 'Libro ' . $i,
+                ]);
+            }
+        });
     }
 }
