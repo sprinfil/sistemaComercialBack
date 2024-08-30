@@ -49,7 +49,7 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenes()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::paginate(20)
+            OrdenTrabajo::with('toma.tipoToma')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
