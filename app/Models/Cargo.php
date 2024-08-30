@@ -34,8 +34,6 @@ class Cargo extends Model
         return $this->morphTo(__FUNCTION__, 'modelo_origen', 'id_origen');
     }
 
-    
-
     public function dueno(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo_dueno', 'id_dueno');
@@ -45,12 +43,27 @@ class Cargo extends Model
     {
         return $this->hasMany(Abono::class,'id_cargo');
     }
+
     public function abonosTotal()
     {
-       
+        return $this->abonos()->sum('total_abonado'); // 'monto' es el campo en la tabla 'abonos' que contiene el valor abonado
     }
 
     public function concepto(): HasOne{
         return $this->hasOne(ConceptoCatalogo::class, "id", "id_concepto");
+    }
+
+    public function montoOriginal()
+    {
+        return ($this->monto + $this->iva);
+    }
+
+    public function montoPendiente()
+    {
+        $monto_pendiente = ($this->monto + $this->iva) - $this->abonosTotal();
+        if($monto_pendiente < 1){
+            $monto_pendiente = 0;
+        }
+        return $monto_pendiente;
     }
 }

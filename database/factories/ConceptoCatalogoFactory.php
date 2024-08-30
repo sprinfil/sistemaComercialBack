@@ -24,7 +24,7 @@ class ConceptoCatalogoFactory extends Factory
             'nombre'=>$this->faker->word,
             'descripcion'=> $this->faker->sentence,
             'estado'=> $this->faker->randomElement(['activo', 'inactivo']),
-            'prioridad_abono'=>$this->faker->numberBetween(0, 5),
+            'prioridad_abono'=>$this->faker->numberBetween(1, 3),
             'prioridad_por_antiguedad'=>0,
             'genera_iva'=>0,
             'abonable'=>0,

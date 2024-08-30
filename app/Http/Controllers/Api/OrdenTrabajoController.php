@@ -49,9 +49,9 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenes()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::all()
+            OrdenTrabajo::paginate(20)
         );
-       
+       //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
 
 
@@ -63,12 +63,12 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo'][0]);
             if ($catalogo=="Existe"){
                 return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
             }
             DB::commit();
-            return response(["Orden_Trabajo_Catalogo"=>$catalogo],200);
+            return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo)],200);
         }
         catch(Exception $ex){
             DB::rollBack();
@@ -79,6 +79,7 @@ class OrdenTrabajoController extends Controller
             
         
     }
+    
     public function storeAcciones(StoreOrdenTrabajoCatalogoRequest $request){
         try{
             DB::beginTransaction();
@@ -152,7 +153,8 @@ class OrdenTrabajoController extends Controller
     public function updateCatalogo(UpdateOrdenTrabajoCatalogoRequest $request, OrdenTrabajoCatalogo $ordenTrabajo)
     {
         $data=$request->validated();
-        $catalogo=(new OrdenTrabajoCatalogoService())->store($data);
+        $catalogo=(new OrdenTrabajoCatalogoService())->update($data['orden_trabajo_catalogo']);
+        return $catalogo;
     }
 
     public function destroyCatalogo(OrdenTrabajoCatalogo $ordenTrabajo, Request $request)
@@ -264,7 +266,7 @@ class OrdenTrabajoController extends Controller
         
         $datos=$request->validated();
         $datos['id']=$request->id;
-        $data=(new OrdenTrabajoService())->asignar($datos);
+        $data=(new OrdenTrabajoService())->asignar($datos['ordenes_trabajo'][0]);
         if ($data==null){
             return response()->json(["message"=>"Ya existe una OT vigente, por favor concluyala primero antes de generar otra"],202);
         }
@@ -312,6 +314,8 @@ class OrdenTrabajoController extends Controller
 
     public function storeOrdenMasiva(StoreOrdenTrabajoRequest $request)
     {
+        
+       try{
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->Masiva($request->validated()['ordenes_trabajo']);
         if (!$data){
@@ -323,16 +327,56 @@ class OrdenTrabajoController extends Controller
             return $data;
             //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
-       try{
-       
        }
        catch(Exception $ex){
         DB::rollBack();
         return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],202);
        }
-   
+    }
+    public function storeOrdenMasivaAsignacion(UpdateOrdenTrabajoRequest $request)
+    {
         
-        
+       try{
+        DB::beginTransaction();
+        $data=(new OrdenTrabajoService())->AsignarMasiva($request->validated()['ordenes_trabajo']);
+        if (!$data){
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
+        }
+        else
+        {
+            DB::commit();
+            return $data;
+            //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+        }
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+        return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],202);
+       }
+    }
+    public function filtradoOrdenes(Request $request){
+        try{
+            DB::beginTransaction();
+            //$filtros=$request->validated();
+            $filtros=$request;
+            $data=(new OrdenTrabajoService())->FiltrarOT($filtros['ruta_id'] ?? null,$filtros['libro_id'] ?? null,
+            $filtros['toma_id'] ?? null,$filtros['saldo'] ?? null, $filtros['asignada'] ?? null,
+            $filtros['no asignada'] ?? null,$filtros['concluida'] ?? null,$filtros['cancelada'] ?? null,
+            $filtros['domestica'] ?? null,$filtros['comercial'] ?? null,$filtros['industrial'] ?? null,$filtros['especial'] ?? null);
+            if (!$data){
+                return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
+            }
+            else
+            {
+                DB::commit();
+                return $data;
+                //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+            }
+           }
+           catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],202);
+           }
     }
     public function deleteOrden(Request $request)
     {

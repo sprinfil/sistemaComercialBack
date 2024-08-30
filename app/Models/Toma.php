@@ -56,6 +56,11 @@ class Toma extends Model
         'posicion'
     ];
     
+    // Libro
+    public function libro():BelongsTo{
+        return $this->belongsTo(Libro::class,"id_libro");
+    }
+
     // Giro comercial asociado a la toma
     public function giroComercial() : BelongsTo
     {
@@ -104,7 +109,7 @@ class Toma extends Model
     public function ordenesTrabajo():HasMany{
         return $this->hasMany(OrdenTrabajo::class,'id_toma');
     }
-
+   
     public function datos_fiscales(): MorphOne
     {
         return $this->MorphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
@@ -119,9 +124,16 @@ class Toma extends Model
     {
         return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
+    public function cargosVigentesConConcepto(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->where('estado', 'pendiente')
+                    ->with('concepto'); // Cargar la relación 'concepto' junto con los cargos
+    }
+
     public function pagos(): MorphMany
     {
-        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno');
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->orderBy('fecha_pago', 'desc');;
     }
     public function pagosPendientes(): MorphMany
     {
@@ -145,6 +157,26 @@ class Toma extends Model
     public function getDireccionCompleta()
     {
         return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
+    }
+
+    public function saldoToma(){
+        $total_final = 0;
+        $cargos_pendientes = $this->cargosVigentes;
+        foreach($cargos_pendientes as $cargo)
+        {
+            $total_final += $cargo->montoPendiente();
+        }
+        return $total_final;
+    }
+
+    public function saldoSinAplicar(){
+        $total_final = 0;
+        $pagos_pendientes = $this->pagosPendientes;
+        foreach($pagos_pendientes as $pago)
+        {
+            $total_final += $pago->pendiente();
+        }
+        return $total_final;
     }
 }
 

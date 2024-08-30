@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class PagoService{
 
@@ -28,72 +29,88 @@ class PagoService{
         }
     }
 
+    // total de pagos apagar
+    public function totalPagos(array $cargos)
+    {
+        $total_a_pagar = 0;
+        foreach ($cargos as $cargo) {
+            $cargo_selecionado = Cargo::findOrFail($cargo['id_cargo']); // Asumiendo que cargo es un array
+            $total_a_pagar += $cargo_selecionado->montoPendiente(); // Asumiendo que las propiedades existen
+        }
+        return $total_a_pagar;
+    }
+
     // método para cargar un cargo a un usuario
-    public function registrarPago(StorePagoRequest $request): Pago
+    public function registrarPago(StorePagoRequest $request)
     {
         try {
-            // 1. Llega la información del pago
             $data = $request->validated();
 
             DB::beginTransaction();
-
-            // 1.2 Se obtiene el dueño del pago
+            // se obtiene el dueño de los cargos
             $modelo = $data['modelo_dueno'];
             $id_modelo = $data['id_dueno'];
             $dueno = helperGetOwner($modelo, $id_modelo);
-
-            // Supongamos que $data tiene una clave 'caja_id' para identificar la caja
-            $caja = Caja::find($data['id_caja']); // Ajusta según cómo identifiques la caja
-
-            // Cuenta el número de pagos en esa caja
+            // se obtiene la caja y se registra el pago
+            $caja = Caja::find($data['id_caja']);
             $numeroPagos = $caja->pagos()->count() + 1;
-
-            // Genera el folio
             $folio = strtoupper('C'.str_pad($caja->id, 2, '0', STR_PAD_LEFT).'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT));
-
-            // Agrega el folio al array $data
             $data['folio'] = $folio;
-
-            // 1.3 Se registra el pago
+            $data['fecha_pago'] = date('Y-m-d');
             $pago = Pago::create($data);
-            $monto_pagado = $pago->total_pagado;
+            // se obtiene el saldo
+            $saldo_inicial = $dueno->saldoToma();
 
-            // 1.3.1 Se obtienen los pagos pendientes y su total
-            $pagos_pendientes = $this->pagosPorModeloPendiente($request);
-            $monto_pagos_pendientes = $this->totalPendiente($request);
+            // se obtiene el monto pagado
+            $monto_pagado =  number_format($pago->total_pagado, 2, '.', '');
+            // se obtienen los cargos a pagar (si hay) y cuanto se va pagar
+            if (isset($data['cargos']) && !empty($data['cargos'])) {
+                $cargos_selecionados = $data['cargos'];
+                // Proceder con la lógica cuando cargos existe y no está vacío
+                $total_a_pagar = number_format($this->totalPagos($cargos_selecionados), 2, '.', '');
+            }else{
+                $cargos_selecionados = null;
+                $total_a_pagar = 0;
+            }
+            
+            $abono_acumulado = 0;
 
-            // 1.4 Se obtienen los cargos a pagar
-            $cargos_selecionados = $data['cargos'];
-            $total_a_pagar = 0;
-
+            // valida si hay cargos selecionados
             if($cargos_selecionados){
-                foreach ($cargos_selecionados as $cargo) {
-                    $cargo_selecionado = Cargo::findOrFail($cargo['id_cargo']); // Asumiendo que cargo es un array
-                    $total_a_pagar += $cargo_selecionado->monto + $cargo_selecionado->iva; // Asumiendo que las propiedades existen
-                }
-
+                // se calcula la diferencia entre el total de los cargos a pagar y el pago
+                //$diferencia = abs($monto_pagado - $total_a_pagar);
                 if($total_a_pagar <= $monto_pagado){
-                    $total_abonado = 0;
+                    // si la diferencia de lo pagado es menor o la diferencia es poca se hacen los cargos
                     foreach ($cargos_selecionados as $cargo) {
-                        $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_selecionado->monto + $cargo_selecionado->iva);
+                        $cargo_selecionado = Cargo::findOrFail($cargo['id_cargo']);
+                        $abono_acumulado += number_format($cargo_selecionado->montoPendiente(), 2, '.', '');
+                        $this->registrarAbono($cargo['id_cargo'], 'pago', $pago->id, $cargo_selecionado->montoPendiente());
                         $this->consolidarEstados($id_modelo, $modelo);
-                        $total_abonado += $cargo_selecionado->monto + $cargo_selecionado->iva; // Actualizar el total abonado
                     }
-                    // Consolidar estados fuera del bucle para optimizar
-                    
-
-                    if($total_abonado < $monto_pagado){
-                        //$this->procesarPagos($id_modelo, $modelo);
+                    // si lo pagado no consume todo lo pagado
+                    // -> llama la funcion de pago y se aplica el saldo a favor
+                    if($abono_acumulado < $monto_pagado){
+                        //throw new Exception("Lo pagado es menor que el adeudo total ".$abono_acumulado ."<". $monto_pagado);
+                        $this->pagoAutomatico($id_modelo, $modelo);
                     }
                 } else {
-                    throw new Exception("El monto a pagar es mayor que el monto pagado ".$total_a_pagar." <= ".$monto_pagado);
-                }
+                    // si no hay cargos a pagar
+                    // -> llama la funcion de pago y se aplica el saldo a favor
+                    $this->pagoAutomatico($id_modelo, $modelo);
+                    //throw new Exception("Lo pagado es menor que el adeudo total ".$total_a_pagar ."<". $monto_pagado);
+                } 
             } else {
-                throw new Exception("No hay cargos a pagar");
+                $this->pagoAutomatico($id_modelo, $modelo);
             }
 
+            $this->consolidarEstados($id_modelo, $modelo);
             DB::commit();
-            return Pago::findOrFail($pago->id);;
+            $pago_final = Pago::with('abonos')->findOrFail($pago->id);
+            $pago_final->saldo_anterior = number_format($saldo_inicial, 2, '.', '');
+            $pago_final->saldo_actual = number_format($dueno->saldoToma(), 2, '.', '');
+            $pago_final->saldo_no_aplicado = number_format($dueno->saldoSinAplicar(), 2, '.', '');
+            //throw new Exception("L");
+            return $pago_final;
         } 
         catch(Exception $ex){
             DB::rollBack();
@@ -101,6 +118,132 @@ class PagoService{
         }
     }
 
+    public function pagoAutomatico($_id_modelo, $_modelo)
+    {
+        try {
+            $dueno = helperGetOwner($_modelo, $_id_modelo);
+            $pagos_pendientes = $dueno->pagosPendientes;
+            $cargos_vigentes = $dueno->cargosVigentesConConcepto;
+
+            if($pagos_pendientes)
+            {
+                foreach($pagos_pendientes as $pago)
+                {
+                    $total_por_prioridad = 0;
+                    
+                    if ($cargos_vigentes) {
+                        $cargos_ordenados = $this->clasificarPorPrioridad($cargos_vigentes);
+                        foreach ($cargos_ordenados as $prioridad => $grupo) {
+                            $total_por_prioridad = number_format($grupo['total'], 2, '.', '');
+                            //$cantidad_de_cargos = count($grupo['cargos']);
+                        
+                            foreach ($grupo['cargos'] as $cargo) {
+                                $pago_real = Pago::find($pago->id);
+                                $total_pendiente = $pago_real->pendiente();
+                                if($total_pendiente > 0){
+                                    $cargo_selecionado = Cargo::findOrFail($cargo['id']);
+                                    $monto_con_iva = number_format($cargo_selecionado->montoPendiente(), 2, '.', '');
+                                    $pago_porcentual = number_format((($monto_con_iva) * 100) / $total_por_prioridad, 2, '.', '');
+                                    $abono_final = number_format($pago_porcentual * $total_pendiente / 100, 2, '.', '');
+                                    if($abono_final >= $monto_con_iva){
+                                        $this->registrarAbono($cargo['id'], 'pago', $pago->id, $monto_con_iva);
+                                        $this->consolidarEstados($_id_modelo, $_modelo);
+                                    } else if($abono_final < $monto_con_iva){
+                                        // Validar si el cargo es abonable
+                                        if ($cargo_selecionado->concepto->abonable) {
+                                            if ($cargo_selecionado->concepto->prioridad_por_antiguedad) {
+                                                // Primero verifica si el pago pendiente puede saldar el cargo completo
+                                                if ($total_pendiente > $monto_con_iva) {
+                                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $monto_con_iva);
+                                                    $this->consolidarEstados($_id_modelo, $_modelo);
+                                                    // No hacemos break aquí, ya que queremos continuar abonando los siguientes cargos si es posible
+                                                } else if ($total_pendiente == $monto_con_iva) {
+                                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $monto_con_iva);
+                                                    $this->consolidarEstados($_id_modelo, $_modelo);
+                                                    break 2;
+                                                    // No hacemos break aquí, ya que queremos continuar abonando los siguientes cargos si es posible
+                                                } else if($total_pendiente > 0) {
+                                                    // Si no puede saldar el cargo, abonar lo que se pueda del total pendiente
+                                                    $this->registrarAbono($cargo['id'], 'pago', $pago->id, $total_pendiente);
+                                                    $this->consolidarEstados($_id_modelo, $_modelo);
+                                                    // Aquí se hace break para evitar continuar si el pendiente se ha agotado
+                                                    break 2;
+                                                } else{
+                                                    break 3;
+                                                }
+                                            } else {
+                                                $this->registrarAbono($cargo['id'], 'pago', $pago->id, $abono_final);
+                                                $this->consolidarEstados($_id_modelo, $_modelo);
+                                            }
+                                        } else {
+                                            // El cargo no es abonable, puedes manejar este caso.
+                                            break 2;
+                                        }
+                                    }
+                                } else {
+                                    break 2;
+                                }
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            else{
+                // no hay pagos
+            }
+            
+            //return $cargos_ordenados; // Convertir la colección a JSON
+        } 
+        catch (Exception $ex) {
+            throw new Exception("Error al procesar pago: " . $ex->getMessage());
+        }
+    }
+    
+    function clasificarPorPrioridad(EloquentCollection $cargos): array
+    {
+        $clasificado = collect();
+    
+        // Agrupar los cargos por prioridad
+        $cargos->groupBy(function ($cargo) {
+            return (string)$cargo->concepto->prioridad_abono;
+        })->each(function ($cargosConMismaPrioridad, $prioridad) use ($clasificado) {
+    
+            // Ordenar los cargos dentro de cada prioridad
+            $cargosOrdenados = $cargosConMismaPrioridad->sort(function ($a, $b) {
+                // Ordenar por abonable (abonable = 1 primero)
+                if ($a->concepto->abonable !== $b->concepto->abonable) {
+                    return $a->concepto->abonable ? -1 : 1;
+                }
+    
+                // Si ambos tienen la misma prioridad por antigüedad, ordenar por fecha
+                if ($a->concepto->prioridad_por_antiguedad && $b->concepto->prioridad_por_antiguedad) {
+                    return strtotime($a->fecha_cargo) - strtotime($b->fecha_cargo);
+                }
+    
+                // Mantener el orden original si no hay criterios de ordenación adicionales
+                return 0;
+            });
+    
+            // Calcular el total de monto e IVA
+            $total = $cargosOrdenados->sum(function ($cargo) {
+                return $cargo->monto + $cargo->iva;
+            });
+    
+            // Añadir los cargos ordenados y el total a la colección clasificada
+            $clasificado->put($prioridad, [
+                'cargos' => $cargosOrdenados->values()->toArray(),  // Guardamos la colección ordenada
+                'total' => $total,
+            ]);
+        });
+    
+        // Ordenar el clasificado por prioridad ascendente para que se mantenga el orden correcto
+        $clasificado = $clasificado->sortKeys();
+    
+        return $clasificado->toArray();
+    }
+    
     //
     public function registrarAbono($id_cargo, $modelo_origen, $id_origen, $monto)
     {
@@ -146,11 +289,18 @@ class PagoService{
                 // consolidar estados pagos y cargos
                 $estado_pagos = $this->consolidarEstadosDePago($dueno);
                 $estado_cargos = $this->consolidarEstadosDeCargo($dueno);
-                if($estado_pagos == 1 && $estado_cargos == 1){
+                if($estado_pagos == null && $estado_cargos == null){
                     DB::commit();
                 }
                 else{
-                    throw new Exception('error en la consolidacion de estados');
+                    $error = " ";
+                    if($estado_pagos){
+                        $error = $error . " " . $estado_pagos;
+                    }
+                    if($estado_cargos){
+                        $error = $error . " " . $estado_cargos;
+                    }
+                    throw new Exception('error en la consolidacion de estados: '.$error);
                 }
             }
             else{
@@ -180,10 +330,10 @@ class PagoService{
                         foreach ($abonos_aplicados as $abono) {
                             $total_abonado += $abono->total_abonado;
                         }
-                        // despues de recorrer todos los abonos
-                        if($total_abonado == $total_pagado){
-                            //throw new Exception('igual abono'.$total_abonado.'pago'.$total_pagado);
-                            // si la suma de abonos es igual al total pagado
+                        // después de recorrer todos los abonos
+                        $diferencia = abs($total_abonado - $total_pagado);
+                        if($diferencia < 1 || $total_abonado == $total_pagado){
+                            // si la diferencia es menor a 1
                             $pago_modificado = Pago::findOrFail($pago->id);
                             $pago_modificado->update([
                                 'estado' => 'abonado'
@@ -200,7 +350,7 @@ class PagoService{
                             $pago_modificado->save();
                         }
                         else{
-                            throw new Exception('error abono'.$total_abonado.'pago'.$total_pagado);
+                            throw new Exception('error abono '.$total_abonado.' > pago '.$total_pagado.' '.$abonos_aplicados);
                         }
                     }else{
                         throw new Exception('no hay abonos');
@@ -209,9 +359,9 @@ class PagoService{
             }else{
                 throw new Exception('no hay pagos');
             }
-            return 1;
+            return null;
         }catch(Exception $ex){
-            return 0;
+            return $ex;
         }
     }
 
@@ -230,9 +380,10 @@ class PagoService{
                         foreach ($abonos_al_cargo as $abono) {
                             $total_abonado_al_cargo += $abono->total_abonado;
                         }
-                        // despues de recorrer todos los abonos
-                        if($total_abonado_al_cargo == $total_cargo){
-                            // si la suma de abonos es igual al total del cargo
+                        // después de recorrer todos los abonos
+                        $diferencia = abs($total_abonado_al_cargo - $total_cargo);
+                        if($diferencia < 1){
+                            // si la diferencia es menor a 1
                             $cargo_modificado = Cargo::findOrFail($cargo->id);
                             $cargo_modificado->update([
                                 'estado' => 'pagado'
@@ -254,9 +405,9 @@ class PagoService{
             }else{
                 throw new Exception('no hay cargos');
             }
-            return 1;
+            return null;
         }catch(Exception $ex){
-            return 0;
+            return $ex;
         }
     }
 
@@ -323,7 +474,7 @@ class PagoService{
             $dueno = null;
             if($modelo == 'usuario'){
                 $dueno = Usuario::findOrFail($id_modelo);
-                $pagos = $dueno->pagos;
+                $pagos = $dueno->pagosPendientes;
                 if($pagos){
                     return $pagos;
                 } else{
@@ -331,7 +482,7 @@ class PagoService{
                 }
             }else if($modelo == 'toma'){
                 $dueno = Toma::findOrFail($id_modelo);
-                $pagos = $dueno->pagos;
+                $pagos = $dueno->pagosPendientes;
                 if($pagos){
                     return $pagos;
                 } else{
@@ -378,7 +529,7 @@ class PagoService{
             $pagos = $this->pagosPorModeloPendiente($request);
             $total_pendiente = 0;
             foreach ($pagos as $pago) {
-                $total_pendiente = $pago->total_pagado;
+                $total_pendiente += $pago->pendiente();
             }
             return $total_pendiente;
         } catch(Exception $ex){
