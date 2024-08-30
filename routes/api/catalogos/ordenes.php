@@ -29,6 +29,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/OrdenTrabajo/restore/{id}", "restoreOrden");
         Route::delete("/OrdenTrabajo/log_delete/{id}", "deleteOrden");
         Route::get("/OrdenTrabajo/show/{id}", "showOrden");
-        Route::get("/OrdenTrabajo/filtros", "filtradoOrdenes");
+        Route::post("/OrdenTrabajo/filtros", "filtradoOrdenes");
     });
 });

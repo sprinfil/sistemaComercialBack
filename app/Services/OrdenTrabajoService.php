@@ -336,17 +336,17 @@ class OrdenTrabajoService{
         //$query=OrdenTrabajo::query();
         // HIPER MEGA QUERY INSANO
         $query=OrdenTrabajo::when($Asignada, function (EloquentBuilder $q)  {
-            return $q->where('estado', 'En proceso');
+            return $q->orWhere('estado', 'En proceso');
         })->when($NoAsignada, function (EloquentBuilder $q)  {
-            return $q->where('estado', 'No asignada');
+            return $q->orWhere('estado', 'No asignada');
         })->when($Concluida, function (EloquentBuilder $q)  {
-            return $q->where('estado', 'Concluida');
+            return $q->orWhere('estado', 'Concluida');
         })->when($Cancelada, function (EloquentBuilder $q)  {
-            return $q->where('estado', 'Cancelada');
-        })
+            return $q->orWhere('estado', 'Cancelada');
+        })->with('toma.tipoToma')
         ->when($ruta, function (EloquentBuilder $q) use($ruta,$libro)  {
 
-           $q->with('toma.tipoToma')->whereHas('toma', function($a)use($ruta,$libro){
+           $q->whereHas('toma', function($a)use($ruta,$libro){
                 $a->when($libro, function (EloquentBuilder $a2) use($ruta,$libro){
                     $a2->with('libro')->whereHas('libro', function($b)use($ruta,$libro){
                         $b->where('id',$libro)->with('tieneRuta')->whereHas('tieneRuta', function($c)use($ruta){
@@ -365,32 +365,48 @@ class OrdenTrabajoService{
                 
             });
             return $q;
-        },function (EloquentBuilder $q) {
-            $q->with('toma.tipoToma')->whereHas('toma', function($a){
-                $a->with('libro')->whereHas('libro', function($b){
-                    $b->with('tieneRuta')->whereHas('tieneRuta');
+        })->when($toma, function (EloquentBuilder $q) use($toma,$domestica,$comercial,$industrial,$especial) {
+            
+            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial){
+                $a->when($domestica, function (EloquentBuilder $b){
+                   $b->orWhere('nombre','domestica');
                 });
-            });
-            return $q;
-        })->when($toma, function (EloquentBuilder $q) use($toma,$domestica) {
-            /*
-            $q->with('tieneRuta')->whereHas('tieneRuta', function($a)use($toma){
-             
-                
-            });
-            */
-        },function (EloquentBuilder $q) {
-            /*
-            $q->with('toma')->whereHas('toma', function($a){
-                $a->with('libro')->whereHas('libro', function($b){
-                    $b->with('tieneRuta')->whereHas('tieneRuta');
+                $a->when($comercial, function (EloquentBuilder $b) {
+                   $b->orWhere('nombre','comercial');
                 });
-            });
-            */
-            return $q;
+                $a->when($industrial, function (EloquentBuilder $b)  {
+                   $b->orWhere('nombre','industrial');
+                });
+                $a->when($especial, function (EloquentBuilder $b) {
+                   $b->orWhere('nombre','especial');
+                });
+                   
+               });
+               $q->where('id_toma',$toma);
+            
         }
-        )
+        ,function(EloquentBuilder $q)use($domestica,$comercial,$industrial,$especial){
+            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial){
+                
+                $a->when($domestica, function (EloquentBuilder $b){
+                   $b->orWhere('nombre','domestica');
+                });
+                $a->when($comercial, function (EloquentBuilder $b) {
+                   $b->orWhere('nombre','comercial');
+                });
+                $a->when($industrial, function (EloquentBuilder $b)  {
+                   $b->orWhere('nombre','industrial');
+                });
+                $a->when($especial, function (EloquentBuilder $b) {
+                   $b->orWhere('nombre','especial');
+                });
+                   
+               });
+        })->when($saldo, function (EloquentBuilder $q){
+            
+        })
         ->get();
+        //CONSULTAR POR TOMA, RUTA Y LIBRO SIEMPRE
         /*
         ->when($ruta, function (EloquentBuilder $q, $ruta)  {
             return OrdenTrabajo::with('toma')->whereHas('toma', function($a){
