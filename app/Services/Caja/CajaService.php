@@ -627,6 +627,7 @@ class CajaService{
               "nombre_operador" => $NombreOperador,
               "fondo_inicial" => $fondoInicial,
               "Total_retirado" => $montoTotal,
+              "caja_id" =>  $sesionCaja->id
             ];
 
             return $json = json_encode($estadoSesion);

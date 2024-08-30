@@ -22,7 +22,7 @@ use App\Services\OrdenTrabajoCatalogoService;
 use App\Services\OrdenTrabajoAccionService;
 use App\Services\OrdenTrabajoService;
 use Exception;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Return_;
@@ -49,12 +49,16 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenes()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::paginate(20)
+            OrdenTrabajo::with('toma.tipoToma')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
 
-
+    public function indexMasivas(){
+        return OrdenTrabajoCatalogoResource::collection(
+            OrdenTrabajoCatalogo::where('genera_masiva',1)->get()
+        );
+    }
     /**
      * Store a newly created resource in storage.
      */
@@ -81,12 +85,13 @@ class OrdenTrabajoController extends Controller
     }
     
     public function storeAcciones(StoreOrdenTrabajoCatalogoRequest $request){
+        DB::beginTransaction();
+        $data=$request->validated();
+        $acciones=(new OrdenTrabajoAccionService())->store($data);
+        DB::commit();
+        return response(["Orden_Trabajo_Acciones"=>$acciones],200);
         try{
-            DB::beginTransaction();
-            $data=$request->validated();
-            $acciones=(new OrdenTrabajoAccionService())->store($data);
-            DB::commit();
-            return response(["Orden_Trabajo_Acciones"=>$acciones],200);
+           
         }
         catch(Exception $ex){
             DB::rollBack();
@@ -249,7 +254,7 @@ class OrdenTrabajoController extends Controller
         else
         {
             DB::commit();
-            return response()->json([new OrdenTrabajoResource($data[0]),CargoResource::collection($data[1])],200);
+            return response()->json(["orden de trabajo"=>new OrdenTrabajoResource($data[0]),"cargos"=>$data[1]],200); //agregar cargo resource
         }
        }
        catch(Exception $ex){
@@ -369,7 +374,7 @@ class OrdenTrabajoController extends Controller
             else
             {
                 DB::commit();
-                return $data;
+                return response()->json(['ordenes_trabajo'=>$data]);
                 //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
             }
            }
