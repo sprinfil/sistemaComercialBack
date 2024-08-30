@@ -41,6 +41,9 @@ class DatabaseSeeder extends Seeder
         $this->call(ConceptoCatalogoSeeder::class);
         //$this->call(OrdenesTrabajoSeeder::class);
         //
+        $this->call(RutaSeeder::class);
+        $this->call(LibroSeeder::class);
+        //
         $this->call(TomaSeeder::class);
         //
         $this->call(DescuentosSeeder::class);
@@ -58,8 +61,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PagoSeeder::class);
         //$this->call(CorteCajaSeeder::class);
         //
-        $this->call(RutaSeeder::class);
-        $this->call(LibroSeeder::class);
+       
         //
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);

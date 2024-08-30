@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\GiroComercialCatalogo;
+use App\Models\Libro;
 use App\Models\Toma;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use MatanYadaev\EloquentSpatial\Objects\Point;
@@ -26,7 +27,7 @@ class TomaFactory extends Factory
         return [
             'id_usuario' => $usuarioId,
             'id_giro_comercial' => GiroComercialCatalogo::inRandomOrder()->first()->id,
-            'id_libro' => $this->faker->numberBetween(21, 37),
+            'id_libro' => Libro::inRandomOrder()->first()->id,
             'id_codigo_toma' => $codigoTomaId++,
             'id_tipo_toma' => $this->faker->randomElement([1,2,3,4]),
             'clave_catastral' => $this->faker->regexify('[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}'),
