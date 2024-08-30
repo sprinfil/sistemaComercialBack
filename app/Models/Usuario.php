@@ -87,14 +87,17 @@ class Usuario extends Model
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
-
+  
     public static function ConsultarPorNombresCodigo(string $usuario){
         if (is_numeric($usuario)){
             return Usuario::ConsultarPorCodigo($usuario);
         }
         else{
             $nuvUsuario=str_replace(" ","%",$usuario);
-            $data = Usuario::with('tomas')->whereRaw("
+            $data = Usuario::with(["tomas.ordenesTrabajo"=> function($query){
+                $query->where('estado','No asignada');
+              }])
+              ->whereRaw("
             CONCAT(
                 COALESCE(nombre, ''), ' ', 
                 COALESCE(apellido_paterno, ''), ' ', 
@@ -119,7 +122,10 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::with("tomas")->where("codigo_usuario",$usuario)->paginate(10);
+        $data = Usuario::with(["tomas.ordenesTrabajo"=> function($query){
+          $query->where('estado','No asignada');
+        }])
+        ->where("codigo_usuario",$usuario)->paginate(10);
           return $data;
     }
 
