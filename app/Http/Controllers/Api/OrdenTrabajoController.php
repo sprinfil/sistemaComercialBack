@@ -67,7 +67,7 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo'][0]);
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
             if ($catalogo=="Existe"){
                 return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
             }
@@ -253,7 +253,7 @@ class OrdenTrabajoController extends Controller
         else
         {
             DB::commit();
-            return response()->json([new OrdenTrabajoResource($data[0]),CargoResource::collection($data[1])],200);
+            return response()->json(["orden de trabajo"=>new OrdenTrabajoResource($data[0]),"cargos"=>$data[1]],200); //agregar cargo resource
         }
        }
        catch(Exception $ex){
@@ -373,7 +373,7 @@ class OrdenTrabajoController extends Controller
             else
             {
                 DB::commit();
-                return $data;
+                return response()->json(['ordenes_trabajo'=>$data]);
                 //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
             }
            }
