@@ -134,8 +134,9 @@ class CajaService{
 
         //Valida que la suma de los totales coincida con el total general
         if (($data['corte_data'][0]['total_efectivo_real'] + 
-             $data['corte_data'][0]['total_tarjetas_real'] + 
-             $data['corte_data'][0]['total_cheques_real']) != $data['corte_data'][0]['total_real'] )
+             $data['corte_data'][0]['total_tarjetas_debito_real'] +
+             $data['corte_data'][0]['total_tarjetas_credito_real'] +  
+             $data['corte_data'][0]['total_documentos_real']) != $data['corte_data'][0]['total_real'] )
         {
              return response()->json([
             'error' => 'La suma de los totales no coincide con el total real.'
@@ -152,7 +153,7 @@ class CajaService{
         //Verifica que exista un registro caja el cual finalizar 
         if ($cajaHisto) {
           //Obtiene el total de dinero registrado en los pagos
-          $totalRegistrado = $cajaHisto->totalPorTipo("efectivo") + $cajaHisto->totalPorTipo("tarjeta") + $cajaHisto->totalPorTipo("cheque");
+          $totalRegistrado = $cajaHisto->totalPorTipo("efectivo") + $cajaHisto->totalPorTipo("tarjeta_debito")+ $cajaHisto->totalPorTipo("tarjeta_credito") + $cajaHisto->totalPorTipo("documento");
           
           //Verifica diferencias en el total de los registros y el total enviado por el cajero
           if ($totalRegistrado != $data['corte_data'][0]['total_real']) {
@@ -183,14 +184,20 @@ class CajaService{
 
             "total_efectivo_registrado" =>  $cajaHisto->totalPorTipo("efectivo"),
             "total_efectivo_real" => $data['corte_data'][0]['total_efectivo_real'],
-            "total_tarjetas_registrado" => $cajaHisto->totalPorTipo("tarjeta"),
-            "total_tarjetas_real" =>$data['corte_data'][0]['total_tarjetas_real'],
-            "total_cheques_registrado" => $cajaHisto->totalPorTipo("cheque"),
-            "total_cheques_real" =>$data['corte_data'][0]['total_cheques_real'],
+
+            "total_tarjetas_debito_registrado" => $cajaHisto->totalPorTipo("tarjeta_debito"),
+            "total_tarjetas_debito_real" =>$data['corte_data'][0]['total_tarjetas_debito_real'],
+            "total_tarjetas_credito_registrado" => $cajaHisto->totalPorTipo("tarjeta_credito"),
+            "total_tarjetas_credito_real" =>$data['corte_data'][0]['total_tarjetas_credito_real'],
+
+            "total_documentos_registrado" => $cajaHisto->totalPorTipo("documentos"),
+            "total_documentos_real" =>$data['corte_data'][0]['total_documentos_real'],
+
             "total_registrado" => $totalRegistrado,
             "total_real" => $data['corte_data'][0]['total_real'],
             "discrepancia" => $discrepancia,
             "discrepancia_monto" => $discrepanciaMonto,
+            "descripcion" => $data['corte_data'][0]['descripcion'],
             "fecha_corte" => $fechaHoraLocalFormateada
           ]; 
           $cajaReg = [

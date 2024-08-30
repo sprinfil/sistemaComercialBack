@@ -23,6 +23,7 @@ class StoreCajaCatalogoRequest extends FormRequest
     {
         return [
             "id_cuenta_contable"=>"required|integer|gt:0",
+            "numero_caja"=>"required|integer|unique:caja_catalogos,numero_caja|gt:0",
             "nombre_caja"=>"required|string",
             "hora_apertura"=>"required|date_format:H:i",
             "hora_cierre"=>"required|date_format:H:i|after:hora_apertura",

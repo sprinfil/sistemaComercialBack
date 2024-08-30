@@ -16,11 +16,13 @@ use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreRutaRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateRutaRequest;
+use App\Services\Facturacion\RutaService;
 use Faker\Core\Coordinates;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class RutaController extends Controller
 {
@@ -303,5 +305,20 @@ class RutaController extends Controller
         Storage::disk('local')->put($fileName, $geojson);
 
         return response()->download(storage_path("app/{$fileName}"))->deleteFileAfterSend(true);
+    }
+
+    public function librosPorRuta(string $id)
+    {
+        try {
+            DB::beginTransaction();
+            $libros = (new RutaService())->librosPorRutaService($id);
+            DB::commit();
+            return $libros;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al relizar la busqueda de libros.'
+            ], 500);
+        }
     }
 }

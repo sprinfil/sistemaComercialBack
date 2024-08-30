@@ -13,6 +13,7 @@ class CajaCatalogo extends Model
     use HasFactory,SoftDeletes;
     protected $fillable=[
         'id_cuenta_contable',
+        'numero_caja',
         'nombre_caja',
         'hora_apertura',
         'hora_cierre',

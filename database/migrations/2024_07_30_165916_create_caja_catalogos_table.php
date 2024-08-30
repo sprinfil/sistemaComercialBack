@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('caja_catalogos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_cuenta_contable');
+            $table->integer('numero_caja');
             $table->string('nombre_caja');
             $table->time('hora_apertura');
             $table->time('hora_cierre');

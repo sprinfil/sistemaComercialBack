@@ -26,7 +26,8 @@ class StorePagoRequest extends FormRequest
             "id_dueno"=>"required|integer",
             "modelo_dueno"=>"required|string|max:55",
             "total_pagado"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
-            "forma_pago"=>"required|string|max:55",
+            "forma_pago"=>"required|string|max:55|
+               in:efectivo,tarjeta_debito,tarjeta_credito,documento",
             "fecha_pago"=>"required|date",
             "estado"=>"nullable|string|max:55",
             "timbrado"=>"nullable|string|max:55",

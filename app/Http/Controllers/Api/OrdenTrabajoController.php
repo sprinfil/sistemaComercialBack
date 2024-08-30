@@ -63,7 +63,7 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo'][0]);
+            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
             if ($catalogo=="Existe"){
                 return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
             }

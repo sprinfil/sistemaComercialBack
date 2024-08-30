@@ -18,6 +18,7 @@ class CajaCatalogoResource extends JsonResource
         return [
             "id" => $this->id,
             "id_cuenta_contable" => $this->id_cuenta_contable,
+            "numero_caja" =>$this->numero_caja,
             "nombre_caja" => $this->nombre_caja,
             "hora_apertura" => $this->hora_apertura,
             "hora_cierre" => $this->hora_cierre,

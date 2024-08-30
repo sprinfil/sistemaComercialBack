@@ -25,13 +25,9 @@ class UpdateCajasRequest extends FormRequest
 
             "caja_data"=>"required|array",   
             "caja_data.*.id_caja_catalogo" => "required|integer|gt:0",
-          //  "caja_data.*.fondo_inicial" => "nullable|numeric|regex:/^\d+(\.\d{2})$/",//esto no debe estar lleno en el cierre
             "caja_data.*.fondo_final" => "required|numeric|regex:/^\d+(\.\d{2})$/",
-           // "caja_data.*.fecha_apertura" => "nullable|date_format:Y-m-d H:i:s", //esto no debe estar lleno en el cierre
 
             "corte_data"=>"required|array",
-            //"corte_data.*.id_caja"=>"required|integer|gt:0",
-
             "corte_data.*.cantidad_centavo_10"=>"required|integer|min:0",
             "corte_data.*.cantidad_centavo_20"=>"required|integer|min:0",
             "corte_data.*.cantidad_centavo_50"=>"required|integer|min:0",
@@ -46,18 +42,13 @@ class UpdateCajasRequest extends FormRequest
             "corte_data.*.cantidad_billete_200"=>"required|integer|min:0",
             "corte_data.*.cantidad_billete_500"=>"required|integer|min:0",
             "corte_data.*.cantidad_billete_1000"=>"required|integer|min:0",
-
-            // "corte_data.*.estatus"=>"required|string|in:aprobado,rechazado,pendiente",
-            //"corte_data.*.total_efectivo_registrado"=>"required|numeric|regex:/^\d+(\.\d{2})$/",//Este lo calcula el sistema
             "corte_data.*.total_efectivo_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
-            //"corte_data.*.total_tarjetas_registrado"=>"required|numeric|regex:/^\d+(\.\d{2})$/",//Este lo calcula el sistema
-            "corte_data.*.total_tarjetas_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
-            //"corte_data.*.total_cheques_registrado"=>"required|numeric|regex:/^\d+(\.\d{2})$/",//Este lo calcula el sistema
-            "corte_data.*.total_cheques_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
-             //"corte_data.*.total_registrado"=>"required|numeric|regex:/^\d+(\.\d{2})$/", //Este lo calcula el sistema
+            "corte_data.*.total_tarjetas_debito_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
+            "corte_data.*.total_tarjetas_credito_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
+            "corte_data.*.total_documentos_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
              "corte_data.*.total_real"=>"required|numeric|regex:/^\d+(\.\d{2})$/",
-            //"corte_data.*.discrepancia"=>"required|string|in:si,no",//Este lo calcula el sistema
-            //"corte_data.*.discrepancia_monto"=>"required|numeric|regex:/^\d+(\.\d{2})$/",//Este lo calcula el sistema
+             "corte_data.*.descripcion"=>"nullable|string|max:100",
+           
         ];
     }
 }
