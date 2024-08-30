@@ -22,7 +22,7 @@ use App\Services\OrdenTrabajoCatalogoService;
 use App\Services\OrdenTrabajoAccionService;
 use App\Services\OrdenTrabajoService;
 use Exception;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Return_;
@@ -54,7 +54,11 @@ class OrdenTrabajoController extends Controller
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
 
-
+    public function indexMasivas(){
+        return OrdenTrabajoCatalogoResource::collection(
+            OrdenTrabajoCatalogo::where('genera_masiva',1)->get()
+        );
+    }
     /**
      * Store a newly created resource in storage.
      */
@@ -359,7 +363,10 @@ class OrdenTrabajoController extends Controller
             DB::beginTransaction();
             //$filtros=$request->validated();
             $filtros=$request;
-            $data=(new OrdenTrabajoService())->FiltrarOT($filtros['ruta_id'] ?? null,$filtros['libro_id'] ?? null,$filtros['toma_id'] ?? null,$filtros['saldo'] ?? null, $filtros['estado'] ?? null);
+            $data=(new OrdenTrabajoService())->FiltrarOT($filtros['ruta_id'] ?? null,$filtros['libro_id'] ?? null,
+            $filtros['toma_id'] ?? null,$filtros['saldo'] ?? null, $filtros['asignada'] ?? null,
+            $filtros['no asignada'] ?? null,$filtros['concluida'] ?? null,$filtros['cancelada'] ?? null,
+            $filtros['domestica'] ?? null,$filtros['comercial'] ?? null,$filtros['industrial'] ?? null,$filtros['especial'] ?? null);
             if (!$data){
                 return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
             }

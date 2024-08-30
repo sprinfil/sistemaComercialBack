@@ -58,7 +58,7 @@ class Toma extends Model
     
     // Libro
     public function libro():BelongsTo{
-        return $this->belongsTo(libro::class,"id_libro");
+        return $this->belongsTo(Libro::class,"id_libro");
     }
 
     // Giro comercial asociado a la toma
