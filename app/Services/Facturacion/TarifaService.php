@@ -68,13 +68,13 @@ class TarifaService{
             }
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
-                //$tarifa = Tarifa::create($data);
+                $tarifa = Tarifa::create($data);
                 // E importa las tarifas de la tarifa activa si se desea
                 $request = new Request();
                 $request->merge(['confirm' => true]);
-                //$request->merge(['tarifa_id' => $tarifa->id]);
+                $request->merge(['tarifa_id' => $tarifa->id]);
                 $respuesta = $this->importarTipoTomaTarifas($request);
-                return response($respuesta, 201);
+                return response($respuesta, 201); //201 created
             }
         } catch (Exception $ex) {
              return response()->json([
@@ -86,27 +86,34 @@ class TarifaService{
     public function importarTipoTomaTarifas(Request $request){
         try{
             //input con un tarifa_id
-            //$id_tarifa_nueva = $request->input('tarifa_id');
+            $id_tarifa_nueva = $request->input('tarifa_id');
             $confirm = $request->input('confirm');
             //Si el Confirm del request es true y la tarifa_id es diferente de null entra a la condicion
-            if($confirm != null){
-                $tarifas_tipo = TipoToma::all(); //Consulta todos los tipos de tomas que hay registrados
+            if($confirm != null || $id_tarifa_nueva){
+                //consulta de los tipos de toma, con que servicio de tarifa tiene el tipo de la toma y los detalles de la tarifa por tipo de servicio.
+                $tarifas_tipo = TipoToma::with('tarifaServicio', 'tarifaServicio.tarifaDetalle')->get();
                 $tarifa_activa = Tarifa::where('estado', 'activo')->first(); //Busca la tarifa que tenga el estado = activo
-                foreach ($tarifas_tipo as $tipo) {
-                    
+                foreach ($tarifas_tipo as $tipo) {               
                     // y al final los servicios por tipo de toma, en la tarifa activa
-                    return $servicios = TarifaServiciosDetalle::with('tarifaServicio', 'tarifaServicio.tipotoma' ,
-                     'tarifaServicio.tarifa',
-                     'tarifaServicio.tarifa.conceptos')
+                    $servicios = TarifaServiciosDetalle::with('tarifaServicio', 'tarifaServicio.tipotoma' ,
+                     'tarifaServicio.tarifa')
                     ->where('id_tarifa_servicio' , $tarifa_activa->id)
                     ->get();
 
                     foreach ($servicios as $servicio) {
+
+                        $ServiciosTarifa = new TarifaServicio();
+                        $ServiciosTarifa->id_tarifa = $id_tarifa_nueva;
+                        $ServiciosTarifa->id_tipo_toma = $tipo->id;
+                        $ServiciosTarifa->genera_iva = $servicio->tarifaServicio['genera_iva'];
+                        $ServiciosTarifa->tipo_servicio = $servicio->tarifaServicio['tipo_servicio'];
+                        $ServiciosTarifa->save();
+
                         $detalle_servicio = new TarifaServiciosDetalle();
-                        //$detalle_servicio->id_tarifa_servicio = $id_tarifa_nueva;
+                        $detalle_servicio->id_tarifa_servicio = $ServiciosTarifa->id;
                         $detalle_servicio->rango = $servicio['rango'];
                         $detalle_servicio->monto = $servicio['monto'];
-                        //$detalle_servicio->save();
+                        $detalle_servicio->save();
                     }
 
                     // valida si hay tarifas para ese tipo de toma

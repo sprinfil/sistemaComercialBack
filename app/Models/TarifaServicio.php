@@ -10,6 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TarifaServicio extends Model
 {
     use HasFactory;
+     protected $fillable = [
+        "id_tarifa",
+        "id_tipo_toma",
+        "genera_iva",
+        "tipo_servicio"
+    ];
 
     
     public function tarifa() : BelongsTo
