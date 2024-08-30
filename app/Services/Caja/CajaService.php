@@ -620,6 +620,7 @@ class CajaService{
               "nombre_operador" => $NombreOperador,
               "fondo_inicial" => $fondoInicial,
               "Total_retirado" => $montoTotal,
+              "caja_catalogo_id" =>  $sesionCaja->id
             ];
 
             return $estadoSesion;
