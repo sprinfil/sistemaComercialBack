@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\OrdenesTrabajoCargo;
+use App\Models\OrdenesTrabajoEncadenada;
+use App\Models\OrdenTrabajo;
+use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -85,5 +89,9 @@ class OrdenesTrabajoSeeder extends Seeder
             ]);
         }
 
+        OrdenesTrabajoCargo::factory()->count(10)->create();
+        OrdenesTrabajoEncadenada::factory()->count(10)->create();
+        OrdenTrabajoAccion::factory()->count(10)->create();
+        OrdenTrabajo::factory()->count(10)->create();
     }
 }

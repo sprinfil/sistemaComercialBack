@@ -19,12 +19,10 @@ class OrdenTrabajoAccionFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_orden_trabajo_catalogo' => 0,
-            'accion' => $this->faker->randomElement(['registrar','modificar','quitar']),
-            'modelo' => $this->faker->randomElement(['usuario', 'toma', 'lectura', 'medidor', 'consumo']),
-            'opcional' => 0,
-            'id_orden_trabajo_acc_encadena' => 0,
-            'id_orden_trabajo_acc_alterna' => 0,
+            'id_orden_trabajo_catalogo' => $this->faker->numberBetween(1, 100), // Asumiendo que existe un rango de IDs válidos
+            'accion' => $this->faker->randomElement(['registrar', 'modificar', 'quitar']),
+            'modelo' => $this->faker->word,
+            'campo' => $this->faker->optional()->word, // Puede ser nulo o tener un valor
         ];
     }
 }
