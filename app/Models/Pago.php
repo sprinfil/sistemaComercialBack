@@ -54,6 +54,11 @@ class Pago extends Model
         return $this->abonos()->with('cargo')->get();
     }
 
+    public function abonosConCargos(): MorphMany
+{
+    return $this->abonos()->with('cargo');
+}
+
     public function pendiente()
     {
         $abonos = $this->abonos;
@@ -72,5 +77,17 @@ class Pago extends Model
             $total_aplicado += $abono->total_abonado;
         }
         return $total_aplicado;
+    }
+
+    public function formatDueno()
+    {
+        // Always return the formatted 'dueno'
+        if ($this->modelo_dueno === 'toma') {
+            return $this->dueno;
+        } elseif ($this->modelo_dueno === 'usuario') {
+            return $this->dueno;
+        }
+
+        return null;
     }
 }

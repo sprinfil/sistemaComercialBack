@@ -10,6 +10,7 @@ use App\Http\Requests\StoreRetiroCajaRequest;
 use App\Http\Requests\UpdateCajaCatalogoRequest;
 use App\Http\Requests\UpdateCajasRequest;
 use App\Http\Resources\CajaResource;
+use App\Http\Resources\PagoResource;
 use App\Models\Caja;
 use App\Models\CajaCatalogo;
 use App\Models\OperadorAsignado;
@@ -293,7 +294,10 @@ class CajasController extends Controller
     public function pagosPorCaja(Request $request)
     {
         try {
-            return response($this->cajaService->pagosPorCaja($request));
+            return response( 
+                PagoResource::collection(
+                    $this->cajaService->pagosPorCaja($request)
+                ));
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo consultar los pagos de esta caja'

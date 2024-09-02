@@ -22,7 +22,7 @@ class TomaSeeder extends Seeder
         // Calles
         Calle::factory()->count(100)->create();
         // Crea 50 registros de tomas utilizando la fábrica
-        Toma::factory()->count(30)->create();
+        //Toma::factory()->count(30)->create();
         // Crea 50 registros de medidores 
         Medidor::factory()->count(30)->create();
         // Crea 50 registros de contrato

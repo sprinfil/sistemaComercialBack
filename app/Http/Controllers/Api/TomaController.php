@@ -103,7 +103,7 @@ class TomaController extends Controller
     public function buscarCodigoToma($codigo)
     {
         try {
-            $toma = Toma::where('id_codigo_toma', $codigo)->with("usuario")->first();
+            $toma = Toma::where('codigo_toma', $codigo)->with("usuario")->first();
             return response(new TomaResource($toma), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -115,7 +115,7 @@ class TomaController extends Controller
     public function buscarCodigoTomas($codigo)
     {
         try {
-            $toma = Toma::where('id_codigo_toma', $codigo)->get();
+            $toma = Toma::where('codigo_toma', $codigo)->get();
             return response(TomaResource::collection($toma), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -128,10 +128,10 @@ class TomaController extends Controller
     /**
      * Cargos por toma
      */
-    public function cargosPorToma($id_codigo_toma)
+    public function cargosPorToma($codigo_toma)
     {
         try {
-            $toma = Toma::where("id_codigo_toma", $id_codigo_toma)->first();
+            $toma = Toma::where("codigo_toma", $codigo_toma)->first();
             // Ordena los cargos por el atributo 'prioridad' del concepto asociado
             $cargosOrdenados = $toma->cargos()->with('concepto')->get()->sortBy(function($cargo) {
                 return $cargo->concepto->prioridad_abono;
@@ -151,7 +151,7 @@ class TomaController extends Controller
     public function pagosPorToma($id)
     {
         try {
-            $toma = Toma::where("id_codigo_toma",$id)->first();
+            $toma = Toma::where("codigo_toma",$id)->first();
             return $toma->pagos;
         } catch (ModelNotFoundException $e) {
             return response()->json([

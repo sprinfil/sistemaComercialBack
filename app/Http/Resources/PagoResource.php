@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Toma;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,6 +21,7 @@ class PagoResource extends JsonResource
             "id_caja" => $this->id_caja,
             "id_dueno" => $this->id_dueno,
             "modelo_dueno" => $this->modelo_dueno,
+            'dueno' => $this->formatDueno(),
             "id_corte_caja" => $this->id_corte_caja,
             "total_pagado" => $this->total_pagado,
             "forma_pago" => $this->forma_pago,
@@ -27,6 +30,7 @@ class PagoResource extends JsonResource
             "timbrado" => $this->timbrado,
             "abonos" => AbonoResource::collection($this->whenLoaded('abonos')),
             "cargos" => CargoResource::collection($this->whenLoaded('cargos')),
+            'abonos_con_cargos' => AbonoResource::collection($this->whenLoaded('abonosConCargos')),
             "saldo_anterior" => number_format($this->saldo_anterior, 2, '.', '') ? $this->saldo_anterior : 0,
             "saldo_actual" => number_format($this->saldo_actual, 2, '.', '') ? $this->saldo_actual : 0,
             "saldo_no_aplicado" => number_format($this->saldo_no_aplicado, 2, '.', '') ? $this->saldo_no_aplicado : 0,

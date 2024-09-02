@@ -229,7 +229,7 @@ class CajaService{
     try{
       $data = $request->all();
       $id_caja = $data['id_caja'];
-      $pagos = Caja::findOrFail($id_caja)->pagos;
+      $pagos = Caja::findOrFail($id_caja)->pagosConDetalle;
       return $pagos;
     } catch(Exception $ex){
       throw $ex;
@@ -620,6 +620,7 @@ class CajaService{
               "nombre_operador" => $NombreOperador,
               "fondo_inicial" => $fondoInicial,
               "Total_retirado" => $montoTotal,
+              "id" =>  $sesionCaja->id
             ];
 
             return $estadoSesion;

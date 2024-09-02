@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_usuario');
             $table->unsignedBigInteger('id_giro_comercial');
             $table->unsignedBigInteger('id_libro');
-            $table->unsignedBigInteger('id_codigo_toma');
+            $table->string('codigo_toma');
             $table->unsignedBigInteger('id_tipo_toma');
             $table->string('clave_catastral');
             $table->enum('estatus', ['pendiente confirmación inspección', 'pendiente de inspeccion', 'pendiente de instalacion', 'activa', 'baja definitiva', 'baja temporal', 'en proceso','limitado']);

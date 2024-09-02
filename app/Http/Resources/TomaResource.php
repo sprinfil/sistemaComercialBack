@@ -24,7 +24,7 @@ class TomaResource extends JsonResource
             "id_usuario" => $this->id_usuario,
             "id_giro_comercial" => $this->id_giro_comercial,
             "id_libro" => $this->id_libro,
-            "id_codigo_toma" => $this->id_codigo_toma,
+            "codigo_toma" => $this->codigo_toma,
             "id_tipo_toma" => $this->id_tipo_toma,
             "estatus" => $this->estatus,
             "clave_catastral" => $this->clave_catastral,

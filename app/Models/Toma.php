@@ -34,7 +34,7 @@ class Toma extends Model
         "id_usuario",
         "id_giro_comercial",
         "id_libro",
-        "id_codigo_toma",
+        "codigo_toma",
         "id_tipo_toma",
         "clave_catastral",
         "estatus",
@@ -141,6 +141,12 @@ class Toma extends Model
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
+    public function pagosConDetalle(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->with(['abonosConCargos']);
+    }
+
 
     //Consumos asociados a la toma
     public function factura():HasMany{
