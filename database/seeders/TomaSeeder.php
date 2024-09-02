@@ -18,14 +18,14 @@ class TomaSeeder extends Seeder
     public function run(): void
     {
         // Colonia
-        Colonia::factory()->count(10)->create();
+        //Colonia::factory()->count(10)->create();
         // Calles
-        Calle::factory()->count(100)->create();
+        //Calle::factory()->count(100)->create();
         // Crea 50 registros de tomas utilizando la fábrica
         //Toma::factory()->count(30)->create();
         // Crea 50 registros de medidores 
-        Medidor::factory()->count(30)->create();
+        //Medidor::factory()->count(30)->create();
         // Crea 50 registros de contrato
-        Contrato::factory()->count(30)->create();
+        //Contrato::factory()->count(30)->create();
     }
 }
