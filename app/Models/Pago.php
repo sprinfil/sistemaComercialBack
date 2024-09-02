@@ -78,9 +78,9 @@ class Pago extends Model
     {
         // Always return the formatted 'dueno'
         if ($this->modelo_dueno === 'toma') {
-            return $this->dueno->codigo_toma;
+            return $this->dueno;
         } elseif ($this->modelo_dueno === 'usuario') {
-            return $this->dueno->codigo_usuario;
+            return $this->dueno;
         }
 
         return null;
