@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\OrdenesTrabajoCargo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class OrdenesTrabajoCargoFactory extends Factory
 {
+    protected $model = OrdenesTrabajoCargo::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +19,8 @@ class OrdenesTrabajoCargoFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+           'id_orden_trabajo_catalogo' => $this->faker->numberBetween(1, 100), // Asumiendo un rango de IDs válidos
+            'id_concepto_catalogo' => $this->faker->numberBetween(1, 100), // Asumiendo un rango de IDs válidos
         ];
        
     }
