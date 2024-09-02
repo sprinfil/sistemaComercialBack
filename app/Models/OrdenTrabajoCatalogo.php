@@ -21,8 +21,13 @@ class OrdenTrabajoCatalogo extends Model
         "nombre",
         "descripcion",
         "vigencias",
+        "servicio",
         "momento_cargo",
         "genera_masiva",
+        "asigna_masiva",
+        "cancela_masiva",
+        "cierra_masiva",
+        "publico_general",
         "limite_ordenes",
 
     ];

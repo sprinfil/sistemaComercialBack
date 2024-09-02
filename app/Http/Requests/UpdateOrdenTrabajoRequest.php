@@ -32,6 +32,7 @@ class UpdateOrdenTrabajoRequest extends FormRequest
             "obervaciones.*."=>"nullable|string",
             "evidencia.*."=>"nullable|string",
             "material_utilizado.*."=>"nullable|string",
+            "genera_OT_encadenadas.*." => "sometimes|boolean",
 
             
         ];

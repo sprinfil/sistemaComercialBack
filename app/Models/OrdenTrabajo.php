@@ -15,6 +15,7 @@ class OrdenTrabajo extends Model
     //protected $table="orden_trabajos";
     protected $fillable=[
         "id_toma",
+        "id_empleado_genero",
         "id_empleado_asigno",
         "id_empleado_encargado",
         "id_orden_trabajo_catalogo",
