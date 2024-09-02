@@ -33,6 +33,14 @@ class Caja extends Model
                 ->orderBy('created_at', 'desc');
     }
 
+    //Caja con pagos
+    public function pagosConDetalle() : HasMany
+    {
+        return $this->hasMany(Pago::class, 'id_caja')
+                ->with(['dueno', 'abonosConCargos'])
+                ->orderBy('created_at', 'desc');
+    }
+
     public function pagosPorTipo(string $tipo)
     {
         return $this->pagos()->where('forma_pago', $tipo)->get();
