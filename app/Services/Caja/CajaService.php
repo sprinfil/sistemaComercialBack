@@ -618,6 +618,7 @@ class CajaService{
             $estadoSesion = [
               "caja_nombre" => $cataCajaNombre->nombre_caja, 
               "nombre_operador" => $NombreOperador,
+              "id_operador" => $usuario->operador->id,
               "fondo_inicial" => $fondoInicial,
               "Total_retirado" => $montoTotal,
               "id" =>  $sesionCaja->id
