@@ -13,6 +13,6 @@ class RutaSeeder extends Seeder
      */
     public function run(): void
     {
-        Ruta::factory()->count(10)->create();
+        Ruta::factory()->count(7)->create();
     }
 }

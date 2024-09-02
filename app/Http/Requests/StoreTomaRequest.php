@@ -25,7 +25,7 @@ class StoreTomaRequest extends FormRequest
             "id_usuario"=>"required|int",
             "id_giro_comercial"=>"required|int",
             "id_libro"=>"required|int",
-            "id_codigo_toma"=>"required|int",
+            "codigo_toma"=>"required|string",
             "id_tipo_toma"=>"required|int",
             "clave_catastral"=>"required|string|min:10|max:18",
             "estatus"=>"required|string|max:55|

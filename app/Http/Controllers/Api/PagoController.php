@@ -116,4 +116,20 @@ class PagoController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Consulta un cargo especifico por su id
+     */
+    public function showDetalle($id)
+    {
+        try {
+            return response(new PagoResource(
+                $this->pagoService->busquedaPorFolio($id)
+            ), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el pago por su id '.$id
+            ], 500);
+        }
+    }
 }

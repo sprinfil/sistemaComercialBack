@@ -50,6 +50,11 @@ class Libro extends Model
     public function tomas() : HasMany {
         return $this->hasMany(Toma::class , "id_libro");
     }
+
+    public function countTomas(): int
+    {
+        return $this->tomas()->count();
+    }
     
     public function getPuntosAttribute(){
         if($this->asignacionGeografica){

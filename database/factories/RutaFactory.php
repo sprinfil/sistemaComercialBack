@@ -34,7 +34,7 @@ class RutaFactory extends Factory
     {
         return $this->afterCreating(function (Ruta $ruta) 
         {
-            for ($i = 0; $i < 12; $i++) {
+            for ($i = 1; $i < 13; $i++) {
                 Libro::factory()->create([
                     'id_ruta'=>$ruta->id,
                     'nombre' => 'Libro ' . $i,
