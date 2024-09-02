@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\OrdenesTrabajoEncadenada;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class OrdenesTrabajoEncadenadaFactory extends Factory
 {
+    protected $model = OrdenesTrabajoEncadenada::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +19,8 @@ class OrdenesTrabajoEncadenadaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'id_OT_Catalogo_padre' => $this->faker->numberBetween(1, 100), // Asumiendo un rango de IDs válidos
+            'id_OT_Catalogo_encadenada' => $this->faker->numberBetween(1, 100), // Asumiendo un rango de IDs válidos
         ];
     }
 }

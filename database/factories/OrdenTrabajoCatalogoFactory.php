@@ -22,11 +22,17 @@ class OrdenTrabajoCatalogoFactory extends Factory
     public function definition(): array
     {
         return [
-            "id_concepto_catalogo" => 0,
-            "nombre" => '',
-            "vigencias" => $this->faker->numberBetween(1,30),
-            "momento_cargo" => $this->faker->randomElement(['generar','asignar','concluir','No genera']), //'generar','asignar','concluir','No genera'
-            "genera_masiva" => 0,
+            'nombre' => $this->faker->word,
+            'servicio' => $this->faker->randomElement(['CONSUMO DE AGUA POTABLE', 'SERV. ALCANTARILLADO', 'TRAT. Y SANEAMIENTO', 'OTRO']),
+            'descripcion' => $this->faker->sentence,
+            'vigencias' => $this->faker->numberBetween(1, 10),
+            'momento_cargo' => $this->faker->randomElement(['generar', 'asignar', 'concluir', 'No genera']),
+            'genera_masiva' => $this->faker->boolean,
+            'asigna_masiva' => $this->faker->boolean,
+            'cancela_masiva' => $this->faker->boolean,
+            'cierra_masiva' => $this->faker->boolean,
+            'publico_general' => $this->faker->boolean,
+            'limite_ordenes' => $this->faker->numberBetween(1, 100),
         ];
     }
 

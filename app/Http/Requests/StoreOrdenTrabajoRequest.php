@@ -23,12 +23,17 @@ class StoreOrdenTrabajoRequest extends FormRequest
     {
         return [
             "ordenes_trabajo"=> "required|array",
-            "ordenes_trabajo.*"=> "required|array:id_toma,id_empleado_asigno,id_empleado_encargado,id_orden_trabajo_catalogo,posicion_OT",
+            "ordenes_trabajo.*"=> "required|array:id_toma,id_empleado_genero,id_empleado_asigno,id_empleado_encargado,id_orden_trabajo_catalogo,posicion_OT",
             "id_toma.*." => "required|exists:toma,id",
+            "id_empleado_genero.*." => "required|exists:operadores,id",
             "id_empleado_asigno.*." => "required|exists:operadores,id",
             "id_empleado_encargado.*." => "sometimes|exists:operadores,id",
             "id_orden_trabajo_catalogo.*." => "required|exists:orden_trabajo_catalogos,id",
+            "obervaciones.*." => "sometimes|string",
+            "evidencia.*." => "sometimes|string",
+            "material_utilizado.*." => "sometimes|string",
             "posicion_OT.*." => "sometimes|point",
+            "genera_OT_encadenadas.*." => "sometimes|boolean",
             /*
             "modelos"=> "required|array:toma,medidores,contratos,usuarios",
             

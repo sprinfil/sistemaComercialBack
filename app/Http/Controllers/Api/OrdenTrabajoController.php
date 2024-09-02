@@ -27,6 +27,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Return_;
 
+use function PHPUnit\Framework\isNull;
+
 class OrdenTrabajoController extends Controller
 {
     /**
@@ -63,16 +65,16 @@ class OrdenTrabajoController extends Controller
      * Store a newly created resource in storage.
      */
     public function storeCatalogo(StoreOrdenTrabajoCatalogoRequest $request)
-    {
+    { DB::beginTransaction();
+        $data=$request->validated();
+        $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
+        if ($catalogo=="Existe"){
+            return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
+        }
+        DB::commit();
+        return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo)],200);
         try{
-            DB::beginTransaction();
-            $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
-            if ($catalogo=="Existe"){
-                return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
-            }
-            DB::commit();
-            return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo)],200);
+           
         }
         catch(Exception $ex){
             DB::rollBack();
@@ -363,17 +365,14 @@ class OrdenTrabajoController extends Controller
             DB::beginTransaction();
             //$filtros=$request->validated();
             $filtros=$request;
-            $data=(new OrdenTrabajoService())->FiltrarOT($filtros['ruta_id'] ?? null,$filtros['libro_id'] ?? null,
-            $filtros['toma_id'] ?? null,$filtros['saldo'] ?? null, $filtros['asignada'] ?? null,
-            $filtros['no asignada'] ?? null,$filtros['concluida'] ?? null,$filtros['cancelada'] ?? null,
-            $filtros['domestica'] ?? null,$filtros['comercial'] ?? null,$filtros['industrial'] ?? null,$filtros['especial'] ?? null);
+            $data=(new OrdenTrabajoService())->FiltrarOT($filtros);
             if (!$data){
-                return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
+                return response()->json(["message"=>"No ha seleccionado un filtro para OT, por favor especifique algún parametro"],202);
             }
             else
             {
                 DB::commit();
-                return response()->json(['ordenes_trabajo'=>$data]);
+                return response()->json(['ordenes_trabajo'=>OrdenTrabajoResource::collection($data)]);
                 //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
             }
            }

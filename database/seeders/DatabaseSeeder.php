@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Calle;
+use App\Models\Colonia;
 use App\Models\CorteCaja;
 use App\Models\Cotizacion;
 use App\Models\Factura;
@@ -42,7 +44,9 @@ class DatabaseSeeder extends Seeder
         //
         $this->call(RutaSeeder::class);
         //
-        $this->call(TomaSeeder::class);
+        Colonia::factory()->count(10)->create();
+        // Calles
+        Calle::factory()->count(100)->create();
         //
         $this->call(DescuentosSeeder::class);
         // 
@@ -69,7 +73,7 @@ class DatabaseSeeder extends Seeder
         //$this->call(FacturaSeeder::class);
         $this->call(AsignacionGeograficaSeeder::class);
         //
-        //$this->call(OrdenesTrabajoSeeder::class);
+        $this->call(OrdenesTrabajoSeeder::class);
         //
     }
 }

@@ -6,6 +6,8 @@ use App\Models\OrdenTrabajoCatalogo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use function PHPUnit\Framework\isNull;
+
 class TomaResource extends JsonResource
 {
     public static $wrap = false;
@@ -43,15 +45,21 @@ class TomaResource extends JsonResource
             "c_alc" => $this->c_alc,
             "c_san" => $this->c_san,
             'tipo_toma' => new UsuarioResource($this->whenLoaded('tipoToma')),
-            'libro' => new LibroResource($this->whenLoaded('libro')),
+            'libro' => new LibroSimplificado($this->whenLoaded('libro')),
             'usuario' => new UsuarioResource($this->whenLoaded('usuario')),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
             'giroComercial' => new GiroComercialCatalogoResource($this->whenLoaded('giroComercial')),
             'medidor' => $this->whenLoaded('medidor'),
             'consumo' => $this->whenLoaded('consumo'),
             'ordenes_trabajo' => OrdenTrabajoResource::collection($this->whenLoaded('ordenesTrabajo')),
-            'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes')))
+            'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes'))),
+            'saldo' =>  isset($this->saldo) ? $this->saldo : null,
         ];
         //return parent::toArray($request);
+    }
+    protected function hasRequestedSaldo($request)
+    {
+        // Example: Check if a query parameter indicates saldo should be included
+        return $request->has('cargos');
     }
 }
