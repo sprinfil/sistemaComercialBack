@@ -39,10 +39,8 @@ class DatabaseSeeder extends Seeder
         $this->call(GiroComercialSeeder::class);
         $this->call(TipoTomasSeeder::class);
         $this->call(ConceptoCatalogoSeeder::class);
-        //$this->call(OrdenesTrabajoSeeder::class);
         //
         $this->call(RutaSeeder::class);
-        $this->call(LibroSeeder::class);
         //
         $this->call(TomaSeeder::class);
         //
@@ -50,7 +48,7 @@ class DatabaseSeeder extends Seeder
         // 
         $this->call(AnomaliaSeeder::class);
         $this->call(AjusteSeeder::class);
-        
+        //
         $this->call(ConvenioSeeder::class);
         $this->call(ConstanciaSeeder::class);
         $this->call(BonificacionCatalogoSeeder::class);
@@ -60,9 +58,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CajaCatalogoSeeder::class);
         $this->call(PagoSeeder::class);
         //$this->call(CorteCajaSeeder::class);
-        //
-       
-        //
         $this->call(RolSeeder::class);
         $this->call(PermissionsSeeder::class);
         $this->call(TipoTomaSeeder::class);

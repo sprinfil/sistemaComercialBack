@@ -27,7 +27,6 @@ class TomaFactory extends Factory
 
     public function definition()
     {
-        static $codigoTomaId = 1;
         static $usuarioId = 0;
         $usuarioId++;
 

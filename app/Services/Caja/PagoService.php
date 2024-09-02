@@ -425,6 +425,16 @@ class PagoService{
         }
     }
 
+    // metodo para buscar un pago por su id
+    public function busquedaPorFolio($folio): Pago
+    {
+        try {
+            return Pago::where('folio', $folio)->firstOrFail();
+        } catch(Exception $ex) {
+            throw $ex;
+        }
+    }
+
     // metodo para buscar todos los pagos de un modelo especifico
     public function pagosPorModelo(Request $request){
         try{
