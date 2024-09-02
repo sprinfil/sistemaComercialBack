@@ -139,6 +139,12 @@ class Toma extends Model
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
+    public function pagosConDetalle(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->with(['abonosConCargos']);
+    }
+
 
     //Consumos asociados a la toma
     public function factura():HasMany{
