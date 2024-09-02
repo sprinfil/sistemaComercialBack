@@ -506,6 +506,42 @@ class PagoService{
         }
     }
 
+    // metodo para buscar todos los pagos de un modelo especifico
+    public function pagosPorModeloConDetalle(Request $request)
+    {
+        try{
+            $data = $request->all();
+
+            // tipo pago
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
+            $dueno = null;
+            if($modelo == 'usuario'){
+                $dueno = Usuario::findOrFail($id_modelo);
+                $pagos = $dueno->pagosConDetalle;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else if($modelo == 'toma'){
+                $dueno = Toma::findOrFail($id_modelo);
+                $pagos = $dueno->pagosConDetalle;
+                if($pagos){
+                    return $pagos;
+                } else{
+                    throw new Exception('el modelo no contiene pagos');
+                }
+            }else{
+                throw new Exception('modelo no definido');
+            }
+        } catch(Exception $ex){
+            throw $ex;
+        }
+    }
+
     // actualizar pago
     public function modificarPago(UpdatePagoRequest $request, $id): Pago
     {

@@ -54,6 +54,11 @@ class Pago extends Model
         return $this->abonos()->with('cargo')->get();
     }
 
+    public function abonosConCargos(): MorphMany
+{
+    return $this->abonos()->with('cargo');
+}
+
     public function pendiente()
     {
         $abonos = $this->abonos;

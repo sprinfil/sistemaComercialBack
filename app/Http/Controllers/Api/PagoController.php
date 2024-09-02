@@ -72,13 +72,26 @@ class PagoController extends Controller
     }
 
     /**
-     * Consulta historial de pagos por modelo
+     * Consulta historial de pagos por modelo pagosPorModeloConDetalle
      */
     public function pagosPorModelo(Request $request)
     {
         try {
             return response(PagoResource::collection(
                 $this->pagoService->pagosPorModelo($request)
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los pagos'
+            ], 500);
+        }
+    }
+
+    public function pagosPorModeloConDetalle(Request $request)
+    {
+        try {
+            return response(PagoResource::collection(
+                $this->pagoService->pagosPorModeloConDetalle($request)
             ),200);
         } catch (ModelNotFoundException $e) {
             return response()->json([

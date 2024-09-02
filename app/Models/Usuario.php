@@ -87,6 +87,12 @@ class Usuario extends Model
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
+    public function pagosConDetalle(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->with(['abonosConCargos']);
+    }
+    
   
     public static function ConsultarPorNombresCodigo(string $usuario){
         if (is_numeric($usuario)){
