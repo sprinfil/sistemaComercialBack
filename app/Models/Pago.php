@@ -73,4 +73,16 @@ class Pago extends Model
         }
         return $total_aplicado;
     }
+
+    public function formatDueno()
+    {
+        // Always return the formatted 'dueno'
+        if ($this->modelo_dueno === 'toma') {
+            return $this->dueno->codigo_toma;
+        } elseif ($this->modelo_dueno === 'usuario') {
+            return $this->dueno->codigo_usuario;
+        }
+
+        return null;
+    }
 }
