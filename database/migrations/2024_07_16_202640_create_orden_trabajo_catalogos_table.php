@@ -19,6 +19,10 @@ return new class extends Migration
             $table->integer('vigencias');
             $table->enum('momento_cargo',['generar','asignar','concluir','No genera']);
             $table->boolean('genera_masiva');
+            $table->boolean('asigna_masiva');
+            $table->boolean('cancela_masiva');
+            $table->boolean('cierra_masiva');
+            $table->boolean('publico_general');
             $table->integer('limite_ordenes');
             $table->softDeletes();
             $table->timestamps();
