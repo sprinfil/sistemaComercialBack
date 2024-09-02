@@ -65,16 +65,16 @@ class OrdenTrabajoController extends Controller
      * Store a newly created resource in storage.
      */
     public function storeCatalogo(StoreOrdenTrabajoCatalogoRequest $request)
-    {
+    { DB::beginTransaction();
+        $data=$request->validated();
+        $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
+        if ($catalogo=="Existe"){
+            return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
+        }
+        DB::commit();
+        return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo)],200);
         try{
-            DB::beginTransaction();
-            $data=$request->validated();
-            $catalogo=(new OrdenTrabajoCatalogoService())->store($data['orden_trabajo_catalogo']);
-            if ($catalogo=="Existe"){
-                return response()->json(["message"=>"Ya existe una OT con este nombre",201]);
-            }
-            DB::commit();
-            return response(["Orden_Trabajo_Catalogo"=>new OrdenTrabajoCatalogoResource($catalogo)],200);
+           
         }
         catch(Exception $ex){
             DB::rollBack();

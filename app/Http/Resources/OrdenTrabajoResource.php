@@ -20,6 +20,7 @@ class OrdenTrabajoResource extends JsonResource
         return [
             "id" => $this->id,
             "id_toma" => $this->id_toma,
+            "id_empleado_genero" => $this->id_empleado_genero,
             "id_empleado_asigno" => $this->id_empleado_asigno,
             "id_empleado_encargado" => $this->id_empleado_encargado,
             "id_orden_trabajo_catalogo" => $this->id_orden_trabajo_catalogo,

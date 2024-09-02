@@ -41,7 +41,7 @@ class OrdenTrabajoService{
       
         $id_empleado_asigno=auth()->user()->operador->id;//auth()->user()->operador->id
   
-        $ordenTrabajoPeticion['id_empleado_asigno']=$id_empleado_asigno;
+        $ordenTrabajoPeticion['id_empleado_genero']=$id_empleado_asigno;
       
         $cargo=null;
         if (count($ordenTrabajo)>=$OtCatalogo['limite_ordenes']){
@@ -72,13 +72,16 @@ class OrdenTrabajoService{
         } 
     }
     public function asignar(array $ordenTrabajo): ?OrdenTrabajo{ //Ejemplo de service
-        
+        $id_empleado_asigno=auth()->user()->operador->id;
+  
+
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
         if ($OT['estado']=="Concluida" || $OT['estado']=="Cancelada"){
             return null;
         }
         else{
             $OT['estado']="En proceso";
+            $OT['id_empleado_asigno']=$id_empleado_asigno;
             $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
             $OT->update();
             $OT->save();
@@ -296,7 +299,39 @@ class OrdenTrabajoService{
         return $OTModelo;
     }
     public function Quitar($Accion,$ordenTrabajo,$modelos){
-        
+        $tipo_modelo=$Accion['modelo'];
+
+
+        switch($tipo_modelo){
+            case "toma":
+                $dato=$modelos['toma'];
+                $OTModelo=Toma::create($dato);
+                break;
+            case "medidor":
+                $dato=$modelos['medidor'];
+                $OTModelo=Medidor::create($dato);
+                break;
+            case "contrato":
+                $dato=$modelos['contrato'];
+                $OTModelo=Contrato::create($dato);
+                break;
+            case "usuario":
+                $dato=$modelos['usuario'];
+                $OTModelo=Usuario::create($dato);
+                break;
+            case "consumo":
+                $dato=$modelos['consumo'];
+                $OTModelo=Consumo::create($dato);
+                break;
+            case "lectura":
+                $dato=$modelos['lectura'];
+                $OTModelo=Lectura::create($dato);
+                break;
+            default:
+            $OTModelo=null;
+            break;
+        }
+        return $OTModelo;
     }
     public function generarCargo($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){
 
@@ -427,7 +462,7 @@ class OrdenTrabajoService{
                     $toma=$query->toma;
                     $saldo=$toma->saldoToma();
                     if ($saldo>=$saldoMin && $saldo<=$saldoMax){
-                        $toma['saldoToma']=$saldo;
+                        $toma['saldo']=$saldo;
                         unset($toma['cargosVigentes']);
                         
                         $resultado=$toma;
