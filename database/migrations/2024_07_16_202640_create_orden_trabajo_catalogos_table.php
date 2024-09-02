@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('orden_trabajo_catalogos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->enum('servicio',['CONSUMO DE AGUA POTABLE','SERV. ALCANTARILLADO','TRAT. Y SANEAMIENTO','OTRO']);
             $table->string('descripcion');
             $table->integer('vigencias');
             $table->enum('momento_cargo',['generar','asignar','concluir','No genera']);

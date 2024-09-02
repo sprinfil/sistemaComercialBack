@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isEmpty;
 use function PHPUnit\Framework\isNull;
 
 class OrdenTrabajoService{
@@ -332,21 +333,34 @@ class OrdenTrabajoService{
     public function restore(){
         
     }
-    public function FiltrarOT($ruta, $libro,$toma,$saldo,$Asignada,$NoAsignada,$Concluida,$Cancelada,$domestica,$industrial,$comercial,$especial){
-        //$query=OrdenTrabajo::query();
-        // HIPER MEGA QUERY INSANO
-        $query=OrdenTrabajo::when($Asignada, function (EloquentBuilder $q)  {
+    public function FiltrarOT($filtros){
+       
+        $ruta=$filtros['ruta_id'] ?? null;
+        $libro=$filtros['libro_id'] ?? null;
+        $toma=$filtros['toma_id'] ?? null;
+        $saldoMin=$filtros['saldo_min'] ?? null;
+        $saldoMax=$filtros['saldo_max'] ?? null;
+        $Asignada=$filtros['asignada'] ?? null;
+        $no_asignada=$filtros['no_asignada'] ?? null;
+        $Concluida=$filtros['concluida'] ?? null;
+        $Cancelada=$filtros['cancelada'] ?? null;
+        $domestica=$filtros['domestica'] ?? null;
+        $comercial=$filtros['comercial'] ?? null;
+        $industrial=$filtros['industrial'] ?? null;
+        $especial=$filtros['especial'] ?? null;
+         // HIPER MEGA QUERY INSANO
+         $query=OrdenTrabajo::when($Asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'En proceso');
-        })->when($NoAsignada, function (EloquentBuilder $q)  {
+        })->when($no_asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'No asignada');
         })->when($Concluida, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'Concluida');
         })->when($Cancelada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'Cancelada');
-        })->with('toma.tipoToma')
+        })->with('toma.tipoToma','toma.libro')
         ->when($ruta, function (EloquentBuilder $q) use($ruta,$libro)  {
 
-           $q->whereHas('toma', function($a)use($ruta,$libro){
+        $q->whereHas('toma', function($a)use($ruta,$libro){
                 $a->when($libro, function (EloquentBuilder $a2) use($ruta,$libro){
                     $a2->with('libro')->whereHas('libro', function($b)use($ruta,$libro){
                         $b->where('id',$libro)->with('tieneRuta')->whereHas('tieneRuta', function($c)use($ruta){
@@ -369,59 +383,73 @@ class OrdenTrabajoService{
             
             $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial){
                 $a->when($domestica, function (EloquentBuilder $b){
-                   $b->orWhere('nombre','domestica');
+                $b->orWhere('nombre','domestica');
                 });
                 $a->when($comercial, function (EloquentBuilder $b) {
-                   $b->orWhere('nombre','comercial');
+                $b->orWhere('nombre','comercial');
                 });
                 $a->when($industrial, function (EloquentBuilder $b)  {
-                   $b->orWhere('nombre','industrial');
+                $b->orWhere('nombre','industrial');
                 });
                 $a->when($especial, function (EloquentBuilder $b) {
-                   $b->orWhere('nombre','especial');
+                $b->orWhere('nombre','especial');
                 });
-                   
-               });
-               $q->where('id_toma',$toma);
+                
+            });
+            $q->where('id_toma',$toma);
             
         }
         ,function(EloquentBuilder $q)use($domestica,$comercial,$industrial,$especial){
             $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial){
                 
                 $a->when($domestica, function (EloquentBuilder $b){
-                   $b->orWhere('nombre','domestica');
+                $b->orWhere('nombre','domestica');
                 });
                 $a->when($comercial, function (EloquentBuilder $b) {
-                   $b->orWhere('nombre','comercial');
+                $b->orWhere('nombre','comercial');
                 });
                 $a->when($industrial, function (EloquentBuilder $b)  {
-                   $b->orWhere('nombre','industrial');
+                $b->orWhere('nombre','industrial');
                 });
                 $a->when($especial, function (EloquentBuilder $b) {
-                   $b->orWhere('nombre','especial');
+                $b->orWhere('nombre','especial');
                 });
-                   
-               });
-        })->when($saldo, function (EloquentBuilder $q){
-            
-        })
-        ->get();
-        //CONSULTAR POR TOMA, RUTA Y LIBRO SIEMPRE
-        /*
-        ->when($ruta, function (EloquentBuilder $q, $ruta)  {
-            return OrdenTrabajo::with('toma')->whereHas('toma', function($a){
-                $a->with('libro')->whereHas('libro', function($b){
-                    $b->with('tieneRuta')->whereHas('tieneRuta');
-                });
+                
             });
-        })
-        ->when($libro, function (EloquentBuilder $q, $libro)  {
-            return $q->where('estado', $libro);
-        })->when($estadoOT, function (EloquentBuilder $q, $estadoOT)  {
-            return $q->where('estado', $estadoOT);
-        })
-         */
-        $OT = $query;
+        }) 
+        ->get();
+
+        //TODO CONSULTA SALDO CON Y SIN CONVENIO
+
+        if ($saldoMin){
+            if ($saldoMax){
+                $query = $query->filter(function($query) use($saldoMin,$saldoMax) {
+                    $toma=$query->toma;
+                    $saldo=$toma->saldoToma();
+                    if ($saldo>=$saldoMin && $saldo<=$saldoMax){
+                        $toma['saldoToma']=$saldo;
+                        unset($toma['cargosVigentes']);
+                        
+                        $resultado=$toma;
+                
+                    return $resultado;
+                    }
+                    
+            
+                });
+            }
+            
+            else{
+              return null;
+            }
+                
+        
+            //return $tomasSaldo;
+        }
+        $OT =$query;
         return $OT;
+        //
+       
+       
     }
 }

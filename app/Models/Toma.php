@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
+use function PHPUnit\Framework\isNull;
+
 class Toma extends Model
 {
     use HasFactory, SoftDeletes;
@@ -174,7 +176,14 @@ class Toma extends Model
         }
         return $total_final;
     }
-
+    public function getSaldo(){
+        if  (!isNull($this->saldo)){
+            return $this->saldo;
+        }
+        else{
+            return null;
+        }
+    }
     public function saldoSinAplicar(){
         $total_final = 0;
         $pagos_pendientes = $this->pagosPendientes;
