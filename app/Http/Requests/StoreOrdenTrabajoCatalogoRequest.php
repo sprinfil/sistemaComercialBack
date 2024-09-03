@@ -42,7 +42,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "orden_trabajo_accion.*.id_orden_trabajo_catalogo" => "sometimes|exists:orden_trabajo_catalogos,id",
             "orden_trabajo_accion.*.id_concepto_catalogo" => "sometimes|exists:concepto_catalogos,id",
             "orden_trabajo_accion.*.accion"=>"sometimes|in:registrar,modificar,quitar",
-            "orden_trabajo_accion.*.modelo"=>"sometimes|in:toma,medidor,contrato,lectura,usuario",
+            "orden_trabajo_accion.*.modelo"=>"sometimes|in:toma,medidores,contratos,lecturas,usuarios",
             "orden_trabajo_accion.*.campo"=>"sometimes|in:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion,",
             "orden_trabajo_accion.*.opcional"=>"sometimes|boolean",
              "orden_trabajo_accion.*.id_orden_trabajo_acc_encadena"=>"sometimes|string",

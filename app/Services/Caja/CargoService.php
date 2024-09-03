@@ -178,37 +178,38 @@ class CargoService{
         }
     }
 
-    // metodo para buscar todos los pagos de un modelo especifico
-    public function cargosDeTomasDeUsuario($id){
-        try{
+    public function cargosDeTomasDeUsuario($id)
+    {
+        try {
             $id_usuario = $id;
 
-            $dueno = null;
-            if($id_usuario){
+            if ($id_usuario) {
                 $dueno = Usuario::with([
                     'tomas',
                     'cargosVigentes',
                     'tomas.cargosVigentes',
                 ])->findOrFail($id_usuario);
+
+                // Añadir el monto pendiente manualmente
+                $dueno->cargosVigentes->each(function ($cargo) {
+                    $cargo->monto_pendiente = $cargo->montoPendiente();
+                });
+
+                $dueno->tomas->each(function ($toma) {
+                    $toma->cargosVigentes->each(function ($cargo) {
+                        $cargo->monto_pendiente = $cargo->montoPendiente();
+                    });
+                });
+
                 return $dueno;
-            } else{
+            } else {
                 throw new Exception('usuario no definido');
             }
-                /*else if($modelo == 'toma'){
-                $dueno = Toma::findOrFail($id_modelo);
-                $cargos = $dueno->cargos->where('estado', 'pendiente');
-                if($cargos){
-                    return $cargos;
-                } else{
-                    throw new Exception('el modelo no contiene cargos');
-                }
-            }else{
-                throw new Exception('modelo no definido');
-            }*/
-        } catch(Exception $ex){
+        } catch (Exception $ex) {
             throw $ex;
         }
     }
+
 
     // metodo para cargar un cargo a un usuario/toma
     public function generarCargoDirecto(StoreCargoDirectoRequest $request)

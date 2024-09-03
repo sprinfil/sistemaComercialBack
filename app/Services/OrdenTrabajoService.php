@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Return_;
 
 use function PHPUnit\Framework\isEmpty;
 use function PHPUnit\Framework\isNull;
@@ -95,7 +96,7 @@ class OrdenTrabajoService{
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        if ($OT['estado']=="Concluida"){
+        if ($OT['estado']=="aa"){
            return null;
         }
         else{
@@ -192,7 +193,7 @@ class OrdenTrabajoService{
     //metodo que maneja el tipo de accion de la ot a realizar
     public function Acciones(OrdenTrabajo $ordenTrabajo, $OtCatalogo, $modelos){
         $acciones=$OtCatalogo->ordenTrabajoAccion ?? null;
-        if (isNull($acciones)){
+        if (empty($acciones)){
             return null;
         }
         else{
@@ -224,32 +225,32 @@ class OrdenTrabajoService{
                 $OTModelo->save();
                 
                 break;
-            case "medidor":
+            case "medidors":
                 $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['medidor'];
                 $OTModelo->update($dato);
                 $OTModelo->save();
                 break;
-            case "contrato":
+            case "contratos":
                 $OTModelo=Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['contrato'];
                 $OTModelo->update($dato);
                 $OTModelo->save();
                 break;
-            case "usuario":
+            case "usuarios":
                 $OTModeloHijo=Toma::find($ordenTrabajo['id_toma']);
                 $OTModelo=$OTModeloHijo->usuario;
                 $dato=$modelos['usuario'];
                 $OTModelo->update($dato);
                 $OTModelo->save();
                 break;
-            case "consumo":
+            case "consumos":
                 $OTModelo=Consumo::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['usuario'];
                 $OTModelo->update($dato);
                 $OTModelo->save();
                 break;
-            case "lectura":
+            case "lecturas":
                 $OTModelo=Lectura::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['lectura'];
                 $OTModelo->update($dato);
@@ -272,23 +273,23 @@ class OrdenTrabajoService{
                 $dato=$modelos['toma'];
                 $OTModelo=Toma::create($dato);
                 break;
-            case "medidor":
+            case "medidores":
                 $dato=$modelos['medidor'];
                 $OTModelo=Medidor::create($dato);
                 break;
-            case "contrato":
+            case "contratos":
                 $dato=$modelos['contrato'];
                 $OTModelo=Contrato::create($dato);
                 break;
-            case "usuario":
+            case "usuarios":
                 $dato=$modelos['usuario'];
                 $OTModelo=Usuario::create($dato);
                 break;
-            case "consumo":
+            case "consumos":
                 $dato=$modelos['consumo'];
                 $OTModelo=Consumo::create($dato);
                 break;
-            case "lectura":
+            case "lecturas":
                 $dato=$modelos['lectura'];
                 $OTModelo=Lectura::create($dato);
                 break;
@@ -301,8 +302,6 @@ class OrdenTrabajoService{
     
     public function Quitar($Accion,$ordenTrabajo,$modelos){
         $tipo_modelo=$Accion['modelo'];
-     
-
         switch($tipo_modelo){
             /*
             case "toma":
@@ -310,30 +309,33 @@ class OrdenTrabajoService{
                 $OTModelo=Toma::delete($dato);
                 break;
                 */
-            case "medidor":
+            case "medidores":
                 $OTModelo=Toma::find($ordenTrabajo['id_toma']);
                 $medidor=$OTModelo->medidor;
                 $medidor->delete();
+                //$medidor=Medidor::withTrashed()->where('id_toma',$ordenTrabajo['id_toma'])->first();
+                /*
                 $dato=$modelos['toma'] ?? null;
                 if  ($dato!=null){
                     
                 }
                 $OTModelo->update($dato);
+                */
                 break;
                 /*
-            case "contrato":
+            case "contratos":
                 $dato=$modelos['contrato'];
                 $OTModelo=Contrato::create($dato);
                 break;
-            case "usuario":
+            case "usuarios":
                 $dato=$modelos['usuario'];
                 $OTModelo=Usuario::create($dato);
                 break;
-            case "consumo":
+            case "consumos":
                 $dato=$modelos['consumo'];
                 $OTModelo=Consumo::create($dato);
                 break;
-            case "lectura":
+            case "lecturas":
                 $dato=$modelos['lectura'];
                 $OTModelo=Lectura::create($dato);
                 break;
@@ -387,14 +389,15 @@ class OrdenTrabajoService{
         $toma=$filtros['toma_id'] ?? null;
         $saldoMin=$filtros['saldo_min'] ?? null;
         $saldoMax=$filtros['saldo_max'] ?? null;
-        $Asignada=$filtros['asignada'] ?? null;
-        $no_asignada=$filtros['no_asignada'] ?? null;
-        $Concluida=$filtros['concluida'] ?? null;
-        $Cancelada=$filtros['cancelada'] ?? null;
-        $domestica=$filtros['domestica'] ?? null;
-        $comercial=$filtros['comercial'] ?? null;
-        $industrial=$filtros['industrial'] ?? null;
-        $especial=$filtros['especial'] ?? null;
+        $Asignada=$filtros['asignada'] ?? false;
+        $no_asignada=$filtros['no_asignada'] ?? false;
+        $Concluida=$filtros['concluida'] ?? false;
+        $Cancelada=$filtros['cancelada'] ?? false;
+        $domestica=$filtros['domestica'] ?? false;
+        $comercial=$filtros['comercial'] ?? false;
+        $industrial=$filtros['industrial'] ?? false;
+        $especial=$filtros['especial'] ?? false;
+
          // HIPER MEGA QUERY INSANO
          $query=OrdenTrabajo::when($Asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'En proceso');
@@ -404,7 +407,7 @@ class OrdenTrabajoService{
             return $q->orWhere('estado', 'Concluida');
         })->when($Cancelada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'Cancelada');
-        })->with('toma.tipoToma','toma.libro')
+        })->with('toma.tipoToma','toma.libro','ordenTrabajoCatalogo')
         ->when($ruta, function (EloquentBuilder $q) use($ruta,$libro)  {
 
         $q->whereHas('toma', function($a)use($ruta,$libro){
@@ -463,7 +466,7 @@ class OrdenTrabajoService{
                 });
                 
             });
-        }) 
+        })
         ->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
@@ -472,15 +475,18 @@ class OrdenTrabajoService{
             if ($saldoMax){
                 $query = $query->filter(function($query) use($saldoMin,$saldoMax) {
                     $toma=$query->toma;
-                    $saldo=$toma->saldoToma();
-                    if ($saldo>=$saldoMin && $saldo<=$saldoMax){
-                        $toma['saldo']=$saldo;
-                        unset($toma['cargosVigentes']);
-                        
-                        $resultado=$toma;
-                
-                    return $resultado;
+                    if (!empty($toma)){
+                        $saldo=$toma->saldoToma();
+                        if ($saldo>=$saldoMin && $saldo<=$saldoMax){
+                            $toma['saldo']=$saldo;
+                            unset($toma['cargosVigentes']);
+                            
+                            $resultado=$toma;
+                    
+                            return $resultado;
+                        }
                     }
+                    
                     
             
                 });
