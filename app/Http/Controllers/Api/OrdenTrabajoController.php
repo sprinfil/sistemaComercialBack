@@ -308,7 +308,6 @@ class OrdenTrabajoController extends Controller
         $data=$request->all();
         $OT=$data['orden_trabajo'];
         $modelos=$data['modelos'];
-        
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         if (!$Acciones){
             return response()->json(["message"=>"la OT especificada ya se cerro"]);
