@@ -22,6 +22,7 @@ class PagoResource extends JsonResource
             "id_dueno" => $this->id_dueno,
             "modelo_dueno" => $this->modelo_dueno,
             'dueno' => $this->formatDueno(),
+            'usuario' => $this->formatUsuario(),
             "id_corte_caja" => $this->id_corte_caja,
             "total_pagado" => $this->total_pagado,
             "forma_pago" => $this->forma_pago,
