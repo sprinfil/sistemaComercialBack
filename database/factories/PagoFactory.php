@@ -29,6 +29,7 @@ class PagoFactory extends Factory
             'modelo_dueno' => '',
             //'id_corte_caja'=>CorteCaja::all()->random()->id,
             'total_pagado'=>$this->faker->randomFloat(2, 0, 9999),
+            'saldo_anterior'=>0,
             'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
             'fecha_pago'=>now(),
             'estado'=> $this->faker->randomElement(['abonado', 'pendiente', 'cancelado']),

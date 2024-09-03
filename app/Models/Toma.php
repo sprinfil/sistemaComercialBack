@@ -188,6 +188,17 @@ class Toma extends Model
         }
         return $total_final;
     }
+
+    public function saldoPendiente(){
+        $total_final = 0;
+        $cargos_pendientes = $this->cargosVigentes;
+        foreach($cargos_pendientes as $cargo)
+        {
+            $total_final += $cargo->montoPendiente();
+        }
+        return $total_final;
+    }
+
     public function getSaldo(){
         if  (!isNull($this->saldo)){
             return $this->saldo;

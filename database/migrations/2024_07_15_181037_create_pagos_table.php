@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('modelo_dueno');
             //$table->unsignedInteger('id_corte_caja');
             $table->decimal('total_pagado');
+            $table->decimal('saldo_anterior')->nullable();
             $table->string('forma_pago');
             $table->date('fecha_pago');
             $table->enum("estado",['abonado','pendiente','cancelado'])->default('pendiente');
