@@ -15,8 +15,11 @@ class PermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::find(1);
-        $user->assignRole('Admin');
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->assignRole('Admin');
+        }
 
         $user = User::find(2);
         $user->assignRole('Developer');

@@ -176,10 +176,10 @@ class TomaController extends Controller
     public function ordenesToma($id)
     {
         try {
-            //$toma = Toma::findOrFail($id);
+            $toma = Toma::where('codigo_toma',$id)->first();
             //$ordenes=$toma->ordenesTrabajo;
             //return OrdenTrabajoResource::collection($ordenes);
-            $ordenes=OrdenTrabajo::where('codigo_toma',$id)->with(['toma.tipoToma','ordenTrabajoCatalogo','empleadoAsigno','empleadoEncargado','cargos'])->orderBy('created_at','desc')->paginate(20);
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','ordenTrabajoCatalogo','empleadoAsigno','empleadoEncargado','cargos'])->orderBy('created_at','desc')->paginate(20);
            return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([
