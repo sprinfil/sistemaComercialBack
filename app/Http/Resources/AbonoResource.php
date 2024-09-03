@@ -23,6 +23,7 @@ class AbonoResource extends JsonResource
             "modelo_origen" => $this->modelo_origen,
             "total_abonado" => $this->total_abonado,
             "cargo" => Cargo::find($this->id_cargo)->nombre,
+            "nombre" => Cargo::find($this->id_cargo)->nombre,
             "estado" => Cargo::find($this->id_cargo)->estado,
             "monto_abonado" => $this->total_abonado,
             "monto_inicial" => $this->when(true, function () {
