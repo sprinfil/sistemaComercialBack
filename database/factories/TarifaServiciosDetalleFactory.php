@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\TarifaServicio;
 use App\Models\TarifaServiciosDetalle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
