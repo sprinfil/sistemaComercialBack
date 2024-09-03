@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreMedidorRequest;
 use App\Models\Toma;
 use App\Http\Requests\StoreTomaRequest;
+use App\Http\Requests\UpdateMedidorRequest;
 use App\Http\Requests\UpdateTomaRequest;
 use App\Http\Resources\CargoResource;
+use App\Http\Resources\MedidorResource;
 use App\Http\Resources\OrdenTrabajoResource;
 use App\Http\Resources\TomaResource;
+use App\Models\Medidor;
 use App\Models\OrdenTrabajo;
 use App\Services\UsuarioService;
 use Exception;
@@ -195,6 +199,57 @@ class TomaController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Error al consultar las ordenes de trabajo'
+            ], 500);
+        }
+    }
+
+    public function registrarNuevoMedidor(StoreMedidorRequest $request){
+        
+        try {
+            $data = $request->validated();
+            //Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
+            //$data['estatus'] = 'activo';
+            $medidorActivo = Toma::findOrFail($data['id_toma'])->medidorActivo;
+            if($medidorActivo && $data['estatus']=='activo'){
+                Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
+            }
+            
+            $medidor = Medidor::create($data);
+            return response(new MedidorResource($medidor), 201);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el medidor para la toma '
+            ], 500);
+        }
+    }
+
+    /**
+    * Display the specified resource.
+    */
+    public function medidorActivoPorToma($id)
+    {
+        try {
+            $medidor = Toma::findOrFail($id)->medidorActivo;
+            return response(new MedidorResource($medidor), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el medidor para la toma '.$id
+            ], 500);
+        }
+    }
+
+    /**
+    * Display the specified resource.
+    */
+    public function medidoresPorToma($id)
+    {
+        try {
+            return response(MedidorResource::collection(
+                Toma::findOrFail($id)->medidores
+            ),200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar los medidores '.$id
             ], 500);
         }
     }

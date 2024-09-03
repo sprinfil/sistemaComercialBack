@@ -7,6 +7,7 @@ use App\Models\Medidor;
 use App\Http\Requests\StoreMedidorRequest;
 use App\Http\Requests\UpdateMedidorRequest;
 use App\Http\Resources\MedidorResource;
+use App\Models\Toma;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -67,6 +68,14 @@ class MedidorController extends Controller
         try {
             $data = $request->validated();
             $medidor = Medidor::findOrFail($id);
+            $medidorActivo = Toma::find($data['id_toma'])->medidorActivo;
+            if($medidorActivo){
+                if($medidor->id != $medidorActivo->id){
+                    if($data['estatus']=='activo'){
+                        Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
+                    }
+                }
+            }
             $medidor->update($data);
             $medidor->save();
             return response(new MedidorResource($medidor), 200);

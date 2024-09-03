@@ -91,10 +91,22 @@ class Toma extends Model
         return $this->hasMany(Contrato::class, 'id_toma')->where('estatus','!=','cancelado');
     }
 
-     // Medidor asociado a la toma
-    public function medidor() : HasOne
+    // Medidor asociado a la toma
+    public function medidores() : HasMany
     {
-        return $this->hasOne(Medidor::class, 'id_toma');
+        return $this->hasMany(Medidor::class, 'id_toma');
+    }
+
+    public function medidorActivo() : HasOne
+    {
+        return $this->hasOne(Medidor::class, 'id_toma')
+                    ->where('estatus', 'activo');
+    }
+
+    public function desactivarMedidoresActivos()
+    {
+        // Actualizar todos los medidores activos a inactivo
+        return $this->medidorActivo()->update(['estatus' => 'inactivo']);
     }
 
     //Consumos asociados a la toma
