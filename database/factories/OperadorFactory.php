@@ -42,9 +42,8 @@ class OperadorFactory extends Factory
         return $this->afterCreating(function (Operador $operador) {
             $name = strtolower(substr($operador->nombre, 0, 3).$operador->apellido_paterno.$operador->id);
             $user = User::factory()->create([
-                'name' => $name,
+                'name' => $operador->nombre,
                 'email' => $name.'@sapalapaz.gob.mx',
-                'password' => '$2y$12$doEXdsTesrTif4re8ES2huh9rWGaUkBCkSupshDOdp1EdXElPYAmq'
             ]); 
 
             $operador->id_user = $user->id;
