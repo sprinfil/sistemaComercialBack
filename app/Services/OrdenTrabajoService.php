@@ -314,11 +314,13 @@ class OrdenTrabajoService{
                 $OTModelo=Toma::find($ordenTrabajo['id_toma']);
                 $medidor=$OTModelo->medidor;
                 $medidor->delete();
+                /*
                 $dato=$modelos['toma'] ?? null;
                 if  ($dato!=null){
                     
                 }
                 $OTModelo->update($dato);
+                */
                 break;
                 /*
             case "contrato":
@@ -387,14 +389,15 @@ class OrdenTrabajoService{
         $toma=$filtros['toma_id'] ?? null;
         $saldoMin=$filtros['saldo_min'] ?? null;
         $saldoMax=$filtros['saldo_max'] ?? null;
-        $Asignada=$filtros['asignada'] ?? null;
-        $no_asignada=$filtros['no_asignada'] ?? null;
-        $Concluida=$filtros['concluida'] ?? null;
-        $Cancelada=$filtros['cancelada'] ?? null;
-        $domestica=$filtros['domestica'] ?? null;
-        $comercial=$filtros['comercial'] ?? null;
-        $industrial=$filtros['industrial'] ?? null;
-        $especial=$filtros['especial'] ?? null;
+        $Asignada=$filtros['asignada'] ?? false;
+        $no_asignada=$filtros['no_asignada'] ?? false;
+        $Concluida=$filtros['concluida'] ?? false;
+        $Cancelada=$filtros['cancelada'] ?? false;
+        $domestica=$filtros['domestica'] ?? false;
+        $comercial=$filtros['comercial'] ?? false;
+        $industrial=$filtros['industrial'] ?? false;
+        $especial=$filtros['especial'] ?? false;
+
          // HIPER MEGA QUERY INSANO
          $query=OrdenTrabajo::when($Asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'En proceso');
@@ -472,15 +475,18 @@ class OrdenTrabajoService{
             if ($saldoMax){
                 $query = $query->filter(function($query) use($saldoMin,$saldoMax) {
                     $toma=$query->toma;
-                    $saldo=$toma->saldoToma();
-                    if ($saldo>=$saldoMin && $saldo<=$saldoMax){
-                        $toma['saldo']=$saldo;
-                        unset($toma['cargosVigentes']);
-                        
-                        $resultado=$toma;
-                
-                    return $resultado;
+                    if (!empty($toma)){
+                        $saldo=$toma->saldoToma();
+                        if ($saldo>=$saldoMin && $saldo<=$saldoMax){
+                            $toma['saldo']=$saldo;
+                            unset($toma['cargosVigentes']);
+                            
+                            $resultado=$toma;
+                    
+                            return $resultado;
+                        }
                     }
+                    
                     
             
                 });

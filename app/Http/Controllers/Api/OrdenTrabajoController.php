@@ -267,7 +267,7 @@ class OrdenTrabajoController extends Controller
        }
        catch(Exception $ex){
         DB::rollBack();
-        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],202);
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],500);
        }
    
         
@@ -320,7 +320,7 @@ class OrdenTrabajoController extends Controller
         }
        }
        catch(Exception $ex){
-        return response()->json(["error"=>"Ha ocurrido un error al cerrar la orden de trabajo ".$ex->getMessage()]);
+        return response()->json(["error"=>"Ha ocurrido un error al cerrar la orden de trabajo ".$ex->getMessage()],500);
        }
        
     }
@@ -332,7 +332,7 @@ class OrdenTrabajoController extends Controller
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->Masiva($request->validated()['ordenes_trabajo']);
         if (!$data){
-            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],500);
         }
         else
         {
@@ -343,7 +343,7 @@ class OrdenTrabajoController extends Controller
        }
        catch(Exception $ex){
         DB::rollBack();
-        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],202);
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],401);
        }
     }
     public function storeOrdenMasivaAsignacion(UpdateOrdenTrabajoRequest $request)
@@ -353,7 +353,7 @@ class OrdenTrabajoController extends Controller
         DB::beginTransaction();
         $data=(new OrdenTrabajoService())->AsignarMasiva($request->validated()['ordenes_trabajo']);
         if (!$data){
-            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],202);
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],500);
         }
         else
         {
@@ -364,7 +364,7 @@ class OrdenTrabajoController extends Controller
        }
        catch(Exception $ex){
         DB::rollBack();
-        return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],202);
+        return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],500);
        }
     }
     public function filtradoOrdenes(Request $request){
@@ -374,7 +374,7 @@ class OrdenTrabajoController extends Controller
             $filtros=$request;
             $data=(new OrdenTrabajoService())->FiltrarOT($filtros);
             if (!$data){
-                return response()->json(["message"=>"No ha seleccionado un filtro para OT, por favor especifique algún parametro"],202);
+                return response()->json(["message"=>"No ha seleccionado un filtro para OT, por favor especifique algún parametro"],500);
             }
             else
             {
@@ -385,7 +385,7 @@ class OrdenTrabajoController extends Controller
            }
            catch(Exception $ex){
             DB::rollBack();
-            return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],202);
+            return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],500);
            }
     }
     public function deleteOrden(Request $request)
@@ -398,7 +398,7 @@ class OrdenTrabajoController extends Controller
             return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
         }
         catch(Exception $ex){
-            return response()->json(["error"=>"No se pudo cancelar la orden de trabajo"],201);
+            return response()->json(["error"=>"No se pudo cancelar la orden de trabajo"],500);
         }
     
         
