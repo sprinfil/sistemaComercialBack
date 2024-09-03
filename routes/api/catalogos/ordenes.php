@@ -21,6 +21,7 @@ Route::middleware(['api', 'audit'])->group(function () {
 
         //ORDEN DE TRABAJO
         Route::get("/OrdenTrabajo", "indexOrdenes");
+        Route::get("/OrdenTrabajo/NoAsignada","indexOrdenesNoasignadas");
         Route::post("/OrdenTrabajo/create", "storeOrden");
         Route::put("/OrdenTrabajo/cerrar", "cerrarOrden");
         Route::put("/OrdenTrabajo/update", "asignarOrden");

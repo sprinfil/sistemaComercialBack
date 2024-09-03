@@ -32,6 +32,9 @@ class OrdenTrabajo extends Model
     public function toma():BelongsTo{
         return $this->belongsTo(Toma::class,'id_toma');;
     }
+    public function empleadoGenero():BelongsTo{
+        return $this->belongsTo(Operador::class,'id_empleado_genero');;
+    }
     public function empleadoAsigno():BelongsTo{
         return $this->belongsTo(Operador::class,'id_empleado_asigno');;
     }

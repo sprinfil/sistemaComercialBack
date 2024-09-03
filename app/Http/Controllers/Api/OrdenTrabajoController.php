@@ -55,6 +55,13 @@ class OrdenTrabajoController extends Controller
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
+    public function indexOrdenesNoasignadas()
+    {
+        return OrdenTrabajoResource::collection(
+            OrdenTrabajo::with('toma.tipoToma')->where('estado','No asignada')->paginate(20)
+        );
+       //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
+    }
 
     public function indexMasivas(){
         return OrdenTrabajoCatalogoResource::collection(
@@ -308,7 +315,7 @@ class OrdenTrabajoController extends Controller
             DB::rollBack();
         }
         else{
-            DB::commit();
+            DB::rollBack();
             return $Acciones;
         }
        }
