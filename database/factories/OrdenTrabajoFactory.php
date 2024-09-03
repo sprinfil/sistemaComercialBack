@@ -17,17 +17,20 @@ class OrdenTrabajoFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
     public function definition(): array
     {
         $estado_ot = $this->faker->randomElement(['No asignada', 'Concluida', 'En proceso', 'Cancelada']);
-        $vigencia = $this->faker->optional()->date();
-        $fecha_finalziada = null;
-        $evidencia = null;//$this->faker->optional()->sentence;
-        $observaciones = null;//$this->faker->optional()->sentence
-        $material = null;//$this->faker->optional()->word
-        if($estado_ot == 'Concluida'){
-            $fecha = $this->faker->optional()->date();
-            $fecha_finalziada = $fecha ? Carbon::parse($fecha)->subDay() : null;
+        $vigencia = $this->faker->date();
+        $fecha_finalizada = null;
+        $evidencia = null;
+        $observaciones = null;
+        $material = null;
+
+        if ($estado_ot == 'Concluida') {
+            // Si vigencia es null, genera una fecha predeterminada, por ejemplo, hoy.
+            $vigencia = $vigencia ?? Carbon::now();
+            $fecha_finalizada = Carbon::parse($vigencia)->subDay();
             $evidencia = $this->faker->imageUrl(640, 480, 'cats', true, 'Faker', true);
             $observaciones = $this->faker->randomElement([
                 'Ninguna', 
@@ -39,7 +42,6 @@ class OrdenTrabajoFactory extends Factory
                 'Necesita más tiempo', 
                 'Se utilizaron recursos adicionales'
             ]);
-            
             $material = $this->faker->randomElement([
                 'Ninguna', 
                 'Material suficiente', 
@@ -51,14 +53,15 @@ class OrdenTrabajoFactory extends Factory
                 'Material escaso'
             ]);
         }
+
         return [
-            'id_toma' => \App\Models\Toma::pluck('id')->random(), // Obtiene un ID existente de 'tomas'
-            'id_empleado_genero' => \App\Models\Operador::pluck('id')->random(), // Obtiene un ID existente de 'operadores' (empleados)
-            'id_empleado_asigno' => \App\Models\Operador::pluck('id')->random(), // Obtiene un ID existente de 'operadores' o puede ser nulo
-            'id_empleado_encargado' => $this->faker->optional()->randomElement(\App\Models\Operador::pluck('id')->toArray()), // Puede ser nulo o tener un ID válido de 'operadores'
-            'id_orden_trabajo_catalogo' => \App\Models\OrdenTrabajoCatalogo::pluck('id')->random(), // Obtiene un ID existente de 'ot catalogo'
-            'estado' => $estado_ot,//$this->faker->randomElement(['No asignada', 'Concluida', 'En proceso', 'Cancelada']),
-            'fecha_finalizada' => $fecha_finalziada,
+            'id_toma' => \App\Models\Toma::pluck('id')->random(),
+            'id_empleado_genero' => \App\Models\Operador::pluck('id')->random(),
+            'id_empleado_asigno' => \App\Models\Operador::pluck('id')->random(),
+            'id_empleado_encargado' => $this->faker->optional()->randomElement(\App\Models\Operador::pluck('id')->toArray()),
+            'id_orden_trabajo_catalogo' => \App\Models\OrdenTrabajoCatalogo::pluck('id')->random(),
+            'estado' => $estado_ot,
+            'fecha_finalizada' => $fecha_finalizada,
             'fecha_vigencia' => $vigencia,
             'obervaciones' => $observaciones,
             'evidencia' => $evidencia,
@@ -67,4 +70,5 @@ class OrdenTrabajoFactory extends Factory
             'genera_OT_encadenadas' => $this->faker->boolean,
         ];
     }
+
 }
