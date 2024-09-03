@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\ConceptoCatalogo;
+use App\Models\OrdenesTrabajoCargo;
+use App\Models\OrdenesTrabajoEncadenada;
 use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
@@ -42,12 +44,25 @@ class OrdenTrabajoCatalogoFactory extends Factory
      * @return $this
      */
     public function configure()
-    {
-        return $this->afterCreating(function (OrdenTrabajoCatalogo $orden_de_trabajo) {
-            $concepto = ConceptoCatalogo::buscarPorNombre($orden_de_trabajo->nombre);
-            $configuracion = OrdenTrabajoAccion::factory()->create([
-                'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
-            ]); 
-        });
-    }
+{
+    return $this->afterCreating(function (OrdenTrabajoCatalogo $orden_de_trabajo) {
+        // Crear cargos asociados
+        OrdenesTrabajoCargo::factory()->count(2)->create([
+            'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
+        ]);
+
+        // Crear acciones asociadas
+        OrdenTrabajoAccion::factory()->count(2)->create([
+            'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
+        ]);
+
+        // Crear encadenadas asociadas
+        OrdenesTrabajoEncadenada::factory()->count(2)->create([
+            'id_OT_Catalogo_padre' => $orden_de_trabajo->id,
+        ]);
+    });
+}
+
+
+    
 }
