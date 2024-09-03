@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('marca')->nullable();
             $table->string('diametro')->nullable();
             $table->string('tipo')->nullable();
+            $table->enum('estatus', ['activo', 'inactivo']);
             $table->softDeletes();
             $table->timestamps();
         });

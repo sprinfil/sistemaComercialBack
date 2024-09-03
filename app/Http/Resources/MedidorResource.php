@@ -22,6 +22,7 @@ class MedidorResource extends JsonResource
             "marca" => $this->marca,
             "diametro" => $this->diametro,
             "tipo" => $this->tipo,
+            "estatus" => $this->estatus,
         ];
         //return parent::toArray($request);
     }

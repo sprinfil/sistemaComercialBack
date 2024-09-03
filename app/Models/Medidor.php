@@ -17,6 +17,7 @@ class Medidor extends Model
         "marca",
         "diametro",
         "tipo",
+        "estatus",
     ];
 
      // Toma asociada al medidor
