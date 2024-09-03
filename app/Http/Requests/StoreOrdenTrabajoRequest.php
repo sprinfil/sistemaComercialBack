@@ -41,13 +41,13 @@ class StoreOrdenTrabajoRequest extends FormRequest
             "toma.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
 
             "medidores"=> "sometimes|array",
-            "medidores.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
+            "medidores.*"=> "sometimes|array:id_toma,numero_serie,marca,diametro,tipo",
 
             "usuarios"=> "sometimes|array",
-            "usuarios.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
+            "usuarios.*"=> "sometimes,
 
             "contratos"=> "sometimes|array",
-            "contratos.*"=> "sometimes|array:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion",
+            "contratos.*"=> "sometimes|array:estatus,tipo_toma,servicio_contratado",
             */
         ];
     }
