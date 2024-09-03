@@ -34,7 +34,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "orden_trabajo_catalogo.cancela_masiva" => "sometimes|boolean",
             "orden_trabajo_catalogo.cierra_masiva" => "sometimes|boolean",
             "orden_trabajo_catalogo.limite_ordenes" => "sometimes|integer",
-            "orden_trabajo_catalogo.publico_general" => "sometimes|integer",
+            "orden_trabajo_catalogo.publico_general" => "sometimes|boolean",
             //acciones
             "orden_trabajo_accion" => "sometimes|array",
             "orden_trabajo_accion.*" => "sometimes|array:id,id_orden_trabajo_catalogo,id_concepto_catalogo,accion,modelo,campo,opcional,id_orden_trabajo_acc_encadena,id_orden_trabajo_acc_alterna",
@@ -43,7 +43,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "orden_trabajo_accion.*.id_concepto_catalogo" => "sometimes|exists:concepto_catalogos,id",
             "orden_trabajo_accion.*.accion"=>"sometimes|in:registrar,modificar,quitar",
             "orden_trabajo_accion.*.modelo"=>"sometimes|in:toma,medidor,contrato,lectura,usuario",
-            "orden_trabajo_accion.*.campo"=>"sometimes|string",
+            "orden_trabajo_accion.*.campo"=>"sometimes|in:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion,",
             "orden_trabajo_accion.*.opcional"=>"sometimes|boolean",
              "orden_trabajo_accion.*.id_orden_trabajo_acc_encadena"=>"sometimes|string",
             "orden_trabajo_accion.*.id_orden_trabajo_acc_alterna"=>"sometimes|string",
