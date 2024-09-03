@@ -20,9 +20,9 @@ class OrdenTrabajoAccionFactory extends Factory
     {
         return [
             'id_orden_trabajo_catalogo' => $this->faker->numberBetween(1, 100), // Asumiendo que existe un rango de IDs válidos
-            'accion' => $this->faker->randomElement(['registrar', 'modificar', 'quitar']),
-            'modelo' => $this->faker->word,
-            'campo' => $this->faker->optional()->word, // Puede ser nulo o tener un valor
+            'accion' => $this->faker->randomElement(['modificar']),
+            'modelo' => $this->faker->randomElement(['toma']),
+            'campo' => $this->faker->randomElement(['estatus','c_agua','c_alc','c_san','tipo_servicio','tipo_contratacion']),
         ];
     }
 }
