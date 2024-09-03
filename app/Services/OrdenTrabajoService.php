@@ -95,7 +95,7 @@ class OrdenTrabajoService{
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        if ($OT['estado']=="Concluida"){
+        if ($OT['estado']=="aa"){
            return null;
         }
         else{
@@ -407,7 +407,7 @@ class OrdenTrabajoService{
             return $q->orWhere('estado', 'Concluida');
         })->when($Cancelada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'Cancelada');
-        })->with('toma.tipoToma','toma.libro')
+        })->with('toma.tipoToma','toma.libro','ordenTrabajoCatalogo')
         ->when($ruta, function (EloquentBuilder $q) use($ruta,$libro)  {
 
         $q->whereHas('toma', function($a)use($ruta,$libro){
@@ -466,7 +466,7 @@ class OrdenTrabajoService{
                 });
                 
             });
-        }) 
+        })
         ->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO

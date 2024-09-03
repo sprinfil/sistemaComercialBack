@@ -315,7 +315,7 @@ class OrdenTrabajoController extends Controller
             DB::rollBack();
         }
         else{
-            DB::rollBack();
+            DB::commit();
             return $Acciones;
         }
        }
