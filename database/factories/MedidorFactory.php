@@ -28,6 +28,7 @@ class MedidorFactory extends Factory
             'marca' => $this->faker->company,
             'diametro' => $this->faker->randomElement(['20mm', '25mm', '30mm']),
             'tipo' => $this->faker->word,
+            'estatus' => $this->faker->randomElement(['activo','inactivo']),
             'created_at' => now(),
             'updated_at' => now(),
         ];
