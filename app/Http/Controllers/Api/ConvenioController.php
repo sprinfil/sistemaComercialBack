@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ConvenioResource;
 use App\Http\Requests\StoreConvenioCatalogoRequest;
 use App\Http\Requests\UpdateConvenioCatalogoRequest;
+use App\Services\AtencionUsuarios\ConvenioService;
 use App\Services\Catalogos\ConvenioCatalogoService;
 use Exception;
 use Illuminate\Http\Request;
@@ -128,5 +129,20 @@ class ConvenioController extends Controller
             ], 200); 
         }
         
+    }
+
+    public function BuscarConceptosConveniables(Request $data)
+    {
+      try {
+       DB::beginTransaction();
+       $convenio = (new ConvenioService())->BuscarConceptosConveniablesService($data);
+       DB::commit();
+       return $convenio;
+      } catch (Exception $ex) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Ocurrio un error al consultar los conceptos conveniables.'
+        ]); 
+      }
     }
 }
