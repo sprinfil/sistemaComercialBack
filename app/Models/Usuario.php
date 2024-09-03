@@ -63,7 +63,7 @@ class Usuario extends Model
     }
     public function cargosVigentes(): MorphMany
     {
-        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente')->with('concepto');
     }
     public function saldoCargosUsuario(){
         $total=0;

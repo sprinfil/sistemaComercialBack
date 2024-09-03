@@ -124,7 +124,7 @@ class Toma extends Model
 
     public function cargosVigentes(): MorphMany
     {
-        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente')->with('concepto');
     }
     public function cargosVigentesConConcepto(): MorphMany
     {
