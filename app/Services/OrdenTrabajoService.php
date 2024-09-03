@@ -298,19 +298,29 @@ class OrdenTrabajoService{
         }
         return $OTModelo;
     }
+    
     public function Quitar($Accion,$ordenTrabajo,$modelos){
         $tipo_modelo=$Accion['modelo'];
-
+     
 
         switch($tipo_modelo){
+            /*
             case "toma":
                 $dato=$modelos['toma'];
-                $OTModelo=Toma::create($dato);
+                $OTModelo=Toma::delete($dato);
                 break;
+                */
             case "medidor":
-                $dato=$modelos['medidor'];
-                $OTModelo=Medidor::create($dato);
+                $OTModelo=Toma::find($ordenTrabajo['id_toma']);
+                $medidor=$OTModelo->medidor;
+                $medidor->delete();
+                $dato=$modelos['toma'] ?? null;
+                if  ($dato!=null){
+                    
+                }
+                $OTModelo->update($dato);
                 break;
+                /*
             case "contrato":
                 $dato=$modelos['contrato'];
                 $OTModelo=Contrato::create($dato);
@@ -327,12 +337,14 @@ class OrdenTrabajoService{
                 $dato=$modelos['lectura'];
                 $OTModelo=Lectura::create($dato);
                 break;
+                */
             default:
             $OTModelo=null;
             break;
         }
         return $OTModelo;
     }
+        
     public function generarCargo($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){
 
         $cargos=new Collection();
