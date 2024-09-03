@@ -372,6 +372,7 @@ class OrdenTrabajoController extends Controller
             //$filtros=$request->validated();
             $filtros=$request;
             $data=(new OrdenTrabajoService())->FiltrarOT($filtros);
+            //return $data;
             if (!$data){
                 return response()->json(["message"=>"No ha seleccionado un filtro para OT, por favor especifique algún parametro"],500);
             }
