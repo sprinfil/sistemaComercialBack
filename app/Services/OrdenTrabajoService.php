@@ -197,8 +197,9 @@ class OrdenTrabajoService{
             
             $data=$this->cancelar($OT);
             if ($data=="error"){
-                $toma=Toma::find($OT['id_toma']);
                 $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $toma=Toma::find($ordenTrabajo['id_toma']);
+              
                 $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
                 $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo cancelar, debido a que ya esta concluida"]);
             }
@@ -415,7 +416,7 @@ class OrdenTrabajoService{
         return $cargos;
     }
     public function cancelar($request){
-        $OTCatalogo=OrdenTrabajoCatalogo::find($request);
+        $OTCatalogo=OrdenTrabajo::find($request);
         if ($OTCatalogo['estado']=="Concluida"){
         return "error";
         }
