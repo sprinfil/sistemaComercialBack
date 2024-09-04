@@ -310,7 +310,7 @@ class OrdenTrabajoController extends Controller
         $modelos=$data['modelos'] ?? null;
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         if (!$Acciones){
-            return response()->json(["message"=>"la OT especificada ya se cerro"]);
+            return response()->json(["message"=>"la OT especificada ya se cerro"],500);
             DB::rollBack();
         }
         else{
@@ -366,6 +366,48 @@ class OrdenTrabajoController extends Controller
         return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],500);
        }
     }
+    public function storeOrdenMasivaCerrar(StoreOrdenTrabajoRequest $request)
+    {
+        
+       try{
+        DB::beginTransaction();
+        $data=(new OrdenTrabajoService())->CerrarMasiva($request->validated()['ordenes_trabajo']);
+        if (!$data){
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],500);
+        }
+        else
+        {
+            DB::commit();
+            return $data;
+            //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+        }
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],401);
+       }
+    }
+    public function DeleteOrdenMasiva(Request $request)
+    {
+        
+       try{
+        DB::beginTransaction();
+        $data=(new OrdenTrabajoService())->CancelarMasiva($request['ordenes_trabajo']);
+        if (!$data){
+            return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],500);
+        }
+        else
+        {
+            DB::commit();
+            return $data;
+            //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+        }
+       }
+       catch(Exception $ex){
+        DB::rollBack();
+        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],401);
+       }
+    }
     public function filtradoOrdenes(Request $request){
         try{
             DB::beginTransaction();
@@ -389,13 +431,20 @@ class OrdenTrabajoController extends Controller
            }
     }
     public function deleteOrden(Request $request)
-    {
+    { 
         try{
             DB::beginTransaction();
-            $data=(new OrdenTrabajoService())->cancelar($request);
-            DB::commit();
-            //return $data;
-            return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
+            $data=$request['id'];
+            $data=(new OrdenTrabajoService())->cancelar($data);
+            if ($data=="error"){
+                return response()->json(["message"=>"No se puede cancelar una orden de trabajo concluida"],500);
+            }
+            else{
+                DB::rollBack();
+                //return $data;
+                return response()->json(["message"=>"Orden de trabajo cancelada con exito"],200);
+            }
+       
         }
         catch(Exception $ex){
             return response()->json(["error"=>"No se pudo cancelar la orden de trabajo"],500);
