@@ -21,7 +21,14 @@ class PagoFactory extends Factory
      */
     public function definition(): array
     {   
+        $referencia = null;
         $numeroPagos = Pago::count() + 1;
+        $metodoDePago = $this->faker->randomElement(['efectivo','tarjeta_credito','tarjeta_debito','cheque','transferencia','documento']);
+        if($metodoDePago!='efectivo')
+        {
+            $referencia = strtoupper('C'.str_pad($this->faker->randomFloat(2, 0, 9999), 2, '0', STR_PAD_LEFT).'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT));
+        }
+
         return [
             'folio'=>strtoupper('C'.str_pad(1, 2, '0', STR_PAD_LEFT).'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT)),
             'id_caja'=>$this->faker->numberBetween(1,4),
@@ -30,10 +37,11 @@ class PagoFactory extends Factory
             //'id_corte_caja'=>CorteCaja::all()->random()->id,
             'total_pagado'=>$this->faker->randomFloat(2, 0, 9999),
             'saldo_anterior'=>0,
-            'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
+            'forma_pago'=> $this->faker->randomElement(['efectivo','tarjeta_credito','tarjeta_debito','cheque','transferencia','documento']),
             'fecha_pago'=>now(),
             'estado'=> $this->faker->randomElement(['abonado', 'pendiente', 'cancelado']),
             "timbrado"=>$this->faker->randomElement(['realizado', 'pendiente', 'cancelado']),
+            'referencia'=>$referencia,
         ];
     }
 }

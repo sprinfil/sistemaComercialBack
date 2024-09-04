@@ -23,11 +23,11 @@ class MedidorFactory extends Factory
         static $id_toma = 0;
 
         return [
-            'id_toma' => $id_toma++,
+           'id_toma' => $id_toma++,
             'numero_serie' => Str::random(10),
-            'marca' => $this->faker->company,
-            'diametro' => $this->faker->randomElement(['20mm', '25mm', '30mm']),
-            'tipo' => $this->faker->word,
+            'marca' => $this->faker->randomElement(['Acme Corp', 'Watson Tools', 'Globex', 'Initech', 'Stark Industries']),
+            'diametro' => $this->faker->randomElement(['20mm', '25mm', '30mm', '35mm', '40mm']),
+            'tipo' => $this->faker->randomElement(['Mecánico', 'Digital', 'Ultrasonido', 'Electromagnético']),
             'estatus' => $this->faker->randomElement(['activo','inactivo']),
             'created_at' => now(),
             'updated_at' => now(),

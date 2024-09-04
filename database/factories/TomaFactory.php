@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\GiroComercialCatalogo;
 use App\Models\Libro;
+use App\Models\Medidor;
 use App\Models\Toma;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use MatanYadaev\EloquentSpatial\Objects\Point;
@@ -64,5 +65,20 @@ class TomaFactory extends Factory
             'created_at' => now(),
             'updated_at' => now(),
         ];
+    }
+
+    /**
+     * Configure the factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Toma $toma) 
+        {
+            Medidor::factory()->create([
+                'id_toma' => $toma->id
+            ]);
+        });
     }
 }
