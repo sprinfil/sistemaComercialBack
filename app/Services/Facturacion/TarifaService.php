@@ -81,7 +81,7 @@ class TarifaService{
              return response()->json([
                  'message' => 'Ocurrio un error al registrar la tarifa.'
              ], 500);
-        }              
+        }
     }
 
     public function importarTipoTomaTarifas(Request $request){
@@ -100,27 +100,39 @@ class TarifaService{
                 //Detalles de las tarifas con cada servicio que tiene.
                 $detalles = TarifaServiciosDetalle::with('tarifaServicio')->get();
                
-                foreach ($tarifas_tipo as $tipo) {
-              
-        
+                foreach ($tarifas_tipo as $tipo) { 
                     // y al final los servicios por tipo de toma, en la tarifa activa       
                     foreach ($tipo->tarifaServicio as $servicio) {
-                        $ServiciosTarifa = new TarifaServicio();
-                        $ServiciosTarifa->id_tarifa = $tarifa_nueva->id;
-                        $ServiciosTarifa->id_tipo_toma = $tipo->id;
-                        $ServiciosTarifa->genera_iva = $servicio['genera_iva'];
-                        $ServiciosTarifa->tipo_servicio = $servicio['tipo_servicio'];
-                        $ServiciosTarifa->save();
-
-                            foreach ($detalles as $detalle) {
-                            $detalle_servicio = new TarifaServiciosDetalle();
-                            $detalle_servicio->id_tarifa_servicio = $ServiciosTarifa->id;
-                            $detalle_servicio->rango = $detalle['rango'];
-                            $detalle_servicio->monto = $detalle['monto'];
-                            $detalle_servicio->save();
+                        $existen = TarifaServicio::where('id_tarifa' , $tarifa_nueva->id)
+                        ->where('id_tipo_toma', $tipo->id)
+                        ->where('genera_iva' , $servicio['genera_iva'])
+                        ->where('tipo_servicio' , $servicio['tipo_servicio'])
+                        ->first();
+                        if (!$existen) {
+                                $ServiciosTarifa = new TarifaServicio();
+                                $ServiciosTarifa->id_tarifa = $tarifa_nueva->id;
+                                $ServiciosTarifa->id_tipo_toma = $tipo->id;
+                                $ServiciosTarifa->genera_iva = $servicio['genera_iva'];
+                                $ServiciosTarifa->tipo_servicio = $servicio['tipo_servicio'];
+                                $ServiciosTarifa->save();
                         }
-
+                        else{
+                            $ServiciosTarifa = $existen;
+                        }
+                        foreach ($detalles as $detalle) {
+                            $existeDetalle = TarifaServiciosDetalle::where('id_tarifa_servicio', $ServiciosTarifa->id)
+                            ->where('rango', $detalle['rango'])
+                            ->first();
+                            if (!$existeDetalle) {
+                                $detalle_servicio = new TarifaServiciosDetalle();
+                                $detalle_servicio->id_tarifa_servicio = $ServiciosTarifa->id;
+                                $detalle_servicio->rango = $detalle['rango'];
+                                $detalle_servicio->monto = $detalle['monto'];
+                                $detalle_servicio->save();
+                            }
+                        }
                     }
+                 
                         
 
                     // valida si hay tarifas para ese tipo de toma
@@ -423,7 +435,7 @@ class TarifaService{
         try {
             $tarifa = Tarifa::findOrFail($tarifa_id);
             $servicio = [];
-              foreach ($tarifa->servicio as $servicios) {
+              foreach ($tarifa->tarifaServicio as $servicios) {
                  $servicio[] = [
                  "id" => $servicios->id,
                  "id_tarifa_servicio" => $servicios->id_tarifa_servicio,
