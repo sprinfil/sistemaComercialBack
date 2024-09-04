@@ -307,7 +307,7 @@ class OrdenTrabajoController extends Controller
         DB::beginTransaction();
         $data=$request->all();
         $OT=$data['orden_trabajo'];
-        $modelos=$data['modelos'];
+        $modelos=$data['modelos'] ?? null;
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         if (!$Acciones){
             return response()->json(["message"=>"la OT especificada ya se cerro"]);
