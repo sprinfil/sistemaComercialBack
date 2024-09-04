@@ -39,7 +39,7 @@ class TipoTomasSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'nombre' => 'Usuarios',
+                'nombre' => 'Sin Contrato',
                 'descripcion' => 'ninguna',
                 'created_at' => now(),
                 'updated_at' => now(),
