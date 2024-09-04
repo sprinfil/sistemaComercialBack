@@ -77,9 +77,9 @@ class Pago extends Model
     }
 
     public function abonosConCargos(): MorphMany
-{
-    return $this->abonos()->with('cargo');
-}
+    {
+        return $this->abonos()->with('cargo');
+    }
 
     public function pendiente()
     {
