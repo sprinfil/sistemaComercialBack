@@ -41,7 +41,6 @@ class OrdenTrabajoService{
         $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->get();
       
         $id_empleado_asigno=auth()->user()->operador->id;//auth()->user()->operador->id
-  
         $ordenTrabajoPeticion['id_empleado_genero']=$id_empleado_asigno;
       
         $cargo=null;
@@ -559,5 +558,15 @@ class OrdenTrabajoService{
         //
        
        
+    }
+    public function OtMasivas($tipoOrden){
+        match($tipoOrden)
+        {
+            'generar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('genera_masiva',1)->get(),
+            'asignar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('asigna_masiva',1)->get(),
+            'cerrar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('cierra_masiva',1)->get(),
+            'cancelar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('cancela_masiva',1)->get(),
+        };
+        return $ordenesTrabajo;
     }
 }
