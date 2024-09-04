@@ -18,6 +18,7 @@ class OrdenTrabajoAccion extends Model
         "accion",
         "modelo",
         "campo",
+        "valor",
         "opcional",
         "id_orden_trabajo_acc_encadena",
         "id_orden_trabajo_acc_alterna",
