@@ -24,11 +24,13 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/OrdenTrabajo/NoAsignada","indexOrdenesNoasignadas");
         Route::post("/OrdenTrabajo/create", "storeOrden");
         Route::put("/OrdenTrabajo/cerrar", "cerrarOrden");
+        Route::put("/OrdenTrabajo/cerrar/masiva", "storeOrdenMasivaCerrar");
         Route::put("/OrdenTrabajo/update", "asignarOrden");
         Route::post("/OrdenTrabajo/generar/masiva", "storeOrdenMasiva");
         Route::put("/OrdenTrabajo/asigna/masiva", "storeOrdenMasivaAsignacion");
         Route::put("/OrdenTrabajo/restore/{id}", "restoreOrden");
-        Route::delete("/OrdenTrabajo/log_delete/{id}", "deleteOrden");
+        Route::delete("/OrdenTrabajo/log_delete", "deleteOrden");
+        Route::delete("/OrdenTrabajo/log_delete/masiva", "DeleteOrdenMasiva");
         Route::get("/OrdenTrabajo/show/{id}", "showOrden");
         Route::post("/OrdenTrabajo/filtros", "filtradoOrdenes");
     });
