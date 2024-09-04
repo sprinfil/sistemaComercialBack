@@ -18,6 +18,8 @@ class Medidor extends Model
         "diametro",
         "tipo",
         "estatus",
+        "fecha_instalacion",
+        "lectura_inicial"
     ];
 
      // Toma asociada al medidor

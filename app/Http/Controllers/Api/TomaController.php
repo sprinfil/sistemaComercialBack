@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateTomaRequest;
 use App\Http\Resources\CargoResource;
 use App\Http\Resources\MedidorResource;
 use App\Http\Resources\OrdenTrabajoResource;
+use App\Http\Resources\PagoResource;
 use App\Http\Resources\TomaResource;
 use App\Models\Medidor;
 use App\Models\OrdenTrabajo;
@@ -156,7 +157,7 @@ class TomaController extends Controller
     {
         try {
             $toma = Toma::where("codigo_toma",$id)->first();
-            return $toma->pagos;
+            return PagoResource::collection($toma->pagos);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Error al consultar los pagos'
