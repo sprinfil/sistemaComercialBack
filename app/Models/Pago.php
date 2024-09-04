@@ -23,10 +23,19 @@ class Pago extends Model
         "modelo_dueno",
         "id_corte_caja",
         "total_pagado",
+        // ticket
+        "total_abonado",
+        "saldo_anterior",
+        "saldo_pendiente",
+        "saldo_a_favor",
+        "recibido",
+        "cambio",
+        //
         "forma_pago",
         "fecha_pago",
         "estado",
         "timbrado",
+        "referencia"
     ];
     //Pagos con caja
     public function caja() : BelongsTo {

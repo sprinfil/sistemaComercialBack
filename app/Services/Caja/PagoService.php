@@ -104,11 +104,16 @@ class PagoService{
             }
 
             $this->consolidarEstados($id_modelo, $modelo);
-            DB::commit();
+            
             $pago_final = Pago::with('abonos')->findOrFail($pago->id);
             $pago_final->saldo_anterior = number_format($saldo_inicial, 2, '.', '');
-            $pago_final->saldo_actual = number_format($dueno->saldoPendiente(), 2, '.', '');
-            $pago_final->saldo_no_aplicado = number_format($dueno->saldoSinAplicar(), 2, '.', '');
+            $pago_final->saldo_pendiente = number_format($dueno->saldoPendiente(), 2, '.', '');
+            $pago_final->saldo_a_favor = number_format($dueno->saldoSinAplicar(), 2, '.', '');
+            $pago_final->total_abonado = number_format($pago_final->total_abonado(), 2, '.', '');
+            $pago_final->save();
+
+            DB::commit();
+            
             //throw new Exception("L");
             return $pago_final;
         } 
