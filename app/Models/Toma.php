@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
 use function PHPUnit\Framework\isNull;
@@ -61,6 +62,9 @@ class Toma extends Model
     // Libro
     public function libro():BelongsTo{
         return $this->belongsTo(Libro::class,"id_libro");
+    }
+    public function ruta():HasOneThrough{
+        return $this->hasOneThrough(ruta::class,libro::class,'id','id','id_libro','id_ruta');
     }
 
     // Giro comercial asociado a la toma

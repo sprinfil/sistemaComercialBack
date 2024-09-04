@@ -399,7 +399,8 @@ class OrdenTrabajoService{
         $especial=$filtros['especial'] ?? false;
 
          // HIPER MEGA QUERY INSANO
-         $query=OrdenTrabajo::when($Asignada, function (EloquentBuilder $q)  {
+         $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion')
+         ->when($Asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'En proceso');
         })->when($no_asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'No asignada');
@@ -407,7 +408,7 @@ class OrdenTrabajoService{
             return $q->orWhere('estado', 'Concluida');
         })->when($Cancelada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'Cancelada');
-        })->with('toma.tipoToma','toma.libro','ordenTrabajoCatalogo')
+        })
         ->when($ruta, function (EloquentBuilder $q) use($ruta,$libro)  {
 
         $q->whereHas('toma', function($a)use($ruta,$libro){
