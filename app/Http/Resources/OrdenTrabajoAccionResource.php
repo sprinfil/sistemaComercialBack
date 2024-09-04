@@ -21,6 +21,7 @@ class OrdenTrabajoAccionResource extends JsonResource
             "accion" => $this->accion,
             "modelo" => $this->modelo,
             "campo" => $this->campo,
+            "valor" => $this->valor,
             "opcional" => $this->opcional,
             "id_orden_trabajo_acc_encadena" => $this->id_orden_trabajo_acc_encadena,
             "id_orden_trabajo_acc_alterna" => $this->id_orden_trabajo_acc_alterna,
