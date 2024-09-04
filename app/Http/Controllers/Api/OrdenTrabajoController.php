@@ -51,14 +51,14 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenes()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma')->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','ordenTrabajoCatalogo.ordenTrabajoAccion')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
     public function indexOrdenesNoasignadas()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','ordenTrabajoCatalogo')->where('estado','No asignada')->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','No asignada')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
