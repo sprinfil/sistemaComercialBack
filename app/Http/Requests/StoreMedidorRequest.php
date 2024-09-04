@@ -28,6 +28,8 @@ class StoreMedidorRequest extends FormRequest
             "diametro" => "required|string|max:55",
             "tipo" => "required|string|max:55",
             "estatus" => "required|string|max:55",
+            //"fecha_instalacion" => "required|string|max:55",
+            "lectura_inicial" => "required|string|max:55"
         ];
     }
 }
