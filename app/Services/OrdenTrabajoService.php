@@ -189,7 +189,46 @@ class OrdenTrabajoService{
         }
         return $Ordenes;
     }
-
+    public function CancelarMasiva(array $ordenesTrabajo){
+        
+        $Ordenes=new Collection();
+        $i=1;
+        foreach ($ordenesTrabajo as $OT){
+            
+            $data=$this->cancelar($OT);
+            if ($data=="error"){
+                $toma=Toma::find($OT['id_toma']);
+                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
+                $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo cancelar, debido a que ya esta concluida"]);
+            }
+            else{
+              
+            }
+          $i++;
+        }
+        return $Ordenes;
+    }
+    public function CerrarMasiva(array $ordenesTrabajo){
+        
+        $Ordenes=new Collection();
+        $i=1;
+        foreach ($ordenesTrabajo as $OT){
+            
+            $data=$this->asignar($OT);
+            if (!$data){
+                $toma=Toma::find($OT['id_toma']);
+                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
+                $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo asignar, debido a que ya poseia un operador asignado"]);
+            }
+            else{
+                $Ordenes->push($data);
+            }
+          $i++;
+        }
+        return $Ordenes;
+    }
     //metodo que maneja el tipo de accion de la ot a realizar
     public function Acciones(OrdenTrabajo $ordenTrabajo, $OtCatalogo, $modelos){
         $acciones=$OtCatalogo->ordenTrabajoAccion ?? null;
@@ -375,16 +414,23 @@ class OrdenTrabajoService{
         }
         return $cargos;
     }
-    public function cancelar(Request $request){
-        $OT=OrdenTrabajo::find($request['id']);
-        $OTCatalogo=OrdenTrabajoCatalogo::find($OT['id_orden_trabajo_catalogo']);
-        if ($OTCatalogo['momento_cargo']=="generar"){
-            $OtCargos=$OT->cargosVigentes;
-            foreach ($OtCargos as $cargo){
-                $cargo->delete();
-            }
+    public function cancelar($request){
+        $OTCatalogo=OrdenTrabajoCatalogo::find($request);
+        if ($OTCatalogo['estado']=="Concluida"){
+        return "error";
         }
-        $OT->delete();
+        else{
+            $OT=OrdenTrabajo::find($request);
+           
+            if ($OTCatalogo['momento_cargo']=="No genera"){
+                $OtCargos=$OT->cargosVigentes;
+                foreach ($OtCargos as $cargo){
+                    $cargo->delete();
+                }
+            }
+            $OT->delete();
+        }
+       
     }
     public function restore(){
         
