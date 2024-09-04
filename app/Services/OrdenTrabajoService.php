@@ -277,6 +277,8 @@ class OrdenTrabajoService{
                 */
             case "medidores":
                 $dato=$modelos['medidores'];
+                $dato['estatus']="activo";
+                $dato['id_toma']=$ordenTrabajo['id_toma'];
                 $OTModelo=Medidor::create($dato);
                 break;
                 /*
