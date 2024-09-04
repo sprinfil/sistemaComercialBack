@@ -14,5 +14,9 @@ Route::middleware(['api', 'audit'])->group(function () {
         //log delete significa borrado logico
         Route::delete("/Convenio/log_delete/{id}", "destroy");
         Route::put("/Convenio/restaurar/{id}", "restaurarDato");
+
+
+        //Registro de convenio
+        Route::post("/Convenio/BuscarConceptosConveniables","BuscarConceptosConveniables");
     });
 });

@@ -66,4 +66,8 @@ class Cargo extends Model
         }
         return $monto_pendiente;
     }
+
+    public function CargoConveniado():HasOne{
+        return $this->hasOne(CargosConveniado::class, "id_cargo", "id");
+    }
 }

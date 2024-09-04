@@ -44,6 +44,19 @@ class Pago extends Model
         return $this->morphTo(__FUNCTION__, 'modelo_dueno', 'id_dueno');
     }
 
+    public function duenoUsuario(): MorphTo
+    {
+        $dueno = $this->morphTo(__FUNCTION__, 'modelo_dueno', 'id_dueno');
+
+        if ($dueno instanceof Toma) {
+            // Si el modelo dueño es una toma, devuelve el usuario relacionado a esa toma
+            return $dueno->usuario;
+        }
+
+        return $dueno;
+    }
+
+
     public function abonos(): MorphMany
     {
         return $this->morphMany(Abono::class, 'origen', 'modelo_origen', 'id_origen');
@@ -84,6 +97,18 @@ class Pago extends Model
         // Always return the formatted 'dueno'
         if ($this->modelo_dueno === 'toma') {
             return $this->dueno;
+        } elseif ($this->modelo_dueno === 'usuario') {
+            return $this->dueno;
+        }
+
+        return null;
+    }
+
+    public function formatUsuario()
+    {
+        // Always return the formatted 'dueno'
+        if ($this->modelo_dueno === 'toma') {
+            return $this->dueno->usuario;
         } elseif ($this->modelo_dueno === 'usuario') {
             return $this->dueno;
         }

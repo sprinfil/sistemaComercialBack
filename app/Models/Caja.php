@@ -37,7 +37,7 @@ class Caja extends Model
     public function pagosConDetalle() : HasMany
     {
         return $this->hasMany(Pago::class, 'id_caja')
-                ->with(['dueno', 'abonosConCargos'])
+                ->with(['duenoUsuario', 'abonosConCargos'])
                 ->orderBy('created_at', 'desc');
     }
 

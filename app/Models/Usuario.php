@@ -65,6 +65,12 @@ class Usuario extends Model
     {
         return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente')->with('concepto');
     }
+    public function cargosVigentesConConcepto(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->where('estado', 'pendiente')
+                    ->with('concepto'); // Cargar la relación 'concepto' junto con los cargos
+    }
     
     public function saldoCargosUsuario(){
         $total=0;
@@ -78,6 +84,40 @@ class Usuario extends Model
 
         }
         return $total;
+    }
+
+    /*public function saldoPendiente(){
+        $total=0;
+        $cargos=$this->cargosVigentes;
+        foreach ($cargos as $cargo){
+            $total+=$cargo->monto;
+            $abonos=$cargo->abonos;
+            foreach ($abonos as $abono){
+                $total-=$abono->total_abonado;
+            }
+
+        }
+        return $total;
+    }*/
+
+    public function saldoPendiente(){
+        $total_final = 0;
+        $cargos_pendientes = $this->cargosVigentes;
+        foreach($cargos_pendientes as $cargo)
+        {
+            $total_final += $cargo->montoPendiente();
+        }
+        return $total_final;
+    }
+
+    public function saldoSinAplicar(){
+        $total_final = 0;
+        $pagos_pendientes = $this->pagosPendientes;
+        foreach($pagos_pendientes as $pago)
+        {
+            $total_final += $pago->pendiente();
+        }
+        return $total_final;
     }
 
     public function pagos(): MorphMany

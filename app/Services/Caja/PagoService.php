@@ -59,7 +59,7 @@ class PagoService{
             $data['fecha_pago'] = date('Y-m-d');
             $pago = Pago::create($data);
             // se obtiene el saldo
-            $saldo_inicial = $dueno->saldoToma();
+            $saldo_inicial = $dueno->saldoPendiente();
 
             // se obtiene el monto pagado
             $monto_pagado =  number_format($pago->total_pagado, 2, '.', '');
@@ -107,7 +107,7 @@ class PagoService{
             DB::commit();
             $pago_final = Pago::with('abonos')->findOrFail($pago->id);
             $pago_final->saldo_anterior = number_format($saldo_inicial, 2, '.', '');
-            $pago_final->saldo_actual = number_format($dueno->saldoToma(), 2, '.', '');
+            $pago_final->saldo_actual = number_format($dueno->saldoPendiente(), 2, '.', '');
             $pago_final->saldo_no_aplicado = number_format($dueno->saldoSinAplicar(), 2, '.', '');
             //throw new Exception("L");
             return $pago_final;

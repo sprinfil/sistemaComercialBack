@@ -60,4 +60,8 @@ class ConceptoCatalogo extends Model
         $data=ConceptoCatalogo::where('nombre',$nombre)->get()->first();
         return $data;
     }
+
+    public function CargoConveniable():HasOne{
+        return $this->hasOne(CargosConveniable::class, "id_concepto_catalogo", "id");
+    }
 }

@@ -17,6 +17,8 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/ruta/masive_polygon_delete","masive_polygon_delete");
         Route::post("/ruta/create_polygon","create_polygon");
         Route::get("/ruta/export_geojson","export_geojson");
+
+        Route::get("/ruta/libros/{id}","librosPorRuta");
     });
 
     Route::controller(LibroController::class)->group(function() {

@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class ConvenioCatalogo extends Model
@@ -19,5 +21,13 @@ class ConvenioCatalogo extends Model
     public function conceptosAplicables(): MorphMany
     {
         return $this->morphMany(ConceptoAplicable::class, 'conceptosAplicables', 'modelo', 'id_modelo');
+    }
+
+    public function CargoConveniable():HasOne{
+        return $this->hasOne(CargosConveniable::class, "id_convenio_catalogo", "id");
+    }
+
+    public function Convenio():HasMany{
+        return $this->hasMany(Convenio::class, "id_convenio_catalogo", "id");
     }
 }

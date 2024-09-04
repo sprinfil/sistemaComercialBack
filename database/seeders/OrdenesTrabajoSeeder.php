@@ -92,6 +92,6 @@ class OrdenesTrabajoSeeder extends Seeder
         /*OrdenesTrabajoCargo::factory()->count(10)->create();
         OrdenesTrabajoEncadenada::factory()->count(10)->create();
         OrdenTrabajoAccion::factory()->count(10)->create();*/
-        OrdenTrabajo::factory()->count(10)->create();
+        OrdenTrabajo::factory()->count(1000)->create();
     }
 }
