@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('accion',['registrar','modificar','quitar']);
             $table->string('modelo'); //ahora es un enum
             $table->string('campo')->nullable();
+            $table->string('valor')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

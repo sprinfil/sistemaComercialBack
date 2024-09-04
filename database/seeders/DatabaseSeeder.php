@@ -83,7 +83,7 @@ class DatabaseSeeder extends Seeder
         //$this->call(FacturaSeeder::class);
         $this->call(AsignacionGeograficaSeeder::class);
         //
-        $this->call(OrdenesTrabajoSeeder::class);
+        //$this->call(OrdenesTrabajoSeeder::class);
         //
     }
 }

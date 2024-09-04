@@ -96,7 +96,7 @@ class OrdenTrabajoService{
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        if ($OT['estado']=="aa"){
+        if ($OT['estado']=="Concluida"){
            return null;
         }
         else{
@@ -114,7 +114,7 @@ class OrdenTrabajoService{
             if (count($OrdenesEncadenadas)!=0 && $IniciarEncadenadas==true){
                 $OTencadenadas=new Collection();
                 foreach ($OrdenesEncadenadas as $encade){
-                    $NuevasOt=['id_toma'=>$ordenTrabajo['id_toma'],'id_empleado_asigno'=>$ordenTrabajo['id_empleado_asigno'],'id_orden_trabajo_catalogo'=>$encade['id']];
+                    $NuevasOt=['id_toma'=>$OT['id_toma'],'id_empleado_asigno'=>$OT['id_empleado_asigno'],'id_orden_trabajo_catalogo'=>$encade['id']];
                     $OTencadenadas->push($this->crearOrden($NuevasOt));
                 }
             }
@@ -193,7 +193,7 @@ class OrdenTrabajoService{
     //metodo que maneja el tipo de accion de la ot a realizar
     public function Acciones(OrdenTrabajo $ordenTrabajo, $OtCatalogo, $modelos){
         $acciones=$OtCatalogo->ordenTrabajoAccion ?? null;
-        if (empty($acciones)){
+        if (count($acciones)==0){
             return null;
         }
         else{
@@ -202,7 +202,7 @@ class OrdenTrabajoService{
                 {
                     'modificar'=>$this->Modificar($accion,$ordenTrabajo,$modelos),
                     'registrar'=>$this->Registrar($accion,$ordenTrabajo,$modelos),
-                    'quitar'=>$this->Quitar($accion,$ordenTrabajo,$modelos),
+                    //'quitar'=>$this->Quitar($accion,$ordenTrabajo,$modelos),
                 };
             }
             return $resultado;
@@ -220,12 +220,12 @@ class OrdenTrabajoService{
         switch($tipo_modelo){
             case "toma":
                 $OTModelo=Toma::find($ordenTrabajo['id_toma']);
-                $dato=$modelos['toma'];
+                $dato=[$Accion['campo']=>$Accion['valor']];
                 $OTModelo->update($dato);
                 $OTModelo->save();
                 
                 break;
-            case "medidors":
+            case "medidores":
                 $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['medidor'];
                 $OTModelo->update($dato);
@@ -269,30 +269,35 @@ class OrdenTrabajoService{
 
 
         switch($tipo_modelo){
+            /*
             case "toma":
                 $dato=$modelos['toma'];
                 $OTModelo=Toma::create($dato);
                 break;
+                */
             case "medidores":
-                $dato=$modelos['medidor'];
+                $dato=$modelos['medidores'];
                 $OTModelo=Medidor::create($dato);
                 break;
+                /*
             case "contratos":
-                $dato=$modelos['contrato'];
+                $dato=$modelos['contratos'];
                 $OTModelo=Contrato::create($dato);
                 break;
             case "usuarios":
-                $dato=$modelos['usuario'];
+                $dato=$modelos['usuarios'];
                 $OTModelo=Usuario::create($dato);
                 break;
+                
             case "consumos":
-                $dato=$modelos['consumo'];
+                $dato=$modelos['consumos'];
                 $OTModelo=Consumo::create($dato);
                 break;
             case "lecturas":
-                $dato=$modelos['lectura'];
+                $dato=$modelos['lecturas'];
                 $OTModelo=Lectura::create($dato);
                 break;
+                */
             default:
             $OTModelo=null;
             break;
