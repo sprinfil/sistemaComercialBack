@@ -23,9 +23,7 @@ class ConvenioCatalogo extends Model
         return $this->morphMany(ConceptoAplicable::class, 'conceptosAplicables', 'modelo', 'id_modelo');
     }
 
-    public function CargoConveniable():HasOne{
-        return $this->hasOne(CargosConveniable::class, "id_convenio_catalogo", "id");
-    }
+   
 
     public function Convenio():HasMany{
         return $this->hasMany(Convenio::class, "id_convenio_catalogo", "id");
