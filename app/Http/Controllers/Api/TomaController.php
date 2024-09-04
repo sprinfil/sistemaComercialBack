@@ -192,6 +192,20 @@ class TomaController extends Controller
             ], 500);
         }
     }
+    public function ordenesTomaSinAsignadas($id)
+    {
+        try {
+            $toma = Toma::where('codigo_toma',$id)->first();
+            //$ordenes=$toma->ordenesTrabajo;
+            //return OrdenTrabajoResource::collection($ordenes);
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->orderBy('created_at','desc')->paginate(20);
+           return OrdenTrabajoResource::collection($ordenes); 
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar las ordenes de trabajo'
+            ], 500);
+        }
+    }
     public function general($id)
     {
         try {
