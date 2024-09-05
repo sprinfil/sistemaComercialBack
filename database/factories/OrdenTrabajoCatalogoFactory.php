@@ -44,25 +44,33 @@ class OrdenTrabajoCatalogoFactory extends Factory
      * @return $this
      */
     public function configure()
-{
-    return $this->afterCreating(function (OrdenTrabajoCatalogo $orden_de_trabajo) {
-        // Crear cargos asociados
-        OrdenesTrabajoCargo::factory()->count(2)->create([
-            'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
-        ]);
+    {
+        return $this->afterCreating(function (OrdenTrabajoCatalogo $orden_de_trabajo) {
+            // Crear cargos asociados
+            OrdenesTrabajoCargo::factory()->count(1)->create([
+                'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
+            ]);
 
-        // Crear acciones asociadas
-        OrdenTrabajoAccion::factory()->count(2)->create([
-            'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
-        ]);
-
-        // Crear encadenadas asociadas
-        OrdenesTrabajoEncadenada::factory()->count(2)->create([
-            'id_OT_Catalogo_padre' => $orden_de_trabajo->id,
-        ]);
-    });
-}
-
-
-    
+            if($orden_de_trabajo->nombre == 'Instalación de medidores')
+            {
+                OrdenTrabajoAccion::factory()->create([
+                    'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
+                    'accion' => 'registrar',
+                    'modelo' => 'medidores',
+                    'campo' => '',
+                    'valor' => ''
+                ]);
+            } else{
+                // Crear acciones asociadas
+                OrdenTrabajoAccion::factory()->count(1)->create([
+                    'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
+                ]);
+            }
+            
+            // Crear encadenadas asociadas
+            OrdenesTrabajoEncadenada::factory()->count(1)->create([
+                'id_OT_Catalogo_padre' => $orden_de_trabajo->id,
+            ]);
+        });
+    }
 }
