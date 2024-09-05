@@ -23,6 +23,8 @@ class MedidorResource extends JsonResource
             "diametro" => $this->diametro,
             "tipo" => $this->tipo,
             "estatus" => $this->estatus,
+            "fecha_instalacion" => $this->fecha_instalacion,
+            "lectura_inicial" => $this->lectura_inicial
         ];
         //return parent::toArray($request);
     }
