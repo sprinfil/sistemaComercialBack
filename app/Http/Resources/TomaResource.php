@@ -46,6 +46,7 @@ class TomaResource extends JsonResource
             "c_san" => $this->c_san,
             'tipo_toma' => new UsuarioResource($this->whenLoaded('tipoToma')),
             'libro' => new LibroSimplificado($this->whenLoaded('libro')),
+            'ruta' => new RutaSimplificado($this->whenLoaded('ruta')),
             'usuario' => new UsuarioResource($this->whenLoaded('usuario')),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
             'giroComercial' => new GiroComercialCatalogoResource($this->whenLoaded('giroComercial')),
