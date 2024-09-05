@@ -7,7 +7,7 @@ Route::middleware(['api', 'audit'])->group(function () {
     // gestion de ordenes de trabajo
     Route::controller(OrdenTrabajoController::class)->group(function () {
         Route::get("/OrdenTrabajoCatalogo", "indexCatalogo");
-        Route::get("/OrdenTrabajoCatalogo/masiva", "indexMasivas");
+        Route::get("/OrdenTrabajoCatalogo/masiva/{tipo}", "indexMasivas");
         Route::put("/OrdenTrabajoCatalogo/create", "storeCatalogo");
         Route::put("/OrdenTrabajoCatalogo/update", "updateCatalogo");
         Route::put("/OrdenTrabajoCatalogo/create/cargos", "storeCargos");
