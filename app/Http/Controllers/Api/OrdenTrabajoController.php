@@ -303,14 +303,14 @@ class OrdenTrabajoController extends Controller
         
         
     }
-    public function cerrarOrden(Request $request)
+    public function cerrarOrden(StoreOrdenTrabajoRequest $request)
     {
        
        try{
         
         DB::beginTransaction();
-        $data=$request->all();
-        $OT=$data['orden_trabajo'];
+        $data=$request->validated();
+        $OT=$data['ordenes_trabajo'];
         $modelos=$data['modelos'] ?? null;
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         if (!$Acciones){

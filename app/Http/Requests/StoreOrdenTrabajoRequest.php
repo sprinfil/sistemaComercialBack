@@ -23,18 +23,26 @@ class StoreOrdenTrabajoRequest extends FormRequest
     {
         return [
             "ordenes_trabajo"=> "required|array",
-            "ordenes_trabajo.*"=> "required|array:id,id_toma,id_empleado_genero,id_empleado_asigno,id_empleado_encargado,id_orden_trabajo_catalogo,posicion_OT",
-            "id_toma.*." => "sometimes|exists:toma,id",
-            "id_toma.*." => "sometimes|exists:toma,id",
-            "id_empleado_genero.*." => "sometimes|exists:operadores,id",
-            "id_empleado_asigno.*." => "sometimes|exists:operadores,id",
-            "id_empleado_encargado.*." => "sometimes|exists:operadores,id",
-            "id_orden_trabajo_catalogo.*." => "sometimes|exists:orden_trabajo_catalogos,id",
-            "obervaciones.*." => "sometimes|string",
-            "evidencia.*." => "sometimes|string",
-            "material_utilizado.*." => "sometimes|string",
-            "posicion_OT.*." => "sometimes|point",
-            "genera_OT_encadenadas.*." => "sometimes|boolean",
+            "ordenes_trabajo.*"=> "required|array:id,id_toma,id_empleado_genero,id_empleado_asigno,id_empleado_encargado,id_orden_trabajo_catalogo,observaciones,evidencia,material_utilizado,posicion_OT,genera_OT_encadenadas",
+            "ordenes_trabajo.*.id" => "sometimes|integer",
+            "ordenes_trabajo.*.id_toma" => "sometimes|exists:toma,id",
+            "ordenes_trabajo.*.id_empleado_genero" => "sometimes|exists:operadores,id",
+            "ordenes_trabajo.*.id_empleado_asigno" => "sometimes|exists:operadores,id",
+            "ordenes_trabajo.*.id_empleado_encargado" => "sometimes|exists:operadores,id",
+            "ordenes_trabajo.*.id_orden_trabajo_catalogo" => "sometimes|exists:orden_trabajo_catalogos,id",
+            "ordenes_trabajo.*.observaciones" => "sometimes|string",
+            "ordenes_trabajo.*.evidencia" => "sometimes|string",
+            "ordenes_trabajo.*.material_utilizado" => "sometimes|string",
+            "ordenes_trabajo.*.posicion_OT" => "sometimes|point",
+            "ordenes_trabajo.*.genera_OT_encadenadas" => "sometimes|boolean",
+
+            "modelos"=> "sometimes|array",
+            "modelos.medidores"=> "sometimes|array:numero_serie,marca,diametro,tipo",
+            "medidores.numero_serie" => "sometimes|string",
+            "medidores.marca" => "sometimes|string",
+            "medidores.diametro" => "sometimes|string",
+            "medidores.tipo" => "sometimes|string",
+   
             /*
             "modelos"=> "required|array:toma,medidores,contratos,usuarios",
             
