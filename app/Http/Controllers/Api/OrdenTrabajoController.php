@@ -305,14 +305,12 @@ class OrdenTrabajoController extends Controller
     }
     public function cerrarOrden(StoreOrdenTrabajoRequest $request)
     {
-       
-       try{
-        
         DB::beginTransaction();
         $data=$request->validated();
-        $OT=$data['ordenes_trabajo'];
+        $OT=$data['ordenes_trabajo'][0];
         $modelos=$data['modelos'] ?? null;
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
+        return $Acciones;
         if (!$Acciones){
             return response()->json(["message"=>"la OT especificada ya se cerro"],500);
             DB::rollBack();
@@ -321,6 +319,9 @@ class OrdenTrabajoController extends Controller
             DB::commit();
             return $Acciones;
         }
+       try{
+        
+       
        }
        catch(Exception $ex){
         return response()->json(["error"=>"Ha ocurrido un error al cerrar la orden de trabajo ".$ex->getMessage()],500);
@@ -372,6 +373,8 @@ class OrdenTrabajoController extends Controller
     }
     public function storeOrdenMasivaCerrar(StoreOrdenTrabajoRequest $request)
     {
+       
+       try{
         DB::beginTransaction();
         $data=$request->validated();
         $data=(new OrdenTrabajoService())->CerrarMasiva($data['ordenes_trabajo']);
@@ -384,8 +387,6 @@ class OrdenTrabajoController extends Controller
             return $data;
             //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
-       try{
-       
        }
        catch(Exception $ex){
         DB::rollBack();

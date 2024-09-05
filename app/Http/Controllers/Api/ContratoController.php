@@ -21,6 +21,7 @@ use App\Models\Tarifa;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\CotizacionService;
+use App\Services\OrdenTrabajoService;
 use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Promise\Create;
@@ -62,19 +63,20 @@ class ContratoController extends Controller
         $id_toma=$request->input('id_toma');
         $servicio=$request->input('servicio_contratados');
         $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
-        
+        // TO DO
+
       
-        //$data['folio_solicitud']=Contrato::darFolio();
         if (count($contratos)!=0) {
             
             return response()->json([
                 'message' => 'El usuario y/o toma ya tiene un contrato',
                 'restore' => false
-            ], 200);
+            ], 500);
             
             //return $contratos;
         }
         else{
+            $ordenTrabajo=(new OrdenTrabajoService)->crearOrden($request->input('ordenes_trabajo'));
             $c=new Collection();
             foreach ($servicio as $sev){
                 $CrearContrato=$data;
@@ -83,7 +85,7 @@ class ContratoController extends Controller
                 $c->push(Contrato::create($CrearContrato));
             }
             
-            return response(ContratoResource::collection($c), 201);
+            return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo ],201);
             //return $c;
         }
             
@@ -252,22 +254,22 @@ class ContratoController extends Controller
     }
     public function terminarCotizacion(Cotizacion $cotizacion, UpdateCotizacionRequest $request){
         
-       
+       ////SI QUIERA SE USA????
          try{
             $data=$request->validated();
             $cotizacion=Cotizacion::find($data['id_cotizacion']);
-         if ($cotizacion){
-            $cotizacion->update($data);
-            $cotizacion->save();
-            return new CotizacionResource($cotizacion);
-         }
-         else{
-            //return $data;
-            return response()->json(['message' => 'El contrato no tiene una cotización vigente'], 200);
-         }
+            if ($cotizacion){
+                $cotizacion->update($data);
+                $cotizacion->save();
+                return new CotizacionResource($cotizacion);
+            }
+            else{
+                //return $data;
+                return response()->json(['message' => 'El contrato no tiene una cotización vigente'], 500);
+            }
          }
          catch(Exception $ex){
-            return response()->json(['message' => 'La cotización no se puede cerrar'], 200);
+            return response()->json(['message' => 'La cotización no se puede cerrar'], 500);
          }
          
      }

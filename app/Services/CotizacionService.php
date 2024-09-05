@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 class CotizacionService{
+    
     public function CargoContratos($contratos){
         $cargo=new Collection();
         $fecha=Carbon::now();

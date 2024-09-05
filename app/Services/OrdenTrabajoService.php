@@ -198,7 +198,7 @@ class OrdenTrabajoService{
             
             $data=$this->cancelar($OT);
             if ($data=="error"){
-                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $ordenTrabajo=OrdenTrabajo::find($OT);
                 $toma=Toma::find($ordenTrabajo['id_toma']);
               
                 $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
@@ -223,7 +223,7 @@ class OrdenTrabajoService{
                 $toma=Toma::find($ordenTrabajo['id_toma']);
            
                 $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
-                $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo asignar, debido a que ya poseia un operador asignado"]);
+                $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo cerrar, debido a que ya poseia un operador asignado"]);
             }
             else{
                 $Ordenes->push($data);
@@ -454,6 +454,7 @@ class OrdenTrabajoService{
         $industrial=$filtros['industrial'] ?? null;
         $especial=$filtros['especial'] ?? null;
         $sin_contrato=$filtros['sin_contrato'] ?? null;
+        $servicio=$filtros['servicio'] ?? null;
 
          // HIPER MEGA QUERY INSANO
          $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')
