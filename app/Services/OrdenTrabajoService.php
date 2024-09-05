@@ -453,7 +453,7 @@ class OrdenTrabajoService{
         $sin_contrato=$filtros['sin_contrato'] ?? null;
 
          // HIPER MEGA QUERY INSANO
-         $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion')
+         $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')
          ->when($Asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'En proceso');
         })->when($no_asignada, function (EloquentBuilder $q)  {
@@ -529,8 +529,7 @@ class OrdenTrabajoService{
                     $a->whereIn('nombre', $types);
                 }
             });
-        })
-        ->get();
+        })->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
 
