@@ -20,17 +20,17 @@ class TarifaServicio extends Model
     
     public function tarifa() : BelongsTo
     {
-        return $this->belongsTo(Tarifa::class, 'id_tarifa');
+        return $this->belongsTo(Tarifa::class, 'id_tarifa' , 'id');
     }
     
     
     public function tarifaDetalle() : HasMany
     {
-        return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa_servicio'); //detalles
+        return $this->hasMany(TarifaServiciosDetalle::class, 'id_tarifa_servicio' , 'id');
     }
 
     public function tipotoma() : BelongsTo {
-         return $this->belongsTo(TipoToma::class, 'id_tipo_toma');
+         return $this->belongsTo(TipoToma::class, 'id_tipo_toma' , 'id');
     }
     
 }

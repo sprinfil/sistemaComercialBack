@@ -313,6 +313,7 @@ class TarifaController extends Controller
             DB::beginTransaction();
             $tarifaServicioDetalle = (new TarifaService())->updateTarifaServicioDetalleService($data, $id);
             DB::commit();
+            return $tarifaServicioDetalle;
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([

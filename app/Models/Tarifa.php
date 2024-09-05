@@ -28,6 +28,6 @@ class Tarifa extends Model
         return TarifaConceptoDetalle::all();
     }
     public function tarifaServicio() : HasMany {
-        return $this->hasMany(TarifaServicio::class , 'id_tarifa');
+        return $this->hasMany(TarifaServicio::class , 'id_tarifa', 'id');
     }
 }

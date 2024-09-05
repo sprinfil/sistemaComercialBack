@@ -37,7 +37,7 @@ class TarifaServiciosDetalle extends Model
      }
      
      public function tarifaServicio() : BelongsTo {
-        return $this->belongsTo(TarifaServicio::class, 'id_tarifa_servicio');
+        return $this->belongsTo(TarifaServicio::class, 'id_tarifa_servicio', 'id');
      }
-    
+
 }

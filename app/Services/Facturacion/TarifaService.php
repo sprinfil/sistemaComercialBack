@@ -359,10 +359,32 @@ class TarifaService{
     public function storeTarifaServicioDetalle($id_tarifa_servicio) 
     {
         try {
+        /* 
+            
+    Store de TarifasServiciosDetalle
+
+	    •Cuando haces el Store de una tarifa_detalle_servicio, no puedes crear un registro de un servicio (una id_tarifa_servicio)
+	     que no exista. 
+	    •El rango no puede ser menor de 17 m³ y el monto no puede ser menor
+
+
+    Update de TarifaServiciosDetalle
+
+	    •Cuando haces el update de una tarifa_detalle_servicio, no puede haber 2 registros con el mismo id_tarifa_servicio, rango
+	
+	    •El monto cuando se hace el update, no tiene que ser menor
+        
+        */
+
+
             //Verifica que exista un servicio para poder añadir una tarfa servicio detalle
-             $tarifaServicio = TarifaServicio::where('id' , $id_tarifa_servicio)->first();
+            $tarifaServicio = TarifaServicio::where('id' , $id_tarifa_servicio)->first();
+            $rangomin = $tarifaServicio->tarifaDetalle->min('rango');
              //Si existe una tarifa servicio, hace el store
             if ($tarifaServicio->tarifaDetalle) {
+                if ($rangomin) {
+                    
+                }
                 $tarifaServicioDetalle = TarifaServiciosDetalle::create($id_tarifa_servicio);
                 return response(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 201);
             }
@@ -373,7 +395,7 @@ class TarifaService{
             }
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'No se pudo guardar el servicio detalle. '
+                'error' => 'No se pudo guardar el servicio detalle. ' .$ex
             ], 500);
         }
     }
@@ -431,20 +453,21 @@ class TarifaService{
 
     public function get_servicios_detalles_by_tarifa_idService($tarifa_id)
     {
-        //fix to do
+
         try {
-            $tarifa = Tarifa::findOrFail($tarifa_id);
+            $tarifa = TarifaServiciosDetalle::with('tarifaServicio', 'tarifaServicio.tarifa')
+            ->whereHas('tarifaServicio.tarifa', function($query) use ($tarifa_id){
+                $query->where('id', $tarifa_id);
+            })
+            ->get();
+            //$tarifa = Tarifa::findOrFail($tarifa_id);
             $servicio = [];
-              foreach ($tarifa->tarifaServicio as $servicios) {
+              foreach ($tarifa as $servicios) {
                  $servicio[] = [
                  "id" => $servicios->id,
                  "id_tarifa_servicio" => $servicios->id_tarifa_servicio,
                  "rango" => $servicios->rango,
                  "monto" => $servicios->monto,
-                 /*"agua" => $servicios->agua,
-                 "alcantarillado" => $servicios->alcantarillado,
-                 "saneamiento" => $servicios->saneamiento,
-                 */
                ];
            }
 
