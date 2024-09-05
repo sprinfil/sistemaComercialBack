@@ -131,16 +131,6 @@ class CajaService{
          //formateo de la fecha años-meses-dias
          $fechaApertura = Carbon::parse($fechaHoraLocalFormateada);
          $fechaApertura = $fechaApertura->format('Y-m-d');
-
-        //Valida que la suma de los totales coincida con el total general
-        if (($data['corte_data'][0]['total_efectivo_real'] + 
-             $data['corte_data'][0]['total_tarjetas_real'] + 
-             $data['corte_data'][0]['total_cheques_real']) != $data['corte_data'][0]['total_real'] )
-        {
-             return response()->json([
-            'error' => 'La suma de los totales no coincide con el total real.'
-             ]);
-        }
         
         //Consulta de registro de caja por idOperador,idCajaCatalogo donde el registro sea del dia actual y no cuente con fecha de cierre
         $cajaHisto = Caja::where('id_operador',$idOperador)
