@@ -59,7 +59,7 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenesNoasignadas()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','No asignada')->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
@@ -303,14 +303,14 @@ class OrdenTrabajoController extends Controller
         
         
     }
-    public function cerrarOrden(Request $request)
+    public function cerrarOrden(StoreOrdenTrabajoRequest $request)
     {
        
        try{
         
         DB::beginTransaction();
-        $data=$request->all();
-        $OT=$data['orden_trabajo'];
+        $data=$request->validated();
+        $OT=$data['ordenes_trabajo'];
         $modelos=$data['modelos'] ?? null;
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         if (!$Acciones){

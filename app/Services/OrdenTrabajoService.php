@@ -157,7 +157,8 @@ class OrdenTrabajoService{
            
             $data=$this->crearOrden($OT);
             if (!$data){
-                $toma=Toma::find($OT['id_toma']);
+                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $toma=Toma::find($ordenTrabajo['id_toma']);
                 $Ordenes->push(["Error"=>"La orden de trabajo para la toma con clave catastral ".$toma['clave_catastral']." no se pudo crear, debido, a que ya supera el limite del tipo de orden de trabajo: ".$catalogo['nombre']]);
             }
             else{
@@ -176,8 +177,9 @@ class OrdenTrabajoService{
             
             $data=$this->asignar($OT);
             if (!$data){
-                $toma=Toma::find($OT['id_toma']);
                 $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $toma=Toma::find($ordenTrabajo['id_toma']);
+          
                 $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
                 $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo asignar, debido a que ya poseia un operador asignado"]);
             }
@@ -215,10 +217,11 @@ class OrdenTrabajoService{
         $i=1;
         foreach ($ordenesTrabajo as $OT){
             
-            $data=$this->asignar($OT);
+            $data=$this->concluir($OT, null);
             if (!$data){
-                $toma=Toma::find($OT['id_toma']);
                 $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $toma=Toma::find($ordenTrabajo['id_toma']);
+           
                 $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
                 $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo asignar, debido a que ya poseia un operador asignado"]);
             }
