@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('contratos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_toma');
-            $table->unsignedBigInteger('id_usuario');
+            $table->unsignedBigInteger('id_usuario')->nullable();
             $table->string('folio_solicitud')->unique();
             $table->enum('estatus', [
                 'pendiente de inspeccion', 

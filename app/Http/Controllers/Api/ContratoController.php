@@ -56,39 +56,53 @@ class ContratoController extends Controller
      */
     public function store(Contrato $contrato,StoreContratoRequest $request)
     {
-        
-            
-        $data=$request->validated();
-        $id_usuario=$request->input('id_usuario');
-        $id_toma=$request->input('id_toma');
-        $servicio=$request->input('servicio_contratados');
-        $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
-        // TO DO
-
-      
-        if (count($contratos)!=0) {
-            
-            return response()->json([
-                'message' => 'El usuario y/o toma ya tiene un contrato',
-                'restore' => false
-            ], 500);
-            
-            //return $contratos;
-        }
-        else{
-            $ordenTrabajo=(new OrdenTrabajoService)->crearOrden($request->input('ordenes_trabajo'));
-            $c=new Collection();
-            foreach ($servicio as $sev){
-                $CrearContrato=$data;
-                $CrearContrato['folio_solicitud']=Contrato::darFolio();
-                $CrearContrato['servicio_contratado']=$sev;
-                $c->push(Contrato::create($CrearContrato));
+        DB::beginTransaction();
+            $data=$request->validated()['contrato'];
+            $id_usuario=$request['contrato']['id_usuario'];
+            $id_toma=$request['contrato']['id_toma'] ?? null;
+            $servicio=$request['contrato']['servicio_contratados'];
+            $OT=$request['ordenes_trabajo'][0] ?? null;
+            $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
+            // TO DO
+    
+          
+            if (count($contratos)!=0) {
+                
+                return response()->json([
+                    'message' => 'El usuario y/o toma ya tiene un contrato',
+                    'restore' => false
+                ], 500);
+                
+                //return $contratos;
             }
+            else{
+                if (!empty($OT)){
+                    $ordenTrabajo=(new OrdenTrabajoService)->crearOrden($OT);
+                }
+                else{
+                    $ordenTrabajo=null;
+                }
             
-            return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo ],201);
-            //return $c;
-        }
+                $c=new Collection();
+                foreach ($servicio as $sev){
+                    $CrearContrato=$data;
+                    $CrearContrato['folio_solicitud']=Contrato::darFolio();
+                    $CrearContrato['servicio_contratado']=$sev;
+                    $c->push(Contrato::create($CrearContrato));
+                }
+                DB::rollBack();
+                return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo ],201);
+           
+            }
+             
+           try{
             
+           }
+           catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(["Error"=>"No se pudo crear solicitud de contrato"],500);
+           } 
+          
        
         
         

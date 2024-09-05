@@ -15,11 +15,13 @@ use App\Http\Resources\PagoResource;
 use App\Http\Resources\TomaResource;
 use App\Models\Medidor;
 use App\Models\OrdenTrabajo;
+use App\Services\TomaService;
 use App\Services\UsuarioService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class TomaController extends Controller
@@ -288,5 +290,27 @@ class TomaController extends Controller
                 'error' => 'No se pudo encontrar los medidores '.$id
             ], 500);
         }
+    }
+    public function filtradoTomas(Request $request){
+        try{
+            DB::beginTransaction();
+            //$filtros=$request->validated();
+            $filtros=$request->all();
+            $data=(new TomaService())->tomaTipos($filtros);
+            // return $data;
+            if (!$data){
+                return response()->json(["message"=>"No ha seleccionado un filtro para tomas, por favor especifique algún parametro"],500);
+            }
+            else
+            {
+                DB::commit();
+                return response()->json(['tomas'=>TomaResource::collection($data)]);
+                //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+            }
+           }
+           catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(["error"=>"No se pudo consultar tomas ".$ex],500);
+           }
     }
 }
