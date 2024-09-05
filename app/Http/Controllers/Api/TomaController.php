@@ -251,7 +251,7 @@ class TomaController extends Controller
             if($medidorActivo && $data['estatus']=='activo'){
                 Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
             }
-            $medidor['fecha_instalacion'] = Carbon::now();
+            $data['fecha_instalacion'] = Carbon::now();
             $medidor = Medidor::create($data);
             return response(new MedidorResource($medidor), 201);
         } catch (ModelNotFoundException $e) {
