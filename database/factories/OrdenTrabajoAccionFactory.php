@@ -22,7 +22,8 @@ class OrdenTrabajoAccionFactory extends Factory
             'id_orden_trabajo_catalogo' => $this->faker->numberBetween(1, 100), // Asumiendo que existe un rango de IDs válidos
             'accion' => $this->faker->randomElement(['modificar']),
             'modelo' => $this->faker->randomElement(['toma']),
-            'campo' => $this->faker->randomElement(['estatus','c_agua','c_alc','c_san','tipo_servicio','tipo_contratacion']),
+            'campo' => $this->faker->randomElement(['estatus']),
+            'valor' => $this->faker->randomElement(['pendiente confirmación inspección', 'pendiente de inspeccion', 'pendiente de instalacion', 'activa', 'baja definitiva', 'baja temporal', 'en proceso', 'limitado']),
         ];
     }
 }
