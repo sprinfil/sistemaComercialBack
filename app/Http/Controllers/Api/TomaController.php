@@ -11,10 +11,12 @@ use App\Http\Requests\UpdateTomaRequest;
 use App\Http\Resources\CargoResource;
 use App\Http\Resources\MedidorResource;
 use App\Http\Resources\OrdenTrabajoResource;
+use App\Http\Resources\PagoResource;
 use App\Http\Resources\TomaResource;
 use App\Models\Medidor;
 use App\Models\OrdenTrabajo;
 use App\Services\UsuarioService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -155,14 +157,34 @@ class TomaController extends Controller
     public function pagosPorToma($id)
     {
         try {
-            $toma = Toma::where("codigo_toma",$id)->first();
-            return $toma->pagos;
+            // Buscar la toma por su código
+            $toma = Toma::where("codigo_toma", $id)->first();
+            
+            // Verificar si la toma existe
+            if($toma) {
+                // Cargar los pagos con los abonos relacionados
+                $pagos = $toma->pagos()->with('abonosConCargos')->get();
+
+                // Verificar si existen pagos
+                if($pagos->isNotEmpty()) {
+                    // Retornar los pagos utilizando el PagoResource para transformar los datos
+                    return PagoResource::collection($pagos);
+                } else {
+                    // Si no hay pagos, retornar null o algún mensaje vacío
+                    return response()->json(['message' => 'No se encontraron pagos para esta toma.'], 404);
+                }
+            } else {
+                // Si la toma no existe, retornar un error 404
+                return response()->json(['error' => 'Toma no encontrada'], 404);
+            }
         } catch (ModelNotFoundException $e) {
+            // Capturar cualquier excepción de modelo no encontrado y retornar un error
             return response()->json([
                 'error' => 'Error al consultar los pagos'
             ], 500);
         }
     }
+
 
     /**
      * guardar posicion
@@ -227,7 +249,7 @@ class TomaController extends Controller
             if($medidorActivo && $data['estatus']=='activo'){
                 Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
             }
-            
+            $medidor['fecha_instalacion'] = Carbon::now();
             $medidor = Medidor::create($data);
             return response(new MedidorResource($medidor), 201);
         } catch (ModelNotFoundException $e) {
