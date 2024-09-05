@@ -33,5 +33,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/OrdenTrabajo/log_delete/masiva", "DeleteOrdenMasiva");
         Route::get("/OrdenTrabajo/show/{id}", "showOrden");
         Route::post("/OrdenTrabajo/filtros", "filtradoOrdenes");
+
     });
 });

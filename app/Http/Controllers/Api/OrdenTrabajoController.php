@@ -435,6 +435,7 @@ class OrdenTrabajoController extends Controller
             return response()->json(["error"=>"No se pudo crear la asignación masiva de OT ".$ex],500);
            }
     }
+ 
     public function deleteOrden(Request $request)
     { 
         try{
