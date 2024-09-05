@@ -35,7 +35,7 @@ class Libro extends Model
         'polygon' => Polygon::class,
     ];
  
-    public function ruta() : BelongsTo {
+    public function tieneRuta() : BelongsTo {
         return $this->belongsTo(Ruta::class , "id_ruta");
     }
     public function cargaTrabajo() : HasMany {
