@@ -454,6 +454,7 @@ class OrdenTrabajoService{
         $industrial=$filtros['industrial'] ?? null;
         $especial=$filtros['especial'] ?? null;
         $sin_contrato=$filtros['sin_contrato'] ?? null;
+        $servicio=$filtros['servicio'] ?? null;
 
          // HIPER MEGA QUERY INSANO
          $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')

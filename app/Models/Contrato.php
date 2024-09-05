@@ -140,5 +140,22 @@ class Contrato extends Model
         $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$ano)->get();
         return $data;
         
-    }   
+    } 
+
+    // Borrados y restores en cascada
+    protected static function boot() //borrado en cascada
+    {
+        parent::boot();
+
+        static::deleting(function ($parent) {
+            // Soft delete related child models
+            $parent->cotizaciones()->each(function ($child) {
+                $child->delete();
+            });
+        });
+        static::restoring(function ($parent) {
+            $parent->cotizaciones()->withTrashed()->restore();
+        });
+
+    }  
 }

@@ -9,6 +9,7 @@ use App\Models\OrdenTrabajoAccion;
 class OrdenTrabajoAccionService{
 
     public function store(array $ordenCatalogo){ //Ejemplo de service
+        
         $ordenAcciones=$ordenCatalogo['orden_trabajo_accion'];
         //$id=$idcatalogo ?? $ordenAcciones[0]['id_orden_trabajo_catalogo'];
         $OrdenAcciones=[];
