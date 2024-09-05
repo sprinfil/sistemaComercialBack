@@ -95,7 +95,7 @@ class OrdenTrabajoService{
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        if ($OT['estado']=="Concluida"){
+        if ($OT['estado']!="En proceso"){
            return null;
         }
         else{
