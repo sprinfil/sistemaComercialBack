@@ -12,7 +12,11 @@ class CargosConveniado extends Model
     use HasFactory,SoftDeletes;
     protected $fillable = [
         'id_cargo',
-        'id_convenio'
+        'id_convenio',
+        'monto_original_pendiente',
+        'monto_final_pendiente',
+        'porcentaje_conveniado',
+        'monto_conveniado'
     ];
 
     public function Convenio():BelongsTo{

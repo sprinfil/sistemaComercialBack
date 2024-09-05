@@ -13,7 +13,12 @@ class Convenio extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'id_convenio_catalogo'
+        'id_convenio_catalogo',
+        'monto_conveniado',
+        'monto_total',
+        'periodicidad',
+        'cantidad_letras',
+        'comentario',
     ];
 
     public function ConvenioCatalogo():BelongsTo{

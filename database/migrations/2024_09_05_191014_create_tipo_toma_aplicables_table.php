@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('convenios', function (Blueprint $table) {
+        Schema::create('tipo_toma_aplicables', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_convenio_catalogo');
-            $table->decimal('monto_conveniado');
-            $table->decimal('monto_total');
-            $table->enum('periodicidad',['mensual','quincenal']);
-            $table->integer('cantidad_letras');
-            $table->string('comentario');
+            $table->unsignedBigInteger('id_modelo');
+            $table->string('modelo_origen');
+            $table->unsignedBigInteger('id_tipo_toma');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('convenios');
+        Schema::dropIfExists('tipo_toma_aplicables');
     }
 };
