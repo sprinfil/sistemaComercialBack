@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_cargo');
             $table->unsignedBigInteger('id_convenio');
+            $table->decimal('monto_original_pendiente');
+            $table->decimal('monto_final_pendiente');
+            $table->decimal('porcentaje_conveniado');
+            $table->decimal('monto_conveniado');
             $table->softDeletes();
             $table->timestamps();
         });
