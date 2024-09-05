@@ -8,10 +8,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class OrdenTrabajo extends Model
 {
     use HasFactory, SoftDeletes;
+    use HasSpatial;
+
+    
+    protected $casts = [
+        'posicion_OT' => Point::class,
+    ];
+    protected $spatialFields = [
+        'posicion_OT',
+    ];
+    
     //protected $table="orden_trabajos";
     protected $fillable=[
         "id_toma",

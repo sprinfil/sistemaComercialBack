@@ -64,7 +64,7 @@ class Toma extends Model
         return $this->belongsTo(Libro::class,"id_libro");
     }
     public function ruta():HasOneThrough{
-        return $this->hasOneThrough(ruta::class,libro::class,'id','id','id_libro','id_ruta');
+        return $this->hasOneThrough(Ruta::class,Libro::class,'id','id','id_libro','id_ruta');
     }
 
     // Giro comercial asociado a la toma

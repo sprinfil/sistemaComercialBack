@@ -41,6 +41,7 @@ class OrdenTrabajoController extends Controller
         );
        
     }
+
     public function indexConf()
     {
         return OrdenTrabajoAccionResource::collection(
@@ -51,21 +52,24 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenes()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','ordenTrabajoCatalogo.ordenTrabajoAccion')->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
     public function indexOrdenesNoasignadas()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','No asignada')->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
 
-    public function indexMasivas(){
+    public function indexMasivas(Request $request){
+        $data=$request->tipo;
+        //return $data;
+        $ordenes=(new OrdenTrabajoService())->OtMasivas($data);
         return OrdenTrabajoCatalogoResource::collection(
-            OrdenTrabajoCatalogo::where('genera_masiva',1)->get()
+            $ordenes
         );
     }
     /**
@@ -299,14 +303,14 @@ class OrdenTrabajoController extends Controller
         
         
     }
-    public function cerrarOrden(Request $request)
+    public function cerrarOrden(StoreOrdenTrabajoRequest $request)
     {
        
        try{
         
         DB::beginTransaction();
-        $data=$request->all();
-        $OT=$data['orden_trabajo'];
+        $data=$request->validated();
+        $OT=$data['ordenes_trabajo'];
         $modelos=$data['modelos'] ?? null;
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
         if (!$Acciones){
@@ -368,10 +372,9 @@ class OrdenTrabajoController extends Controller
     }
     public function storeOrdenMasivaCerrar(StoreOrdenTrabajoRequest $request)
     {
-        
-       try{
         DB::beginTransaction();
-        $data=(new OrdenTrabajoService())->CerrarMasiva($request->validated()['ordenes_trabajo']);
+        $data=$request->validated();
+        $data=(new OrdenTrabajoService())->CerrarMasiva($data['ordenes_trabajo']);
         if (!$data){
             return response()->json(["message"=>"Ya existe una OT vigente para una de las tomas seleccionadas, por favor concluyala primero antes de generar otra"],500);
         }
@@ -381,6 +384,8 @@ class OrdenTrabajoController extends Controller
             return $data;
             //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
         }
+       try{
+       
        }
        catch(Exception $ex){
         DB::rollBack();
@@ -411,9 +416,9 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             //$filtros=$request->validated();
-            $filtros=$request;
+            $filtros=$request->all();
             $data=(new OrdenTrabajoService())->FiltrarOT($filtros);
-            //return $data;
+            // return $data;
             if (!$data){
                 return response()->json(["message"=>"No ha seleccionado un filtro para OT, por favor especifique algún parametro"],500);
             }

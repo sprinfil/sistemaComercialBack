@@ -1,6 +1,8 @@
 <?php
 namespace App\Services\AtencionUsuarios;
 
+use App\Models\Cargo;
+use App\Models\ConceptoAplicable;
 use App\Models\Toma;
 use App\Models\Usuario;
 use Carbon\Carbon;
@@ -14,18 +16,53 @@ class ConvenioService{
     public function BuscarConceptosConveniablesService(Request $data)
     {
       try {
-      //  $toma = "";
-       // $usuario = "";
-
+     
+        $conceptoAplicable = [];
         if ($data->tipo == "toma") {
-          $toma = Toma::find($data->id);
+          
+          $cargos = Cargo::where('modelo_dueno',"toma")
+          ->where('id_dueno',$data->id)
+          ->where('estado','pendiente')
+          ->get();
+          $cargos = $cargos->toArray();
+          $cargosAplicables = [];
+          $nxt = 0;
+          $temp = [];
+
+          foreach ($cargos as $cargo)
+          {
+            $temp = ConceptoAplicable::where('id_concepto_catalogo',$cargo['id_concepto'])
+            ->where('modelo','convenio_catalogo')
+            ->where('id_modelo',$data['id_convenio_catalogo'])
+            ->get();
+           
+            if (count($temp) != 0) {
+              $tempArr = $temp->toArray();
+              $cargosAplicables[$nxt] = $cargo;
+              $cargosAplicables[$nxt]['aplicable'] = "si";
+              $cargosAplicables[$nxt]['rango_minimo'] = $temp[0]['rango_minimo'];
+              $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];
+              
+            }
+            else{
+              $cargosAplicables[$nxt] = $cargo;
+              $cargosAplicables[$nxt]['aplicable'] = "No";
+            }
+           
+            $nxt++;
+          }
+          
          }
-        if ($data->tipo == "usuario") {
+       if ($data->tipo == "usuario") {
           $usuario = Usuario::find($data->id);
-         } 
-         return $toma->cargosVigentesConConcepto;
+       }          
+         return $cargosAplicables;
+
+
       } catch (Exception $ex) {
-        //throw $th;
+        return response()->json([
+          'Ocurio un error durante la busqueda de cargos aplicables.'
+        ]);
       }
        
 

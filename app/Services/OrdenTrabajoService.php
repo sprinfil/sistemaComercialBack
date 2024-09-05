@@ -41,7 +41,6 @@ class OrdenTrabajoService{
         $ordenTrabajo=OrdenTrabajo::where('id_toma',$ordenTrabajoPeticion['id_toma'])->where('id_orden_trabajo_catalogo',$ordenTrabajoPeticion['id_orden_trabajo_catalogo'])->whereNot('estado','Concluida')->whereNot('estado','Cancelada')->get();
       
         $id_empleado_asigno=auth()->user()->operador->id;//auth()->user()->operador->id
-  
         $ordenTrabajoPeticion['id_empleado_genero']=$id_empleado_asigno;
       
         $cargo=null;
@@ -158,7 +157,8 @@ class OrdenTrabajoService{
            
             $data=$this->crearOrden($OT);
             if (!$data){
-                $toma=Toma::find($OT['id_toma']);
+                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $toma=Toma::find($ordenTrabajo['id_toma']);
                 $Ordenes->push(["Error"=>"La orden de trabajo para la toma con clave catastral ".$toma['clave_catastral']." no se pudo crear, debido, a que ya supera el limite del tipo de orden de trabajo: ".$catalogo['nombre']]);
             }
             else{
@@ -177,8 +177,9 @@ class OrdenTrabajoService{
             
             $data=$this->asignar($OT);
             if (!$data){
-                $toma=Toma::find($OT['id_toma']);
                 $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $toma=Toma::find($ordenTrabajo['id_toma']);
+          
                 $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
                 $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo asignar, debido a que ya poseia un operador asignado"]);
             }
@@ -216,10 +217,11 @@ class OrdenTrabajoService{
         $i=1;
         foreach ($ordenesTrabajo as $OT){
             
-            $data=$this->asignar($OT);
+            $data=$this->concluir($OT, null);
             if (!$data){
-                $toma=Toma::find($OT['id_toma']);
                 $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $toma=Toma::find($ordenTrabajo['id_toma']);
+           
                 $catalogo=OrdenTrabajoCatalogo::find( $ordenTrabajo['id_orden_trabajo_catalogo']);
                 $Ordenes->push(["Error"=>"La orden de trabajo tipo:".$catalogo['nombre'].". Para la toma con clave catastral ".$toma['clave_catastral']." no se pudo asignar, debido a que ya poseia un operador asignado"]);
             }
@@ -447,13 +449,14 @@ class OrdenTrabajoService{
         $no_asignada=$filtros['no_asignada'] ?? false;
         $Concluida=$filtros['concluida'] ?? false;
         $Cancelada=$filtros['cancelada'] ?? false;
-        $domestica=$filtros['domestica'] ?? false;
-        $comercial=$filtros['comercial'] ?? false;
-        $industrial=$filtros['industrial'] ?? false;
-        $especial=$filtros['especial'] ?? false;
+        $domestica=$filtros['domestica'] ?? null;
+        $comercial=$filtros['comercial'] ?? null;
+        $industrial=$filtros['industrial'] ?? null;
+        $especial=$filtros['especial'] ?? null;
+        $sin_contrato=$filtros['sin_contrato'] ?? null;
 
          // HIPER MEGA QUERY INSANO
-         $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion')
+         $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')
          ->when($Asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'En proceso');
         })->when($no_asignada, function (EloquentBuilder $q)  {
@@ -484,45 +487,61 @@ class OrdenTrabajoService{
                 
             });
             return $q;
-        })->when($toma, function (EloquentBuilder $q) use($toma,$domestica,$comercial,$industrial,$especial) {
+        })->when($toma, function (EloquentBuilder $q) use($toma,$domestica,$comercial,$industrial,$especial,$sin_contrato) {
             
-            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial){
-                $a->when($domestica, function (EloquentBuilder $b){
-                $b->orWhere('nombre','domestica');
-                });
-                $a->when($comercial, function (EloquentBuilder $b) {
-                $b->orWhere('nombre','comercial');
-                });
-                $a->when($industrial, function (EloquentBuilder $b)  {
-                $b->orWhere('nombre','industrial');
-                });
-                $a->when($especial, function (EloquentBuilder $b) {
-                $b->orWhere('nombre','especial');
-                });
+            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial,$sin_contrato){
+                $types = [];
+
+                if ($domestica) {
+                    $types[] = 'Domestica';
+                }
+                if ($comercial) {
+                    $types[] = 'Comercial';
+                }
+                if ($industrial) {
+                    $types[] = 'Industrial';
+                }
+                if ($especial) {
+                    $types[] = 'Especial';
+                }
+                if ($sin_contrato) {
+                    $types[] = 'Sin Contrato';
+                }
+        
+                if (!empty($types)) {
+                    $a->whereIn('nombre', $types);
+                }
                 
             });
             $q->where('id_toma',$toma);
             
         }
-        ,function(EloquentBuilder $q)use($domestica,$comercial,$industrial,$especial){
-            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial){
+        ,function(EloquentBuilder $q)use($domestica,$comercial,$industrial,$especial,$sin_contrato){
+            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial,$sin_contrato){
                 
-                $a->when($domestica, function (EloquentBuilder $b){
-                $b->orWhere('nombre','domestica');
-                });
-                $a->when($comercial, function (EloquentBuilder $b) {
-                $b->orWhere('nombre','comercial');
-                });
-                $a->when($industrial, function (EloquentBuilder $b)  {
-                $b->orWhere('nombre','industrial');
-                });
-                $a->when($especial, function (EloquentBuilder $b) {
-                $b->orWhere('nombre','especial');
-                });
-                
+                $types = [];
+
+                if ($domestica) {
+                    $types[] = 'Domestica';
+                }
+                if ($comercial) {
+                    $types[] = 'Comercial';
+                }
+                if ($industrial) {
+                    $types[] = 'Industrial';
+                }
+                if ($especial) {
+                    $types[] = 'Especial';
+                }
+                if ($sin_contrato) {
+                    $types[] = 'Sin Contrato';
+                }
+        
+                if (!empty($types)) {
+                    $a->whereIn('nombre', $types);
+                }
             });
-        })
-        ->get();
+        })->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
 
@@ -559,5 +578,15 @@ class OrdenTrabajoService{
         //
        
        
+    }
+    public function OtMasivas($tipoOrden){
+        match($tipoOrden)
+        {
+            'generar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('genera_masiva',1)->get(),
+            'asignar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('asigna_masiva',1)->get(),
+            'cerrar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('cierra_masiva',1)->get(),
+            'cancelar'=>$ordenesTrabajo=OrdenTrabajoCatalogo::where('cancela_masiva',1)->get(),
+        };
+        return $ordenesTrabajo;
     }
 }

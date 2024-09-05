@@ -61,7 +61,5 @@ class ConceptoCatalogo extends Model
         return $data;
     }
 
-    public function CargoConveniable():HasOne{
-        return $this->hasOne(CargosConveniable::class, "id_concepto_catalogo", "id");
-    }
+   
 }
