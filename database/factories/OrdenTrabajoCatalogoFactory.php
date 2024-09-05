@@ -57,6 +57,8 @@ class OrdenTrabajoCatalogoFactory extends Factory
                     'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
                     'accion' => 'registrar',
                     'modelo' => 'medidores',
+                    'campo' => '',
+                    'valor' => ''
                 ]);
             } else{
                 // Crear acciones asociadas
