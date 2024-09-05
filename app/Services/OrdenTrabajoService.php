@@ -487,21 +487,30 @@ class OrdenTrabajoService{
                 
             });
             return $q;
-        })->when($toma, function (EloquentBuilder $q) use($toma,$domestica,$comercial,$industrial,$especial) {
+        })->when($toma, function (EloquentBuilder $q) use($toma,$domestica,$comercial,$industrial,$especial,$sin_contrato) {
             
-            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial){
-                $a->when($domestica, function (EloquentBuilder $b){
-                $b->orWhere('   nombre','domestica');
-                });
-                $a->when($comercial, function (EloquentBuilder $b) {
-                $b->orWhere('nombre','comercial');
-                });
-                $a->when($industrial, function (EloquentBuilder $b)  {
-                $b->orWhere('nombre','industrial');
-                });
-                $a->when($especial, function (EloquentBuilder $b) {
-                $b->orWhere('nombre','especial');
-                });
+            $q->whereHas('toma.tipoToma', function($a)use($domestica,$comercial,$industrial,$especial,$sin_contrato){
+                $types = [];
+
+                if ($domestica) {
+                    $types[] = 'Domestica';
+                }
+                if ($comercial) {
+                    $types[] = 'Comercial';
+                }
+                if ($industrial) {
+                    $types[] = 'Industrial';
+                }
+                if ($especial) {
+                    $types[] = 'Especial';
+                }
+                if ($sin_contrato) {
+                    $types[] = 'Sin Contrato';
+                }
+        
+                if (!empty($types)) {
+                    $a->whereIn('nombre', $types);
+                }
                 
             });
             $q->where('id_toma',$toma);
