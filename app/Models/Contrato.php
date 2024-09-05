@@ -111,7 +111,7 @@ class Contrato extends Model
 
         
         if ($folio){
-            $num=substr($folio,0,5)+1;
+            $num=intval(substr($folio,0,5))+1;
             switch(strlen(strval($num))){
                 case 1:
                     $num="0000".$num;
