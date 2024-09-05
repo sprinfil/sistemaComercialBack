@@ -416,7 +416,7 @@ class OrdenTrabajoController extends Controller
         try{
             DB::beginTransaction();
             //$filtros=$request->validated();
-            $filtros=$request;
+            $filtros=$request->all();
             $data=(new OrdenTrabajoService())->FiltrarOT($filtros);
             //return $data;
             if (!$data){
