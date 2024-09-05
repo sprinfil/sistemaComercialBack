@@ -16,11 +16,8 @@ class ConvenioService{
     public function BuscarConceptosConveniablesService(Request $data)
     {
       try {
-     
-        $conceptoAplicable = [];
-        if ($data->tipo == "toma") {
-          
-          $cargos = Cargo::where('modelo_dueno',"toma")
+        //  $conceptoAplicable = [];
+          $cargos = Cargo::where('modelo_dueno',$data->tipo)
           ->where('id_dueno',$data->id)
           ->where('estado','pendiente')
           ->get();
@@ -28,7 +25,6 @@ class ConvenioService{
           $cargosAplicables = [];
           $nxt = 0;
           $temp = [];
-
           foreach ($cargos as $cargo)
           {
             $temp = ConceptoAplicable::where('id_concepto_catalogo',$cargo['id_concepto'])
@@ -37,34 +33,24 @@ class ConvenioService{
             ->get();
            
             if (count($temp) != 0) {
-              $tempArr = $temp->toArray();
               $cargosAplicables[$nxt] = $cargo;
               $cargosAplicables[$nxt]['aplicable'] = "si";
               $cargosAplicables[$nxt]['rango_minimo'] = $temp[0]['rango_minimo'];
-              $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];
-              
+              $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];             
             }
             else{
               $cargosAplicables[$nxt] = $cargo;
               $cargosAplicables[$nxt]['aplicable'] = "No";
-            }
-           
+            }          
             $nxt++;
           }
-          
-         }
-       if ($data->tipo == "usuario") {
-          $usuario = Usuario::find($data->id);
-       }          
-         return $cargosAplicables;
 
+         return json_encode($cargosAplicables);
 
       } catch (Exception $ex) {
         return response()->json([
           'Ocurio un error durante la busqueda de cargos aplicables.'
         ]);
       }
-       
-
     }
 }
