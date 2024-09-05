@@ -18,5 +18,8 @@ Route::middleware(['api', 'audit'])->group(function () {
 
         //Registro de convenio
         Route::post("/Convenio/BuscarConceptosConveniables","BuscarConceptosConveniables");
+
+        // mike
+        Route::get("/Convenio/conceptos/{id}", "conceptosAplicables");
     });
 });

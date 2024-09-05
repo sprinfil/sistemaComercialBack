@@ -17,6 +17,16 @@ use function PHPUnit\Framework\returnValueMap;
 
 class ConvenioController extends Controller
 {
+    protected $convenioService;
+
+    /**
+     * Constructor del controller
+     */
+    public function __construct(ConvenioCatalogoService $_convenioService)
+    {
+        $this->convenioService = $_convenioService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -136,6 +146,21 @@ class ConvenioController extends Controller
       try {
        DB::beginTransaction();
        $convenio = (new ConvenioService())->BuscarConceptosConveniablesService($data);
+       DB::commit();
+       return $convenio;
+      } catch (Exception $ex) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Ocurrio un error al consultar los conceptos conveniables.'
+        ]); 
+      }
+    }
+
+    public function conceptosAplicables(string $id)
+    {
+      try {
+       DB::beginTransaction();
+       $convenio = $this->convenioService->conceptosAplicables($id);
        DB::commit();
        return $convenio;
       } catch (Exception $ex) {

@@ -11,6 +11,7 @@ use App\Models\CatalogoBonificacion;
 use App\Models\Pago;
 use App\Models\Toma;
 use App\Models\Usuario;
+use App\Services\OrdenTrabajoService;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -390,6 +391,17 @@ class PagoService{
                         if($diferencia < 1){
                             // si la diferencia es menor a 1
                             $cargo_modificado = Cargo::findOrFail($cargo->id);
+                            //
+                            $concepto = $cargo_modificado;
+                            if($concepto->genera_orden != 0)
+                            {
+                                $ordenTrabajoPeticion = [
+                                    'id_orden_trabajo_catalogo' => $concepto->genera_orden, // ID estático del catálogo de la orden de trabajo
+                                    'id_toma' => $cargo_modificado->id_dueno, // ID estático de la toma
+                                ];
+                                (new OrdenTrabajoService())->crearOrden($ordenTrabajoPeticion);
+                            }
+                            //
                             $cargo_modificado->update([
                                 'estado' => 'pagado'
                             ]);

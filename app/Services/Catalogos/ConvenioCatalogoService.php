@@ -119,4 +119,24 @@ class ConvenioCatalogoService{
        
     }
 
+    public function conceptosAplicables(string $id)
+    {
+        try{
+            $convenio = ConvenioCatalogo::findOrFail($id);
+            if($convenio){
+                $conceptos_aplicables = $convenio->conceptosAplicables;
+                if($conceptos_aplicables){
+                    return $conceptos_aplicables;
+                }else{
+                    return new Exception("el convenip ".$id)." no tiene conceptos aplicables";
+                }
+            }else{
+                return new Exception("no existe el convenio ".$id);
+            }
+        }catch(Exception $ex){
+            return response()->json([
+                'message' => 'Ocurrio un error al restaurar la constancia.'.$ex
+            ], 200);
+        }
+    }
 }

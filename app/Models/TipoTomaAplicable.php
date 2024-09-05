@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class tipo_toma_aplicable extends Model
+class TipoTomaAplicable extends Model
 {
     use HasFactory,SoftDeletes;
 

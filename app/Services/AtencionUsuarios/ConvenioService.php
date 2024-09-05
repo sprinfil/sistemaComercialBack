@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ConvenioService{
-
     public function BuscarConceptosConveniablesService(Request $data)
     {
       try {
