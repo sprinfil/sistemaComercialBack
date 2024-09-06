@@ -579,7 +579,7 @@ class OrdenTrabajoService{
         });
 */
        
-      /*
+      
         $Querysaldo=new Collection();
         foreach($query as $ot){
             $saldo=$ot['toma']->saldoToma();
@@ -607,8 +607,8 @@ class OrdenTrabajoService{
             unset( $ot['toma']['cargosVigentes']);
            
         }
-        */
-        $OT =$query;
+        
+        $OT =$Querysaldo;
         return $OT;
         //
        
