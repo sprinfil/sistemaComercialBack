@@ -133,6 +133,7 @@ class TomaService{
             //return $tomasSaldo;
         }
             */
+            /*
             $Querysaldo=new Collection();
             foreach($query as $ot){
                 $saldo=$ot->saldoToma();
@@ -160,7 +161,8 @@ class TomaService{
                 unset( $ot['cargosVigentes']);
                
             }
-        $OT =$Querysaldo;
+                */
+        $OT =$query;
         return $OT;
         //
 

@@ -63,8 +63,9 @@ class OrdenTrabajoController extends Controller
         $hoy=Carbon::now('America/Denver')->startOfDay();
         $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
         $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
+        //return [$hoyFormateado,$hoyFormateadofinal];
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','toma.ruta','toma.libro','empleadoGenero','empleadoAsigno','empleadoEncargado','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->paginate(20)
+            OrdenTrabajo::with('toma.usuario','toma.tipoToma','toma.ruta','toma.libro','empleadoGenero','empleadoAsigno','empleadoEncargado','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }

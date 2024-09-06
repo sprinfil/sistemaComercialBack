@@ -222,7 +222,7 @@ class TomaController extends Controller
             $hoy=Carbon::now('America/Denver')->startOfDay();
             $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
             $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
-            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at','desc')->paginate(20);
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['usuario','toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at','desc')->paginate(20);
            return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([

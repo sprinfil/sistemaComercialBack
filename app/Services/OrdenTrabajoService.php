@@ -54,6 +54,7 @@ class OrdenTrabajoService{
             
             
             $ordenTrabajoPeticion['fecha_vigencia']=Carbon::today()->addDays($OtCatalogo['vigencias']);
+            $ordenTrabajoPeticion['created_at']= Carbon::now('America/Denver')->format('Y-m-d H:i:s');
             $ordenTrabajoPeticion['estado']="No asignada";
             $ordenTrabajo=OrdenTrabajo::create($ordenTrabajoPeticion);
             if($OtCatalogo['momento_cargo']=="generar"){
@@ -81,7 +82,7 @@ class OrdenTrabajoService{
             return null;
         }
         else{
-            $OT['fecha_asignacion']=Carbon::today()->format('Y-m-d');
+            $OT['fecha_asignacion']=Carbon::today('America/Denver')->format('Y-m-d H:i:s');
             $OT['estado']="En proceso";
             $OT['id_empleado_asigno']=$id_empleado_asigno;
             $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
@@ -578,7 +579,7 @@ class OrdenTrabajoService{
         });
 */
        
-      
+      /*
         $Querysaldo=new Collection();
         foreach($query as $ot){
             $saldo=$ot['toma']->saldoToma();
@@ -606,8 +607,8 @@ class OrdenTrabajoService{
             unset( $ot['toma']['cargosVigentes']);
            
         }
-        
-        $OT =$Querysaldo;
+        */
+        $OT =$query;
         return $OT;
         //
        
