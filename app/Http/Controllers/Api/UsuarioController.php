@@ -115,7 +115,7 @@ class UsuarioController extends Controller
             $data = Usuario::ConsultarPorNombresCodigo($usuario);
      
            // return response()->json($data);
-           return response(UsuarioResource::collection($data));
+           return UsuarioResource::collection($data);
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 500);

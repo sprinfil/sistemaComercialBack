@@ -18,7 +18,7 @@ class TomaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //$calle2=;
+        $calle2=" y ".$this->entre_calle_2 ?? null;
         return [
             "id" => $this->id,
             "posicion" => $this->posicion,
@@ -36,7 +36,7 @@ class TomaResource extends JsonResource
             "codigo_postal" => $this->codigo_postal,
             "numero_casa" => $this->numero_casa,
             "localidad" => $this->localidad,
-            "direccion_completa"=>$this->calle."/".$this->entre_calle_1." y ".$this->entre_calle_2." #".$this->numero_casa." ".$this->colonia,
+            "direccion_completa"=>$this->calle."/".$this->entre_calle_1.$calle2." #".$this->numero_casa." ".$this->colonia,
             "diametro_toma" => $this->diametro_toma,
             "calle_notificaciones" => $this->calle_notificaciones,
             "entre_calle_notificaciones_1" => $this->entre_calle_notificaciones_1,
