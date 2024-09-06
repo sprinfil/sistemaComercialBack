@@ -21,6 +21,7 @@ use App\Models\OrdenTrabajoAccion;
 use App\Services\OrdenTrabajoCatalogoService;
 use App\Services\OrdenTrabajoAccionService;
 use App\Services\OrdenTrabajoService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -58,8 +59,11 @@ class OrdenTrabajoController extends Controller
     }
     public function indexOrdenesNoasignadas()
     {
+        $hoy=Carbon::now('America/Denver')->startOfDay();
+        $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
+        $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
