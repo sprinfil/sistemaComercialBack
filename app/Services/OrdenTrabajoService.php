@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Else_;
 use PhpParser\Node\Stmt\Return_;
 
 use function PHPUnit\Framework\isEmpty;
@@ -53,6 +54,7 @@ class OrdenTrabajoService{
             
             
             $ordenTrabajoPeticion['fecha_vigencia']=Carbon::today()->addDays($OtCatalogo['vigencias']);
+            $ordenTrabajoPeticion['created_at']= Carbon::now('America/Denver')->format('Y-m-d H:i:s');
             $ordenTrabajoPeticion['estado']="No asignada";
             $ordenTrabajo=OrdenTrabajo::create($ordenTrabajoPeticion);
             if($OtCatalogo['momento_cargo']=="generar"){
@@ -80,7 +82,7 @@ class OrdenTrabajoService{
             return null;
         }
         else{
-            $OT['fecha_asignacion']=Carbon::today()->format('Y-m-d');
+            $OT['fecha_asignacion']=Carbon::today('America/Denver')->format('Y-m-d H:i:s');
             $OT['estado']="En proceso";
             $OT['id_empleado_asigno']=$id_empleado_asigno;
             $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
@@ -563,36 +565,50 @@ class OrdenTrabajoService{
         ->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
-
-        if ($saldoMin){
-            if ($saldoMax){
-                $query = $query->filter(function($query) use($saldoMin,$saldoMax) {
-                    $toma=$query->toma;
-                    if (!empty($toma)){
-                        $saldo=$toma->saldoToma();
-                        if ($saldo>=$saldoMin && $saldo<=$saldoMax){
-                            $toma['saldo']=$saldo;
-                            unset($toma['cargosVigentes']);
-                            
-                            $resultado=$toma;
-                    
-                            return $resultado;
-                        }
-                    }
-                    
-                    
-            
-                });
-            }
-            
-            else{
-              return null;
-            }
+        /*
+        $query = $query->filter(function($query) {
+            $toma=$query->toma;
+            if (!empty($toma)){
+                $saldo=$toma->saldoToma();
+                $toma['saldo']=$saldo;
+                unset($toma['cargosVigentes']);
+                $resultado=$toma;
+                return $resultado;    
                 
-        
-            //return $tomasSaldo;
+            }
+        });
+*/
+       
+      
+        $Querysaldo=new Collection();
+        foreach($query as $ot){
+            $saldo=$ot['toma']->saldoToma();
+            $ot['toma']['saldo']=$saldo;
+   
+            if ($saldoMin){
+                if ($saldoMax){
+                    if ($ot['toma']['saldo']>=$saldoMin && $ot['toma']['saldo']<=$saldoMax){
+                
+                        $Querysaldo->push($ot);
+                     
+                    }
+                }
+                
+                else{
+                    if ($ot['toma']['saldo']==$saldoMin){
+                        $Querysaldo->push($ot);
+                    }
+                }
+            
+            }
+            else{
+                $Querysaldo->push($ot);
+            }
+            unset( $ot['toma']['cargosVigentes']);
+           
         }
-        $OT =$query;
+        
+        $OT =$Querysaldo;
         return $OT;
         //
        
