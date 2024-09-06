@@ -219,9 +219,10 @@ class TomaController extends Controller
     {
         try {
             $toma = Toma::where('codigo_toma',$id)->first();
-            //$ordenes=$toma->ordenesTrabajo;
-            //return OrdenTrabajoResource::collection($ordenes);
-            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->orderBy('created_at','desc')->paginate(20);
+            $hoy=Carbon::now('America/Denver')->startOfDay();
+            $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
+            $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at','desc')->paginate(20);
            return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([
