@@ -22,6 +22,7 @@ class TomaService{
         $industrial=$filtros['industrial'] ?? null;
         $especial=$filtros['especial'] ?? null;
         $sin_contrato=$filtros['sin_contrato'] ?? null;
+        $codigo=$filtros['codigo_toma'] ?? null;
 
          // HIPER MEGA QUERY INSANO
          $query=Toma::with('tipoToma','libro','ruta')
@@ -97,7 +98,10 @@ class TomaService{
                     $a->whereIn('nombre', $types);
                 }
             });
-        })->get();
+        })->when($codigo, function (Builder $q) use ($codigo){
+            $q->where('codigo_toma',$codigo);
+        })
+        ->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
 /*

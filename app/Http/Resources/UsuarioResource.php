@@ -28,6 +28,7 @@ class UsuarioResource extends JsonResource
             "rfc" => $this->rfc,
             "correo" => $this->correo,
             'tomas' =>TomaResource::collection($this->whenLoaded('tomas')),//$this->tomas?? 
+            'toma' =>TomaResource::collection($this->whenLoaded('toma')),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratos')),
             'descuento_asociado' => new DescuentoAsociadoResource($this->whenLoaded('descuento_asociado')),
             'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes')))

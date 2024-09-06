@@ -37,7 +37,7 @@ class OrdenTrabajoController extends Controller
     public function indexCatalogo()
     {
         return OrdenTrabajoCatalogoResource::collection(
-            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos','ordenTrabajoEncadenado')->get()
+            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos.OTConcepto','ordenTrabajoEncadenado')->get()
         );
        
     }
@@ -310,9 +310,8 @@ class OrdenTrabajoController extends Controller
         $OT=$data['ordenes_trabajo'][0];
         $modelos=$data['modelos'] ?? null;
         $Acciones=(new OrdenTrabajoService())->concluir($OT,$modelos);
-        return $Acciones;
         if (!$Acciones){
-            return response()->json(["message"=>"la OT especificada ya se cerro"],500);
+            return response()->json(["message"=>"la OT especificada no se puede concluir o ya se cerró"],500);
             DB::rollBack();
         }
         else{

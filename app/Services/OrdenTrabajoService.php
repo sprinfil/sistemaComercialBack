@@ -95,7 +95,7 @@ class OrdenTrabajoService{
     ///El operador encargado termina la orden de trabajo
     public function concluir(array $ordenTrabajo, $modelos){ //Ejemplo de service
         $OT=OrdenTrabajo::find($ordenTrabajo['id']);
-        if ($OT['estado']=="Concluida"){
+        if ($OT['estado']!="En proceso"){
            return null;
         }
         else{
@@ -455,6 +455,7 @@ class OrdenTrabajoService{
         $especial=$filtros['especial'] ?? null;
         $sin_contrato=$filtros['sin_contrato'] ?? null;
         $servicio=$filtros['servicio'] ?? null;
+        $codigo=$filtros['codigo_toma'] ?? null;
 
          // HIPER MEGA QUERY INSANO
          $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')
@@ -542,7 +543,12 @@ class OrdenTrabajoService{
                     $a->whereIn('nombre', $types);
                 }
             });
-        })->get();
+        })->when($codigo, function (EloquentBuilder $q) use ($codigo){
+            $q->whereHas('toma', function($a)use ($codigo){
+                $a->where('codigo_toma',$codigo);
+            });
+        })
+        ->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
 
