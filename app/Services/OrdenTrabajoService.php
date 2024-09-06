@@ -463,7 +463,7 @@ class OrdenTrabajoService{
         $fecha_fin=$filtros['fecha_fin'] ?? null;
 
          // HIPER MEGA QUERY INSANO
-         $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')
+         $query=OrdenTrabajo::with('empleadoGenero','empleadoAsigno','empleadoEncargado','toma.usuario','toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')
          ->when($Asignada, function (EloquentBuilder $q)  {
             return $q->orWhere('estado', 'En proceso');
         })->when($no_asignada, function (EloquentBuilder $q)  {
