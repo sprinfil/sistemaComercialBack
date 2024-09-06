@@ -207,7 +207,7 @@ class TomaController extends Controller
             $toma = Toma::where('codigo_toma',$id)->first();
             //$ordenes=$toma->ordenesTrabajo;
             //return OrdenTrabajoResource::collection($ordenes);
-            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->orderBy('created_at','desc')->paginate(20);
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->orderBy('created_at','desc')->paginate(20);
             return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -221,7 +221,7 @@ class TomaController extends Controller
             $toma = Toma::where('codigo_toma',$id)->first();
             //$ordenes=$toma->ordenesTrabajo;
             //return OrdenTrabajoResource::collection($ordenes);
-            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->orderBy('created_at','desc')->paginate(20);
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->orderBy('created_at','desc')->paginate(20);
            return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([
