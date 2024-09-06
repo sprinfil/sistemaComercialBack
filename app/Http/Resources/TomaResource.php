@@ -18,7 +18,7 @@ class TomaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $calle2=" y ".$this->entre_calle_2 ?? null;
+        $calle2= !empty($this->entre_calle_2)?" y ".$this->entre_calle_2 :null;
         return [
             "id" => $this->id,
             "posicion" => $this->posicion,
