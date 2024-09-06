@@ -631,4 +631,49 @@ class CajaService{
     }
   }
 
+  public function sesionPreviaService()
+  {
+    try {
+      $usuario = auth()->user();
+      //Obtencion de datos del arreglo
+      $idOperador = $usuario->operador->id;
+
+      $sesionesAbiertas = Caja::where('id_operador',$idOperador)
+      ->where('fecha_cierre',null)
+      ->get();
+
+      if ($sesionesAbiertas) {
+        return json_encode($sesionesAbiertas);
+      }else
+      {
+        return response()->json([
+          'error' => 'No se existen sesiones abiertas.'
+      ]);
+      }
+      
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda.'
+    ], 500);
+    }
+  }
+
+  public function cortesRechazadosService()
+  {
+    try {
+      $usuario = auth()->user();
+      //Obtencion de datos del arreglo
+      $idOperador = $usuario->operador->id;
+
+      $cortesRechazados = CorteCaja::where('id_operador',$idOperador)
+      ->where('estatus',"rechazado")
+      ->with('Caja')
+      ->get();
+      return $cortesRechazados;
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda.'
+    ], 500);
+    }
+  }
 }
