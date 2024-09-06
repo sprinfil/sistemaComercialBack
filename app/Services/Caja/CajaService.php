@@ -669,7 +669,7 @@ class CajaService{
       ->where('estatus',"rechazado")
       ->with('Caja')
       ->get();
-      return $cortesRechazados;
+      return json_encode($cortesRechazados);
     } catch (Exception $ex) {
       return response()->json([
         'error' => 'Ocurrio un error durante la busqueda.'
