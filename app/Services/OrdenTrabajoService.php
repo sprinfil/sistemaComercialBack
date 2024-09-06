@@ -80,6 +80,7 @@ class OrdenTrabajoService{
             return null;
         }
         else{
+            $OT['fecha_asignacion']=Carbon::today()->format('Y-m-d');
             $OT['estado']="En proceso";
             $OT['id_empleado_asigno']=$id_empleado_asigno;
             $OT['id_empleado_encargado']=$ordenTrabajo['id_empleado_encargado'];
@@ -456,6 +457,10 @@ class OrdenTrabajoService{
         $sin_contrato=$filtros['sin_contrato'] ?? null;
         $servicio=$filtros['servicio'] ?? null;
         $codigo=$filtros['codigo_toma'] ?? null;
+        /////fechas
+        $fecha_tipo=$filtros['fecha_tipo'] ?? null;
+        $fecha_inicio=$filtros['fecha_inicio'] ?? null;
+        $fecha_fin=$filtros['fecha_fin'] ?? null;
 
          // HIPER MEGA QUERY INSANO
          $query=OrdenTrabajo::with('toma.tipoToma','toma.libro','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')
@@ -546,6 +551,13 @@ class OrdenTrabajoService{
         })->when($codigo, function (EloquentBuilder $q) use ($codigo){
             $q->whereHas('toma', function($a)use ($codigo){
                 $a->where('codigo_toma',$codigo);
+            });
+        })->when($fecha_inicio, function (EloquentBuilder $q) use ($fecha_inicio,$fecha_fin,$fecha_tipo){
+          
+            $q->when($fecha_fin, function (EloquentBuilder $q2) use ($fecha_inicio,$fecha_fin,$fecha_tipo){
+                $q2->whereBetween($fecha_tipo,[$fecha_inicio,$fecha_fin]);
+            },function(EloquentBuilder $q) use($fecha_inicio,$fecha_tipo){
+                $q->where($fecha_tipo,$fecha_inicio);
             });
         })
         ->get();
