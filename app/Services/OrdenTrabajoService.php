@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Else_;
 use PhpParser\Node\Stmt\Return_;
 
 use function PHPUnit\Framework\isEmpty;
@@ -563,36 +564,50 @@ class OrdenTrabajoService{
         ->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
-
-        if ($saldoMin){
-            if ($saldoMax){
-                $query = $query->filter(function($query) use($saldoMin,$saldoMax) {
-                    $toma=$query->toma;
-                    if (!empty($toma)){
-                        $saldo=$toma->saldoToma();
-                        if ($saldo>=$saldoMin && $saldo<=$saldoMax){
-                            $toma['saldo']=$saldo;
-                            unset($toma['cargosVigentes']);
-                            
-                            $resultado=$toma;
-                    
-                            return $resultado;
-                        }
-                    }
-                    
-                    
-            
-                });
-            }
-            
-            else{
-              return null;
-            }
+        /*
+        $query = $query->filter(function($query) {
+            $toma=$query->toma;
+            if (!empty($toma)){
+                $saldo=$toma->saldoToma();
+                $toma['saldo']=$saldo;
+                unset($toma['cargosVigentes']);
+                $resultado=$toma;
+                return $resultado;    
                 
-        
-            //return $tomasSaldo;
+            }
+        });
+*/
+       
+      
+        $Querysaldo=new Collection();
+        foreach($query as $ot){
+            $saldo=$ot['toma']->saldoToma();
+            $ot['toma']['saldo']=$saldo;
+   
+            if ($saldoMin){
+                if ($saldoMax){
+                    if ($ot['toma']['saldo']>=$saldoMin && $ot['toma']['saldo']<=$saldoMax){
+                
+                        $Querysaldo->push($ot);
+                     
+                    }
+                }
+                
+                else{
+                    if ($ot['toma']['saldo']==$saldoMin){
+                        $Querysaldo->push($ot);
+                    }
+                }
+            
+            }
+            else{
+                $Querysaldo->push($ot);
+            }
+            unset( $ot['toma']['cargosVigentes']);
+           
         }
-        $OT =$query;
+        
+        $OT =$Querysaldo;
         return $OT;
         //
        

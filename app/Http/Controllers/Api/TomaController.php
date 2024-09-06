@@ -298,6 +298,7 @@ class TomaController extends Controller
             //$filtros=$request->validated();
             $filtros=$request->all();
             $data=(new TomaService())->tomaTipos($filtros);
+            return $data;
             // return $data;
             if (!$data){
                 return response()->json(["message"=>"No ha seleccionado un filtro para tomas, por favor especifique algún parametro"],500);
@@ -306,6 +307,7 @@ class TomaController extends Controller
             {
                 DB::commit();
                 return response()->json(['tomas'=>TomaResource::collection($data)]);
+                //return response()->json(['tomas'=>$data]);
                 //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
             }
            }

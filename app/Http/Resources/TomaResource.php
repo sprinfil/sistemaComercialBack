@@ -46,7 +46,7 @@ class TomaResource extends JsonResource
             "c_agua" => $this->c_agua,
             "c_alc" => $this->c_alc,
             "c_san" => $this->c_san,
-            'tipo_toma' => new UsuarioResource($this->whenLoaded('tipoToma')),
+            'tipo_toma' => new TipoTomaResource($this->whenLoaded('tipoToma')),
             'libro' => new LibroSimplificado($this->whenLoaded('libro')),
             'ruta' => new RutaSimplificado($this->whenLoaded('ruta')),
             'usuario' => new UsuarioResource($this->whenLoaded('usuario')),
