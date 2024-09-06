@@ -118,7 +118,7 @@ class UsuarioController extends Controller
            return response(UsuarioResource::collection($data));
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+            return response()->json(['error' => 'No se encontraron usuarios'], 500);
         }
     }
     public function showContacto(string $usuario)
@@ -130,7 +130,7 @@ class UsuarioController extends Controller
         );
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+            return response()->json(['error' => 'No se encontraron usuarios'], 500);
         }
     }
     public function showDireccion(string $usuario)
