@@ -355,8 +355,8 @@ class TarifaService{
             ], 500);
         }
        
-    }
-    public function storeTarifaServicioDetalle($id_tarifa_servicio) 
+    }    
+    public function storeTarifaServicioDetalle(array $tarifaDetalles) 
     {
         try {
         /* 
@@ -378,14 +378,23 @@ class TarifaService{
 
 
             //Verifica que exista un servicio para poder añadir una tarfa servicio detalle
-            $tarifaServicio = TarifaServicio::where('id' , $id_tarifa_servicio)->first();
+            $tarifaServicio = TarifaServicio::where('id' , $tarifaDetalles['id_tarifa_servicio'])->first();
             $rangomin = $tarifaServicio->tarifaDetalle->min('rango');
+            $montomin = $tarifaServicio->tarifaDetalle->min('monto');
              //Si existe una tarifa servicio, hace el store
             if ($tarifaServicio->tarifaDetalle) {
-                if ($rangomin) {
-                    
+                foreach ($tarifaServicio->tarifaDetalle as $detalle) {
+                    if ($tarifaDetalles['monto'] <= $montomin) {
+                        return response()->json(['error' => 'El monto no puede ser igual o menor que el monto minimo'], 400);
+                    }
+                    if ($tarifaDetalles['rango'] == $detalle->rango) {
+                        return response()->json(['error' => 'El rango ingresado ya existe'] , 400);
+                    }
+                    elseif ($tarifaDetalles['rango'] < $rangomin) {
+                        return response()->json(['error' => 'El rango no puede ser menor al rango minimo registrado'] , 400);
+                    }
                 }
-                $tarifaServicioDetalle = TarifaServiciosDetalle::create($id_tarifa_servicio);
+                $tarifaServicioDetalle = TarifaServiciosDetalle::create($tarifaDetalles);
                 return response(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 201);
             }
             else{
@@ -412,17 +421,48 @@ class TarifaService{
         }
     }
 
-    public function updateTarifaServicioDetalleService(array $data,  string $id)
+    public function updateTarifaServicioDetalleService(array $tarifaDetalles , $id)
     {
         try {
           
             $tarifaServicioDetalle = TarifaServiciosDetalle::findOrFail($id);
-            $tarifaServicioDetalle->update($data);
-            $tarifaServicioDetalle->save();
-            return response(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 200);
+            $rangoActual = $tarifaServicioDetalle->rango;
+
+            $siguienteRango = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
+            ->where('rango', '>', $rangoActual)
+            ->orderBy('rango', 'asc')
+            ->first();
+            
+            $montomin = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
+                ->where('id', '!=', $tarifaServicioDetalle->id)
+                ->min('monto');
+            
+            $rangoExiste = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
+                ->where('rango', $tarifaDetalles['rango'])
+                ->where('id', '!=', $tarifaServicioDetalle->id)
+                ->first();
+            
+            if ($rangoExiste) {
+                return response()->json(['error' => 'El rango ingresado ya existe para esta tarifa'], 400);
+            }
+            
+            if ($tarifaDetalles['rango'] <= $rangoActual) {
+                return response()->json(['error' => 'El nuevo rango no puede ser menor o igual que el actual'], 400);
+            }
+            if ($siguienteRango && $tarifaDetalles['rango'] >= $siguienteRango->rango) {
+                return response()->json(['error' => 'El nuevo rango no puede ser mayor o igual que el siguiente rango'], 400);
+            }
+            
+            if ($tarifaDetalles['monto'] <= $montomin) {
+                return response()->json(['error' => 'El monto no puede ser igual o menor que el monto mínimo registrado'], 400);
+            }
+            
+            $tarifaServicioDetalle->update($tarifaDetalles);
+            
+            return response()->json(new TarifaServiciosDetalleResource($tarifaServicioDetalle), 200);
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'No se edito el servicio.'
+                'error' => 'No se edito el servicio.' .$ex
             ], 500);
         }
     }

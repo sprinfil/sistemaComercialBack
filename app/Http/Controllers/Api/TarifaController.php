@@ -305,13 +305,13 @@ class TarifaController extends Controller
         //Log::info("id");
     }
 
-    public function updateTarifaServicioDetalle(UpdateTarifaServiciosDetalleRequest $request,  string $id)
+    public function updateTarifaServicioDetalle(UpdateTarifaServiciosDetalleRequest $request , $id)
     {
         try {
             $data = $request->validated();
             $id = $request->id;
             DB::beginTransaction();
-            $tarifaServicioDetalle = (new TarifaService())->updateTarifaServicioDetalleService($data, $id);
+            $tarifaServicioDetalle = (new TarifaService())->updateTarifaServicioDetalleService($data , $id);
             DB::commit();
             return $tarifaServicioDetalle;
         } catch (Exception $ex) {
