@@ -31,5 +31,9 @@ Route::middleware(['api', 'audit'])->group(function () {
         //ConsultaSesion
         Route::get("/cajas/estadoSesionCobro","estadoSesionCobro");
 
+        //
+        Route::get("/cajas/sesionPrevia","sesionPrevia");
+        Route::get("/cajas/cortesRechazados","cortesRechazados");
+
     });
 });
