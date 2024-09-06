@@ -32,14 +32,21 @@ return new class extends Migration
             $table->integer('cantidad_billete_1000');
             $table->decimal('total_efectivo_registrado', total: 8 , places:2);
             $table->decimal('total_efectivo_real', total: 8 , places:2);
-            $table->decimal('total_tarjetas_registrado', total: 8 , places:2);
-            $table->decimal('total_tarjetas_real', total: 8 , places:2);
+            $table->decimal('total_tarjetas_credito_registrado', total: 8 , places:2);
+            $table->decimal('total_tarjetas_credito_real', total: 8 , places:2);
+            $table->decimal('total_tarjetas_debito_registrado', total: 8 , places:2);
+            $table->decimal('total_tarjetas_debito_real', total: 8 , places:2);
             $table->decimal('total_cheques_registrado', total: 8 , places:2);
             $table->decimal('total_cheques_real', total: 8 , places:2);
+            $table->decimal('total_transferencias_registrado', total: 8 , places:2);
+            $table->decimal('total_transferencias_real', total: 8 , places:2);
+            $table->decimal('total_documentos_registrado', total: 8 , places:2);
+            $table->decimal('total_documentos_real', total: 8 , places:2);
             $table->decimal('total_registrado' , total: 8 , places: 2);
             $table->decimal('total_real', total: 8 , places:2);
             $table->enum('discrepancia' , ['si' , 'no']);
             $table->decimal('discrepancia_monto', total: 8 , places: 2);
+            $table->string('descripcion')->nullable();
             $table->dateTime('fecha_corte'); //datetime?         
             $table->softDeletes();
             $table->timestamps();

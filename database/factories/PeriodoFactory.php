@@ -71,7 +71,8 @@ class PeriodoFactory extends Factory
     {
         return $this->afterCreating(function (Periodo $periodo) 
         {
-            $tomas = Toma::where('c_agua', 1)->get();
+            $tomas = Toma::whereNotNull('c_agua')->get();
+
             foreach($tomas as $toma){
                 Factura::factory()->create([
                     'id_periodo'=> $periodo->id,
