@@ -36,6 +36,7 @@ class OrdenTrabajoResource extends JsonResource
             "genera_OT_encadenadas" => $this->genera_OT_encadenadas,
             "created_at" =>  Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'toma' =>new TomaResource($this->whenLoaded('toma')),
+            'empleado_genero' =>new OperadorResource($this->whenLoaded('empleadoGenero')),
             'empleadoAsigno' =>new OperadorResource($this->whenLoaded('empleadoAsigno')),
             'empleadoEncargado' =>new OperadorResource($this->whenLoaded('empleadoEncargado')),
             'orden_trabajo_catalogo' =>new OrdenTrabajoCatalogoResource($this->whenLoaded('ordenTrabajoCatalogo')),

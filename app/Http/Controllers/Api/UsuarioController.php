@@ -115,10 +115,10 @@ class UsuarioController extends Controller
             $data = Usuario::ConsultarPorNombresCodigo($usuario);
      
            // return response()->json($data);
-           return response()->json(UsuarioResource::collection($data));
+           return UsuarioResource::collection($data);
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+            return response()->json(['error' => 'No se encontraron usuarios'], 500);
         }
     }
     public function showContacto(string $usuario)
@@ -130,7 +130,7 @@ class UsuarioController extends Controller
         );
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+            return response()->json(['error' => 'No se encontraron usuarios'], 500);
         }
     }
     public function showDireccion(string $usuario)
