@@ -46,6 +46,10 @@ class Usuario extends Model
     {
         return $this->hasMany(Toma::class, 'id_usuario');
     }
+    public function toma() : HasOne
+    {
+        return $this->hasOne(Toma::class, 'id_usuario');
+    }
     public function descuento_asociado() : HasOne
     {
         return $this->hasOne(DescuentoAsociado::class, 'id_usuario');
@@ -137,7 +141,8 @@ class Usuario extends Model
   
     public static function ConsultarPorNombresCodigo(string $usuario){
         if (is_numeric($usuario)){
-            return Usuario::ConsultarPorCodigo($usuario);
+            //return Usuario::ConsultarPorCodigo($usuario);
+            return Toma::ConsultarUsuarioPorCodigo($usuario);
         }
         else{
             $nuvUsuario=str_replace(" ","%",$usuario);

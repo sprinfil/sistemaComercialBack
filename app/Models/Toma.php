@@ -220,5 +220,14 @@ class Toma extends Model
         }
         return $total_final;
     }
+    public static function ConsultarUsuarioPorCodigo(string $toma) {
+        $data = Usuario::whereHas('tomas', function ($query)use($toma) {
+            $query->where('codigo_toma', $toma);
+        })->with(['toma' => function ($query) use($toma){
+            $query->where('codigo_toma', $toma);
+        }])
+       ->paginate(1);
+          return  $data;
+    }
 }
 

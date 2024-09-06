@@ -110,11 +110,11 @@ class UsuarioController extends Controller
      */
     public function show(string $usuario)
     {
+       
         try{
             $data = Usuario::ConsultarPorNombresCodigo($usuario);
-        return UsuarioResource::collection(
-            $data
-        );
+     
+            return response()->json($data);
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron usuarios'], 200);
