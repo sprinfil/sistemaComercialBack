@@ -458,7 +458,7 @@ class OrdenTrabajoService{
         $servicio=$filtros['servicio'] ?? null;
         $codigo=$filtros['codigo_toma'] ?? null;
         /////fechas
-        $fecha_tipo=$filtros['fecha_tipo'] ?? null;
+        $fecha_tipo=$filtros['fecha_tipo'] ?? "created_at";
         $fecha_inicio=$filtros['fecha_inicio'] ?? null;
         $fecha_fin=$filtros['fecha_fin'] ?? null;
 
@@ -559,7 +559,7 @@ class OrdenTrabajoService{
             },function(EloquentBuilder $q) use($fecha_inicio,$fecha_tipo){
                 $q->where($fecha_tipo,$fecha_inicio);
             });
-        })
+        })->orderby($fecha_tipo,'desc')
         ->get();
 
         //TODO CONSULTA SALDO CON Y SIN CONVENIO
