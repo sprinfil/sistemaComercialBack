@@ -37,7 +37,7 @@ class OrdenTrabajoController extends Controller
     public function indexCatalogo()
     {
         return OrdenTrabajoCatalogoResource::collection(
-            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos','ordenTrabajoEncadenado')->get()
+            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos.OTConcepto','ordenTrabajoEncadenado')->get()
         );
        
     }
