@@ -682,7 +682,7 @@ class CajaService{
       $usuario = auth()->user();
       //Obtencion de datos del arreglo
       $idOperador = $usuario->operador->id;
-
+      //BugDelGit
       $cortesRechazados = CorteCaja::where('id_operador',$idOperador)
       ->where('estatus',"rechazado")
       ->with('Caja' , 'Caja.catalogoCaja')
