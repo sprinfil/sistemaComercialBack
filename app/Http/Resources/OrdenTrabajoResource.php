@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Operador;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 class OrdenTrabajoResource extends JsonResource
 {
@@ -32,7 +33,7 @@ class OrdenTrabajoResource extends JsonResource
             "evidencia" => $this->evidencia,
             "posicion_OT" => $this->posicion_OT,
             "genera_OT_encadenadas" => $this->genera_OT_encadenadas,
-            "created_at" => $this->created_at,
+            "created_at" =>  Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
             'toma' =>new TomaResource($this->whenLoaded('toma')),
             'empleadoAsigno' =>new OperadorResource($this->whenLoaded('empleadoAsigno')),
             'empleadoEncargado' =>new OperadorResource($this->whenLoaded('empleadoEncargado')),

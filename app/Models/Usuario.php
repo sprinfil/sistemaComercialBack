@@ -141,8 +141,8 @@ class Usuario extends Model
   
     public static function ConsultarPorNombresCodigo(string $usuario){
         if (is_numeric($usuario)){
-            //return Usuario::ConsultarPorCodigo($usuario);
-            return Toma::ConsultarUsuarioPorCodigo($usuario);
+            return Usuario::ConsultarPorCodigo($usuario);
+            //return Toma::ConsultarUsuarioPorCodigo($usuario);
         }
         else{
             $nuvUsuario=str_replace(" ","%",$usuario);
@@ -174,9 +174,7 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::with(["tomas.ordenesTrabajo"=> function($query){
-          $query->where('estado','No asignada');
-        }])
+        $data = Usuario::with("tomas.ordenesTrabajo")
         ->where("codigo_usuario",$usuario)->paginate(10);
           return $data;
     }
