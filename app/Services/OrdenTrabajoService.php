@@ -127,8 +127,8 @@ class OrdenTrabajoService{
             $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
             $cargo=null;
         
-           
-           
+            //$evidencia= $ordenTrabajo['evidencia']->file('image')->store('images', 'public');
+            //$ordenTrabajo['evidencia']=$evidencia;
             $OT->update($ordenTrabajo);
             $OT->save($ordenTrabajo);
             $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
@@ -151,6 +151,7 @@ class OrdenTrabajoService{
         
   
     }
+
 //validar terminar ot si pagos saldados 
     public function Masiva(array $ordenesTrabajo){
         $catalogo=OrdenTrabajoCatalogo::find($ordenesTrabajo[0]['id_orden_trabajo_catalogo']);
