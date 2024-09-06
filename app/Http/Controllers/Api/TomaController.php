@@ -298,7 +298,7 @@ class TomaController extends Controller
             //$filtros=$request->validated();
             $filtros=$request->all();
             $data=(new TomaService())->tomaTipos($filtros);
-            return $data;
+            //return $data;
             // return $data;
             if (!$data){
                 return response()->json(["message"=>"No ha seleccionado un filtro para tomas, por favor especifique algún parametro"],500);

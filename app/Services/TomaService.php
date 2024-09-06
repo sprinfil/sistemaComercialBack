@@ -135,7 +135,7 @@ class TomaService{
             */
             $Querysaldo=new Collection();
             foreach($query as $ot){
-                $saldo=Toma::find($ot['id'])->saldoToma();
+                $saldo=$ot->saldoToma();
                 $ot->saldo=$saldo;
        
                 if ($saldoMin){
