@@ -330,4 +330,34 @@ class CajasController extends Controller
             ], 500);
         }
     }
+    
+    public function sesionPrevia()
+    {
+        try {
+            DB::beginTransaction();
+            $cajaSesionesPre = (new CajaService())->sesionPreviaService();
+            DB::commit();
+            return $cajaSesionesPre;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error durante la busqueda de la sesion'
+            ], 500);
+        }
+    }
+
+    public function cortesRechazados()
+    {
+        try {
+            DB::beginTransaction();
+            $cortes = (new CajaService())->cortesRechazadosService();
+            DB::commit();
+            return $cortes;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error durante la busqueda de los cortes'
+            ], 500);
+        }
+    }
 }
