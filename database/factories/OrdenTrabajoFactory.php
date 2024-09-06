@@ -23,9 +23,14 @@ class OrdenTrabajoFactory extends Factory
     $estado_ot = $this->faker->randomElement(['No asignada', 'Concluida', 'En proceso', 'Cancelada']);
     $vigencia = $this->faker->date();
     $fecha_finalizada = null;
+    $fecha_asignacion = null;
     $evidencia = null;
     $observaciones = null;
     $material = null;
+
+    if ($estado_ot != 'No asignada' && $estado_ot != 'Cancelada') {
+        $fecha_asignacion = Carbon::parse($vigencia)->subDays(2);
+    }
 
     if ($estado_ot == 'Concluida') {
         $vigencia = $vigencia ?? Carbon::now();
@@ -54,7 +59,7 @@ class OrdenTrabajoFactory extends Factory
     }
 
     return [
-        'id_toma' => \App\Models\Toma::pluck('id')->random(),
+       'id_toma' => \App\Models\Toma::where('id', '>', 20)->pluck('id')->random(),
         'id_empleado_genero' => \App\Models\Operador::pluck('id')->random(),
         'id_empleado_asigno' => in_array($estado_ot, ['Concluida', 'En proceso']) 
             ? \App\Models\Operador::pluck('id')->random() 
@@ -64,6 +69,7 @@ class OrdenTrabajoFactory extends Factory
             : null, // No asignar operador si está "No asignada" o "Cancelada"
         'id_orden_trabajo_catalogo' => \App\Models\OrdenTrabajoCatalogo::pluck('id')->random(),
         'estado' => $estado_ot,
+        'fecha_asignacion' => $fecha_asignacion,
         'fecha_finalizada' => $fecha_finalizada,
         'fecha_vigencia' => $vigencia,
         'obervaciones' => $observaciones,
