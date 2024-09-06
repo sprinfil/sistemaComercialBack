@@ -32,6 +32,7 @@ class OrdenTrabajo extends Model
         "id_empleado_encargado",
         "id_orden_trabajo_catalogo",
         "estado",
+        "fecha_asignacion",
         "fecha_finalizada",
         "fecha_vigencia",
         "obervaciones",

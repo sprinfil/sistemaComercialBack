@@ -26,6 +26,7 @@ class OrdenTrabajoResource extends JsonResource
             "id_empleado_encargado" => $this->id_empleado_encargado,
             "id_orden_trabajo_catalogo" => $this->id_orden_trabajo_catalogo,
             "estado" => $this->estado,
+            "fecha_asignacion" => $this->fecha_asignacion,
             "fecha_finalizada" => $this->fecha_finalizada,
             "fecha_vigencia" => $this->fecha_vigencia,
             "obervaciones" => $this->obervaciones,
