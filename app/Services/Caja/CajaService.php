@@ -138,12 +138,22 @@ class CajaService{
         ->whereDate('fecha_apertura',$fechaApertura)
         ->where('fecha_cierre',null)
         ->first();
-        
+
+     
+
+
         //Verifica que exista un registro caja el cual finalizar 
         if ($cajaHisto) {
+        
           //Obtiene el total de dinero registrado en los pagos
-          $totalRegistrado = $cajaHisto->totalPorTipo("efectivo") + $cajaHisto->totalPorTipo("tarjeta") + $cajaHisto->totalPorTipo("cheque");
+          $totalRegistrado = $cajaHisto->totalPorTipo("efectivo") 
+          + $cajaHisto->totalPorTipo("tarjeta_credito") 
+          + $cajaHisto->totalPorTipo("tarjeta_debito") 
+          + $cajaHisto->totalPorTipo("cheque")
+          + $cajaHisto->totalPorTipo("transferencia")
+          + $cajaHisto->totalPorTipo("documento");
           
+          //return $totalRegistrado;
           //Verifica diferencias en el total de los registros y el total enviado por el cajero
           if ($totalRegistrado != $data['corte_data'][0]['total_real']) {
             $discrepancia = "si";
@@ -170,13 +180,20 @@ class CajaService{
             "cantidad_billete_200" => $data['corte_data'][0]['cantidad_billete_200'],
             "cantidad_billete_500" => $data['corte_data'][0]['cantidad_billete_500'],
             "cantidad_billete_1000" => $data['corte_data'][0]['cantidad_billete_1000'],
+            "total_efectivo_registrado" =>  $cajaHisto->totalPorTipo("efectivo") ?? 0,
+            "total_efectivo_real" => $data['corte_data'][0]['total_efectivo_real']?? 0,
+            "total_tarjetas_credito_registrado" => $cajaHisto->totalPorTipo("tarjeta_credito") ?? 0,
+            "total_tarjetas_credito_real" =>$data['corte_data'][0]['total_tarjetas_credito_real'] ?? 0,
+            "total_tarjetas_debito_registrado" => $cajaHisto->totalPorTipo("tarjeta_debito"),
+            "total_tarjetas_debito_real" =>$data['corte_data'][0]['total_tarjetas_debito_real'] ?? 0,
+            "total_cheques_registrado" => $cajaHisto->totalPorTipo("cheque") ?? 0,
+            "total_cheques_real" =>$data['corte_data'][0]['total_cheques_real'] ?? 0,
+            "total_transferencias_registrado" => $cajaHisto->totalPorTipo("transferencia") ?? 0,
+            "total_transferencias_real" =>$data['corte_data'][0]['total_transferencias_real'] ?? 0,
+            "total_documentos_registrado" => $cajaHisto->totalPorTipo("documento") ?? 0,
+            "total_documentos_real" =>$data['corte_data'][0]['total_documentos_real'] ?? 0,
 
-            "total_efectivo_registrado" =>  $cajaHisto->totalPorTipo("efectivo"),
-            "total_efectivo_real" => $data['corte_data'][0]['total_efectivo_real'],
-            "total_tarjetas_registrado" => $cajaHisto->totalPorTipo("tarjeta"),
-            "total_tarjetas_real" =>$data['corte_data'][0]['total_tarjetas_real'],
-            "total_cheques_registrado" => $cajaHisto->totalPorTipo("cheque"),
-            "total_cheques_real" =>$data['corte_data'][0]['total_cheques_real'],
+
             "total_registrado" => $totalRegistrado,
             "total_real" => $data['corte_data'][0]['total_real'],
             "discrepancia" => $discrepancia,
@@ -189,6 +206,7 @@ class CajaService{
             "fecha_cierre" => $fechaHoraLocalFormateada
           ];
           
+  
            //Registra el corte y actualiza el cierre de caja
            $cajaHisto->update($cajaReg);
            $corte = CorteCaja::create($corteReg);
@@ -664,10 +682,10 @@ class CajaService{
       $usuario = auth()->user();
       //Obtencion de datos del arreglo
       $idOperador = $usuario->operador->id;
-
+      //BugDelGit
       $cortesRechazados = CorteCaja::where('id_operador',$idOperador)
       ->where('estatus',"rechazado")
-      ->with('Caja')
+      ->with('Caja' , 'Caja.catalogoCaja')
       ->get();
       return json_encode($cortesRechazados);
     } catch (Exception $ex) {

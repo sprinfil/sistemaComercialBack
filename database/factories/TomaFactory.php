@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Contrato;
 use App\Models\GiroComercialCatalogo;
 use App\Models\Libro;
 use App\Models\Medidor;
 use App\Models\Toma;
+use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
@@ -79,6 +81,37 @@ class TomaFactory extends Factory
             Medidor::factory()->create([
                 'id_toma' => $toma->id
             ]);
+
+            // Crear el contrato para la toma recién creada y pasarle los datos
+            $servicio = $this->faker->randomElement(['agua', 'alcantarillado y saneamiento']);
+
+            $usuario = Usuario::find($toma->id_usuario);
+
+            $contrato = Contrato::factory()->create([
+                'id_toma' => $toma->id,
+                'id_usuario' => $usuario->id,
+                'servicio_contratado' => $servicio,
+                'clave_catastral' => $toma->clave_catastral,
+                'tipo_toma' => $toma->id_tipo_toma,
+                'coordenada' => $toma->posicion->latitude . ', ' . $toma->posicion->longitude,
+                'nombre_contrato' => $usuario->nombre . ' ' . $usuario->apellido_paterno . ' ' . $usuario->apellido_materno,
+                'colonia' => $toma->colonia,
+                'calle' => $toma->calle,
+                'municipio' => $this->faker->city,
+                'localidad' => $this->faker->city,
+                'domicilio' => $this->faker->address,
+            ]);
+
+            $toma_actualizada = Toma::find($toma->id);
+            if($servicio == 'agua'){
+                $toma_actualizada->c_agua = $contrato->id;
+            } 
+            else if($servicio == 'alcantarillado y saneamiento'){
+                $toma_actualizada->c_agua = $contrato->id;
+                $toma_actualizada->c_alc = $contrato->id;
+                $toma_actualizada->c_san = $contrato->id;
+            }
+            $toma_actualizada->save();
         });
     }
 }

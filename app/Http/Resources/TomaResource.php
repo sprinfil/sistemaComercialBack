@@ -56,7 +56,7 @@ class TomaResource extends JsonResource
             'consumo' => $this->whenLoaded('consumo'),
             'ordenes_trabajo' => OrdenTrabajoResource::collection($this->whenLoaded('ordenesTrabajo')),
             'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes'))),
-            'saldo' =>  $this->saldoToma(),
+            'saldo' =>  number_format($this->saldo, 2, '.', '') ?? number_format($this->saldoToma(), 2, '.', ''),
         ];
         //return parent::toArray($request);
     }
