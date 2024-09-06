@@ -222,7 +222,7 @@ class TomaController extends Controller
             $hoy=Carbon::now('America/Denver')->startOfDay();
             $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
             $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
-            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at','desc')->paginate(20);
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['usuario','toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at','desc')->paginate(20);
            return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -298,6 +298,7 @@ class TomaController extends Controller
             //$filtros=$request->validated();
             $filtros=$request->all();
             $data=(new TomaService())->tomaTipos($filtros);
+            //return $data;
             // return $data;
             if (!$data){
                 return response()->json(["message"=>"No ha seleccionado un filtro para tomas, por favor especifique algún parametro"],500);
@@ -306,6 +307,7 @@ class TomaController extends Controller
             {
                 DB::commit();
                 return response()->json(['tomas'=>TomaResource::collection($data)]);
+                //return response()->json(['tomas'=>$data]);
                 //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
             }
            }

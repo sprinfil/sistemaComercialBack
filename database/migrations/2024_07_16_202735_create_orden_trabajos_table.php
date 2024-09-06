@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('fecha_asignacion')->nullable();
             $table->date('fecha_finalizada')->nullable();
             $table->date('fecha_vigencia')->nullable();
-            $table->string('obervaciones')->nullable();
+            $table->string('obervaciones')->nullable();/////////////XDDDDDD
             $table->string('evidencia')->nullable();
             $table->string('material_utilizado')->nullable();
             $table->point('posicion_OT')->nullable();

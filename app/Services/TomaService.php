@@ -25,7 +25,7 @@ class TomaService{
         $codigo=$filtros['codigo_toma'] ?? null;
 
          // HIPER MEGA QUERY INSANO
-         $query=Toma::with('tipoToma','libro','ruta')
+         $query=Toma::with('usuario','tipoToma','libro','ruta')
         ->when($ruta, function (Builder $q) use($ruta,$libro)  {
 
         $q->when($libro, function (Builder $a2) use($ruta,$libro){
@@ -133,6 +133,35 @@ class TomaService{
             //return $tomasSaldo;
         }
             */
+            /*
+            $Querysaldo=new Collection();
+            foreach($query as $ot){
+                $saldo=$ot->saldoToma();
+                $ot->saldo=$saldo;
+       
+                if ($saldoMin){
+                    if ($saldoMax){
+                        if ($ot['saldo']>=$saldoMin && $ot['saldo']<=$saldoMax){
+                    
+                            $Querysaldo->push($ot);
+                         
+                        }
+                    }
+                    
+                    else{
+                        if ($ot['saldo']==$saldoMin){
+                            $Querysaldo->push($ot);
+                        }
+                    }
+                
+                }
+                else{
+                    $Querysaldo->push($ot);
+                }
+                unset( $ot['cargosVigentes']);
+               
+            }
+                */
         $OT =$query;
         return $OT;
         //
