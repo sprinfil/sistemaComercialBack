@@ -53,7 +53,7 @@ class OrdenTrabajoController extends Controller
     public function indexOrdenes()
     {
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','toma.ruta','empleadoGenero','empleadoAsigno','empleadoEncargado','ordenTrabajoCatalogo.ordenTrabajoAccion')->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
@@ -63,7 +63,7 @@ class OrdenTrabajoController extends Controller
         $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
         $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
         return OrdenTrabajoResource::collection(
-            OrdenTrabajo::with('toma.tipoToma','toma.ruta','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->paginate(20)
+            OrdenTrabajo::with('toma.tipoToma','toma.ruta','toma.libro','empleadoGenero','empleadoAsigno','empleadoEncargado','ordenTrabajoCatalogo.ordenTrabajoAccion')->where('estado','En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->paginate(20)
         );
        //return Toma::where('id',$id)->with(['ordenesTrabajo:id,id_toma,id_orden_trabajo_catalogo','ordenesTrabajo.ordenTrabajoCatalogo:id,nombre'])->get();
     }
