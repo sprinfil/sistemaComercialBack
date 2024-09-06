@@ -685,7 +685,7 @@ class CajaService{
 
       $cortesRechazados = CorteCaja::where('id_operador',$idOperador)
       ->where('estatus',"rechazado")
-      ->with('Caja')
+      ->with('Caja' , 'Caja.catalogoCaja')
       ->get();
       return json_encode($cortesRechazados);
     } catch (Exception $ex) {
