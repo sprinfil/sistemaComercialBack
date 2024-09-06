@@ -161,7 +161,7 @@ class OrdenTrabajoService{
            
             $data=$this->crearOrden($OT);
             if (!$data){
-                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $ordenTrabajo=OrdenTrabajo::find($OT['id_toma']);
                 $toma=Toma::find($ordenTrabajo['id_toma']);
                 $Ordenes->push(["Error"=>"La orden de trabajo para la toma con clave catastral ".$toma['clave_catastral']." no se pudo crear, debido, a que ya supera el limite del tipo de orden de trabajo: ".$catalogo['nombre']]);
             }
