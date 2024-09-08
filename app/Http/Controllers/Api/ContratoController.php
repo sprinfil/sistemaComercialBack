@@ -37,9 +37,9 @@ class ContratoController extends Controller
     public function index()
     {
         try{
-            return ContratoResource::collection(
+            return response()->json(["Contratos"=> ContratoResource::collection(
                 Contrato::all()
-            );
+            )]);
         }
         catch(Exception $ex){
             return response()->json([
@@ -90,8 +90,10 @@ class ContratoController extends Controller
                     $CrearContrato['servicio_contratado']=$sev;
                     $c->push(Contrato::create($CrearContrato));
                 }
+                ///$toma=$data;
+
                 DB::rollBack();
-                return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo ],201);
+                return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo,"toma"=> ],201);
            
             }
              

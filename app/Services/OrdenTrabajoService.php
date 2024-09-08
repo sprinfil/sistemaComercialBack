@@ -399,7 +399,7 @@ class OrdenTrabajoService{
         }
         return $OTModelo;
     }
-        
+    ////
     public function generarCargo($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){
 
         $cargos=new Collection();

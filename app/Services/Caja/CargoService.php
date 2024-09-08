@@ -10,6 +10,7 @@ use App\Models\CargoDirecto;
 use App\Models\ConceptoCatalogo;
 use App\Models\Toma;
 use App\Models\Usuario;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -268,5 +269,26 @@ class CargoService{
         } catch (Exception $ex) {
             throw $ex;
         }
+    }
+    public function generarCargosToma($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){ ////pendiente
+
+        $cargos=new Collection();
+        foreach($conceptos as $concepto){
+            $tarifa=(new ConceptoService())->obtenerTarifaToma($dueno['id_tipo_toma'],$concepto['id']);
+            $iva=helperCalcularIVA($tarifa['monto']);
+            $cargos->push(Cargo::create([
+                'id_concepto' => $concepto['id'],
+                'nombre' => $concepto['nombre'],
+                'id_origen' =>  $origen['id'],
+                'modelo_origen' => $tipoOrigen,
+                'id_dueno' => $dueno['id'],
+                'modelo_dueno' => $tipoDueno,
+                'monto' => $tarifa['monto'],
+                'iva' => $iva,
+                'estado' => "pendiente",
+                'fecha_cargo' => Carbon::today('gmt-7')->format('Y-m-d'),
+            ]));
+        }
+        return $cargos;
     }
 }
