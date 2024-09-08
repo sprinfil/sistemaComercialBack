@@ -21,18 +21,18 @@ class Convenio extends Model
         'comentario',
     ];
 
-    public function ConvenioCatalogo():BelongsTo{
+    public function ConvenioCatalogo() : BelongsTo
+    {
         return $this->belongsTo(ConvenioCatalogo::class, "id_convenio_catalogo", "id");
     }
 
-    public function Letra(): HasMany
+    public function Letra() : HasMany
     {
         return $this->hasMany(Letra::class,'id_convenio');
     }
 
-    public function CargosConveniados(): HasMany
+    public function CargosConveniados() : HasMany
     {
         return $this->hasMany(CargosConveniado::class,'id_convenio');
     }
-
 }
