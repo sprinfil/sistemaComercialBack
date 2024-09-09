@@ -7,10 +7,12 @@ use App\Http\Requests\StoreCajaCatalogoRequest;
 use App\Http\Requests\StoreCajasRequest;
 use App\Http\Requests\StoreOperadorAsignadoRequest;
 use App\Http\Requests\StoreRetiroCajaRequest;
+use App\Http\Requests\StoreSolicitudCancelacionRequest;
 use App\Http\Requests\UpdateCajaCatalogoRequest;
 use App\Http\Requests\UpdateCajasRequest;
 use App\Http\Resources\CajaResource;
 use App\Http\Resources\PagoResource;
+use App\Http\Resources\SolicitudCancelacionPagoResource;
 use App\Models\Caja;
 use App\Models\CajaCatalogo;
 use App\Models\OperadorAsignado;
@@ -58,7 +60,7 @@ class CajasController extends Controller
     {
         try {
             $data = $request->validated();
-        
+
             DB::beginTransaction();
             $apertura = (new CajaService())->iniciarCaja($data);
             DB::commit();
@@ -74,10 +76,7 @@ class CajasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Caja $cajas)
-    {
-        //
-    }
+    public function show(Caja $cajas) {}
 
     /**
      * Update the specified resource in storage.
@@ -96,13 +95,10 @@ class CajasController extends Controller
                 'error' => 'Ocurrio un error al realizar el cierre de caja.'
             ], 500);
         }
-        
     }
 
     public function asignarOperador(StoreOperadorAsignadoRequest $request)
     {
-      
-        
         try {
             DB::beginTransaction();
             $data = $request->validated();
@@ -117,7 +113,7 @@ class CajasController extends Controller
         }
     }
 
-    public function retirarAsignacion (StoreOperadorAsignadoRequest $request)
+    public function retirarAsignacion(StoreOperadorAsignadoRequest $request)
     {
         try {
             $data = $request->validated();
@@ -156,7 +152,6 @@ class CajasController extends Controller
         DB::commit();
         return $cajaCatalogo;
         try {
-           
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
@@ -197,7 +192,7 @@ class CajasController extends Controller
 
     public function modificarCajaCatalogo(UpdateCajaCatalogoRequest $request, string $id)
     {
-        
+
         try {
             $data = $request->validated();
             DB::beginTransaction();
@@ -244,36 +239,30 @@ class CajasController extends Controller
 
     //RetiroMetodos
     public function registrarRetiro(StoreRetiroCajaRequest $request)
-  {
-    try {
-        $data = $request->validated();
-        DB::beginTransaction();
-        $retiro = (new CajaService())->registrarRetiroService($data);
-        Db::commit();
-        return $retiro;
-    } catch (Exception $ex) {
-        DB::rollBack();
-        return response()->json([
-            'Ocurrio un error durante el registro del retiro.'.$ex
-        ]);
+    {
+        try {
+            $data = $request->validated();
+            DB::beginTransaction();
+            $retiro = (new CajaService())->registrarRetiroService($data);
+            Db::commit();
+            return $retiro;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'Ocurrio un error durante el registro del retiro.' . $ex
+            ]);
+        }
     }
-  }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Caja $cajas)
-    {
-        //
-    }
+    public function destroy(Caja $cajas) {}
 
-     /**
+    /**
      * Display a listing of the resource.
      */
-    public function cargosPorModelo (Request $request)
-    {
-        // si es por 
-    }
+    public function cargosPorModelo(Request $request) {}
 
     public function test()
     {
@@ -294,10 +283,11 @@ class CajasController extends Controller
     public function pagosPorCaja(Request $request)
     {
         try {
-            return response( 
+            return response(
                 PagoResource::collection(
                     $this->cajaService->pagosPorCaja($request)
-                ));
+                )
+            );
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo consultar los pagos de esta caja'
@@ -305,10 +295,10 @@ class CajasController extends Controller
         }
     }
 
-    public function solicitarCancelacionPago(Request $request)
+    public function solicitarCancelacionPago(StoreSolicitudCancelacionRequest $request)
     {
         try {
-            return response($this->cajaService->solicitudCancelacionPago($request));
+            return response()->json(new SolicitudCancelacionPagoResource($this->cajaService->solicitudCancelacionPago($request)), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo solicitar la cancelacion del pago'
@@ -330,7 +320,7 @@ class CajasController extends Controller
             ], 500);
         }
     }
-    
+
     public function sesionPrevia()
     {
         try {
@@ -357,6 +347,30 @@ class CajasController extends Controller
             DB::rollBack();
             return response()->json([
                 'error' => 'Ocurrio un error durante la busqueda de los cortes'
+            ], 500);
+        }
+    }
+
+    public function solicitudesCancelacionPago(Request $request)
+    {
+        try {
+            return response()->json(SolicitudCancelacionPagoResource::collection($this->cajaService->solicitudesCancelacion($request)), 200);
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error durante la busqueda de las solicitudes' . $ex
+            ], 500);
+        }
+    }
+
+    public function actualizarSolicitudCancelacionPago(Request $request)
+    { //actualizarSolicitudCancelacion
+        try {
+            return response()->json($this->cajaService->actualizarSolicitudCancelacion($request), 200);
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrió un error durante la actualización de la solicitud: ' . $ex->getMessage()
             ], 500);
         }
     }

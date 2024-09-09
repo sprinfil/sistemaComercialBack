@@ -37,23 +37,13 @@ class FactibilidadController extends Controller
     public function store(Factibilidad $factibilidad , StoreFactibilidadRequest $request)
     {
         try{
-             $data = $request->validated();
-            $factibilidad = Factibilidad::join('contratos' , 'factibilidad.id_contrato' 
-            , '=' , 
-            'contratos.id')
-            ->where('contratos.estatus' , '=' , 'pendiente de inspeccion')
-            ->orWhere('contratos.estatus' , '=' , 'inspeccionado')
-            ->get();
-            if ($request->estado_factible == 'no_factible' ) {
-                $factibilidad = Factibilidad::create($data);
-                return response()->json([
-                    'message' => 'Contrato no factible',
-                ], 500); 
-            }
-            else{
-                $factibilidad = Factibilidad::create($data);
-                     return response(new FactibilidadResource($factibilidad), 201);
-            }
+            $data = $request->validated();
+            $data['estado'] = 'pendiente';
+            $data['agua_estado_factible'] = 'pendiente';
+            $data['alc_estado_factible'] = 'pendiente';
+            $data['san_estado_factible'] = 'pendiente';
+            $factibilidad = Factibilidad::create($data);
+            return response(new FactibilidadResource($factibilidad), 201);
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar la factibilidad'.$e
@@ -102,7 +92,7 @@ class FactibilidadController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Factibilidad $factibilidad, $id)
+    /*public function destroy(Factibilidad $factibilidad, $id)
     {
         try {
             $factibilidad = Factibilidad::findOrFail($id);
@@ -113,9 +103,9 @@ class FactibilidadController extends Controller
                 'error' => 'No se pudo borrar la factibilidad'
             ], 500);
         }
-    }
+    }*/
     
-    public function restaurar (Factibilidad $factibilidad, Request $request)
+    /*public function restaurar (Factibilidad $factibilidad, Request $request)
     {
         try {
             $factibilidad = Factibilidad::withTrashed()->findOrFail($request->id);
@@ -130,7 +120,5 @@ class FactibilidadController extends Controller
                 'message' => 'Hubo un error al restaurar la factibilidad'
             ]);
         }
-
-    }
-
+    }*/
 }

@@ -23,7 +23,7 @@ class MonitorFactibilidadController extends Controller
     {
         try{
             //Muestra todas las factibilidades de los contratos
-           return $factibilidades = Factibilidad::with('contrato')->paginate(10);
+           return FactibilidadResource::collection($factibilidades = Factibilidad::with('contrato')->paginate(10));
              $data = [];
                     return response()->json([
                      $data[] = [
