@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('toma', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_usuario');
-            $table->unsignedBigInteger('id_giro_comercial');
-            $table->unsignedBigInteger('id_libro');
-            $table->string('codigo_toma');
+            $table->unsignedBigInteger('id_usuario')->nullable();
+            $table->unsignedBigInteger('id_giro_comercial')->nullable();
+            $table->unsignedBigInteger('id_libro')->nullable();
+            $table->string('codigo_toma')->nullable();
             $table->unsignedBigInteger('id_tipo_toma');
-            $table->string('clave_catastral');
+            $table->string('clave_catastral')->nullable();
             $table->enum('estatus', ['pendiente confirmación inspección', 'pendiente de inspeccion', 'pendiente de instalacion', 'activa', 'baja definitiva', 'baja temporal', 'en proceso','limitado']);
             $table->string('calle');
             $table->string('entre_calle_1')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('codigo_postal');
             $table->string('numero_casa')->nullable();
             $table->string('localidad');
-            $table->string('diametro_toma');
+            $table->string('diametro_toma')->nullable();
             $table->string('calle_notificaciones');
             $table->string('entre_calle_notificaciones_1')->nullable();
             $table->string('entre_calle_notificaciones_2')->nullable();
