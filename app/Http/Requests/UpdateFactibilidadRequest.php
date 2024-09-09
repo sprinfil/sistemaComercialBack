@@ -22,8 +22,15 @@ class UpdateFactibilidadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "estado_factible"=>"required|in:factible,no_factible" ,
-            "derechos_conexion"=>"numeric|nullable|min:0", 
+            //"estado_factible"=>"required|in:factible,no_factible" ,
+            //"derechos_conexion"=>"numeric|nullable|min:0",
+            'id_revisor'=>'required|int',
+            'estado'=>'required|in:pendiente,rechazada,pendiente_de_pago,pagada',
+            'agua_estado_factible'=>'required|in:no_factible,factible',
+            'alc_estado_factible'=>'required|in:no_factible,factible',
+            'san_estado_factible'=>'required|in:no_factible,factible',
+            'derechos_conexion'=>'numeric|nullable|min:0',
+            'documento'=>'nullable|string'
         ];
     }
 }
