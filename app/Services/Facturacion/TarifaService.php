@@ -426,36 +426,49 @@ class TarifaService{
         try {
           
             $tarifaServicioDetalle = TarifaServiciosDetalle::findOrFail($id);
+            $tarifaServicio = TarifaServicio::findOrFail($tarifaServicioDetalle->id_tarifa_servicio);
             $rangoActual = $tarifaServicioDetalle->rango;
+            $montoActual = $tarifaServicioDetalle->monto;
 
-            $siguienteRango = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
-            ->where('rango', '>', $rangoActual)
-            ->orderBy('rango', 'asc')
-            ->first();
-            
-            $montomin = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
-                ->where('id', '!=', $tarifaServicioDetalle->id)
-                ->min('monto');
-            
+            if (isset($tarifaDetalles['id_tarifa_servicio']) && $tarifaDetalles['id_tarifa_servicio'] != $tarifaServicioDetalle->id_tarifa_servicio) {
+                $newtarifaServicio = TarifaServicio::find($tarifaDetalles['id_tarifa_servicio']);
+
+                if (!$newtarifaServicio || $newtarifaServicio->tipo_servicio != $tarifaServicio->tipo_servicio) {
+                    return response()->json(['error' => 'No se puede cambiar el id_tarifa_servicio a otro tipo de servicio'], 400);
+                }
+            }            
+            $siguienteDetalle = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
+                ->where('rango', '>', $rangoActual)
+                ->orderBy('rango', 'asc')
+                ->first();
+            $anteriorDetalle = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
+                ->where('rango', '<', $rangoActual)
+                ->orderBy('rango', 'desc')
+                ->first();
             $rangoExiste = TarifaServiciosDetalle::where('id_tarifa_servicio', $tarifaServicioDetalle->id_tarifa_servicio)
                 ->where('rango', $tarifaDetalles['rango'])
                 ->where('id', '!=', $tarifaServicioDetalle->id)
                 ->first();
             
-            if ($rangoExiste) {
-                return response()->json(['error' => 'El rango ingresado ya existe para esta tarifa'], 400);
-            }
-            
-            if ($tarifaDetalles['rango'] <= $rangoActual) {
-                return response()->json(['error' => 'El nuevo rango no puede ser menor o igual que el actual'], 400);
-            }
-            if ($siguienteRango && $tarifaDetalles['rango'] >= $siguienteRango->rango) {
-                return response()->json(['error' => 'El nuevo rango no puede ser mayor o igual que el siguiente rango'], 400);
-            }
-            
-            if ($tarifaDetalles['monto'] <= $montomin) {
-                return response()->json(['error' => 'El monto no puede ser igual o menor que el monto mínimo registrado'], 400);
-            }
+                if ($rangoExiste) {
+                    return response()->json(['error' => 'El rango ingresado ya existe para esta tarifa'], 400);
+                }
+                
+                // Verificar que el nuevo rango no sea menor que el rango actual ni mayor que el siguiente
+                if ($tarifaDetalles['rango'] < $rangoActual) {
+                    return response()->json(['error' => 'El nuevo rango no puede ser menor que el actual'], 400);
+                }
+                if ($siguienteDetalle && $tarifaDetalles['rango'] >= $siguienteDetalle->rango) {
+                    return response()->json(['error' => 'El nuevo rango no puede ser mayor o igual que el siguiente rango'], 400);
+                }
+                
+                // Validar que el nuevo monto esté entre los montos del rango anterior y siguiente
+                if ($anteriorDetalle && $tarifaDetalles['monto'] <= $anteriorDetalle->monto) {
+                    return response()->json(['error' => 'El nuevo monto no puede ser menor o igual al monto anterior'], 400);
+                }
+                if ($siguienteDetalle && $tarifaDetalles['monto'] >= $siguienteDetalle->monto) {
+                    return response()->json(['error' => 'El nuevo monto no puede ser mayor o igual que el siguiente monto'], 400);
+                }
             
             $tarifaServicioDetalle->update($tarifaDetalles);
             
@@ -500,7 +513,7 @@ class TarifaService{
                 $query->where('id', $tarifa_id);
             })
             ->get();
-            //$tarifa = Tarifa::findOrFail($tarifa_id);
+       //$tarifa = Tarifa::findOrFail($tarifa_id);
             $servicio = [];
               foreach ($tarifa as $servicios) {
                  $servicio[] = [
@@ -514,12 +527,17 @@ class TarifaService{
         usort($servicio, function ($a, $b) {
             return $a['rango'] <=> $b['rango'];
         });
-        return json_encode($servicio);
-        } catch (Exception $ex) {
+        if (!$servicio) {
+            return response()->json(['error' => 'Hubo un error en la busqueda.'], 400);
+        }
+        else{
+            return json_encode($servicio);
+        }
+            } catch (Exception $ex) {
             return response()->json([
                 'error' => 'Ocurrio un error en la busqueda. ' .$ex
             ], 500);
-        }
+         }
         
     }
 

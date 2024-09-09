@@ -100,17 +100,19 @@ class ConceptoCatalogoSeeder extends Seeder
 
         $tipo_tomas = TipoToma::all();
         $tipo_tomas->each(function ($tipo_toma) {
+            $tarifaServicios = TarifaServicio::where('id_tipo_toma', $tipo_toma->id)->get();
             $rango = 17;
-            for ($i = 1; $i <= 10; $i++) {
-                TarifaServiciosDetalle::factory()->create([
-                    'rango'=>$rango*$i,
-                    'monto'=> 200,
-                    /*
-                    'agua'=>10*17,
-                    'alcantarillado'=>2*17,
-                    'saneamiento'=>2*17
-                    */
-                ]);
+            $monto = 215;
+            foreach ($tarifaServicios as $tarifaServicio) {
+                for ($i = 1; $i <= 10; $i++) {
+                    TarifaServiciosDetalle::factory()->create([
+                        'id_tarifa_servicio'=>$tarifaServicio->id,
+                        'rango'=>$rango*$i,
+                        'monto'=> $monto,
+                    ]);
+                    $monto += 10;
+                }
+                $monto = 215;
             }
         });
 

@@ -20,9 +20,7 @@ class TarifaServiciosDetalleFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_tarifa_servicio' => 1,
-            'rango'=> 0,
-            'monto' => $this->faker->numberBetween(0,300),
+            
         ];
     }
 }
