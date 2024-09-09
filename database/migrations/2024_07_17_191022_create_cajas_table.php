@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('fondo_final', total:8, places:2)->nullable();
             $table->dateTime('fecha_apertura')->nullable();
             $table->dateTime('fecha_cierre')->nullable();
+            $table->enum('estado', ['activo', 'inactivo']);
             $table->softDeletes();
             $table->timestamps();
         });
