@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('solicitud_cancelacion_pagos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_operador');
+            $table->unsignedBigInteger('id_solicitante');
             $table->unsignedBigInteger('id_caja');
             $table->string('folio');
+            $table->enum('estado',['pendiente','rechazado','aprobado']);
+            $table->unsignedBigInteger('id_revisor')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
