@@ -33,6 +33,7 @@ class CajaService{
         $idOperador = $usuario->operador->id;
         $idCajaCatalogo = $data['id_caja_catalogo'];
 
+       
         //Fecha hora base
         $fechaHoraBase = Carbon::now();
         $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
@@ -49,18 +50,21 @@ class CajaService{
         //Consulta para obtener si el operador esta asignado a la caja en la que se desea registrar
         $cajaAsignada = OperadorAsignado::where('id_caja_catalogo',$idCajaCatalogo)->where('id_operador',$idOperador)->first();
 
+        if ($cajaAsignada == null) {
+          return response()->json([
+            'error' => 'El operador no esta asignado a esta caja.'
+           ]);
+        }
         
         //Obtencion de la informacion de la caja en la que se va a registrar
         $CajaCatalogo = CajaCatalogo::FindOrFail($cajaAsignada->id_caja_catalogo);
        
-        //Obtencion de un registro previo en caso de existir uno en el mismo dia y que no se haya cerrado el corte
-        $cajaPreviaReg = Caja::where('id_operador',$idOperador) //'id_caja_catalogo',$idCajaCatalogo
+        //Obtencion de un registro previo en caso de existir uno en el mismo dia y que se encuentre en estado activo
+        $cajaPreviaReg = Caja::where('id_operador',$idOperador) 
         ->whereDate('fecha_apertura',  $fechaApertura)
-        ->where('fecha_cierre', null)
+        ->where('estado',  "activo")
         ->get();
-
-        //return $cajaPreviaReg;
-
+       
             //El id_operador ingresado debe ser igual al de la caja en la que se quiere logear
         if($cajaAsignada->id_operador == $idOperador)
         {
@@ -69,22 +73,23 @@ class CajaService{
 
             //No debe existir un registro previo de la caja en el mismo dia a menos que este registro ya cuente con una fecha de cierre
            if (count($cajaPreviaReg) == 0) {
-
-            $sesionCaja = [
-              "id_operador" =>$idOperador,
-              "id_caja_catalogo" => $data['id_caja_catalogo'], 
-              "fondo_inicial" => $data['fondo_inicial'],
-              "fecha_apertura" => $fechaHoraLocalFormateada ,
-            ]; 
+            
+             $sesionCaja = [
+               "id_operador" =>$idOperador,
+               "id_caja_catalogo" => $data['id_caja_catalogo'], 
+               "fondo_inicial" => $data['fondo_inicial'],
+               "fecha_apertura" => $fechaHoraLocalFormateada ,
+              ]; 
 
                 $caja = Caja::create($sesionCaja);
                 return response(new CajaResource($caja));;
-           }
+              }
+              
            //condicion en caso de que la caja ya cuente con un registro abierto el dia actual
            else{
-            return response()->json([
-              'error' => 'La caja ya se encuentra abierta.'
-          ]);
+             return response()->json([
+               'error' => 'La caja ya se encuentra abierta.',$cajaPreviaReg
+              ]);
            }
            
           }
@@ -106,7 +111,7 @@ class CajaService{
         
      } catch (Exception $ex) {
         return response()->json([
-            'error' => 'Ocurrio un error durante la apertura.'
+            'error' => 'Ocurrio un error durante la apertura.'.$ex
         ]);
      }
    }
@@ -136,11 +141,8 @@ class CajaService{
         $cajaHisto = Caja::where('id_operador',$idOperador)
         ->where('id_caja_catalogo',$data['caja_data'][0]['id_caja_catalogo'])
         ->whereDate('fecha_apertura',$fechaApertura)
-        ->where('fecha_cierre',null)
+        ->where('estado','activo')
         ->first();
-
-     
-
 
         //Verifica que exista un registro caja el cual finalizar 
         if ($cajaHisto) {
@@ -199,14 +201,16 @@ class CajaService{
             "discrepancia" => $discrepancia,
             "discrepancia_monto" => $discrepanciaMonto,
             "fecha_corte" => $fechaHoraLocalFormateada
+            
           ]; 
+
           $cajaReg = [
             "id_caja_catalogo" => $data['caja_data'][0]['id_caja_catalogo'],
             "fondo_final" => $data['caja_data'][0]['fondo_final'],
-            "fecha_cierre" => $fechaHoraLocalFormateada
+            "fecha_cierre" => $fechaHoraLocalFormateada,
+            "estado" => 'inactivo'
           ];
           
-  
            //Registra el corte y actualiza el cierre de caja
            $cajaHisto->update($cajaReg);
            $corte = CorteCaja::create($corteReg);
@@ -215,8 +219,7 @@ class CajaService{
            return response()->json([
             'Se ha finalizado el cierre de caja y se registro el corte.'
            ]);
-          
-         
+                   
         }else{
           return response()->json([
             'error' => 'No existen cajas abiertas.'
@@ -347,14 +350,11 @@ class CajaService{
   public function guardarCajaCatalogoService(array $data)
   {
  
-    //$caja->save();
     try {
      
       $cajaPrevia = CajaCatalogo::withTrashed()
       ->where('nombre_caja',$data["nombre_caja"])
       ->first();
-
-      //return $cajaPrevia;
 
       if ($cajaPrevia) {
 
@@ -372,7 +372,6 @@ class CajaService{
 
       }else{
         
-      //return $data;
         $caja = CajaCatalogo::create($data);
         return response(new CajaCatalogoResource($caja), 200);;
         return $caja;
@@ -383,7 +382,7 @@ class CajaService{
       }
     } catch (Exception $ex) {
       return response()->json([
-                'error' => 'Ocurrio un error durante el registro de la caja.'.$ex
+                'error' => 'Ocurrio un error durante el registro de la caja.'
             ], 500);
     }
   }
@@ -493,7 +492,7 @@ class CajaService{
       $cajaSesion = Caja::where('id_operador',$idOperador)
       ->where('id_caja_catalogo',$data->id_caja_catalogo)
       ->where(DB::raw('DATE(fecha_apertura)'),$fechaApertura)
-      ->where('fecha_cierre',null)
+      ->where('estado','activo')
       ->first();
       
       if ($cajaSesion) {
@@ -501,7 +500,7 @@ class CajaService{
       }
       else{
         return response()->json([
-          'error' => 'No se encontro sesion de caja asociada a este operador.'
+          'error' => 'No se encontro sesion de caja abierta asociada a este operador.'
         ]);
       }
 
@@ -530,17 +529,14 @@ class CajaService{
       $fechaApertura = Carbon::parse($fechaHoraLocalFormateada);
       $fechaApertura = $fechaApertura->format('Y-m-d');
       
-     
-
       if ($data) {
         
         $cajaSesion = Caja::where('id_operador',$idOperador)
         ->where('id_caja_catalogo',$data['id_caja_catalogo'])
         ->where(DB::raw('DATE(fecha_apertura)'),$fechaApertura)
-        ->where('fecha_cierre',null)
+        ->where('estado','activo')
         ->first();
   
-        //return $cajaSesion;
         if ($cajaSesion->fecha_cierre == null) {
           
           $retiroArray = [
@@ -586,16 +582,32 @@ class CajaService{
     }
   }
 
-  public function estadoSesionCobroService()
+  public function estadoSesionCobroService(Request $data)
   {
     try {
+      //recibir id sesion de caja
         $usuario = auth()->user();
         $montoTotal = 0;
+        $dataArreglo = $data->toArray();
         if ($usuario->operador) {
-          $sesionCaja = Caja::where('id_operador',$usuario->operador->id)
-          ->where('fecha_cierre',null)
-          ->first();
 
+          if($dataArreglo['id_sesion_caja'] != null)
+          {
+            $sesionCaja = Caja::where('id',$dataArreglo['id_sesion_caja'])->first();
+           
+            if($usuario->operador->id != $sesionCaja->id_operador)
+            {
+              return response()->json([
+                'error'=>'El operador no tiene acceso a las sesiones de otros operadores'
+              ]);
+            }
+          
+          }else{
+            $sesionCaja = Caja::where('id_operador',$usuario->operador->id)
+           ->where('estado','activo')
+           ->first();
+          }
+          
           if ($sesionCaja) {
             
             //Consulta del nombre de la caja
@@ -613,15 +625,18 @@ class CajaService{
             . $usuario->operador->apellido_paterno . " " 
             . $usuario->operador->apellido_materno;
 
-            $fondoInicial = $sesionCaja->fondo_inicial; 
-            
+            $fondoInicial = $sesionCaja->fondo_inicial;           
             //Proceso para sumar los totales de todos los retiros asociados a la sesion de cobro
-            $retirosMonto = $retiro->toArray();
-            foreach ($retirosMonto as $monto)
-            {
-              $montoTotal += $monto['monto_total'];
+            if ($retiro) {
+              $retirosMonto = $retiro->toArray();
+              foreach ($retirosMonto as $monto)
+              {
+                $montoTotal += $monto['monto_total'];
+              }
+            }else{
+              $montoTotal = 0;
             }
-          
+                    
             //Datos a retornar
             $estadoSesion = [
               "caja_nombre" => $cataCajaNombre->nombre_caja, 
@@ -644,7 +659,7 @@ class CajaService{
             
     } catch (Exception $ex) {
       return response()->json([
-        'error' => 'Ocurrio un error durante la busqueda.'
+        'error' => 'Ocurrio un error durante la busqueda.'.$ex
     ], 500);
     }
   }
@@ -657,7 +672,7 @@ class CajaService{
       $idOperador = $usuario->operador->id;
 
       $sesionesAbiertas = Caja::where('id_operador',$idOperador)
-      ->where('fecha_cierre',null)
+      ->where('estado','activo')
       ->get();
 
       if ($sesionesAbiertas) {

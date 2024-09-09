@@ -316,11 +316,11 @@ class CajasController extends Controller
         }
     }
 
-    public function estadoSesionCobro()
+    public function estadoSesionCobro(Request $data)
     {
         try {
             DB::beginTransaction();
-            $cajaSesion = (new CajaService())->estadoSesionCobroService();
+            $cajaSesion = (new CajaService())->estadoSesionCobroService($data);
             DB::commit();
             return $cajaSesion;
         } catch (Exception $ex) {
