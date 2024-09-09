@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 class TomaService{
 
+    public function crearToma(){
+        ///generar código de toma
+    }
     public function tomaTipos($filtros){
         $ruta=$filtros['ruta_id'] ?? null;
         $libro=$filtros['libro_id'] ?? null;

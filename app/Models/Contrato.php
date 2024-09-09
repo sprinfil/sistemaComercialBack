@@ -40,6 +40,10 @@ class Contrato extends Model
     {
         return $this->belongsTo(Toma::class, 'id_toma');
     }
+    public function usuario() : BelongsTo
+    {
+        return $this->belongsTo(usuario::class, 'id_usuario');
+    }
     // Factibilidad asociada a un contrato
     public function factibilidad() : HasOne
     {
@@ -95,7 +99,7 @@ class Contrato extends Model
     }
 
     public static function contratoRepetido($id_usuario, $servicios,$toma_id){
-        $contratos= Contrato::where('id_usuario', $id_usuario)->where('id_toma',$toma_id)
+        $contratos= Contrato::where('id_toma',$toma_id)
         ->where('estatus', '!=', 'cancelado')
         ->where(function ($query) use ($servicios) {
             if (!empty($servicios)) {
@@ -137,7 +141,7 @@ class Contrato extends Model
 
     public static function ConsultarPorFolio(string $folio, string $ano){
         
-        $data=Contrato::where('folio_solicitud','like','%'.$folio.'%/'.$ano)->get();
+        $data=Contrato::with('usuario','toma')->where('folio_solicitud','like','%'.$folio.'%/'.$ano)->get();
         return $data;
         
     } 
