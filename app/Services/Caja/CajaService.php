@@ -86,7 +86,7 @@ class CajaService
           //condicion en caso de que la caja ya cuente con un registro abierto el dia actual
           else {
             return response()->json([
-              'error' => 'La caja ya se encuentra abierta.'
+              'error' => 'La caja ya se encuentra abierta.',$cajaPreviaReg
             ]);
           }
         }
