@@ -127,8 +127,8 @@ class OrdenTrabajoService{
             $ordenTrabajo['fecha_finalizada']=Carbon::today()->format('Y-m-d');
             $cargo=null;
         
-           
-           
+            //$evidencia= $ordenTrabajo['evidencia']->file('image')->store('images', 'public');
+            //$ordenTrabajo['evidencia']=$evidencia;
             $OT->update($ordenTrabajo);
             $OT->save($ordenTrabajo);
             $OTAcciones=$this->Acciones($OT, $OrdenCatalogo,$modelos);
@@ -151,6 +151,7 @@ class OrdenTrabajoService{
         
   
     }
+
 //validar terminar ot si pagos saldados 
     public function Masiva(array $ordenesTrabajo){
         $catalogo=OrdenTrabajoCatalogo::find($ordenesTrabajo[0]['id_orden_trabajo_catalogo']);
@@ -160,7 +161,7 @@ class OrdenTrabajoService{
            
             $data=$this->crearOrden($OT);
             if (!$data){
-                $ordenTrabajo=OrdenTrabajo::find($OT['id']);
+                $ordenTrabajo=OrdenTrabajo::find($OT['id_toma']);
                 $toma=Toma::find($ordenTrabajo['id_toma']);
                 $Ordenes->push(["Error"=>"La orden de trabajo para la toma con clave catastral ".$toma['clave_catastral']." no se pudo crear, debido, a que ya supera el limite del tipo de orden de trabajo: ".$catalogo['nombre']]);
             }
@@ -398,7 +399,7 @@ class OrdenTrabajoService{
         }
         return $OTModelo;
     }
-        
+    ////
     public function generarCargo($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){
 
         $cargos=new Collection();

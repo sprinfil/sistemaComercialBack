@@ -30,20 +30,21 @@ class Pago extends Model
         "saldo_a_favor",
         "recibido",
         "cambio",
-        //
+        // estados
         "forma_pago",
         "fecha_pago",
         "estado",
         "timbrado",
         "referencia"
     ];
-    //Pagos con caja
-    public function caja() : BelongsTo {
+
+    // Pagos con caja
+    public function caja(): BelongsTo {
         return $this->belongsTo(Caja::class , 'id_caja'); 
     }
 
-    //pagos con corte de caja
-    public function corteCaja () : HasMany
+    // Pagos con corte de caja
+    public function corteCaja(): HasMany
     {
         return $this->hasMany(CorteCaja::class, 'id_pago'); 
     }
@@ -56,15 +57,12 @@ class Pago extends Model
     public function duenoUsuario(): MorphTo
     {
         $dueno = $this->morphTo(__FUNCTION__, 'modelo_dueno', 'id_dueno');
-
         if ($dueno instanceof Toma) {
             // Si el modelo dueño es una toma, devuelve el usuario relacionado a esa toma
             return $dueno->usuario;
         }
-
         return $dueno;
     }
-
 
     public function abonos(): MorphMany
     {
@@ -103,25 +101,21 @@ class Pago extends Model
 
     public function formatDueno()
     {
-        // Always return the formatted 'dueno'
         if ($this->modelo_dueno === 'toma') {
             return $this->dueno;
         } elseif ($this->modelo_dueno === 'usuario') {
             return $this->dueno;
         }
-
         return null;
     }
 
     public function formatUsuario()
     {
-        // Always return the formatted 'dueno'
         if ($this->modelo_dueno === 'toma') {
             return $this->dueno->usuario;
         } elseif ($this->modelo_dueno === 'usuario') {
             return $this->dueno;
         }
-
         return null;
     }
 }

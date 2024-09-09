@@ -37,6 +37,8 @@ class ContratoResource extends JsonResource
             "diametro_de_la_toma" => $this->diametro_de_la_toma,
             "codigo_postal" => $this->codigo_postal,
             "coordenada" => $this->coordenada,
+            "usuario" =>new UsuarioResource($this->whenLoaded('usuario')),
+            "toma" => new TomaResource($this->whenLoaded('toma')),
         ];
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Cargo;
 use App\Models\OrdenTrabajo;
+use App\Models\OrdenTrabajoCatalogo;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -80,6 +82,37 @@ class OrdenTrabajoFactory extends Factory
     ];
 }
 
+/**
+     * Configure the factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (OrdenTrabajo $ot) {
+            if($ot->nombre == 'Limitación')
+            {
+                $ot_cat = OrdenTrabajoCatalogo::find($ot->id_orden_trabajo_catalogo);
+                Cargo::factory()->create([
+                    'id_concepto' => 146,
+                    'nombre' => $ot_cat->nombre,
+                    'id_origen' => $ot_cat->id,
+                    'modelo_origen' => 'orden_trabajo',
+                    'id_dueno' => $ot->id_toma,
+                    'modelo_dueno' => 'toma',
+                    'monto' => 400,
+                    'iva' => (0.16 * 400),
+                    'estado' => 'pendiente',
+                    'fecha_cargo' => Carbon::now(),
+                    'fecha_liquidacion' => null, //$fecha_liquidacion,
+                    'deleted_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            
+        });
+    }
      
 
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Cargo;
 use App\Models\ConceptoCatalogo;
 use App\Models\OrdenesTrabajoCargo;
 use App\Models\OrdenesTrabajoEncadenada;
@@ -51,7 +52,49 @@ class OrdenTrabajoCatalogoFactory extends Factory
                 'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
             ]);
 
-            if($orden_de_trabajo->nombre == 'Instalación de medidores')
+            if($orden_de_trabajo->nombre == 'Limitación')
+            {
+                OrdenTrabajoAccion::factory()->create([
+                    'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
+                    'accion' => 'modificar',
+                    'modelo' => 'toma',
+                    'campo' => 'estatus',
+                    'valor' => 'limitado'
+                ]);
+
+                // Cargo::factory()->create([
+                //     'id_concepto' => 146,
+                //     'nombre' => "Facturacion " . $factura->periodo->nombre,
+                //     'id_origen' => $factura->id,
+                //     'modelo_origen' => 'facturacion',
+                //     'id_dueno' => $factura->id_toma,
+                //     'modelo_dueno' => 'toma',
+                //     'monto' => $factura->monto,
+                //     'iva' => (0.16 * $factura->monto),
+                //     'estado' => 'pendiente',
+                //     'fecha_cargo' => Periodo::find($factura->id_periodo)->periodo,
+                //     'fecha_liquidacion' => null, //$fecha_liquidacion,
+                //     'deleted_at' => null,
+                //     'created_at' => now(),
+                //     'updated_at' => now(),
+                // ]);
+
+                OrdenesTrabajoEncadenada::factory()->count(1)->create([
+                    'id_OT_Catalogo_padre' => $orden_de_trabajo->id,
+                    'id_OT_Catalogo_encadenada' => 3//$this->faker->numberBetween(1, 100),
+                ]);
+            }
+            else if($orden_de_trabajo->nombre == 'Insp consumo elevado')
+            {
+                // OrdenTrabajoAccion::factory()->create([
+                //     'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
+                //     'accion' => 'registrar',
+                //     'modelo' => 'medidores',
+                //     'campo' => '',
+                //     'valor' => ''
+                // ]);
+            }
+            else if($orden_de_trabajo->nombre == 'Instalación de medidores')
             {
                 OrdenTrabajoAccion::factory()->create([
                     'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
@@ -62,15 +105,15 @@ class OrdenTrabajoCatalogoFactory extends Factory
                 ]);
             } else{
                 // Crear acciones asociadas
-                OrdenTrabajoAccion::factory()->count(1)->create([
+                /*OrdenTrabajoAccion::factory()->count(1)->create([
                     'id_orden_trabajo_catalogo' => $orden_de_trabajo->id,
-                ]);
+                ]);*/
             }
             
             // Crear encadenadas asociadas
-            OrdenesTrabajoEncadenada::factory()->count(1)->create([
-                'id_OT_Catalogo_padre' => $orden_de_trabajo->id,
-            ]);
+            //OrdenesTrabajoEncadenada::factory()->count(1)->create([
+            //    'id_OT_Catalogo_padre' => $orden_de_trabajo->id,
+            //]);
         });
     }
 }

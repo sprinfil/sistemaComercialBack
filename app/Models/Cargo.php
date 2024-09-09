@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Cargo extends Model
 {
     use HasFactory, SoftDeletes;
-    
+
     protected $fillable = [
         "id_concepto",
         "nombre",
@@ -28,7 +28,7 @@ class Cargo extends Model
         "fecha_cargo",
         "fecha_liquidacion",
     ];
-    
+
     public function origen(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo_origen', 'id_origen');
@@ -41,7 +41,23 @@ class Cargo extends Model
 
     public function abonos(): HasMany
     {
-        return $this->hasMany(Abono::class,'id_cargo');
+        return $this->hasMany(Abono::class, 'id_cargo');
+    }
+
+    public function abonosVigentes(): HasMany
+    {
+        return $this->hasMany(Abono::class, 'id_cargo')
+            ->whereHas('origen', function ($query) {
+                $query->where('estado', '!=', 'cancelado');
+            });
+    }
+
+    public function abonosCancelados(): HasMany
+    {
+        return $this->hasMany(Abono::class, 'id_cargo')
+            ->whereHas('origen', function ($query) {
+                $query->where('estado', '==', 'cancelado');
+            });
     }
 
     public function abonosTotal()
@@ -49,7 +65,8 @@ class Cargo extends Model
         return $this->abonos()->sum('total_abonado'); // 'monto' es el campo en la tabla 'abonos' que contiene el valor abonado
     }
 
-    public function concepto(): HasOne{
+    public function concepto(): HasOne
+    {
         return $this->hasOne(ConceptoCatalogo::class, "id", "id_concepto");
     }
 
@@ -61,13 +78,14 @@ class Cargo extends Model
     public function montoPendiente()
     {
         $monto_pendiente = ($this->monto + $this->iva) - $this->abonosTotal();
-        if($monto_pendiente < 1){
+        if ($monto_pendiente < 1) {
             $monto_pendiente = 0;
         }
         return $monto_pendiente;
     }
 
-    public function CargoConveniado():HasOne{
+    public function CargoConveniado(): HasOne
+    {
         return $this->hasOne(CargosConveniado::class, "id_cargo", "id");
     }
 }
