@@ -114,7 +114,7 @@ class ContratoController extends Controller
                 if (!$notificacion){
                     $entrecalle1=$toma['entre_calle1']?"/".$toma['entre_calle1']: null;
                     $entrecalle2= $toma['entre_calle2']?" & ".$toma['entre_calle2']: null;
-                    $toma['calle_notificaciones']=$toma['calle'].$entrecalle1.$entrecalle2.", ".$toma['colonia'].", ".$toma['localidad'];
+                    $toma['direccion_notificacion']=$toma['calle'].$entrecalle1.$entrecalle2.", ".$toma['colonia'].", ".$toma['localidad'];
                 }
                 $toma=Toma::create($toma);
             }

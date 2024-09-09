@@ -28,9 +28,7 @@ return new class extends Migration
             $table->string('numero_casa')->nullable();
             $table->string('localidad');
             $table->string('diametro_toma')->nullable();
-            $table->string('calle_notificaciones');
-            $table->string('entre_calle_notificaciones_1')->nullable();
-            $table->string('entre_calle_notificaciones_2')->nullable();
+            $table->string('direccion_notificacion');
             $table->enum('tipo_servicio',['lectura','promedio']);
             $table->unsignedBigInteger('c_agua')->nullable();
             $table->unsignedBigInteger('c_alc')->nullable();
