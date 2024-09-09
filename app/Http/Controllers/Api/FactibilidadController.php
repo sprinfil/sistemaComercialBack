@@ -49,11 +49,6 @@ class FactibilidadController extends Controller
                 'error' => 'No se pudo guardar la factibilidad'.$e
             ], 500);
         }
-        /*
-        $factibilidadAux = Factibilidad::join('contratos' , 'factibilidad.contratos_id' ,
-         'contratos.factibilidad_id')->get(); aux */
-
-        
     }
 
     /**
