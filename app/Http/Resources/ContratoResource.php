@@ -33,7 +33,7 @@ class ContratoResource extends JsonResource
             "calle" => $this->calle,
             "entre_calle1" => $this->entre_calle1,
             "entre_calle2" => $this->entre_calle2,
-            "domicilio" => $this->domicilio,
+            "num_casa" => $this->num_casa,
             "diametro_de_la_toma" => $this->diametro_de_la_toma,
             "codigo_postal" => $this->codigo_postal,
             "coordenada" => $this->coordenada,

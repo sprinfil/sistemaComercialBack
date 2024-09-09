@@ -29,7 +29,7 @@ class Contrato extends Model
         'localidad',
         'entre_calle1',
         'entre_calle2',
-        'domicilio',
+        'num_casa',
         'diametro_de_la_toma',
         'codigo_postal',
         'coordenada'
@@ -42,7 +42,7 @@ class Contrato extends Model
     }
     public function usuario() : BelongsTo
     {
-        return $this->belongsTo(usuario::class, 'id_usuario');
+        return $this->belongsTo(Usuario::class, 'id_usuario');
     }
     // Factibilidad asociada a un contrato
     public function factibilidad() : HasOne
@@ -75,6 +75,7 @@ class Contrato extends Model
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
     }
+    
     public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
     {
         
