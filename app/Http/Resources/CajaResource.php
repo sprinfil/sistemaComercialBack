@@ -23,6 +23,7 @@ class CajaResource extends JsonResource
             "fondo_final" => $this->fondo_final,
             "fecha_apertura" => $this->fecha_apertura,
             "fecha_cierre" => $this->fecha_cierre,
+            "estado" => $this->estado,
         ];
         
 

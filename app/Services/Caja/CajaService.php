@@ -60,7 +60,7 @@ class CajaService
       //Obtencion de un registro previo en caso de existir uno en el mismo dia y que no se haya cerrado el corte
       $cajaPreviaReg = Caja::where('id_operador', $idOperador) //'id_caja_catalogo',$idCajaCatalogo
         ->whereDate('fecha_apertura',  $fechaApertura)
-        ->where('fecha_cierre', null)
+        ->where('estado',  "activo")
         ->get();
 
       //return $cajaPreviaReg;
@@ -135,7 +135,7 @@ class CajaService
       $cajaHisto = Caja::where('id_operador', $idOperador)
         ->where('id_caja_catalogo', $data['caja_data'][0]['id_caja_catalogo'])
         ->whereDate('fecha_apertura', $fechaApertura)
-        ->where('fecha_cierre', null)
+        ->where('estado','activo')
         ->first();
 
 
@@ -202,7 +202,8 @@ class CajaService
         $cajaReg = [
           "id_caja_catalogo" => $data['caja_data'][0]['id_caja_catalogo'],
           "fondo_final" => $data['caja_data'][0]['fondo_final'],
-          "fecha_cierre" => $fechaHoraLocalFormateada
+          "fecha_cierre" => $fechaHoraLocalFormateada,
+          "estado" => 'inactivo'
         ];
 
 
@@ -262,7 +263,7 @@ class CajaService
     }
   }
 
-  public function solicitudesCancelacion(Request $request)
+  public function solicitudesCancelacion(Request $request) //noMike
   {
     try {
       // Comienza una consulta base para las solicitudes
@@ -315,7 +316,7 @@ class CajaService
     }
   }
 
-  public function actualizarSolicitudCancelacion(Request $request)
+  public function actualizarSolicitudCancelacion(Request $request)//noMike
   {
     try {
       DB::beginTransaction();
@@ -584,7 +585,7 @@ class CajaService
       $cajaSesion = Caja::where('id_operador', $idOperador)
         ->where('id_caja_catalogo', $data->id_caja_catalogo)
         ->where(DB::raw('DATE(fecha_apertura)'), $fechaApertura)
-        ->where('fecha_cierre', null)
+        ->where('estado','activo')
         ->first();
 
       if ($cajaSesion) {
@@ -625,7 +626,7 @@ class CajaService
         $cajaSesion = Caja::where('id_operador', $idOperador)
           ->where('id_caja_catalogo', $data['id_caja_catalogo'])
           ->where(DB::raw('DATE(fecha_apertura)'), $fechaApertura)
-          ->where('fecha_cierre', null)
+          ->where('estado','activo')
           ->first();
 
         //return $cajaSesion;
@@ -671,62 +672,85 @@ class CajaService
     }
   }
 
-  public function estadoSesionCobroService()
+  public function estadoSesionCobroService(Request $data)
   {
     try {
-      $usuario = auth()->user();
-      $montoTotal = 0;
-      if ($usuario->operador) {
-        $sesionCaja = Caja::where('id_operador', $usuario->operador->id)
-          ->where('fecha_cierre', null)
-          ->first();
+      //recibir id sesion de caja
+        $usuario = auth()->user();
+        $montoTotal = 0;
+        $dataArreglo = $data->toArray();
+        if ($usuario->operador) {
 
-        if ($sesionCaja) {
-
-          //Consulta del nombre de la caja
-          $cataCajaNombre = CajaCatalogo::select('nombre_caja')
-            ->where('id', $sesionCaja->id_caja_catalogo)
+          if($dataArreglo['id_sesion_caja'] != null)
+          {
+            $sesionCaja = Caja::where('id',$dataArreglo['id_sesion_caja'])->first();
+           
+            if($usuario->operador->id != $sesionCaja->id_operador)
+            {
+              return response()->json([
+                'error'=>'El operador no tiene acceso a las sesiones de otros operadores'
+              ]);
+            }
+          
+          }else{
+            $sesionCaja = Caja::where('id_operador',$usuario->operador->id)
+           ->where('estado','activo')
+           ->first();
+          }
+          
+          if ($sesionCaja) {
+            
+            //Consulta del nombre de la caja
+            $cataCajaNombre = CajaCatalogo::select('nombre_caja') 
+            ->where('id',$sesionCaja->id_caja_catalogo)
             ->first();
 
-          //Consulta de los montos de los retiros
-          $retiro = RetiroCaja::select('monto_total')
-            ->where('id_sesion_caja', $sesionCaja->id)
+            //Consulta de los montos de los retiros
+            $retiro = RetiroCaja::select('monto_total')
+            ->where('id_sesion_caja',$sesionCaja->id)
             ->get();
 
-          //Nombre del operador
-          $NombreOperador = $usuario->operador->nombre . " "
-            . $usuario->operador->apellido_paterno . " "
+            //Nombre del operador
+            $NombreOperador = $usuario->operador->nombre . " "  
+            . $usuario->operador->apellido_paterno . " " 
             . $usuario->operador->apellido_materno;
 
-          $fondoInicial = $sesionCaja->fondo_inicial;
+            $fondoInicial = $sesionCaja->fondo_inicial;           
+            //Proceso para sumar los totales de todos los retiros asociados a la sesion de cobro
+            if ($retiro) {
+              $retirosMonto = $retiro->toArray();
+              foreach ($retirosMonto as $monto)
+              {
+                $montoTotal += $monto['monto_total'];
+              }
+            }else{
+              $montoTotal = 0;
+            }
+                    
+            //Datos a retornar
+            $estadoSesion = [
+              "caja_nombre" => $cataCajaNombre->nombre_caja, 
+              "nombre_operador" => $NombreOperador,
+              "id_operador" => $usuario->operador->id,
+              "fondo_inicial" => $fondoInicial,
+              "Total_retirado" => $montoTotal,
+              "id" =>  $sesionCaja->id
+            ];
 
-          //Proceso para sumar los totales de todos los retiros asociados a la sesion de cobro
-          $retirosMonto = $retiro->toArray();
-          foreach ($retirosMonto as $monto) {
-            $montoTotal += $monto['monto_total'];
+            return $estadoSesion;
+
           }
-
-          //Datos a retornar
-          $estadoSesion = [
-            "caja_nombre" => $cataCajaNombre->nombre_caja,
-            "nombre_operador" => $NombreOperador,
-            "id_operador" => $usuario->operador->id,
-            "fondo_inicial" => $fondoInicial,
-            "Total_retirado" => $montoTotal,
-            "id" =>  $sesionCaja->id
-          ];
-
-          return $estadoSesion;
+          
+        }else{
+          return response()->json([
+            'error'=>'Este usuario no es un operador '
+          ]);
         }
-      } else {
-        return response()->json([
-          'error' => 'Este usuario no es un operador '
-        ]);
-      }
+            
     } catch (Exception $ex) {
       return response()->json([
-        'error' => 'Ocurrio un error durante la busqueda.'
-      ], 500);
+        'error' => 'Ocurrio un error durante la busqueda.'.$ex
+    ], 500);
     }
   }
 
@@ -738,7 +762,7 @@ class CajaService
       $idOperador = $usuario->operador->id;
 
       $sesionesAbiertas = Caja::where('id_operador', $idOperador)
-        ->where('fecha_cierre', null)
+        ->where('estado','activo')
         ->get();
 
       if ($sesionesAbiertas) {

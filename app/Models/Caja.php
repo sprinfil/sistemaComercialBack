@@ -23,6 +23,7 @@ class Caja extends Model
         'fondo_final',
         'fecha_apertura',
         'fecha_cierre',
+        'estado',
     ];
 
     //Caja con pagos
