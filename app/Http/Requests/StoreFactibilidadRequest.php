@@ -22,8 +22,8 @@ class StoreFactibilidadRequest extends FormRequest
     public function rules(): array
     {
         return [
-           "estado_factible"=>"required|in:factible,no_factible",
-           "derechos_conexion"=>"required|numeric|min:0", 
+            'id_contrato'=>'required|int',
+            'id_solicitante'=>'required|int'
         ];
     }
 }
