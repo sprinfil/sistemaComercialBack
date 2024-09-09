@@ -28,6 +28,9 @@ use GuzzleHttp\Promise\Create;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+
+use function PHPUnit\Framework\isEmpty;
 
 class ContratoController extends Controller
 {
@@ -56,49 +59,65 @@ class ContratoController extends Controller
      */
     public function store(Contrato $contrato,StoreContratoRequest $request)
     {
+       
         DB::beginTransaction();
-            $data=$request->validated()['contrato'];
-            $id_usuario=$request['contrato']['id_usuario'];
-            $id_toma=$request['contrato']['id_toma'] ?? null;
-            $servicio=$request['contrato']['servicio_contratados'];
-            $OT=$request['ordenes_trabajo'][0] ?? null;
-            $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
-            // TO DO
-    
-          
-            if (count($contratos)!=0) {
-                
-                return response()->json([
-                    'message' => 'El usuario y/o toma ya tiene un contrato',
-                    'restore' => false
-                ], 500);
-                
-                //return $contratos;
+        $data=$request->validated()['contrato'];
+        $nuevaToma=$request->validated()['toma'] ?? null;
+        $id_usuario=$request['contrato']['id_usuario'];
+        $id_toma=$request['contrato']['id_toma'] ?? null;
+        $servicio=$request['contrato']['servicio_contratados'];
+        $OT=$request['ordenes_trabajo'][0] ?? null;
+        $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
+        // TO DO
+
+      
+        if (count($contratos)!=0) {
+            
+            return response()->json([
+                'message' => 'La toma ya tiene un contrato',
+                'restore' => false
+            ], 500);
+            
+            //return $contratos;
+        }
+        else{
+            
+            
+            if  (!$nuevaToma){
+                $toma['id']=$data['id_toma'];
+                //return "entro;";
             }
             else{
-                if (!empty($OT)){
-                    $ordenTrabajo=(new OrdenTrabajoService)->crearOrden($OT);
-                }
-                else{
-                    $ordenTrabajo=null;
-                }
-            
-                $c=new Collection();
-                foreach ($servicio as $sev){
-                    $CrearContrato=$data;
-                    $CrearContrato['folio_solicitud']=Contrato::darFolio();
-                    $CrearContrato['servicio_contratado']=$sev;
-                    $c->push(Contrato::create($CrearContrato));
-                }
-                ///$toma=$data;
-
-                DB::rollBack();
-                return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo,"toma"=> ],201);
-           
+                $toma=$nuevaToma;
+                $toma['id_tipo_toma']=$data['tipo_toma'];
+                $toma['estatus']="pendiente de inspección";
+                $toma=Toma::create($toma);
             }
-             
+
+            ///Crea orden de inspección
+        if (!empty($OT)){
+            $OT['id_toma']=$toma['id'];
+            $ordenTrabajo=(new OrdenTrabajoService)->crearOrden($OT);
+        }
+        else{
+            $ordenTrabajo=null;
+        }
+            $c=new Collection();
+            foreach ($servicio as $sev){
+                $CrearContrato=$data;
+                $CrearContrato['folio_solicitud']=Contrato::darFolio();
+                $CrearContrato['servicio_contratado']=$sev;
+                $CrearContrato['id_toma']=$toma['id'];
+                $c->push(Contrato::create($CrearContrato));
+            }
+  
+            $data['id_toma']=$toma['id'];
+            DB::commit();
+            return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo,"toma"=> $toma],201);
+       
+        }
            try{
-            
+           
            }
            catch(Exception $ex){
             DB::rollBack();
@@ -116,13 +135,14 @@ class ContratoController extends Controller
     public function showPorUsuario($id)
     {
         try{
-            $usuario=Usuario::find($id);
+            $usuario=Usuario::where('codigo_usuario',$id)->first();
             $contratos = $usuario->contratovigente;
+           
         //return json_encode($usuario);
             
-        return ContratoResource::collection(
+        return response()->json(["Contrato"=>ContratoResource::collection(
             $contratos
-        );
+        )]);
         
         }
         catch(Exception $ex){
@@ -135,14 +155,14 @@ class ContratoController extends Controller
 
     
         try{
-            $toma=Toma::find($id);
-            //$toma=Toma::ConsultarContratosPorToma($id);
+            $toma=Toma::where('codigo_toma',$id)->first();
             $contratos = $toma->contratovigente;
-            //return json_encode($contratos);
-         
-            return ContratoResource::collection(
+            foreach ($contratos as $c){
+                $c->toma;
+            }
+            return response()->json(["Contrato"=>ContratoResource::collection(
                $contratos
-           );
+           )]);
         
         }
         catch(Exception $ex){
@@ -155,9 +175,9 @@ class ContratoController extends Controller
     {
         try{
             $usuario = Contrato::ConsultarPorFolio($folio,$ano);
-        return ContratoResource::collection(
+        return response()->json(["Contrato"=>ContratoResource::collection(
             $usuario
-        );
+        )]);
         
         }
         catch(Exception $ex){

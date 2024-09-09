@@ -40,6 +40,21 @@ class StoreContratoRequest extends FormRequest
             'contrato.diametro_de_la_toma' => 'sometimes|string',
             'contrato.codigo_postal' => 'sometimes|string|numeric',
             'contrato.coordenada' => 'nullable|string',
+
+            "toma"=>"sometimes|array",
+            "toma.id_giro_comercial"=>'sometimes|exists:giro_comercial_catalogos,id',
+            "toma.calle"=>'sometimes|string',
+            "toma.colonia"=>'sometimes|string',
+            "toma.localidad"=>'sometimes|string',
+            "toma.calle_notificaciones"=>'sometimes|string',
+            "toma.tipo_servicio"=> 'sometimes|in:lectura,promedio',
+            "toma.tipo_contratacion"=> 'sometimes|in:normal, condicionado, desarrollador',
+            "toma.posicion"=>'nullable|array',
+            
+            "ordenes_trabajo"=> "sometimes",
+            "ordenes_trabajo.id_toma" => "sometimes|exists:toma,id",
+            "ordenes_trabajo.posicion_OT" => "sometimes|point",
+            "ordenes_trabajo.genera_OT_encadenadas" => "sometimes|boolean",
         ];
     }
 }
