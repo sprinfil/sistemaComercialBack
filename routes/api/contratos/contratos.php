@@ -8,7 +8,8 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(ContratoController::class)->group(function () {
         Route::get("/contratos", "index");
         Route::post("/contratos/create", "store");
-        Route::put("/contratos/update/{id}", "update");
+        Route::put("/contratos/update", "update");
+        Route::put("/contratos/cambio_nombre", "CambioNombreContrato");
         Route::put("/contratos/restore/{id}", "restaurarDato");
         Route::get("/contratos/consulta/{id}", "showPorToma");
         Route::get("/contratos/consultaFolio/{folio}/{ano?}", "showPorFolio");

@@ -64,7 +64,7 @@ class ContratoFactory extends Factory
         return [
             'id_toma' => $tomaId,
             'id_usuario' => $usuarioId,
-            'folio_solicitud' => $this->faker->unique()->regexify('[A-Za-z0-9]{10}'),
+            'folio_solicitud' => $this->faker->unique()->regexify('(\d{6}/2024)'),
             'estatus' => $this->faker->randomElement([
                 'pendiente de inspeccion',
                 'contrato no factible',
@@ -84,7 +84,7 @@ class ContratoFactory extends Factory
             'calle' => $this->faker->streetAddress,
             'entre_calle1' => $this->faker->optional()->streetName,
             'entre_calle2' => $this->faker->optional()->streetName,
-            'domicilio' => $this->faker->address,
+            'num_casa' => $this->faker->numerify('###'),
             'diametro_de_la_toma' => $this->faker->randomElement(['1/2 pulgada', '3/4 pulgada', '1 pulgada']),
             'codigo_postal' => $this->faker->postcode,
             'coordenada' => $this->faker->optional()->latitude . ', ' . $this->faker->optional()->longitude,

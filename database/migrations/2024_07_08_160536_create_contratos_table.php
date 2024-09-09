@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('calle');
             $table->string('entre_calle1')->nullable();
             $table->string('entre_calle2')->nullable();
-            $table->string('domicilio');
+            $table->string('num_casa')->nullable();
             $table->string('diametro_de_la_toma');
             $table->string('codigo_postal');
             $table->string('coordenada')->nullable();

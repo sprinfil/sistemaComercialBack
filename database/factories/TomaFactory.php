@@ -99,7 +99,7 @@ class TomaFactory extends Factory
                 'calle' => $toma->calle,
                 'municipio' => $this->faker->city,
                 'localidad' => $this->faker->city,
-                'domicilio' => $this->faker->address,
+                'num_casa' => $this->faker->numerify('###'),
             ]);
 
             $toma_actualizada = Toma::find($toma->id);

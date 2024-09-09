@@ -27,9 +27,7 @@ class ContratoService{
         ///Desarrollador y cargos de desarrollador
         ///
     }
-    public function CambioNombre(){
-        /////
-    }
+
     public function BajaDefinitiva(){
         /////
     }
@@ -38,6 +36,12 @@ class ContratoService{
     }
     public function FiltrosContratos(array $filtros){
 
+    }
+    public function update(array $data){
+        $contrato=Contrato::find($data['id']);
+        $contrato->update($data);
+        $contrato->save();
+        return $contrato;
     }
 
 }

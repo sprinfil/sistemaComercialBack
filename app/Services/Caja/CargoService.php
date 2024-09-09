@@ -271,7 +271,7 @@ class CargoService{
         }
     }
     public function generarCargosToma($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){ ////pendiente
-
+        $Zona_horaria = config('global.zona_horaria');
         $cargos=new Collection();
         foreach($conceptos as $concepto){
             $tarifa=(new ConceptoService())->obtenerTarifaToma($dueno['id_tipo_toma'],$concepto['id']);
@@ -286,7 +286,7 @@ class CargoService{
                 'monto' => $tarifa['monto'],
                 'iva' => $iva,
                 'estado' => "pendiente",
-                'fecha_cargo' => Carbon::today('gmt-7')->format('Y-m-d'),
+                'fecha_cargo' => Carbon::now()->setTimezone($Zona_horaria)->format('Y-m-d H:m:s'),
             ]));
         }
         return $cargos;
