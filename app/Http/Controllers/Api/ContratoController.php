@@ -34,6 +34,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Objects\Point;
+use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -471,5 +473,33 @@ class ContratoController extends Controller
         $tipoToma=$request['id_tipo_toma'];
         return (new ContratoService())->ConceptosContratos();
     }
+
+    public function generarContratoPdf()
+    {
+        $data = [
+            'contrato_numero' => '123456',
+            'calle' => 'Calle Principal',
+            'numero_casa' => '12B',
+            'calle_entre' => 'Calle 1',
+            'calle_y' => 'Calle 2',
+            'costo_conexion' => '$1,500',
+            'recibo_numero' => '789123',
+            'notificacion_calle' => 'Calle Secundaria',
+            'notificacion_calle_secundaria' => 'Calle 3',
+            'notificacion_casa_numero' => '45',
+            'nombre_usuario' => 'Juan Pérez',
+            'nombre_sistema' => 'Sistema Municipal',
+        ];
+
+        //$pdf = FacadePdf::loadView('contrato', $data);
+        $pdf = FacadePdf::loadView('contrato', $data)
+              ->setPaper('A4', 'portrait') // Tamaño de papel y orientación
+              ->setOption('margin-top', 0)
+              ->setOption('margin-right', 0)
+              ->setOption('margin-bottom', 0)
+              ->setOption('margin-left', 0);
+        return $pdf->download('contrato.pdf');
+    }
+
     
 }
