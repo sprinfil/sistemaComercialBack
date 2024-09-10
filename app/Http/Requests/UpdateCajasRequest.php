@@ -26,6 +26,8 @@ class UpdateCajasRequest extends FormRequest
             "caja_data"=>"required|array",   
             "caja_data.*.id_caja_catalogo" => "required|integer|gt:0",
             "caja_data.*.fondo_final" => "required|numeric|regex:/^\d+(\.\d{2})$/",
+            "caja_data.*.estado" => "required|string|
+            in:inactivo",
           
 
             "corte_data"=>"required|array",

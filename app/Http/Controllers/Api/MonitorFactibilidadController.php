@@ -21,19 +21,21 @@ class MonitorFactibilidadController extends Controller
      */
     public function index()
     {
-        try{
-            //Muestra todas las factibilidades de los contratos
-           return FactibilidadResource::collection($factibilidades = Factibilidad::with('contrato')->paginate(10));
-             $data = [];
-                    return response()->json([
-                     $data[] = [
-                         'data'=>$factibilidades,
-                     ]
-                    ]);
-        }
-        catch(Exception $ex){
+        try {
+            // Muestra todas las factibilidades de los contratos sin paginación
+            $factibilidades = Factibilidad::with('contrato')->get();
+
+            return FactibilidadResource::collection($factibilidades);
+
+            $data = [];
             return response()->json([
-                'error' => 'No se encontro ningun contrato'.$ex ,
+                $data[] = [
+                    'data' => $factibilidades,
+                ]
+            ]);
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No se encontro ningun contrato' . $ex,
                 'restore' => false
             ], 200);
         }
@@ -47,39 +49,38 @@ class MonitorFactibilidadController extends Controller
         //
     }
 
-    public function filtro (Request $request)
+    public function filtro(Request $request)
     {
-        try{
+        try {
             $contrato = $request->input('id_contrato');
             $agua_factible = $request->input('agua_estado_factible');
             $alcantarillado_factible = $request->input('alc_estado_factible');
             $derechos_conexion = $request->input('derechos_conexion');
             //$tipo_toma = $request->input('tipo_toma');
             $query = Factibilidad::query();
-                if ($contrato) {
-                    $query->where('id_contrato' , $contrato);
-                }
-                if ($agua_factible) {
-                    $query->where('agua_estado_factible' , $agua_factible);
-                }
-                if ($alcantarillado_factible) {
-                    $query->where('alc_estado_factible' , $alcantarillado_factible);
-                }
-                if ($derechos_conexion) {
-                    $query->where('derechos_conexion', $derechos_conexion);
-                }
-                $hasConditions = !empty($query->getQuery()->wheres);
-                if (!$hasConditions) {
-                   return response()->json([
-                    'message'=>'No se encontraron resultados',
-                   ]);
-                }
+            if ($contrato) {
+                $query->where('id_contrato', $contrato);
+            }
+            if ($agua_factible) {
+                $query->where('agua_estado_factible', $agua_factible);
+            }
+            if ($alcantarillado_factible) {
+                $query->where('alc_estado_factible', $alcantarillado_factible);
+            }
+            if ($derechos_conexion) {
+                $query->where('derechos_conexion', $derechos_conexion);
+            }
+            $hasConditions = !empty($query->getQuery()->wheres);
+            if (!$hasConditions) {
+                return response()->json([
+                    'message' => 'No se encontraron resultados',
+                ]);
+            }
             //Muestra las factibilidades filtradas
             return $factibilidades = $query->with('contrato')->paginate(10);
-        }
-        catch(Exception $ex){
+        } catch (Exception $ex) {
             return response()->json([
-                'error' => 'No se encontro ningun contrato'.$ex ,
+                'error' => 'No se encontro ningun contrato' . $ex,
                 'restore' => false
             ], 200);
         }
@@ -98,21 +99,21 @@ class MonitorFactibilidadController extends Controller
             $agua_estado_factible = $request->input('agua_estado_factible');
             $alc_estado_factible = $request->input('alc_estado_factible');
             $query = Factibilidad::query();
-                if ($contrato) {
-                    $query->where('id_contrato' , $contrato);
-                }
-            
+            if ($contrato) {
+                $query->where('id_contrato', $contrato);
+            }
+
             return $factibilidades = $query->with('contrato')->paginate(10);
             //return $fact = Factibilidad::find($id);
             //$factibilidades = Factibilidad::find($id)->with('contrato')->paginate(10);
             $data = [];
             foreach ($factibilidades as $fact) {
                 return response()->json([
-                 //'data'=>$factibilidad,
-                 $data[] = [
-                     'data'=>$fact,
-                 ]
-                ]);  
+                    //'data'=>$factibilidad,
+                    $data[] = [
+                        'data' => $fact,
+                    ]
+                ]);
             }
         } catch (ModelNotFoundException $e) {
             return response()->json([
