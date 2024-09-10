@@ -183,6 +183,19 @@ class ContratoController extends Controller
         }
             
     }
+    public function CerrarContrato(UpdateContratoRequest $request, Contrato $contrato) //TODO
+    {
+        $data=$request->validated();
+        $contrato=(new ContratoService())->update($data['contrato']);
+        return response()->json(["contrato"=>new ContratoResource($contrato)]);
+        try{
+
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se pudo modificar el contrato, introduzca datos correctos'], 200);
+        }
+            
+    }
     public function CambioNombreContrato(UpdateContratoRequest $request){
         DB::beginTransaction();
         $data=$request->validated();
