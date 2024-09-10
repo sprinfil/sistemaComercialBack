@@ -10,7 +10,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         //Route::get("/factibilidadContrato" , "contratoFactible");
         Route::post("/factibilidad/create" , "store");
         Route::get("/factibilidad/show/{id}" , "show");
-        Route::put("/factibilidad/update/{id}" , "update");
+        Route::post("/factibilidad/update/{id}" , "update");
         //Route::delete("/factiblidad/delete/{id}" , "destroy");
         //Route::put("/factibilidad/restaurar/{id}" , "restaurar");
     });
