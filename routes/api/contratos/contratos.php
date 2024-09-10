@@ -16,6 +16,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         //log delete significa borrado logico
         Route::delete("/contratos/log_delete/{id}", "destroy");
         Route::post("/contratos/filtros", "FiltrosContratos");
+        Route::put("/contratos/cerrar", "CerrarContrato");
 
         //Cotizaciones
         Route::prefix('contratos')->group(function (){
