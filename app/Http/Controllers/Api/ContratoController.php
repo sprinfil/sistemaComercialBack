@@ -254,24 +254,17 @@ class ContratoController extends Controller
     }
     public function showCotizacion(Request $request) 
     {
-        
-       
-        
         try{
-            $id_contratos=$request['id_contratos'];
-            $cotizacion=collect([]);
-        foreach ($id_contratos as $cont){
-            $cotizacion->push(Contrato::find($cont)->cotizacionesVigentes);
-        }
+            $id_contratos=$request->all()['contrato'];
+            $cotizacion=Contrato::find($id_contratos['id'])->cotizacionesVigentes;
+            $cotizacion->cotizacionesDetalles;
         
-        return $cotizacion;
+            return response()->json(["cotizacion"=> $cotizacion]);
         
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
-        }
-            
-            
+        }  
     }
     public function crearCotizacion(Cotizacion $cotizacion, StoreCotizacionRequest $request){
        
@@ -317,11 +310,12 @@ class ContratoController extends Controller
      }
      public function destroyCot(Cotizacion $cotizacion, Request $request)
     {
+        $cotizacion = Cotizacion::findOrFail($request["id"]);
+        $cotizacion->delete();
+        return response()->json(['message' => 'Eliminado correctamente'], 200);
         try
         {
-            $cotizacion = Cotizacion::findOrFail($request["id"]);
-            $cotizacion->delete();
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
+         
         }
         catch (\Exception $e) {
 
@@ -372,7 +366,7 @@ class ContratoController extends Controller
         if($existe)
         {
             //return $existe;
-            return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no esten cargados unicamente'], 500);
+            return response()->json(['message' => 'No se puede generar un cargo para las cotizaciones porque ya existe un cargo de cotización asociado'], 500);
         }
         
         foreach ($data as $detalle){
@@ -413,7 +407,7 @@ class ContratoController extends Controller
             $detalleCot
         );
        
-        DB::rollBack();
+        DB::commit();
         return response()->json([
             "contrato"=>$cargos,
             "cotizacion_detalle"=>$detalle
@@ -470,6 +464,11 @@ class ContratoController extends Controller
     public function ObtenerConceptos(Request $request){
         $tipoToma=$request['id_tipo_toma'];
         return (new ContratoService())->ConceptosContratos();
+    }
+    public function FiltrosContratos(Request $request){
+        $data=$request->all();
+       $filtros=(new ContratoService())->FiltrosContratos($data);
+       return response()->json(["contratos"=>$filtros]);
     }
     
 }
