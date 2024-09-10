@@ -12,23 +12,27 @@ use Illuminate\Database\Eloquent\Collection;
 class CotizacionService{
     
     public function CargoContratos($contratos){
-        $cargo=new Collection();
-        $fecha=Carbon::now();
-        $fecha->format('Y-m-d');
+        $fecha=helperFechaAhora();
       
+        /*
         foreach ($contratos as $contrato){
             $monto=$contrato['montoDetalle']+$contrato['monto'];
-            $cargo->push(Cargo::create([
-                'id_concepto' => $contrato['id_concepto'],
-                'concepto' => $contrato['concepto'],
-                'id_origen' => $contrato['id_contrato'],
-                'modelo_origen' => "contrato",
-                'id_dueno' => $contrato['id_toma'],
-                'modelo_dueno' => "toma",
-                'monto' => $monto,
-                'fecha_cargo' => $fecha,
-            ]));
+            
         }
+            */
+        $iva=helperCalcularIVA($contratos['montoDetalle']);
+        $cargo=Cargo::create([
+            'id_concepto' => $contratos['id_concepto'],
+            'nombre' => $contratos['concepto'],
+            'id_origen' => $contratos['id_contrato'],
+            'modelo_origen' => "contrato",
+            'id_dueno' => $contratos['id_toma'],
+            'modelo_dueno' => "toma",
+            'monto' => $contratos['montoDetalle'],
+            "iva"=>$iva,
+            'fecha_cargo' => $fecha,
+            "estado"=>"pendiente",
+        ]);
        return $cargo;
     }
     public function TomaCotizacion($cotizacion): Toma{
@@ -53,10 +57,11 @@ class CotizacionService{
         }
         $conceptos= $concepto->unique('id');
         */
-
+  
         $concepto=[];
         $cotizacion=Cotizacion::find($cotizaciones[0]['id_cotizacion']);
         $contrato=$cotizacion->contrato;
+     
         $concepto=$contrato->tarifaContrato();
         $concepto['id_cotizacion']=$cotizacion['id'];
         $concepto['id_toma']=$cotizacion->TomaCotizada->id;

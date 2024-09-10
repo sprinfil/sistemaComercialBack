@@ -20,6 +20,7 @@ use App\Models\ConceptoCatalogo;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
 use App\Models\Tarifa;
+use App\Models\TarifaConceptoDetalle;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\CargoService;
@@ -360,61 +361,64 @@ class ContratoController extends Controller
         DB::beginTransaction();
         $data=$request->validated()['cotizacion_detalle'];
         $detalleCot=new Collection();
-        $costoContrato=new Collection();
-    
-        $i=0;
-        $a=0;
-        return $data;
+        //$costoContrato=new Collection();
+        $cotizacion=Cotizacion::find($data[0]['id_cotizacion']);
+        $contrato=$cotizacion->contrato;
         $tarifas=(new CotizacionService())->TarifaPorContrato($data);
+        //return $tarifas;
 
-        foreach ($data as $tarifa){
-            $existe=Cargo::where('id_origen',$tarifa['id_contrato'])->where('modelo_origen','contrato')->first();
+        $existe=Cargo::where('id_origen',$tarifas['id_contrato'])->where('modelo_origen','contrato')->first();
             
-            if($existe)
-            {
-                //return $existe;
-                return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no esten cargados unicamente'], 200);
-            }
-         
+        if($existe)
+        {
+            //return $existe;
+            return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no esten cargados unicamente'], 500);
         }
+        
         foreach ($data as $detalle){
-            $detalleCot->push(CotizacionDetalle::create([
-                'id_cotizacion' => $data['id_cotizacion'][$i],
-                'id_sector' => $data['id_sector'][$i],
-                'nombre_concepto' => $data['nombre_concepto'][$i],
-                'monto' => $data['monto'][$i],
-            ]));
-            foreach ($tarifas as $tarifa){
-                if($tarifa['id_cotizacion']== $data['id_cotizacion'][$i])
-                {
-                    $tarifas[$a]['montoDetalle']+=$data['monto'][$i];
-                    //break;
-                    
-                }
-                $a++;
+            $monto=0;
+            $concepto=ConceptoCatalogo::find($detalle['id_concepto']);
+            if  ($concepto['tarifa_fija']==1  ){
+                $TarifaConcepto=TarifaConceptoDetalle::where('id_tipo_toma',$contrato['tipo_toma'])->where('id_concepto',$concepto['id'])->first();
+                $monto=$TarifaConcepto['monto'];
+                $detalleCot->push(CotizacionDetalle::create([
+                    'id_cotizacion' => $detalle['id_cotizacion'],
+                    'id_sector' => $detalle['id_sector'],
+                    'id_concepto' => $detalle['id_concepto'],
+                    'monto' =>$monto,
+                ]));
+
             }
-        }
-        /*
-        while ($i<count($data['monto'])){
-           
-            //guarda y actualiza los cargos por cotización
-           
-            $a=0;
+            else{
+                $monto=$detalle['monto'];
+                $detalleCot->push(CotizacionDetalle::create([
+                    'id_cotizacion' => $detalle['id_cotizacion'],
+                    'id_sector' => $detalle['id_sector'],
+                    'id_concepto' => $detalle['id_concepto'],
+                    'monto' =>$monto ,
+                ]));
+            }
             
-            $i++;
+            $tarifas['montoDetalle']+=$monto;
         }
-            */
+
         //return $tarifas;
         //Genera los cargos por cotizacion
+
+        $tarifas['montoDetalle']+= $tarifas['monto'];
         $cargos=(new CotizacionService())->CargoContratos($tarifas);
-        //return  $cargos;
+
         
         $detalle=CotizacionDetalleResource::collection(
             $detalleCot
         );
        
         DB::rollBack();
-        return[$detalle,$cargos];
+        return response()->json([
+            "contrato"=>$cargos,
+            "cotizacion_detalle"=>$detalle
+
+        ]);
         
        
     }

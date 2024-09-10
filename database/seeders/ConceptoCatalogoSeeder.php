@@ -1099,7 +1099,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
                 "abonable" => 1,
-                "tarifa_fija" => 1,
+                "tarifa_fija" => 0,
             ],
             [
                 "nombre" => "SERVICIO DE AGUA (JURIDICO)", ////COMO QUE JURIDICO
@@ -1501,7 +1501,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
                 "abonable" => 1,
-                "tarifa_fija" => 1,
+                "tarifa_fija" => 0,
             ],
             [
                 "nombre" => "TIPO DE SUELO C (DE PIEDRA) ML ADICIONAL A 9M.",
@@ -1513,7 +1513,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
                 "abonable" => 1,
-                "tarifa_fija" => 1,
+                "tarifa_fija" => 0,
             ],
             [
                 "nombre" => "ROMPIMIENTO DE PAVIMENTO ASFALTO (ML)",
@@ -1525,7 +1525,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
                 "abonable" => 1,
-                "tarifa_fija" => 1,
+                "tarifa_fija" => 0,
             ],
             [
                 "nombre" => "ROMPIMIENTO DE PAVIMENTO HIDRAULICO (ML)",
@@ -1537,7 +1537,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
                 "abonable" => 1,
-                "tarifa_fija" => 1,
+                "tarifa_fija" => 0,
             ],
             [
                 "nombre" => "CONSTANCIA DE NO SERVICIO",
