@@ -14,7 +14,7 @@ class CotizacionDetalle extends Model
     protected $fillable=[
         'id_cotizacion',
         'id_sector',
-        'nombre_concepto',
+        'id_concepto',
         'monto',
     ];
     public function cotizacion(): BelongsTo

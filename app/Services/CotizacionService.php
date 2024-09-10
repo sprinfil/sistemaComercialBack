@@ -37,11 +37,11 @@ class CotizacionService{
     }
     
     public function TarifaPorContrato($cotizaciones){
+        /*
         $concepto=new Collection();
         $i=0;
         foreach ($cotizaciones as $cot){
-            
-            $cotizacion=Cotizacion::find($cot);
+            $cotizacion=Cotizacion::find($cot['id_cotizacion']);
             $contrato=$cotizacion->contrato;
             $concepto->push($contrato->tarifaContrato());
             $concepto[$i]['id_cotizacion']=$cotizacion['id'];
@@ -49,9 +49,23 @@ class CotizacionService{
             $concepto[$i]['id_contrato']=$contrato->id;
             $concepto[$i]['concepto']=$contrato->conceptoContrato()->nombre;
             $i++;
+           
         }
         $conceptos= $concepto->unique('id');
-        return $conceptos;
+        */
+
+        $concepto=[];
+        $cotizacion=Cotizacion::find($cotizaciones[0]['id_cotizacion']);
+        $contrato=$cotizacion->contrato;
+        $concepto=$contrato->tarifaContrato();
+        $concepto['id_cotizacion']=$cotizacion['id'];
+        $concepto['id_toma']=$cotizacion->TomaCotizada->id;
+        $concepto['id_contrato']=$contrato->id;
+        $concepto['concepto']=$contrato->conceptoContrato()->nombre;
+        return $concepto;
         //return $concepto;
+    }
+    public function crearCotizacionDetalle(){
+
     }
 }
