@@ -261,6 +261,7 @@ class ContratoFactory extends Factory
                         'Dividendos',
                         'Demas ingresos'
                     ]),
+                    'nombre'=>$contrato->toma->usuario->getNombreCompletoAttribute(),
                     'correo' => $contrato->toma->usuario->correo,
                     'razon_social' => $contrato->toma->usuario->rfc,
                     'telefono' => $contrato->toma->usuario->telefono,

@@ -37,7 +37,7 @@ class PagoResource extends JsonResource
             "forma_pago" => $this->forma_pago,
             "fecha_pago" => $this->fecha_pago,
             "estado" => $this->estado,
-            "timbrado" => $this->timbrado,
+            "timbrado" => $this->cfdi,
             "referencia" => $this->referencia,
             "abonos" => AbonoResource::collection($this->whenLoaded('abonos')),
             "cargos" => CargoResource::collection($this->whenLoaded('cargos')),
