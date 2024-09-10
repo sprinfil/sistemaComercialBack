@@ -30,7 +30,6 @@ return new class extends Migration
             $table->enum("forma_pago",['efectivo','tarjeta_credito','tarjeta_debito','cheque','transferencia','documento'])->default('efectivo');
             $table->date('fecha_pago');
             $table->enum("estado",['abonado','pendiente','cancelado'])->default('pendiente');
-            $table->enum("timbrado",['realizado','pendiente','cancelado'])->default('pendiente');
             $table->string('referencia')->nullable();
             $table->softDeletes();
             $table->timestamps();

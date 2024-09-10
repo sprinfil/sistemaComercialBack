@@ -58,7 +58,7 @@ class Usuario extends Model
 
     public function datos_fiscales(): MorphOne
     {
-        return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
+        return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo')->latestOfMany();
     }
 
     public function cargos(): MorphMany

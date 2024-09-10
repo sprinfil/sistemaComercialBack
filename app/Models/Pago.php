@@ -34,7 +34,6 @@ class Pago extends Model
         "forma_pago",
         "fecha_pago",
         "estado",
-        "timbrado",
         "referencia"
     ];
 
@@ -42,6 +41,10 @@ class Pago extends Model
     public function caja(): BelongsTo {
         return $this->belongsTo(Caja::class , 'id_caja'); 
     }
+
+    public function cfdi(): HasOne {
+        return $this->hasOne(Cfdi::class, 'folio', 'folio');
+    }    
 
     // Pagos con corte de caja
     public function corteCaja(): HasMany
