@@ -128,7 +128,7 @@ class ContratoController extends Controller
         
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 200);
+            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 500);
         }
             
     }
@@ -148,7 +148,7 @@ class ContratoController extends Controller
         
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 200);
+            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 500);
         }
             
             
@@ -163,7 +163,7 @@ class ContratoController extends Controller
         
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 200);
+            return response()->json(['error' => 'No se encontraron contratos asociados a este usuario'], 500);
         }
             
     }
@@ -174,25 +174,44 @@ class ContratoController extends Controller
     {
         $data=$request->validated();
         $contrato=(new ContratoService())->update($data['contrato']);
-        return response()->json(["contrato"=>new ContratoResource($contrato)]);
+        return response()->json(["contrato"=>new ContratoResource($contrato)],200);
         try{
 
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se pudo modificar el contrato, introduzca datos correctos'], 200);
+            return response()->json(['error' => 'No se pudo modificar el contrato, introduzca datos correctos'], 500);
         }
             
     }
     public function CerrarContrato(UpdateContratoRequest $request, Contrato $contrato) //TODO
     {
-        $data=$request->validated();
-        $contrato=(new ContratoService())->update($data['contrato']);
-        return response()->json(["contrato"=>new ContratoResource($contrato)]);
+        DB::beginTransaction();
+        $data=$request->validated()['contrato'];
+        $contrato=Contrato::find($data['id']);
+
+        if ($contrato['estatus']!="pendiente de pago"){
+            return response()->json(['message' => 'No se pudo cerrar el contrato, estado del contrato invalido'], 500);
+        }
+        else{
+            $cargos=$contrato->cargosVigentes;
+            if (!isEmpty($cargos)){
+                return response()->json(['message' => 'No se pudo cerrar el contrato, tiene cargos pendientes'], 500);
+            }
+            else{
+                $data['estatus']="contratado";
+                $contrato=(new ContratoService())->update($data);
+                return response()->json(["contrato"=>new ContratoResource($contrato)],200);
+                DB::rollBack();
+            }
+
+        }
+ 
         try{
 
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se pudo modificar el contrato, introduzca datos correctos'], 200);
+            DB::rollBack();
+            return response()->json(['error' => 'No se pudo modificar el contrato, introduzca datos correctos'], 500);
         }
             
     }

@@ -75,6 +75,10 @@ class Contrato extends Model
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
     }
+    public function cargosVigentes(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen')->where('estado','pendiente');
+    }
     
     public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
     {

@@ -17,13 +17,20 @@ class ContratoService{
     public function Solicitud($servicio,$data,$toma){
         ////Crea la toma pendiente de inspección
         ////Crear solicitud de factibilidad
-
+        $toma=Toma::find($toma['id']);
         $c=new Collection();
         foreach ($servicio as $sev){
             $CrearContrato=$data;
             $CrearContrato['folio_solicitud']=Contrato::darFolio();
             $CrearContrato['servicio_contratado']=$sev;
             $CrearContrato['id_toma']=$toma['id'];
+            if ($toma['estatus']=="activa"){
+                $CrearContrato['estatus']="inspeccionado";
+            }
+            else{
+                $CrearContrato['estatus']="pendiente de factibilidad";
+            }
+         
             $c->push(Contrato::create($CrearContrato));
         }
         return $c;
