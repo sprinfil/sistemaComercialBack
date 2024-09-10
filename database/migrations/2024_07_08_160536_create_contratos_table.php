@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_usuario')->nullable();
             $table->string('folio_solicitud')->unique();
             $table->enum('estatus', [
+                'pendiente de factibilidad',
                 'pendiente de inspeccion', 
                 'contrato no factible', 
                 'inspeccionado', 
