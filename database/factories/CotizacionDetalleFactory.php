@@ -21,7 +21,7 @@ class CotizacionDetalleFactory extends Factory
         return [
             'id_cotizacion'=>1,
             'id_sector'=>$this->faker->numberBetween(1, 10),
-            'nombre_concepto'=>"",
+            'id_concepto'=>"",
             'monto'=>0.00
         ];
     }

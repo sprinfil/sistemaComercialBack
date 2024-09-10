@@ -54,14 +54,12 @@ class TomaFactory extends Factory
             'numero_casa' => $this->faker->numerify('####'),
             'localidad' => $this->faker->city,
             'diametro_toma' => $this->faker->randomNumber(),
-            'calle_notificaciones' => $this->faker->streetName,
-            'entre_calle_notificaciones_1' => $this->faker->streetName,
-            'entre_calle_notificaciones_2' => $this->faker->streetName,
+            'direccion_notificacion' => $this->faker->streetName,
             'tipo_servicio' => $this->faker->randomElement(['promedio', 'lectura']),
             'c_agua' => null,
             'c_alc' => null,
             'c_san' => null,
-            'tipo_contratacion' => $this->faker->randomElement(['normal', 'condicionado', 'desarrollador']),
+            'tipo_contratacion' => $this->faker->randomElement(['normal', 'condicionado', 'pre-contrato ']),
             'posicion' => null,  // Este valor será sobrescrito al usar create en el LibroFactory
             'deleted_at' => null,
             'created_at' => now(),
@@ -99,7 +97,7 @@ class TomaFactory extends Factory
                 'calle' => $toma->calle,
                 'municipio' => $this->faker->city,
                 'localidad' => $this->faker->city,
-                'domicilio' => $this->faker->address,
+                'num_casa' => $this->faker->numerify('###'),
             ]);
 
             $toma_actualizada = Toma::find($toma->id);

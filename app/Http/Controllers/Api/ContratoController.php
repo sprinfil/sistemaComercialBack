@@ -9,17 +9,21 @@ use App\Http\Requests\StoreCotizacionDetalleRequest;
 use App\Http\Requests\StoreCotizacionRequest;
 use App\Http\Requests\UpdateContratoRequest;
 use App\Http\Requests\UpdateCotizacionRequest;
+use App\Http\Resources\CargoResource;
 use App\Http\Resources\ContratoResource;
 use App\Http\Resources\CotizacionDetalleResource;
 use App\Http\Resources\CotizacionResource;
 use App\Http\Resources\TomaResource;
 use App\Http\Resources\UsuarioResource;
 use App\Models\Cargo;
+use App\Models\ConceptoCatalogo;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
 use App\Models\Tarifa;
 use App\Models\Toma;
 use App\Models\Usuario;
+use App\Services\Caja\CargoService;
+use App\Services\ContratoService;
 use App\Services\CotizacionService;
 use App\Services\OrdenTrabajoService;
 use Carbon\Carbon;
@@ -40,7 +44,7 @@ class ContratoController extends Controller
     public function index()
     {
         try{
-            return response()->json(["Contratos"=> ContratoResource::collection(
+            return response()->json(["contrato"=> ContratoResource::collection(
                 Contrato::all()
             )]);
         }
@@ -69,8 +73,6 @@ class ContratoController extends Controller
         $OT=$request['ordenes_trabajo'][0] ?? null;
         $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
         // TO DO
-
-      
         if (count($contratos)!=0) {
             
             return response()->json([
@@ -81,20 +83,10 @@ class ContratoController extends Controller
             //return $contratos;
         }
         else{
-            
-            
-            if  (!$nuevaToma){
-                $toma['id']=$data['id_toma'];
-                //return "entro;";
-            }
-            else{
-                $toma=$nuevaToma;
-                $toma['id_tipo_toma']=$data['tipo_toma'];
-                $toma['estatus']="pendiente de inspección";
-                $toma=Toma::create($toma);
-            }
-
-            ///Crea orden de inspección
+            $toma=(new ContratoService())->SolicitudToma($nuevaToma,$id_usuario,$data);
+            $c=(new ContratoService())->Solicitud($servicio,$data,$toma);
+           ///Crea orden de inspección
+            /*
         if (!empty($OT)){
             $OT['id_toma']=$toma['id'];
             $ordenTrabajo=(new OrdenTrabajoService)->crearOrden($OT);
@@ -102,18 +94,11 @@ class ContratoController extends Controller
         else{
             $ordenTrabajo=null;
         }
-            $c=new Collection();
-            foreach ($servicio as $sev){
-                $CrearContrato=$data;
-                $CrearContrato['folio_solicitud']=Contrato::darFolio();
-                $CrearContrato['servicio_contratado']=$sev;
-                $CrearContrato['id_toma']=$toma['id'];
-                $c->push(Contrato::create($CrearContrato));
-            }
+            */
   
-            $data['id_toma']=$toma['id'];
+            //$data['id_toma']=$toma['id'];
             DB::commit();
-            return response()->json(["Contrato"=>ContratoResource::collection($c),"Orden_trabajo"=>$ordenTrabajo,"toma"=> $toma],201);
+            return response()->json(["contrato"=>ContratoResource::collection($c),/*"Orden_trabajo"=>$ordenTrabajo,*/"toma"=> $toma],201);
        
         }
            try{
@@ -123,10 +108,6 @@ class ContratoController extends Controller
             DB::rollBack();
             return response()->json(["Error"=>"No se pudo crear solicitud de contrato"],500);
            } 
-          
-       
-        
-        
     }
 
     /**
@@ -140,7 +121,7 @@ class ContratoController extends Controller
            
         //return json_encode($usuario);
             
-        return response()->json(["Contrato"=>ContratoResource::collection(
+        return response()->json(["contrato"=>ContratoResource::collection(
             $contratos
         )]);
         
@@ -160,7 +141,7 @@ class ContratoController extends Controller
             foreach ($contratos as $c){
                 $c->toma;
             }
-            return response()->json(["Contrato"=>ContratoResource::collection(
+            return response()->json(["contrato"=>ContratoResource::collection(
                $contratos
            )]);
         
@@ -175,7 +156,7 @@ class ContratoController extends Controller
     {
         try{
             $usuario = Contrato::ConsultarPorFolio($folio,$ano);
-        return response()->json(["Contrato"=>ContratoResource::collection(
+        return response()->json(["contrato"=>ContratoResource::collection(
             $usuario
         )]);
         
@@ -190,17 +171,41 @@ class ContratoController extends Controller
      */
     public function update(UpdateContratoRequest $request, Contrato $contrato)
     {
-        try{
         $data=$request->validated();
-        $contrato=Contrato::find($request->id);
-        $contrato->update($data);
-        $contrato->save();
-        return new ContratoResource($contrato);
+        $contrato=(new ContratoService())->update($data['contrato']);
+        return response()->json(["contrato"=>new ContratoResource($contrato)]);
+        try{
+
         }
         catch(Exception $ex){
             return response()->json(['error' => 'No se pudo modificar el contrato, introduzca datos correctos'], 200);
         }
             
+    }
+    public function CambioNombreContrato(UpdateContratoRequest $request){
+        DB::beginTransaction();
+        $data=$request->validated();
+        $contrato=(new ContratoService())->update($data['contrato']);
+        $toma=Toma::find($contrato['id_toma']);
+        $conceptoCambio=ConceptoCatalogo::where('id',32)->get();
+        $Existe=Cargo::where('id_concepto',$conceptoCambio[0]['id'])->where('id_origen',$contrato['id'])->where('modelo_origen','contrato')->where('id_dueno',$toma['id'])->where('modelo_dueno','toma')->first();
+        if ($Existe){
+
+        }
+        else{
+            $cargos=(new CargoService())->generarCargosToma($contrato,"contrato",$toma,"toma",$conceptoCambio);
+ 
+            DB::commit();
+            return response()->json(["contrato"=>new ContratoResource($contrato),"cargos"=>CargoResource::collection($cargos)]);
+        }
+
+        try{
+
+        }
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(['error' => 'No se pudo modificar el contrato, introduzca datos correctos'], 200);
+        }
     }
     public function destroy(Contrato $contrato, Request $request)
     {
@@ -353,32 +358,32 @@ class ContratoController extends Controller
     public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
     {
         DB::beginTransaction();
-        $data=$request->validated();
+        $data=$request->validated()['cotizacion_detalle'];
         $detalleCot=new Collection();
         $costoContrato=new Collection();
     
         $i=0;
         $a=0;
-        $tarifas=(new CotizacionService())->TarifaPorContrato($data['id_cotizacion']);
-        foreach ($tarifas as $tarifa){
+        return $data;
+        $tarifas=(new CotizacionService())->TarifaPorContrato($data);
+
+        foreach ($data as $tarifa){
             $existe=Cargo::where('id_origen',$tarifa['id_contrato'])->where('modelo_origen','contrato')->first();
             
             if($existe)
             {
                 //return $existe;
-                return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no sten cargados unicamente'], 200);
+                return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no esten cargados unicamente'], 200);
             }
          
         }
-
-        while ($i<count($data['monto'])){
+        foreach ($data as $detalle){
             $detalleCot->push(CotizacionDetalle::create([
                 'id_cotizacion' => $data['id_cotizacion'][$i],
                 'id_sector' => $data['id_sector'][$i],
                 'nombre_concepto' => $data['nombre_concepto'][$i],
                 'monto' => $data['monto'][$i],
             ]));
-            //guarda y actualiza los cargos por cotización
             foreach ($tarifas as $tarifa){
                 if($tarifa['id_cotizacion']== $data['id_cotizacion'][$i])
                 {
@@ -388,10 +393,17 @@ class ContratoController extends Controller
                 }
                 $a++;
             }
+        }
+        /*
+        while ($i<count($data['monto'])){
+           
+            //guarda y actualiza los cargos por cotización
+           
             $a=0;
             
             $i++;
         }
+            */
         //return $tarifas;
         //Genera los cargos por cotizacion
         $cargos=(new CotizacionService())->CargoContratos($tarifas);
@@ -401,7 +413,7 @@ class ContratoController extends Controller
             $detalleCot
         );
        
-        DB::commit();
+        DB::rollBack();
         return[$detalle,$cargos];
         
        
@@ -451,4 +463,9 @@ class ContratoController extends Controller
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
         }  
     }
+    public function ObtenerConceptos(Request $request){
+        $tipoToma=$request['id_tipo_toma'];
+        return (new ContratoService())->ConceptosContratos();
+    }
+    
 }

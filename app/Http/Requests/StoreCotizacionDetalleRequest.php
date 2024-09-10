@@ -22,10 +22,12 @@ class StoreCotizacionDetalleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_cotizacion"=>"required|exists:cotizaciones,id",
-            "id_sector"=>"sometimes", #todo
-            "nombre_concepto.*"=>"required|string",
-            "monto.*"=>"required|numeric",
+            "cotizacion_detalle"=>"required|array",
+            "cotizacion_detalle.*"=>"required|array",//:id_cotizacion,id_sector,nombre_concepto,monto
+            "cotizacion_detalle.*.id_cotizacion"=>"required|exists:cotizaciones,id",
+            "cotizacion_detalle.*.id_sector"=>"sometimes", #todo
+            "cotizacion_detalle.*.id_concepto.*"=>"required|string",
+            "cotizacion_detalle.*.monto"=>"required|numeric",
         ];
     }
 }
