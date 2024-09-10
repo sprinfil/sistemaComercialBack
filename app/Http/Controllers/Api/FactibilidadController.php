@@ -74,6 +74,15 @@ class FactibilidadController extends Controller
         try {
             $data = $request->validated();
             $factibilidad = Factibilidad::findOrFail($id);
+
+            if ($request->hasFile('documento')) {
+                $file = $request->file('documento');
+                $path = $file->store('documentos', 'public'); // Guardar en el almacenamiento público
+        
+                // Agregar la ruta del archivo al campo correspondiente
+                $data['documento'] = $path;
+            }
+
             $factibilidad->update($data);
             $factibilidad->save();
             return response(new FactibilidadResource($factibilidad), 200);
