@@ -22,7 +22,7 @@ class FactibilidadResource extends JsonResource
             'id_solicitante' => $this->id_solicitante,
             'solicitante' => $this->solicitante->nombre, // Asumiendo que tienes una relación solicitante
             'id_revisor' => $this->id_revisor,
-            'revisor' => $this->revisor ? $this->revisor->nombre : null, // Si tienes una relación revisor
+            'revisor' => $this->revisor ? $this->revisor->nombre : null ?? 'pendiente', // Si tienes una relación revisor
             'estado' => $this->estado,
             'agua_estado_factible'=>$this->agua_estado_factible,
             'alcantarillado_estado_factible'=>$this->alc_estado_factible,
@@ -34,6 +34,7 @@ class FactibilidadResource extends JsonResource
             'url_documento' => $this->documento, // url
             'fecha_solicitud' => $this->created_at->format('Y-m-d H:i'),
             'fecha_actualizacion' => $this->updated_at->format('Y-m-d H'),
+            'ubicacion' => $this->contrato->toma->posicion
         ];
     }
 }
