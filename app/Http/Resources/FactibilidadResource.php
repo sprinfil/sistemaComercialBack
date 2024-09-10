@@ -31,7 +31,7 @@ class FactibilidadResource extends JsonResource
             'contrato' => $this->whenLoaded('contrato', function () {
                 return new ContratoResource($this->contrato);
             }),
-            'url_documento' => $this->documento, // url
+            'url_documento' => $this->documento ?? "ninguna", // url
             'fecha_solicitud' => $this->created_at->format('Y-m-d H:i'),
             'fecha_actualizacion' => $this->updated_at->format('Y-m-d H'),
             'ubicacion' => $this->contrato->toma->posicion
