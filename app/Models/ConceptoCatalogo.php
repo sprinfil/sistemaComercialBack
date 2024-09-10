@@ -22,6 +22,8 @@ class ConceptoCatalogo extends Model
         "prioridad_por_antiguedad",
         "genera_iva",
         "abonable",
+        "categoria",
+        "tipo_tarifa",
         "tarifa_fija",
         "cargo_directo",
         "genera_orden",

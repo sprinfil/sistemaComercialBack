@@ -73,8 +73,6 @@ class ContratoController extends Controller
         $OT=$request['ordenes_trabajo'][0] ?? null;
         $contratos=Contrato::contratoRepetido($id_usuario, $servicio,$id_toma)->get();
         // TO DO
-
-      
         if (count($contratos)!=0) {
             
             return response()->json([
@@ -85,41 +83,9 @@ class ContratoController extends Controller
             //return $contratos;
         }
         else{
-            
-            
-            if  (!$nuevaToma){
-                $toma=Toma::find($data['id_toma']);
-                if ($toma['id_usuario']!=$id_usuario){
-                    return response()->json([
-                        'message' => 'Esta toma esta contratada a otro usuario'
-                    ], 500);
-                }
-            }
-            else{
-                $toma=$nuevaToma;
-                $toma['id_tipo_toma']=$data['tipo_toma'];
-                $toma['id_usuario']=$id_usuario;
-                $toma['estatus']="pendiente de inspección";
-                $toma['tipo_servicio']="lectura";
-                $toma['tipo_contratacion']="normal";
-                $toma['codigo_postal']=$data['codigo_postal'];
-                $toma['numero_casa']=$data['num_casa'];
-                $toma['calle']=$data['calle'];
-                $toma['entre_calle1']=$data['entre_calle1'] ?? null;
-                $toma['entre_calle2']=$data['entre_calle2'] ?? null;
-                $toma['colonia']=$data['colonia'];
-                $toma['localidad']=$data['localidad'];
-                $toma['municipio']=$data['municipio'];
-                $notificacion=$toma['calle_notificaciones'] ?? null;
-                if (!$notificacion){
-                    $entrecalle1=$toma['entre_calle1']?"/".$toma['entre_calle1']: null;
-                    $entrecalle2= $toma['entre_calle2']?" & ".$toma['entre_calle2']: null;
-                    $toma['direccion_notificacion']=$toma['calle'].$entrecalle1.$entrecalle2.", ".$toma['colonia'].", ".$toma['localidad'];
-                }
-                $toma=Toma::create($toma);
-            }
-
-            ///Crea orden de inspección
+            $toma=(new ContratoService())->SolicitudToma($nuevaToma,$id_usuario,$data);
+            $c=(new ContratoService())->Solicitud($servicio,$data,$toma);
+           ///Crea orden de inspección
             /*
         if (!empty($OT)){
             $OT['id_toma']=$toma['id'];
@@ -129,16 +95,8 @@ class ContratoController extends Controller
             $ordenTrabajo=null;
         }
             */
-            $c=new Collection();
-            foreach ($servicio as $sev){
-                $CrearContrato=$data;
-                $CrearContrato['folio_solicitud']=Contrato::darFolio();
-                $CrearContrato['servicio_contratado']=$sev;
-                $CrearContrato['id_toma']=$toma['id'];
-                $c->push(Contrato::create($CrearContrato));
-            }
   
-            $data['id_toma']=$toma['id'];
+            //$data['id_toma']=$toma['id'];
             DB::commit();
             return response()->json(["contrato"=>ContratoResource::collection($c),/*"Orden_trabajo"=>$ordenTrabajo,*/"toma"=> $toma],201);
        
@@ -150,10 +108,6 @@ class ContratoController extends Controller
             DB::rollBack();
             return response()->json(["Error"=>"No se pudo crear solicitud de contrato"],500);
            } 
-          
-       
-        
-        
     }
 
     /**
@@ -417,7 +371,7 @@ class ContratoController extends Controller
             if($existe)
             {
                 //return $existe;
-                return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no sten cargados unicamente'], 200);
+                return response()->json(['message' => 'No se puede generar un cargo para una o más de las cotizaciones especificadas. Agruege conceptos de cotización para contratos que no esten cargados unicamente'], 200);
             }
          
         }
@@ -502,4 +456,9 @@ class ContratoController extends Controller
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
         }  
     }
+    public function ObtenerConceptos(Request $request){
+        $tipoToma=$request['id_tipo_toma'];
+        return (new ContratoService())->ConceptosContratos();
+    }
+    
 }

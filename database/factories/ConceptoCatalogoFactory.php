@@ -28,6 +28,8 @@ class ConceptoCatalogoFactory extends Factory
             'prioridad_por_antiguedad'=>0,
             'genera_iva'=>0,
             'abonable'=>0,
+            "categoria"=> null,
+            "tipo_tarifa"=>null,
             'tarifa_fija'=>0,
             'genera_orden'=>0,
             "genera_recargo"=>0,
