@@ -62,11 +62,13 @@ class ContratoService{
         }
         return $toma;
     }
+    /*
     public function Contratacion(){
 
         ///// crear
 
     }
+        */
     public function ContratacionDesarrollador(){
         ///Desarrollador y cargos de desarrollador
         ///
@@ -79,7 +81,7 @@ class ContratoService{
         ///Solicitudes de contratación
     }
     public function FiltrosContratos(array $filtros){
-
+        
     }
     public function update(array $data){
         $contrato=Contrato::find($data['id']);

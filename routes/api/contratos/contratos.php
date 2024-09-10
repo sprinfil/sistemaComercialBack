@@ -15,6 +15,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/contratos/consultaFolio/{folio}/{ano?}", "showPorFolio");
         //log delete significa borrado logico
         Route::delete("/contratos/log_delete/{id}", "destroy");
+        Route::post("/contratos/filtros", "FiltrosContratos");
 
         //Cotizaciones
         Route::prefix('contratos')->group(function (){
