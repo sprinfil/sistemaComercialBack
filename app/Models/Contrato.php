@@ -59,7 +59,7 @@ class Contrato extends Model
     // Tipo de toma asociado al contrato
     public function tipoToma() : BelongsTo
     {
-        return $this->belongsTo(TipoToma::class, 'tipo_toma', 'nombre');
+        return $this->belongsTo(TipoToma::class, 'tipo_toma', 'id');
     }
     public function cotizaciones(): HasMany
     {
@@ -94,6 +94,7 @@ class Contrato extends Model
     {
         
         $concepto=$this->conceptoContrato();
+   
         $tipotoma=$this->tipoToma;
         $tarifa=TarifaConceptoDetalle::where('id_tipo_toma',$tipotoma['id'])->where('id_concepto',$concepto['id'])->first();
         return $tarifa;
