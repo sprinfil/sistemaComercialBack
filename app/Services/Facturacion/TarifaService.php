@@ -26,7 +26,6 @@ use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\DB;
 use COM;
 
-
 class TarifaService{
 
 
@@ -49,9 +48,10 @@ class TarifaService{
 
     public function storeTarifaService(array $data, string $nombre, Request $request)
     {
-        try {       
+        try {
              //Busca por nombre las tarifas eliminadas
             $tarifa = Tarifa::withTrashed()->orWhere('nombre', $nombre)->first();
+            $estado = $request->input('estado');
             //VALIDACION POR SI EXISTE
             if ($tarifa) {
                 if ($tarifa->trashed()) {
@@ -70,6 +70,13 @@ class TarifaService{
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
                 $tarifa = Tarifa::create($data);
+                if ($estado == 'activo') {
+                    $tarifa->estado = 'activo';
+                    $tarifa->save();
+                     //La tarifa nueva, si tiene el estado activo, la activa y desactiva todas las demas
+                    Tarifa::where('id', '!=', $tarifa->id)
+                    ->update(['estado' => 'inactivo']);
+                }
                 // E importa las tarifas de la tarifa activa si se desea
                 $request = new Request();
                 $request->merge(['confirm' => true]);
@@ -145,7 +152,7 @@ class TarifaService{
                 }
                 return response()->json([
                     'message' => 'Se han importado las tarifas',
-                    'import' => $request->input('confirm')
+                    'id_tarifa' => $request->input('confirm')
                 ], 200);
             }
             else {
@@ -484,9 +491,15 @@ class TarifaService{
     {
 
         try {
-            $tarifa = TarifaConceptoDetalle::all();
+            $tarifas = TarifaConceptoDetalle::with('tipoToma' ,
+            'tipoToma.tarifaServicio' ,
+            'tipoToma.tarifaServicio.tarifa')
+            ->whereHas('tipoToma.tarifaServicio.tarifa', function($query) use ($tarifa_id){
+                $query->where('id', $tarifa_id);
+            })
+            ->get();
             $conceptos = [];
-            foreach ($tarifa as $tarifa) {
+            foreach ($tarifas as $tarifa) {
                 $conceptos[] = [
                     "id" => $tarifa->id,
                     "id_tipo_toma" => $tarifa->id_tipo_toma,
