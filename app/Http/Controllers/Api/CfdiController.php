@@ -8,6 +8,7 @@ use App\Http\Requests\StoreCfdiRequest;
 use App\Http\Requests\UpdateCfdiRequest;
 use App\Http\Resources\CfdiResource;
 use App\Models\Pago;
+use Faker\Factory as FakerFactory;
 use Exception;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,7 +23,7 @@ class CfdiController extends Controller
     {
         try {
             // Comienza la consulta base de Cfdi con la relación Pago
-            $query = Cfdi::with('pagos');
+            $query = Cfdi::with('pagos', 'datoFiscal');
 
             // Filtros para los campos de Cfdi
             if ($request->has('folio')) {
@@ -37,8 +38,8 @@ class CfdiController extends Controller
                 $query->where('metodo', $request->input('metodo'));
             }
 
-            if ($request->has('estado')) {
-                $query->where('estado', $request->input('estado'));
+            if ($request->has('estatus')) {
+                $query->where('estado', $request->input('estatus'));
             }
 
             if ($request->has('documento')) {
@@ -47,38 +48,82 @@ class CfdiController extends Controller
 
             // Filtros para los campos del modelo relacionado Pago
             if ($request->has('id_caja')) {
-                $query->whereHas('pago', function ($q) use ($request) {
+                $query->whereHas('pagos', function ($q) use ($request) {
                     $q->where('id_caja', $request->input('id_caja'));
                 });
             }
 
-            if ($request->has('id_dueno')) {
-                $query->whereHas('pago', function ($q) use ($request) {
-                    $q->where('id_dueno', $request->input('id_dueno'));
+            if ($request->has('codigo')) {
+                $query->whereHas('pagos', function ($q) use ($request) {
+                    $id_dueno = $request->input('codigo');
+                    $tipo_dueno = $request->input('modelo_dueno');
+                    
+                    if ($tipo_dueno === 'usuario') {
+                        $q->where('codigo_usuario', $id_dueno);
+                    } elseif ($tipo_dueno === 'toma') {
+                        $q->where('codigo_toma', $id_dueno);
+                    }
                 });
-            }
-
-            if ($request->has('total_pagado')) {
-                $query->whereHas('pago', function ($q) use ($request) {
-                    $q->where('total_pagado', $request->input('total_pagado'));
-                });
-            }
-
-            if ($request->has('saldo_pendiente')) {
-                $query->whereHas('pago', function ($q) use ($request) {
-                    $q->where('saldo_pendiente', $request->input('saldo_pendiente'));
-                });
-            }
+            }            
 
             if ($request->has('forma_pago')) {
-                $query->whereHas('pago', function ($q) use ($request) {
+                $query->whereHas('pagos', function ($q) use ($request) {
                     $q->where('forma_pago', $request->input('forma_pago'));
                 });
             }
 
             if ($request->has('fecha_pago')) {
-                $query->whereHas('pago', function ($q) use ($request) {
+                $query->whereHas('pagos', function ($q) use ($request) {
                     $q->whereDate('fecha_pago', $request->input('fecha_pago'));
+                });
+            }
+
+            // Filtros para los campos de Datos Fiscales del dueño
+            if ($request->has('razon_social')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('razon_social', 'like', '%' . $request->input('razon_social') . '%');
+                });
+            }
+
+            if ($request->has('correo')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('correo', 'like', '%' . $request->input('correo') . '%');
+                });
+            }
+
+            if ($request->has('regimen_fiscal')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('regimen_fiscal', 'like', '%' . $request->input('regimen_fiscal') . '%');
+                });
+            }
+
+            if ($request->has('telefono')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('telefono', 'like', '%' . $request->input('telefono') . '%');
+                });
+            }
+
+            if ($request->has('pais')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('pais', $request->input('pais'));
+                });
+            }
+
+            if ($request->has('estado')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('estado', $request->input('estado'));
+                });
+            }
+
+            if ($request->has('municipio')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('municipio', 'like', '%' . $request->input('municipio') . '%');
+                });
+            }
+
+            if ($request->has('codigo_postal')) {
+                $query->whereHas('datoFiscal', function ($q) use ($request) {
+                    $q->where('codigo_postal', 'like', '%' . $request->input('codigo_postal') . '%');
                 });
             }
 
@@ -99,18 +144,44 @@ class CfdiController extends Controller
      */
     public function store(StoreCfdiRequest $request)
     {
-        try{
+        try {
+            // Validar los datos del request
             $data = $request->validated();
-            $data['estado'] = 'pendiente';
 
+            // Lista de posibles estados
+            $estados = ['pendiente', 'fallido', 'realizado', 'cancelado'];
+
+            // Seleccionar un estado aleatoriamente
+            $data['estado'] = $estados[array_rand($estados)];
+
+            $pago = Pago::where('folio', $data['folio'])->first();
+            $datos_fiscales = $pago->dueno->datos_fiscales;
+            if(!$datos_fiscales){
+                $datos_fiscales = $pago->duenoUsuario->datos_fiscales;
+            }
+            $data['id_datos_fiscales'] = $datos_fiscales->id;
+
+            // Instanciar Faker para generar la imagen
+            $faker = FakerFactory::create();
+
+            // Si el estado es 'realizado' o 'cancelado', generar y guardar la imagen
+            if ($data['estado'] === 'realizado' || $data['estado'] === 'cancelado') {
+                $data['documento'] = $faker->imageUrl(640, 480, 'cats', true, 'Faker', true);
+            }
+
+            // Crear el registro en la base de datos
             $cfdi = Cfdi::create($data);
+
+            // Retornar la respuesta con el recurso creado
             return response(new CfdiResource($cfdi), 201);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
+            // Manejo de errores y retorno de una respuesta de error
             return response()->json([
-                'error' => 'No se pudo solicitar el timbrado'.$e
+                'error' => 'No se pudo solicitar el timbrado: ' . $e->getMessage()
             ], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -118,12 +189,16 @@ class CfdiController extends Controller
     public function show($id)
     {
         try {
-            $cfdi = Cfdi::findOrFail($id);
+            // Cargar el Cfdi con las relaciones pagos y datoFiscal
+            $cfdi = Cfdi::with('pagos', 'datoFiscal')->findOrFail($id);
+            
+            // Retornar la respuesta con el recurso Cfdi
             return response(new CfdiResource($cfdi), 200);
         } catch (ModelNotFoundException $e) {
+            // Manejar el error si el Cfdi no es encontrado
             return response()->json([
                 'error' => 'No se pudo encontrar el cfdi'
-            ], 500);
+            ], 404);
         }
     }
 
