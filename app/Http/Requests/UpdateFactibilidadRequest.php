@@ -30,7 +30,7 @@ class UpdateFactibilidadRequest extends FormRequest
             'alc_estado_factible'=>'required|in:no_factible,factible',
             'san_estado_factible'=>'required|in:no_factible,factible',
             'derechos_conexion'=>'numeric|nullable|min:0',
-            'documento'=>'nullable|string'
+            'documento' => 'nullable|file|mimes:pdf|max:2048'
         ];
     }
 }
