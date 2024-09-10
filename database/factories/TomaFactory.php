@@ -59,7 +59,7 @@ class TomaFactory extends Factory
             'c_agua' => null,
             'c_alc' => null,
             'c_san' => null,
-            'tipo_contratacion' => $this->faker->randomElement(['normal', 'condicionado', 'desarrollador']),
+            'tipo_contratacion' => $this->faker->randomElement(['normal', 'condicionado', 'pre-contrato ']),
             'posicion' => null,  // Este valor será sobrescrito al usar create en el LibroFactory
             'deleted_at' => null,
             'created_at' => now(),

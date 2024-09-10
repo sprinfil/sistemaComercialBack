@@ -358,14 +358,16 @@ class ContratoController extends Controller
     public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
     {
         DB::beginTransaction();
-        $data=$request->validated();
+        $data=$request->validated()['cotizacion_detalle'];
         $detalleCot=new Collection();
         $costoContrato=new Collection();
     
         $i=0;
         $a=0;
-        $tarifas=(new CotizacionService())->TarifaPorContrato($data['id_cotizacion']);
-        foreach ($tarifas as $tarifa){
+        return $data;
+        $tarifas=(new CotizacionService())->TarifaPorContrato($data);
+
+        foreach ($data as $tarifa){
             $existe=Cargo::where('id_origen',$tarifa['id_contrato'])->where('modelo_origen','contrato')->first();
             
             if($existe)
@@ -375,15 +377,13 @@ class ContratoController extends Controller
             }
          
         }
-
-        while ($i<count($data['monto'])){
+        foreach ($data as $detalle){
             $detalleCot->push(CotizacionDetalle::create([
                 'id_cotizacion' => $data['id_cotizacion'][$i],
                 'id_sector' => $data['id_sector'][$i],
                 'nombre_concepto' => $data['nombre_concepto'][$i],
                 'monto' => $data['monto'][$i],
             ]));
-            //guarda y actualiza los cargos por cotización
             foreach ($tarifas as $tarifa){
                 if($tarifa['id_cotizacion']== $data['id_cotizacion'][$i])
                 {
@@ -393,10 +393,17 @@ class ContratoController extends Controller
                 }
                 $a++;
             }
+        }
+        /*
+        while ($i<count($data['monto'])){
+           
+            //guarda y actualiza los cargos por cotización
+           
             $a=0;
             
             $i++;
         }
+            */
         //return $tarifas;
         //Genera los cargos por cotizacion
         $cargos=(new CotizacionService())->CargoContratos($tarifas);
@@ -406,7 +413,7 @@ class ContratoController extends Controller
             $detalleCot
         );
        
-        DB::commit();
+        DB::rollBack();
         return[$detalle,$cargos];
         
        
