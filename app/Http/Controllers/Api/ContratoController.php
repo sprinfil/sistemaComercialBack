@@ -69,7 +69,7 @@ class ContratoController extends Controller
         DB::beginTransaction();
         $datos=$request->validated();
         $data=$datos['contrato'];
-        $solicitud=$datos['solicitud_factibilidad'];
+        $solicitud=$datos['solicitud_factibilidad'] ?? false;
         $nuevaToma=$request->validated()['toma'] ?? null;
         $id_usuario=$request['contrato']['id_usuario'];
         $id_toma=$request['contrato']['id_toma'] ?? null;

@@ -37,12 +37,12 @@ class ContratoService{
             else{
                 $CrearContrato['estatus']="pendiente de factibilidad";
             }
-         
-            $c->push(Contrato::create($CrearContrato));
+            $cont=Contrato::create($CrearContrato);
+            $c->push($cont);
             $id_empleado_asigno=auth()->user()->operador->id;
             if ($solicitud==true){
                 $factibilidad->push(Factibilidad::create([
-                    "id_contrato"=>$c['id'],
+                    "id_contrato"=>$cont['id'],
                     "id_solicitante"=>$id_empleado_asigno,
                     "estado"=>"pendiente"
                 ]));
