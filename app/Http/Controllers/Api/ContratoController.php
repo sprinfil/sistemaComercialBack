@@ -187,7 +187,8 @@ class ContratoController extends Controller
             
     }
     public function CerrarContrato(UpdateContratoRequest $request, Contrato $contrato) //TODO
-    {
+    { 
+        
         DB::beginTransaction();
         $data=$request->validated()['contrato'];
         $contrato=Contrato::find($data['id']);
@@ -202,6 +203,18 @@ class ContratoController extends Controller
             }
             else{
                 $data['estatus']="contratado";
+                $contrato=(new ContratoService())->update($data);
+                $toma=Toma::find($contrato['id_toma']);
+                $tomaDato['estatus']="activa";
+                if ($contrato['servicio_contratado']=="agua"){
+                    $tomaDato['c_agua']==$contrato['id'];
+                }
+                elseif ($contrato['servicio_contratado']=="alcantarillado y saneamiento"){
+                    $tomaDato['c_alc']==$contrato['id'];
+                    $tomaDato['c_san']==$contrato['id'];
+                }
+                $toma->update($tomaDato);
+                $toma->save();
                 $contrato=(new ContratoService())->update($data);
                 return response()->json(["contrato"=>new ContratoResource($contrato)],200);
                 DB::rollBack();
