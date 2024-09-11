@@ -9,6 +9,7 @@ use Exception;
 use App\Models\Contrato;
 use App\Http\Resources\ContratoResource;
 use App\Models\ConceptoCatalogo;
+use App\Models\Libro;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -66,6 +67,8 @@ class ContratoService{
                 $entrecalle2= $toma['entre_calle2']?" & ".$toma['entre_calle2']: null;
                 $toma['direccion_notificacion']=$toma['calle'].$entrecalle1.$entrecalle2.", ".$toma['colonia'].", ".$toma['localidad'];
             }
+            $libro=Libro::find($toma['id_libro']);
+            $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
             $toma=Toma::create($toma);
         }
         return $toma;
