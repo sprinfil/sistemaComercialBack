@@ -31,12 +31,21 @@ class ContratoService{
             $CrearContrato['folio_solicitud']=Contrato::darFolio();
             $CrearContrato['servicio_contratado']=$sev;
             $CrearContrato['id_toma']=$toma['id'];
-            if ($toma['estatus']=="activa"){
-                $CrearContrato['estatus']="inspeccionado";
+            if ( $toma['tipo_contratacion']=="pre-contrato"){
+                $CrearContrato['estatus']="contratado";
+                
+         
             }
             else{
-                $CrearContrato['estatus']="pendiente de factibilidad";
+                if ($solicitud){
+                    $CrearContrato['estatus']="pendiente de factibilidad";
+                }
+                else{
+                    $CrearContrato['estatus']="inspeccionado";
+                }
+                
             }
+            
             $cont=Contrato::create($CrearContrato);
             $c->push($cont);
             $id_empleado_asigno=auth()->user()->operador->id;

@@ -65,7 +65,7 @@ class ContratoController extends Controller
      */
     public function store(Contrato $contrato,StoreContratoRequest $request)
     {
-       
+       ////Cambiar estatus y poner id de contrato en servicios de toma
         DB::beginTransaction();
         $datos=$request->validated();
         $data=$datos['contrato'];
