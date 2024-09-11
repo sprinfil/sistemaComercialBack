@@ -56,6 +56,7 @@ class StoreContratoRequest extends FormRequest
             "ordenes_trabajo.id_toma" => "sometimes|exists:toma,id",
             "ordenes_trabajo.posicion_OT" => "sometimes|point",
             "ordenes_trabajo.genera_OT_encadenadas" => "sometimes|boolean",
+            "solicitud_factibilidad"=>"sometimes|boolean"
         ];
     }
 }
