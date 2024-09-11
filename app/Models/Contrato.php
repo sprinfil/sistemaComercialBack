@@ -50,11 +50,13 @@ class Contrato extends Model
         return $this->hasOne(Factibilidad::class , 'id_contrato');
     }
 
+    /*
     // Servicio asociado a la toma
     public function servicio() : HasMany
     {
         return $this->hasMany(Servicio::class, 'id_contrato');
     }
+        */
 
     // Tipo de toma asociado al contrato
     public function tipoToma() : BelongsTo

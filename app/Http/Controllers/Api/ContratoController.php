@@ -500,7 +500,7 @@ class ContratoController extends Controller
     }
     public function FiltrosContratos(Request $request){
         $data=$request->all();
-       $filtros=(new ContratoService())->FiltrosContratos($data);
+       $filtros=(new ContratoService())->FiltrosContratos($data['filtros']);
        return response()->json(["contratos"=>$filtros]);
     }
     

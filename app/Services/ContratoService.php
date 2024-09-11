@@ -10,6 +10,7 @@ use App\Models\Contrato;
 use App\Http\Resources\ContratoResource;
 use App\Models\ConceptoCatalogo;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class ContratoService{
@@ -76,9 +77,12 @@ class ContratoService{
 
     }
         */
-    public function ContratacionDesarrollador(){
+    public function ContratacionDesarrollador(array $tomas){
         ///Desarrollador y cargos de desarrollador
-        ///
+        foreach ($tomas as $toma){
+            $toma['tipo_contratacion']="pre-contrato";
+            $toma['estatus']="activa";
+        }
     }
 
     public function BajaDefinitiva(){
@@ -88,7 +92,33 @@ class ContratoService{
         ///Solicitudes de contratación
     }
     public function FiltrosContratos(array $filtros){
-        
+        $libro=$filtros['libro_id'] ?? null;
+        $tipo_tomas=$filtros['tipo_tomas'] ?? null;
+        $contrato_estatus=$filtros['contrato_estatus'] ?? null;
+        $tipo_contratacion=$filtros['tipo_contratacion'] ?? null;
+        $folio_solicitud=$filtros['folio_solicitud'] ?? null;
+
+        $query=Contrato::with('usuario','toma.tipoToma','toma.libro','cotizaciones','factibilidad')
+        ->when($tipo_tomas, function (Builder $q) use($tipo_tomas)  {
+            $q->whereHas('toma', function($a)use($tipo_tomas){
+
+                $a->whereIn('id_tipo_toma',$tipo_tomas);///aplicar esto en OT
+                
+            });
+       })->when($contrato_estatus, function (Builder $q) use($contrato_estatus)  {
+            $q->whereIn('estatus',$contrato_estatus);
+        })->when($tipo_contratacion, function (Builder $q) use($tipo_contratacion)  {
+            $q->whereHas('toma', function($a)use($tipo_contratacion){
+
+                $a->whereIn('tipo_contratacion',$tipo_contratacion);///aplicar esto en OT
+                
+            });
+        })->when($folio_solicitud, function (Builder $q) use($folio_solicitud)  {
+            $q->where('folio_solicitud',$folio_solicitud);
+        })->orderBy('created_at','desc')
+       ->paginate(50);
+
+       return $query;
     }
     public function update(array $data){
         $contrato=Contrato::find($data['id']);
