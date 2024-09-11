@@ -500,6 +500,4 @@ class ContratoController extends Controller
               ->setOption('margin-left', 0);
         return $pdf->download('contrato.pdf');
     }
-
-    
 }

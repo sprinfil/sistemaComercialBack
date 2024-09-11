@@ -21,7 +21,10 @@
         .header {
             text-align: center;
             font-weight: bold;
+            margin-left: auto;
+            margin-right: auto;
             margin-bottom: 20px;
+            max-width: 600px;
         }
         .contract-info {
             margin-bottom: 20px;
@@ -49,6 +52,8 @@
         .signature div {
             width: 45%;
             text-align: center;
+            margin-left: auto;
+            margin-right: auto;
             border-top: 1px solid #000;
             padding-top: 10px;
         }
@@ -56,6 +61,7 @@
             border: 1px solid #000;
             padding: 10px;
             margin-top: 20px;
+            width: 670px;
             text-align: justify;
         }
     </style>
@@ -68,44 +74,38 @@
             <h4>CONTRATO POR SERVICIO DE ALCANTARILLADO</h4>
         </div>
 
-        <div class="contract-info">
-            <table>
-                <tr>
-                    <td class="label">Contrato No.:</td>
-                    <td>{{ $contrato_numero }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Calle:</td>
-                    <td>{{ $calle }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Casa No.:</td>
-                    <td>{{ $numero_casa }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Entre la calle:</td>
-                    <td>{{ $calle_entre }}</td>
-                </tr>
-                <tr>
-                    <td class="label">y la calle:</td>
-                    <td>{{ $calle_y }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Costo por conexión:</td>
-                    <td>{{ $costo_conexion }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Recibo No.:</td>
-                    <td>{{ $recibo_numero }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Notificación en:</td>
-                    <td>{{ $notificacion_calle }}</td>
-                </tr>
-            </table>
-        </div>
+        <div class="contract-info" style="width: 100%; padding: 10px; width: 650px;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Contrato No.:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $contrato_numero }}</td>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">y la calle:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $calle_y }}</td>
+        </tr>
+        <tr>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Calle:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $calle }}</td>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Costo por conexión:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $costo_conexion }}</td>
+        </tr>
+        <tr>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Casa No.:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $numero_casa }}</td>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Recibo No.:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $recibo_numero }}</td>
+        </tr>
+        <tr>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Entre la calle:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $calle_entre }}</td>
+            <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Notificación en:</td>
+            <td style="border-bottom: 1px solid black; padding: 8px;">{{ $notificacion_calle }}</td>
+        </tr>
+    </table>
+</div>
 
-        <div class="clause">
+
+
+        <div style="width: 660px;">
             <p>
                 Se proceda la conexión a la red de alcantarillado, el servicio de la casa citada al principio de esta solicitud, 
                 para lo anterior, manifiesto mi conformidad con lo siguiente:
@@ -129,18 +129,22 @@
             </p>
         </div>
 
-        <div class="signature">
-            <div>
-                <p>El Usuario</p>
-                <p>{{ $nombre_usuario }}</p>
+        <div style="width: 670px;  margin-top: 50px;">
+            <div style="border-bottom: 1px solid black; display: inline-block; margin-left: 100px; padding: 10px; width: 200px; text-align:center; padding-bottom:30px;">
+            <p>El Usuario</p>
+            <p>{{ $nombre_usuario }}</p>
             </div>
-            <div>
-                <p>Por el Sistema</p>
-                <p>{{ $nombre_sistema }}</p>
+            <div style="border-bottom: 1px solid black; display: inline-block; padding: 10px; margin-left: 10px;width: 200px; text-align:center; padding-bottom:30px;">
+            <p>Por el Sistema</p>
+            <p>{{ $nombre_sistema }}</p>
             </div>
         </div>
 
-        <div class="footer-box">
+        <div style=" border: 1px solid #000;
+            padding: 10px;
+            margin-top: 20px;
+            width: 640px;
+            text-align: center;">
             <p>
                 El pago de este contrato no incluye la construcción del registro para la descarga.
             </p>

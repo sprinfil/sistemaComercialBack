@@ -7,6 +7,7 @@ use App\Models\Cfdi;
 use App\Http\Requests\StoreCfdiRequest;
 use App\Http\Requests\UpdateCfdiRequest;
 use App\Http\Resources\CfdiResource;
+use App\Models\DatoFiscal;
 use App\Models\Pago;
 use Faker\Factory as FakerFactory;
 use Exception;
@@ -159,6 +160,7 @@ class CfdiController extends Controller
             if(!$datos_fiscales){
                 $datos_fiscales = $pago->duenoUsuario->datos_fiscales;
             }
+            $res = DatoFiscal::findOrFail($datos_fiscales->id ?? 0);
             $data['id_datos_fiscales'] = $datos_fiscales->id;
 
             // Instanciar Faker para generar la imagen
