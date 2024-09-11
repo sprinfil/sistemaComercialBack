@@ -9,8 +9,12 @@ use Exception;
 use App\Models\Contrato;
 use App\Http\Resources\ContratoResource;
 use App\Models\ConceptoCatalogo;
+use App\Models\Lectura;
+use App\Models\Libro;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class ContratoService{
 
@@ -65,6 +69,8 @@ class ContratoService{
                 $entrecalle2= $toma['entre_calle2']?" & ".$toma['entre_calle2']: null;
                 $toma['direccion_notificacion']=$toma['calle'].$entrecalle1.$entrecalle2.", ".$toma['colonia'].", ".$toma['localidad'];
             }
+            $libro=Libro::find($toma['id_libro']);
+            $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
             $toma=Toma::create($toma);
         }
         return $toma;
@@ -76,9 +82,12 @@ class ContratoService{
 
     }
         */
-    public function ContratacionDesarrollador(){
+    public function ContratacionDesarrollador(array $tomas){
         ///Desarrollador y cargos de desarrollador
-        ///
+        foreach ($tomas as $toma){
+            $toma['tipo_contratacion']="pre-contrato";
+            $toma['estatus']="activa";
+        }
     }
 
     public function BajaDefinitiva(){
@@ -88,7 +97,41 @@ class ContratoService{
         ///Solicitudes de contratación
     }
     public function FiltrosContratos(array $filtros){
-        
+        $libro=$filtros['libro_id'] ?? null;
+        $tipo_tomas=$filtros['tipo_tomas'] ?? null;
+        $contrato_estatus=$filtros['contrato_estatus'] ?? null;
+        $tipo_contratacion=$filtros['tipo_contratacion'] ?? null;
+        $folio_solicitud=$filtros['folio_solicitud'] ?? null;
+        $codigo_toma=$filtros['codigo_toma'] ?? null;
+
+        $query=Toma::with('usuario','tipoToma','libro','contrato.factibilidad','contrato.cotizaciones')
+        ->when($tipo_tomas, function (Builder $q) use($tipo_tomas)  {
+            $q->whereIn('id_tipo_toma',$tipo_tomas);///aplicar esto en OT
+
+       })->when($contrato_estatus, function (Builder $q) use($contrato_estatus)  {
+            $q->whereHas('contrato', function($a)use($contrato_estatus){
+
+                $a->whereIn('estatus',$contrato_estatus);///aplicar esto en OT
+                
+            });
+            
+        })->when($tipo_contratacion, function (Builder $q) use($tipo_contratacion)  {
+            $q->whereIn('tipo_contratacion',$tipo_contratacion);///aplicar esto en OT
+
+        })->when($folio_solicitud, function (Builder $q) use($folio_solicitud)  {
+            $q->whereHas('contrato', function($a)use($folio_solicitud){
+
+                $a->where('folio_solicitud',$folio_solicitud);///aplicar esto en OT
+                
+            });
+            
+        })->when($codigo_toma, function (Builder $q) use($codigo_toma)  {
+            $q->where('codigo_toma',$codigo_toma);///aplicar esto en OT
+
+        })->orderBy('created_at','desc')
+       ->paginate(50);
+
+       return $query;
     }
     public function update(array $data){
         $contrato=Contrato::find($data['id']);
@@ -99,5 +142,18 @@ class ContratoService{
     public function ConceptosContratos():ConceptoCatalogo{
         return ConceptoCatalogo::where('categoria','contrato')->get();
     }
-
+    public function PreContrato($tomas){
+        $PreContrato=new Collection();
+        foreach ($tomas as $toma){
+            $libro=Libro::find($toma['id_libro']);
+            $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
+            $toma['tipo_servicio']="lectura";
+            $toma['tipo_contratacion']="pre-contrato";
+            $toma['estatus']="activa";
+            $coords=new Point($toma['posicion'][0],$toma['posicion'][1]);
+            $toma['posicion']=$coords;
+            $PreContrato->push(Toma::create($toma));
+        }
+        return $PreContrato;
+    }
 }

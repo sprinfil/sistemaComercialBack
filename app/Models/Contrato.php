@@ -10,10 +10,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
+use Point;
 
 class Contrato extends Model
 {
     use HasFactory, SoftDeletes;
+    use HasSpatial;
+    protected $casts = [
+        'coordenada' => Point::class,
+    ];
+    protected $spatialFields = [
+        'coordenada',
+    ];
     protected $fillable = [
         'id_toma',
         'id_usuario',
@@ -50,11 +59,13 @@ class Contrato extends Model
         return $this->hasOne(Factibilidad::class , 'id_contrato');
     }
 
+    /*
     // Servicio asociado a la toma
     public function servicio() : HasMany
     {
         return $this->hasMany(Servicio::class, 'id_contrato');
     }
+        */
 
     // Tipo de toma asociado al contrato
     public function tipoToma() : BelongsTo

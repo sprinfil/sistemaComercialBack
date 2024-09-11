@@ -44,10 +44,11 @@ class ContratoController extends Controller
      */
     public function index()
     {
+        return response()->json(["contrato"=> ContratoResource::collection(
+            Contrato::with('usuario','toma.tipoToma')->orderBy('created_at','desc')->get()
+        )]);
         try{
-            return response()->json(["contrato"=> ContratoResource::collection(
-                Contrato::all()
-            )]);
+          
         }
         catch(Exception $ex){
             return response()->json([
@@ -444,7 +445,7 @@ class ContratoController extends Controller
             "contrato"=>$cargos,
             "cotizacion_detalle"=>$detalle
 
-        ]);
+        ],200);
         
        
     }
@@ -490,7 +491,7 @@ class ContratoController extends Controller
 
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
+            return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 500);
         }  
     }
     public function ObtenerConceptos(Request $request){
@@ -499,8 +500,21 @@ class ContratoController extends Controller
     }
     public function FiltrosContratos(Request $request){
         $data=$request->all();
-       $filtros=(new ContratoService())->FiltrosContratos($data);
-       return response()->json(["contratos"=>$filtros]);
+       $filtros=(new ContratoService())->FiltrosContratos($data['filtros']);
+       return response()->json(["tomas"=>$filtros]);
     }
-    
+    public function PreContrato(Request $request){
+        
+        try{
+        DB::beginTransaction();
+        $data=$request->all()['tomas'];
+        $precontratos=(new ContratoService())->PreContrato($data);
+        DB::commit();
+            return response()->json(['tomas' => TomaResource::collection($precontratos)], 200);
+        }
+        catch(Exception $ex){
+            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas'], 500);
+        }
+
+    }
 }
