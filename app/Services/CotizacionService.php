@@ -57,7 +57,7 @@ class CotizacionService{
         }
         $conceptos= $concepto->unique('id');
         */
-  
+        
         $concepto=[];
         $cotizacion=Cotizacion::find($cotizaciones[0]['id_cotizacion']);
         $contrato=$cotizacion->contrato;

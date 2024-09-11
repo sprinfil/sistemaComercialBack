@@ -9,8 +9,10 @@ use Exception;
 use App\Models\Contrato;
 use App\Http\Resources\ContratoResource;
 use App\Models\ConceptoCatalogo;
+use App\Models\Factibilidad;
 use App\Models\Lectura;
 use App\Models\Libro;
+use FFI;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,11 +20,12 @@ use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class ContratoService{
 
-    public function Solicitud($servicio,$data,$toma){
+    public function Solicitud($servicio,$data,$toma,$solicitud){
         ////Crea la toma pendiente de inspección
         ////Crear solicitud de factibilidad
         $toma=Toma::find($toma['id']);
         $c=new Collection();
+        $factibilidad=new Collection();
         foreach ($servicio as $sev){
             $CrearContrato=$data;
             $CrearContrato['folio_solicitud']=Contrato::darFolio();
@@ -36,6 +39,15 @@ class ContratoService{
             }
          
             $c->push(Contrato::create($CrearContrato));
+            $id_empleado_asigno=auth()->user()->operador->id;
+            if ($solicitud==true){
+                $factibilidad->push(Factibilidad::create([
+                    "id_contrato"=>$c['id'],
+                    "id_solicitante"=>$id_empleado_asigno,
+                    "estado"=>"pendiente"
+                ]));
+            }
+          
         }
         return $c;
     }
