@@ -97,24 +97,32 @@ class ContratoService{
         $contrato_estatus=$filtros['contrato_estatus'] ?? null;
         $tipo_contratacion=$filtros['tipo_contratacion'] ?? null;
         $folio_solicitud=$filtros['folio_solicitud'] ?? null;
+        $codigo_toma=$filtros['codigo_toma'] ?? null;
 
-        $query=Contrato::with('usuario','toma.tipoToma','toma.libro','cotizaciones','factibilidad')
+        $query=Toma::with('usuario','tipoToma','libro','contrato.factibilidad','contrato.cotizaciones')
         ->when($tipo_tomas, function (Builder $q) use($tipo_tomas)  {
-            $q->whereHas('toma', function($a)use($tipo_tomas){
+            $q->whereIn('id_tipo_toma',$tipo_tomas);///aplicar esto en OT
 
-                $a->whereIn('id_tipo_toma',$tipo_tomas);///aplicar esto en OT
-                
-            });
        })->when($contrato_estatus, function (Builder $q) use($contrato_estatus)  {
-            $q->whereIn('estatus',$contrato_estatus);
-        })->when($tipo_contratacion, function (Builder $q) use($tipo_contratacion)  {
-            $q->whereHas('toma', function($a)use($tipo_contratacion){
+            $q->whereHas('contrato', function($a)use($contrato_estatus){
 
-                $a->whereIn('tipo_contratacion',$tipo_contratacion);///aplicar esto en OT
+                $a->whereIn('estatus',$contrato_estatus);///aplicar esto en OT
                 
             });
+            
+        })->when($tipo_contratacion, function (Builder $q) use($tipo_contratacion)  {
+            $q->whereIn('tipo_contratacion',$tipo_contratacion);///aplicar esto en OT
+
         })->when($folio_solicitud, function (Builder $q) use($folio_solicitud)  {
-            $q->where('folio_solicitud',$folio_solicitud);
+            $q->whereHas('contrato', function($a)use($folio_solicitud){
+
+                $a->where('folio_solicitud',$folio_solicitud);///aplicar esto en OT
+                
+            });
+            
+        })->when($codigo_toma, function (Builder $q) use($codigo_toma)  {
+            $q->where('codigo_toma',$codigo_toma);///aplicar esto en OT
+
         })->orderBy('created_at','desc')
        ->paginate(50);
 
