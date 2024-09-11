@@ -65,10 +65,21 @@ class TarifaService{
                 return response()->json([
                     'message' => 'La tarifa ya existe.',
                     'restore' => false
-                ], 500);
+                ], 400);
             }
             //Si no existe la tarifa, crea una tarifa
             if (!$tarifa) {
+                /* 
+                Verifica el nombre de la tarifa con los datos de Data, esto
+                para que no se agreguen tarifas con el mismo nombre ya registrado
+                */
+                $tarifaExistente = Tarifa::whereRaw('LOWER(nombre) = ?', 
+                [strtolower($data['nombre'])])->first();
+                if ($tarifaExistente) {
+                    return response()->json([
+                        'error' => 'El nombre de la tarifa ya existe',
+                    ], 400);
+                }
                 $tarifa = Tarifa::create($data);
                 if ($estado == 'activo') {
                     $tarifa->estado = 'activo';
@@ -190,6 +201,14 @@ class TarifaService{
         try {
             $tarifa = Tarifa::findOrFail($id);
             $data = $request->all();
+            $mismonombre = Tarifa::where('id' , '!=' , $tarifa->id)->get()
+            ->filter(function ($exists) use ($data){
+                return strcasecmp($exists->nombre , $data['nombre']) == 0;
+            })
+            ->isNotempty();
+            if ($mismonombre) {
+                return response()->json(['error' => 'Ya existe una tarifa con el mismo nombre'], 400);
+            }
             $estado = $request->input('ConfirmUpdate');
             if ($tarifa) {
                 $tarifa->update($data);
