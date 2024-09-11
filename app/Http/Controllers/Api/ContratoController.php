@@ -44,10 +44,11 @@ class ContratoController extends Controller
      */
     public function index()
     {
+        return response()->json(["contrato"=> ContratoResource::collection(
+            Contrato::with('usuario','toma.tipoToma')->orderBy('created_at','desc')->get()
+        )]);
         try{
-            return response()->json(["contrato"=> ContratoResource::collection(
-                Contrato::all()
-            )]);
+          
         }
         catch(Exception $ex){
             return response()->json([
