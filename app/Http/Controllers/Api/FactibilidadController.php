@@ -131,22 +131,21 @@ class FactibilidadController extends Controller
     {
         try{
             $factibilidad = Factibilidad::findOrFail($id);
+            $data = [
+                'constancia_numero' => $factibilidad,
+                'calle' => 'Calle Principal',
+                'numero_casa' => '12B',
+                'calle_entre' => 'Calle 1',
+                'calle_y' => 'Calle 2',
+                'costo_factibilidad' => '$1,500',
+                'recibo_numero' => '789123',
+                'notificacion_calle' => 'Calle Secundaria',
+                'nombre_solicitante' => 'Juan Pérez',
+                'nombre_sistema' => 'Sistema Municipal',
+            ];
         }catch(Exception $ex){
 
         }
-
-        $data = [
-            'constancia_numero' => '123456',
-            'calle' => 'Calle Principal',
-            'numero_casa' => '12B',
-            'calle_entre' => 'Calle 1',
-            'calle_y' => 'Calle 2',
-            'costo_factibilidad' => '$1,500',
-            'recibo_numero' => '789123',
-            'notificacion_calle' => 'Calle Secundaria',
-            'nombre_solicitante' => 'Juan Pérez',
-            'nombre_sistema' => 'Sistema Municipal',
-        ];
 
         $pdf = FacadePDF::loadView('factibilidad', $data) // Nombre de la vista
             ->setPaper('A4', 'portrait')  // Tamaño de papel y orientación vertical
