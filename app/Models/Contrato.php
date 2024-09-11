@@ -10,10 +10,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
+use Point;
 
 class Contrato extends Model
 {
     use HasFactory, SoftDeletes;
+    use HasSpatial;
+    protected $casts = [
+        'coordenada' => Point::class,
+    ];
+    protected $spatialFields = [
+        'coordenada',
+    ];
     protected $fillable = [
         'id_toma',
         'id_usuario',

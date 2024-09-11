@@ -9,10 +9,12 @@ use Exception;
 use App\Models\Contrato;
 use App\Http\Resources\ContratoResource;
 use App\Models\ConceptoCatalogo;
+use App\Models\Lectura;
 use App\Models\Libro;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class ContratoService{
 
@@ -140,5 +142,18 @@ class ContratoService{
     public function ConceptosContratos():ConceptoCatalogo{
         return ConceptoCatalogo::where('categoria','contrato')->get();
     }
-
+    public function PreContrato($tomas){
+        $PreContrato=new Collection();
+        foreach ($tomas as $toma){
+            $libro=Libro::find($toma['id_libro']);
+            $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
+            $toma['tipo_servicio']="lectura";
+            $toma['tipo_contratacion']="pre-contrato";
+            $toma['estatus']="activa";
+            $coords=new Point($toma['posicion'][0],$toma['posicion'][1]);
+            $toma['posicion']=$coords;
+            $PreContrato->push(Toma::create($toma));
+        }
+        return $PreContrato;
+    }
 }
