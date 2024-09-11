@@ -16,13 +16,6 @@ use Point;
 class Contrato extends Model
 {
     use HasFactory, SoftDeletes;
-    use HasSpatial;
-    protected $casts = [
-        'coordenada' => Point::class,
-    ];
-    protected $spatialFields = [
-        'coordenada',
-    ];
     protected $fillable = [
         'id_toma',
         'id_usuario',
