@@ -63,7 +63,7 @@ class ContratoService{
                 $factibilidad->push(Factibilidad::create([
                     "id_toma"=>$toma['id'],
                     "id_solicitante"=>$id_empleado_asigno,
-                    "estado"=>"pendiente"
+                    "estado"=>"sin revisar"
                 ]));
             }
           
@@ -187,14 +187,22 @@ class ContratoService{
     public function PreContrato($tomas){
         $PreContrato=new Collection();
         foreach ($tomas as $toma){
-            $libro=Libro::find($toma['id_libro']);
-            $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
-            $toma['tipo_servicio']="lectura";
-            $toma['tipo_contratacion']="pre-contrato";
-            $toma['estatus']="activa";
-            $coords=new Point($toma['posicion'][0],$toma['posicion'][1]);
-            $toma['posicion']=$coords;
-            $PreContrato->push(Toma::create($toma));
+            $libro=Libro::where('nombre',$toma['nombre'])->first();
+            if (!$libro){
+                return response()->json(["error"=>"No existe libro con este nombre, introduzca un nombre de libro valido"],500);
+            }
+            else{
+                $toma['id_libro']=$libro['id'];
+                $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
+                $toma['tipo_servicio']="lectura";
+                $toma['tipo_contratacion']="pre-contrato";
+                $toma['estatus']="activa";
+                $coords=new Point($toma['posicion'][0],$toma['posicion'][1]);
+                $toma['posicion']=$coords;
+                unset($toma['nombre']);
+                $PreContrato->push(Toma::create($toma));
+            }
+         
         }
         return $PreContrato;
     }

@@ -102,13 +102,13 @@ class ContratoController extends Controller
             return response()->json(["Error" => "No se pudo crear solicitud de contrato"], 500);
         }
     }
-    public function storeFile(StoreArchivoRequest $request, $id)
+    public function storeFile(StoreArchivoRequest $request)
     {
         try {
             return response()->json(new ArchivoResource((new ArchivoService())->subir($request)), 200);
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'No se pudo guardar la factibilidad' . $e
+                'error' => 'No se pudo guardar archivos de contratos ' . $e
             ], 500);
         }
     }
@@ -377,27 +377,34 @@ class ContratoController extends Controller
         }
 
         foreach ($data as $detalle) {
+            $id_concepto=$detalle['id_concepto'] ?? null;
             $monto = 0;
-            $concepto = ConceptoCatalogo::find($detalle['id_concepto']);
-            if ($concepto['tarifa_fija'] == 1) {
-                $TarifaConcepto = TarifaConceptoDetalle::where('id_tipo_toma', $contrato['tipo_toma'])->where('id_concepto', $concepto['id'])->first();
-                $monto = $TarifaConcepto['monto'];
-                $detalleCot->push(CotizacionDetalle::create([
-                    'id_cotizacion' => $detalle['id_cotizacion'],
-                    'id_sector' => $detalle['id_sector'],
-                    'id_concepto' => $detalle['id_concepto'],
-                    'monto' => $monto,
-                ]));
-            } else {
-                $monto = $detalle['monto'];
-                $detalleCot->push(CotizacionDetalle::create([
-                    'id_cotizacion' => $detalle['id_cotizacion'],
-                    'id_sector' => $detalle['id_sector'],
-                    'id_concepto' => $detalle['id_concepto'],
-                    'monto' => $monto,
-                ]));
-            }
+            if (!$id_concepto){
 
+            }
+            else{
+                $concepto = ConceptoCatalogo::find($id_concepto);
+                if ($concepto['tarifa_fija'] == 1) {
+                    $TarifaConcepto = TarifaConceptoDetalle::where('id_tipo_toma', $contrato['tipo_toma'])->where('id_concepto', $concepto['id'])->first();
+                    $monto = $TarifaConcepto['monto'];
+                    $detalleCot->push(CotizacionDetalle::create([
+                        'id_cotizacion' => $detalle['id_cotizacion'],
+                        'id_sector' => $detalle['id_sector'],
+                        'id_concepto' => $detalle['id_concepto'],
+                        'monto' => $monto,
+                    ]));
+                } else {
+                    $monto = $detalle['monto'];
+                    $detalleCot->push(CotizacionDetalle::create([
+                        'id_cotizacion' => $detalle['id_cotizacion'],
+                        'id_sector' => $detalle['id_sector'],
+                        'id_concepto' => $detalle['id_concepto'],
+                        'monto' => $monto,
+                    ]));
+                }
+    
+            }
+            
             $tarifas['montoDetalle'] += $monto;
         }
 
