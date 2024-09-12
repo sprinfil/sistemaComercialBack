@@ -41,6 +41,17 @@ class ArchivoController extends Controller
         }
     }
 
+    public function download($filename)
+    {
+        try {
+            return (new ArchivoService())->bajar($filename);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo bajar el archivo' . $e
+            ], 500);
+        }
+    }
+
     /**
      * Display the specified resource.
      */
