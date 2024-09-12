@@ -20,6 +20,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/contratos/filtros", "FiltrosContratos");
         Route::put("/contratos/cerrar", "CerrarContrato");
         Route::post("/contratos/precontrato", "PreContrato");
+        Route::post("/contratos/subirArchivos", "PreContrato");
         //Cotizaciones
         Route::prefix('contratos')->group(function () {
             Route::get("/cotizacion", "indexCotizacion");
