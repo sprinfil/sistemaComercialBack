@@ -93,7 +93,7 @@ class ContratoController extends Controller
             $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
             $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
            
-            DB::rollBack();
+            DB::commit();
             return response()->json(["contrato" => ContratoResource::collection($c),/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
         }
         try {
