@@ -96,19 +96,23 @@ class FactibilidadController extends Controller
                 foreach ($request->file('documentos') as $file) {
                     // Guardar el archivo en el almacenamiento público
                     $path = $file->store('documentos', 'public');
-
+        
+                    // Obtener solo el nombre del archivo (sin la ruta completa)
+                    $filename = basename($path);
+        
                     // Determinar el tipo de archivo según la extensión
                     $extension = $file->getClientOriginalExtension();
                     $tipoArchivo = $this->determinarTipoArchivo($extension);
-
-                    // Agregar la información del archivo al array
+        
+                    // Agregar la información del archivo al array, guardando solo el nombre del archivo
                     $archivo = [
                         'modelo' => 'factibilidad',
                         'id_modelo' => $id,
-                        'url' => $path,
+                        'url' => $filename,  // Guardar solo el nombre del archivo
                         'tipo' => $tipoArchivo,
                     ];
-
+        
+                    // Crear el registro en la base de datos
                     $archivo = Archivo::create($archivo);
                 }
             }
