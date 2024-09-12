@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/generar-contrato', [ContratoController::class, 'generarContratoPdf']);
-Route::get('/generar-constancia', [ContratoController::class, 'generarConstanciaFactibilidadPdf']);
+//Route::get('/generar-contrato', [ContratoController::class, 'generarContratoPdf']);
+//Route::get('/generar-constancia/{id}', [ContratoController::class, 'generarConstanciaFactibilidadPdf']);

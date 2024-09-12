@@ -454,31 +454,38 @@ class ContratoController extends Controller
         return (new ContratoService())->ConceptosContratos();
     }
 
-    public function generarContratoPdf()
+    public function generarContratoPdf($id)
     {
-        $data = [
-            'contrato_numero' => '123456',
-            'calle' => 'Calle Principal',
-            'numero_casa' => '12B',
-            'calle_entre' => 'Calle 1',
-            'calle_y' => 'Calle 2',
-            'costo_conexion' => '$1,500',
-            'recibo_numero' => '789123',
-            'notificacion_calle' => 'Calle Secundaria',
-            'notificacion_calle_secundaria' => 'Calle 3',
-            'notificacion_casa_numero' => '45',
-            'nombre_usuario' => 'Juan Pérez',
-            'nombre_sistema' => 'Sistema Municipal',
-        ];
+        try {
+            $contrato = Contrato::findOrFail($id);
 
-        //$pdf = FacadePdf::loadView('contrato', $data);
-        $pdf = FacadePdf::loadView('contrato', $data)
-            ->setPaper('A4', 'portrait') // Tamaño de papel y orientación
-            ->setOption('margin-top', 0)
-            ->setOption('margin-right', 0)
-            ->setOption('margin-bottom', 0)
-            ->setOption('margin-left', 0);
-        return $pdf->download('contrato.pdf');
+            $data = [
+                'contrato_numero' => $contrato->folio_solicitud,
+                'direccion' => $contrato->toma->getDireccionCompleta(),
+                'numero_casa' => $contrato->numero_casa,
+                'servicio' => strtoupper($contrato->servicio_contratado),
+                'costo_conexion' => '$1,500',
+                'recibo_numero' => '789123',
+                'notificacion_calle_secundaria' => 'Calle 3',
+                'notificacion_casa_numero' => '45',
+                'nombre_usuario' => $contrato->toma->usuario->getNombreCompletoAttribute(),
+                'nombre_sistema' => 'Sistema Municipal',
+                'fecha' => Carbon::createFromTimestamp($contrato->updated_at)->translatedFormat('j \d\e F \d\e Y')
+            ];
+
+            //$pdf = FacadePdf::loadView('contrato', $data);
+            $pdf = FacadePdf::loadView('contrato', $data)
+                ->setPaper('A4', 'portrait') // Tamaño de papel y orientación
+                ->setOption('margin-top', 0)
+                ->setOption('margin-right', 0)
+                ->setOption('margin-bottom', 0)
+                ->setOption('margin-left', 0);
+            return $pdf->download('contrato.pdf');
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No se pudo obtener el contrato' . $ex
+            ], 500);
+        }
     }
 
     public function FiltrosContratos(Request $request)

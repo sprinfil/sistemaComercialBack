@@ -102,12 +102,12 @@ class ConceptoCatalogoSeeder extends Seeder
             $rango = 17;
             for ($i = 1; $i <= 10; $i++) {
                 TarifaServiciosDetalle::factory()->create([
-                    'id_tarifa'=>1,
-                    'id_tipo_toma'=>$tipo_toma->id,
-                    'rango'=>$rango*$i,
-                    'agua'=>10*17,
-                    'alcantarillado'=>2*17,
-                    'saneamiento'=>2*17
+                    'id_tarifa' => 1,
+                    'id_tipo_toma' => $tipo_toma->id,
+                    'rango' => $rango * $i,
+                    'agua' => 10 * 17,
+                    'alcantarillado' => 2 * 17,
+                    'saneamiento' => 2 * 17
                 ]);
             }
         });
@@ -118,8 +118,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "SERVICIO DE AGUA POTABLE",
                 "descripcion" => "Servicio de suministro de agua potable.",
                 "estado" => "activo",
-                "categoria"=> 'todas',
-                
+                "categoria" => 'todas',
+
                 "prioridad_abono" => 2,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -130,7 +130,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "SERV. ALCANTARILLADO",
                 "descripcion" => "Servicio de alcantarillado.",
                 "estado" => "activo",
-                "categoria"=> 'todas',
+                "categoria" => 'todas',
                 "prioridad_abono" => 2,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -141,7 +141,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "TRAT. Y SANEAMIENTO",
                 "descripcion" => "Servicio de tratamiento y saneamiento.",
                 "estado" => "activo",
-                "categoria"=> 'todas',
+                "categoria" => 'todas',
                 "prioridad_abono" => 2,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1062,7 +1062,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONSTANCIA DE contrato RECIENTE",
                 "descripcion" => "Constancia de contratación reciente.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
+                "categoria" => 'contrato',
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1093,8 +1093,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "ROMPIMIENTO DE BANQUETA (ML)",
                 "descripcion" => "Rompimiento de banqueta (metro lineal).",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                "tipo_tarifa"=>'ML',
+                "categoria" => 'contrato',
+                "tipo_tarifa" => 'ML',
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1135,8 +1135,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 1/2\"  COMUN 9M.",
                 "descripcion" => "Contrato de agua 1/2\" común a 9 metros.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1147,8 +1147,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 1/2\" MATERIAL III",
                 "descripcion" => "Contrato de agua 1/2\" material tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1159,8 +1159,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 3/4\" COMUN",
                 "descripcion" => "Contrato de agua 3/4\" común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1171,8 +1171,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 3/4\" MATERIAL III",
                 "descripcion" => "Contrato de agua 3/4\" material tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1183,8 +1183,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 1\" COMUN",
                 "descripcion" => "Contrato de agua 1\" común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1195,8 +1195,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 1\" MATERIAL III",
                 "descripcion" => "Contrato de agua 1\" material tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1207,8 +1207,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA CON PREP. 1/2\"",
                 "descripcion" => "Contrato de agua con preparación 1/2\".",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1219,8 +1219,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 1/2\" CON CUADRO",
                 "descripcion" => "Contrato de agua 1/2\" con cuadro.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1231,8 +1231,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA CON PREP. 3/4\"",
                 "descripcion" => "Contrato de agua con preparación 3/4\".",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1243,8 +1243,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 3/4\" CON CUADRO",
                 "descripcion" => "Contrato de agua 3/4\" con cuadro.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1255,8 +1255,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA CON PREP. 1\"",
                 "descripcion" => "Contrato de agua con preparación 1\".",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1267,8 +1267,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA 1\" CON CUADRO",
                 "descripcion" => "Contrato de agua 1\" con cuadro.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1279,8 +1279,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO AGUA CON PREP. Y CUADRO, COL. MARQUEZ",
                 "descripcion" => "Contrato de agua con preparación y cuadro, Colonia Márquez.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1291,8 +1291,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 1.25M. (CUADRILLA) COMUN",
                 "descripcion" => "Contrato de drenaje a 1.25 metros (cuadrilla) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1303,8 +1303,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 1.25M. (CUADRILLA)TIPO III",
                 "descripcion" => "Contrato de drenaje a 1.25 metros (cuadrilla) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1315,8 +1315,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 1.50M.(CUADRILLA)COMUN",
                 "descripcion" => "Contrato de drenaje a 1.50 metros (cuadrilla) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1327,8 +1327,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 1.50M.(CUADRILLA)TIPO III",
                 "descripcion" => "Contrato de drenaje a 1.50 metros (cuadrilla) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1339,8 +1339,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 1.75M.(CUADRILLA)COMUN",
                 "descripcion" => "Contrato de drenaje a 1.75 metros (cuadrilla) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1351,8 +1351,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 1.75M.(CUADRILLA) TIPO III",
                 "descripcion" => "Contrato de drenaje a 1.75 metros (cuadrilla) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1363,8 +1363,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.00M.(CUADRILLA)COMUN",
                 "descripcion" => "Contrato de drenaje a 2.00 metros (cuadrilla) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1375,8 +1375,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.00M.(CUADRILLA)TIPO III",
                 "descripcion" => "Contrato de drenaje a 2.00 metros (cuadrilla) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1387,8 +1387,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.25M.(RETRO) COMUN",
                 "descripcion" => "Contrato de drenaje a 2.25 metros (retroexcavadora) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1399,8 +1399,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.25M.(RETRO)TIPO III",
                 "descripcion" => "Contrato de drenaje a 2.25 metros (retroexcavadora) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1411,8 +1411,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.50M.(RETRO)COMUN",
                 "descripcion" => "Contrato de drenaje a 2.50 metros (retroexcavadora) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1423,8 +1423,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.50M.(RETRO) TIPO III",
                 "descripcion" => "Contrato de drenaje a 2.50 metros (retroexcavadora) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1435,8 +1435,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.75M.(RETRO)COMUN",
                 "descripcion" => "Contrato de drenaje a 2.75 metros (retroexcavadora) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1447,8 +1447,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 2.75M.(RETRO) TIPO III",
                 "descripcion" => "Contrato de drenaje a 2.75 metros (retroexcavadora) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1459,8 +1459,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 3.00M.(RETRO) COMUN",
                 "descripcion" => "Contrato de drenaje a 3.00 metros (retroexcavadora) común.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1471,8 +1471,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE A 3.00M.(RETRO) TIPO III",
                 "descripcion" => "Contrato de drenaje a 3.00 metros (retroexcavadora) tipo III.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1483,8 +1483,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "CONTRATO DRENAJE CON PREPARACION",
                 "descripcion" => "Contrato de drenaje con preparación.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                
+                "categoria" => 'contrato',
+
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1495,8 +1495,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "TIPO DE SUELO A (COMUN) ML ADICIONAL A 9M.",
                 "descripcion" => "Tipo de suelo A (común) metro lineal adicional a 9 metros.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                "tipo_tarifa"=>'ML',
+                "categoria" => 'contrato',
+                "tipo_tarifa" => 'ML',
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1507,8 +1507,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "TIPO DE SUELO C (DE PIEDRA) ML ADICIONAL A 9M.",
                 "descripcion" => "Tipo de suelo C (de piedra) metro lineal adicional a 9 metros.",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                "tipo_tarifa"=>'ML',
+                "categoria" => 'contrato',
+                "tipo_tarifa" => 'ML',
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1519,8 +1519,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "ROMPIMIENTO DE PAVIMENTO ASFALTO (ML)",
                 "descripcion" => "Rompimiento de pavimento de asfalto (metro lineal).",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                "tipo_tarifa"=>'ML',
+                "categoria" => 'contrato',
+                "tipo_tarifa" => 'ML',
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1531,8 +1531,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "ROMPIMIENTO DE PAVIMENTO HIDRAULICO (ML)",
                 "descripcion" => "Rompimiento de pavimento hidráulico (metro lineal).",
                 "estado" => "activo",
-                "categoria"=> 'contrato',
-                "tipo_tarifa"=>'ML',
+                "categoria" => 'contrato',
+                "tipo_tarifa" => 'ML',
                 "prioridad_abono" => 3,
                 "cargo_directo" => 1,
                 "genera_iva" => 1,
@@ -1643,8 +1643,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "nombre" => "Facturacion",
                 "descripcion" => "Facturacion",
                 "estado" => "activo",
-                "categoria"=> 'facturacion',
-                
+                "categoria" => 'facturacion',
+
                 "prioridad_abono" => 2,
                 "prioridad_por_antiguedad" => 1,
                 "cargo_directo" => 1,
@@ -1652,17 +1652,30 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 1,
                 "tarifa_fija" => 1,
             ],
+            [
+                "nombre" => "Factibilidad y derechos de conexión",
+                "descripcion" => "Cobro de la factibilidad y derechos de conexion",
+                "estado" => "activo",
+                "categoria" => 'factibilidad',
+
+                "prioridad_abono" => 2,
+                "prioridad_por_antiguedad" => 0,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
+            ],
             // Agrega más elementos aquí según sea necesario
         ];
-                
-        
+
+
         foreach ($conceptos as $concepto) {
             ConceptoCatalogo::factory()->create([
                 'nombre' => ucfirst(strtolower($concepto["nombre"])),
                 'descripcion' => ucfirst(strtolower($concepto["descripcion"])),
                 'estado' => $concepto["estado"],
-                "categoria"=> $concepto["categoria"] ?? null,
-                "tipo_tarifa"=>$concepto["tipo_tarifa"] ?? null,
+                "categoria" => $concepto["categoria"] ?? null,
+                "tipo_tarifa" => $concepto["tipo_tarifa"] ?? null,
                 'prioridad_abono' => $concepto["prioridad_abono"],
                 'cargo_directo' => $concepto["cargo_directo"],
                 'genera_iva' => $concepto["genera_iva"],

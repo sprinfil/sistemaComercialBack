@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use PhpParser\Node\Stmt\Return_;
 
@@ -16,27 +17,27 @@ class Factibilidad extends Model
 
     protected $table = 'factibilidad';
 
-    protected $fillable = 
+    protected $fillable =
     [
-        'id_contrato',
+        'id_toma',
         'id_solicitante',
         'id_revisor',
         'estado',
         'agua_estado_factible',
         'alc_estado_factible',
-        'san_estado_factible',
+        //'san_estado_factible',
         'derechos_conexion',
-        'documento'
+        //'documento',
+        'comentario'
     ];
 
-    public function contrato () : ?BelongsTo
+    public function toma(): ?BelongsTo
     {
-        try{
-            return $this->belongsTo(Contrato::class, 'id_contrato');
-        }catch(Exception $ex){
+        try {
+            return $this->belongsTo(Toma::class, 'id_toma');
+        } catch (Exception $ex) {
             return null;
         }
-        
     }
 
     public function solicitante(): HasOne
@@ -47,5 +48,10 @@ class Factibilidad extends Model
     public function revisor(): HasOne
     {
         return $this->hasOne(Operador::class, 'id', 'id_revisor');
+    }
+
+    public function archivos(): MorphMany
+    {
+        return $this->morphMany(Archivo::class, 'origen', 'modelo', 'id_modelo');
     }
 }

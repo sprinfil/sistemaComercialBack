@@ -23,7 +23,7 @@ class MonitorFactibilidadController extends Controller
     {
         try {
             // Muestra todas las factibilidades de los contratos sin paginación
-            $factibilidades = Factibilidad::with('contrato')->get();
+            $factibilidades = Factibilidad::with('toma', 'archivos')->get();
 
             return FactibilidadResource::collection($factibilidades);
 

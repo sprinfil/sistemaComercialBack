@@ -23,14 +23,14 @@ class Toma extends Model
     use HasSpatial;
 
     protected $table = "toma";
-  
+
     protected $casts = [
         'posicion' => Point::class,
     ];
     protected $spatialFields = [
         'posicion',
     ];
- 
+
     protected $fillable = [
         "id_usuario",
         "id_giro_comercial",
@@ -56,53 +56,55 @@ class Toma extends Model
         'c_san',
         'posicion'
     ];
-    
+
     // Libro
-    public function libro():BelongsTo{
-        return $this->belongsTo(Libro::class,"id_libro");
+    public function libro(): BelongsTo
+    {
+        return $this->belongsTo(Libro::class, "id_libro");
     }
-    public function ruta():HasOneThrough{
-        return $this->hasOneThrough(Ruta::class,Libro::class,'id','id','id_libro','id_ruta');
+    public function ruta(): HasOneThrough
+    {
+        return $this->hasOneThrough(Ruta::class, Libro::class, 'id', 'id', 'id_libro', 'id_ruta');
     }
 
     // Giro comercial asociado a la toma
-    public function giroComercial() : BelongsTo
+    public function giroComercial(): BelongsTo
     {
         return $this->belongsTo(GiroComercialCatalogo::class, 'id_giro_comercial');
     }
 
     // Tipo de toma asociado a la toma
-    public function tipoToma() : BelongsTo
+    public function tipoToma(): BelongsTo
     {
         return $this->belongsTo(TipoToma::class, 'id_tipo_toma');
     }
 
     // Usuario asociado a la toma
-    public function usuario() : BelongsTo
+    public function usuario(): BelongsTo
     {
         return $this->belongsTo(Usuario::class, 'id_usuario');
     }
 
     // Contrato asociado a la toma
-    public function contrato() : HasMany
+    public function contrato(): HasMany
     {
         return $this->hasMany(Contrato::class, 'id_toma');
     }
-    public function contratoVigente() : HasMany
+    public function contratoVigente(): HasMany
     {
-        return $this->hasMany(Contrato::class, 'id_toma')->where('estatus','!=','cancelado');
+        return $this->hasMany(Contrato::class, 'id_toma')->where('estatus', '!=', 'cancelado');
     }
 
     // Medidor asociado a la toma
-    public function medidores() : HasMany
+    public function medidores(): HasMany
     {
         return $this->hasMany(Medidor::class, 'id_toma');
     }
 
-    public function medidorActivo() : HasOne
+    public function medidorActivo(): HasOne
     {
         return $this->hasOne(Medidor::class, 'id_toma')
-                    ->where('estatus', 'activo');
+            ->where('estatus', 'activo');
     }
 
     public function desactivarMedidoresActivos()
@@ -112,20 +114,27 @@ class Toma extends Model
     }
 
     //Consumos asociados a la toma
-    public function consumo():HasMany{
-        return $this->hasMany(Consumo::class,'id_toma');
+    public function consumo(): HasMany
+    {
+        return $this->hasMany(Consumo::class, 'id_toma');
     }
 
     //Toma asociada a una factibilidad
-    public function factibilidad () : HasOne
+    public function factibilidad(): HasOne
     {
-        return $this->hasOne(Factibilidad::class);
+        return $this->hasOne(Factibilidad::class)->latestOfMany();;
     }
 
-    public function ordenesTrabajo():HasMany{
-        return $this->hasMany(OrdenTrabajo::class,'id_toma');
+    public function factibilidades(): HasMany
+    {
+        return $this->hasMany(Factibilidad::class);
     }
-   
+
+    public function ordenesTrabajo(): HasMany
+    {
+        return $this->hasMany(OrdenTrabajo::class, 'id_toma');
+    }
+
     public function datos_fiscales(): MorphOne
     {
         return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo')->latestOfMany();
@@ -138,13 +147,13 @@ class Toma extends Model
 
     public function cargosVigentes(): MorphMany
     {
-        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente')->with('concepto');
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente')->with('concepto');
     }
     public function cargosVigentesConConcepto(): MorphMany
     {
         return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')
-                    ->where('estado', 'pendiente')
-                    ->with('concepto'); // Cargar la relación 'concepto' junto con los cargos
+            ->where('estado', 'pendiente')
+            ->with('concepto'); // Cargar la relación 'concepto' junto con los cargos
     }
 
     public function pagos(): MorphMany
@@ -153,18 +162,19 @@ class Toma extends Model
     }
     public function pagosPendientes(): MorphMany
     {
-        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente');
     }
     public function pagosConDetalle(): MorphMany
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
-                    ->with(['abonosConCargos']);
+            ->with(['abonosConCargos']);
     }
 
 
     //Consumos asociados a la toma
-    public function factura():HasMany{
-        return $this->hasMany(Factura::class,'id_toma');
+    public function factura(): HasMany
+    {
+        return $this->hasMany(Factura::class, 'id_toma');
     }
     public function TarifaContrato()
     {
@@ -181,51 +191,51 @@ class Toma extends Model
         return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
     }
 
-    public function saldoToma(){
+    public function saldoToma()
+    {
         $total_final = 0;
         $cargos_pendientes = $this->cargosVigentes;
-        foreach($cargos_pendientes as $cargo)
-        {
+        foreach ($cargos_pendientes as $cargo) {
             $total_final += $cargo->montoPendiente();
         }
         return $total_final;
     }
 
-    public function saldoPendiente(){
+    public function saldoPendiente()
+    {
         $total_final = 0;
         $cargos_pendientes = $this->cargosVigentes;
-        foreach($cargos_pendientes as $cargo)
-        {
+        foreach ($cargos_pendientes as $cargo) {
             $total_final += $cargo->montoPendiente();
         }
         return $total_final;
     }
 
-    public function getSaldo(){
-        if  (!isNull($this->saldo)){
+    public function getSaldo()
+    {
+        if (!isNull($this->saldo)) {
             return $this->saldo;
-        }
-        else{
+        } else {
             return null;
         }
     }
-    public function saldoSinAplicar(){
+    public function saldoSinAplicar()
+    {
         $total_final = 0;
         $pagos_pendientes = $this->pagosPendientes;
-        foreach($pagos_pendientes as $pago)
-        {
+        foreach ($pagos_pendientes as $pago) {
             $total_final += $pago->pendiente();
         }
         return $total_final;
     }
-    public static function ConsultarUsuarioPorCodigo(string $toma) {
-        $data = Usuario::whereHas('tomas', function ($query)use($toma) {
+    public static function ConsultarUsuarioPorCodigo(string $toma)
+    {
+        $data = Usuario::whereHas('tomas', function ($query) use ($toma) {
             $query->where('codigo_toma', $toma);
-        })->with(['toma' => function ($query) use($toma){
+        })->with(['toma' => function ($query) use ($toma) {
             $query->where('codigo_toma', $toma);
         }])
-       ->paginate(1);
-          return  $data;
+            ->paginate(1);
+        return  $data;
     }
 }
-
