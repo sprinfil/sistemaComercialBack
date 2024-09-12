@@ -18,6 +18,7 @@ class Convenio extends Model
         'monto_total',
         'periodicidad',
         'cantidad_letras',
+        'estado',
         'comentario',
     ];
 

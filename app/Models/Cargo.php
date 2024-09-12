@@ -62,7 +62,7 @@ class Cargo extends Model
 
     public function abonosTotal()
     {
-        return $this->abonos()->sum('total_abonado'); // 'monto' es el campo en la tabla 'abonos' que contiene el valor abonado
+        return $this->abonosVigentes()->sum('total_abonado'); // 'monto' es el campo en la tabla 'abonos' que contiene el valor abonado
     }
 
     public function concepto(): HasOne
