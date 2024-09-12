@@ -385,23 +385,6 @@ class TarifaService{
     public function storeTarifaServicioDetalle(array $tarifaDetalles) 
     {
         try {
-        /* 
-            
-    Store de TarifasServiciosDetalle
-
-	    •Cuando haces el Store de una tarifa_detalle_servicio, no puedes crear un registro de un servicio (una id_tarifa_servicio)
-	     que no exista. 
-	    •El rango no puede ser menor de 17 m³ y el monto no puede ser menor
-
-
-    Update de TarifaServiciosDetalle
-
-	    •Cuando haces el update de una tarifa_detalle_servicio, no puede haber 2 registros con el mismo id_tarifa_servicio, rango
-	
-	    •El monto cuando se hace el update, no tiene que ser menor
-        
-        */
-
 
             //Verifica que exista un servicio para poder añadir una tarfa servicio detalle
             $tarifaServicio = TarifaServicio::where('id' , $tarifaDetalles['id_tarifa_servicio'])->first();
