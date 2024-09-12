@@ -87,21 +87,12 @@ class ContratoController extends Controller
             //return $contratos;
         }
         else{
+
+            $EsPreContrato=Toma::find($id_toma)['tipo_contratacion'] ?? null;
             $toma=(new ContratoService())->SolicitudToma($nuevaToma,$id_usuario,$data);
-            $c=(new ContratoService())->Solicitud($servicio,$data,$toma, $solicitud);
-           ///Crea orden de inspección
-            /*
-        if (!empty($OT)){
-            $OT['id_toma']=$toma['id'];
-            $ordenTrabajo=(new OrdenTrabajoService)->crearOrden($OT);
-        }
-        else{
-            $ordenTrabajo=null;
-        }
-            */
-  
-            //$data['id_toma']=$toma['id'];
-            DB::commit();
+            $c=(new ContratoService())->Solicitud($servicio,$data,$toma, $solicitud,$EsPreContrato);
+
+            DB::rollBack();
             return response()->json(["contrato"=>ContratoResource::collection($c),/*"Orden_trabajo"=>$ordenTrabajo,*/"toma"=> $toma],201);
        
         }

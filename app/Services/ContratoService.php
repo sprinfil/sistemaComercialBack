@@ -20,9 +20,10 @@ use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class ContratoService{
 
-    public function Solicitud($servicio,$data,$toma,$solicitud){
+    public function Solicitud($servicio,$data,$toma,$solicitud, $EsPreContrato ){
         ////Crea la toma pendiente de inspección
         ////Crear solicitud de factibilidad
+        $estado=$EsPreContrato ?? null;
         $toma=Toma::find($toma['id']);
         $c=new Collection();
         $factibilidad=new Collection();
@@ -31,7 +32,7 @@ class ContratoService{
             $CrearContrato['folio_solicitud']=Contrato::darFolio();
             $CrearContrato['servicio_contratado']=$sev;
             $CrearContrato['id_toma']=$toma['id'];
-            if ( $toma['tipo_contratacion']=="pre-contrato"){
+            if ( $estado && $estado=="pre-contrato"){
                 $CrearContrato['estatus']="contratado";
                 
             }
@@ -70,9 +71,10 @@ class ContratoService{
         return $c;
     }
     public function SolicitudToma($nuevaToma,$id_usuario,$data){
+        $idToma=$data['id_toma'] ?? null;
+        $existe=Toma::find($idToma) ?? null;
         if  (!$nuevaToma){
-            $toma=Toma::find($data['id_toma']);
-            if ($toma['id_usuario']!=$id_usuario){
+            if ($existe['id_usuario']!=$id_usuario && $existe['tipo_contratacion']!="pre-contrato"){
                 return response()->json([
                     'message' => 'Esta toma esta contratada a otro usuario'
                 ], 500);
@@ -82,7 +84,6 @@ class ContratoService{
             $toma=$nuevaToma;
             $toma['id_tipo_toma']=$data['tipo_toma'];
             $toma['id_usuario']=$id_usuario;
-            $toma['estatus']="pendiente de inspección";
             $toma['tipo_servicio']="lectura";
             $toma['tipo_contratacion']="normal";
             $toma['codigo_postal']=$data['codigo_postal'];
@@ -99,9 +100,19 @@ class ContratoService{
                 $entrecalle2= $toma['entre_calle2']?" & ".$toma['entre_calle2']: null;
                 $toma['direccion_notificacion']=$toma['calle'].$entrecalle1.$entrecalle2.", ".$toma['colonia'].", ".$toma['localidad'];
             }
-            $libro=Libro::find($toma['id_libro']);
-            $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
-            $toma=Toma::create($toma);
+            if ($existe){
+                //$toma['estatus']="activa";
+                $existe->update($toma);
+                $existe->save();
+                $toma= $existe;
+            }
+            else{
+                $toma['estatus']="pendiente de inspección";
+                $libro=Libro::find($toma['id_libro']);
+                $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
+                $toma=Toma::create($toma);
+            }
+            
         }
         return $toma;
     }

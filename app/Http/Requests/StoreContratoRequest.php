@@ -27,7 +27,7 @@ class StoreContratoRequest extends FormRequest
             'contrato.id_toma' => 'sometimes|exists:toma,id',
             'contrato.estatus' => 'sometimes|in:pendiente de inspeccion,contrato no factible,inspeccionado,pendiente de pago,contratado,terminado',
             'contrato.nombre_contrato' => 'sometimes|string',
-            'contrato.clave_catastral' => 'nullable|string|min:9|max:12',
+            'contrato.clave_catastral' => 'nullable|string|min:9|max:15',
             'contrato.tipo_toma' => 'sometimes|integer',
             'contrato.servicio_contratados.*' => 'sometimes|in:agua,alcantarillado y saneamiento',
             'contrato.colonia' => 'sometimes|integer',
