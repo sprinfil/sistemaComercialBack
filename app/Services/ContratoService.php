@@ -61,7 +61,7 @@ class ContratoService{
             $id_empleado_asigno=auth()->user()->operador->id;
             if ($solicitud==true){
                 $factibilidad->push(Factibilidad::create([
-                    "id_contrato"=>$toma['id'],
+                    "id_toma"=>$toma['id'],
                     "id_solicitante"=>$id_empleado_asigno,
                     "estado"=>"pendiente"
                 ]));

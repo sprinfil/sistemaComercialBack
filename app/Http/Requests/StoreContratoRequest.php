@@ -56,7 +56,14 @@ class StoreContratoRequest extends FormRequest
             "ordenes_trabajo.id_toma" => "sometimes|exists:toma,id",
             "ordenes_trabajo.posicion_OT" => "sometimes|point",
             "ordenes_trabajo.genera_OT_encadenadas" => "sometimes|boolean",
-            "solicitud_factibilidad"=>"sometimes|boolean"
+            "solicitud_factibilidad"=>"sometimes|boolean",
+
+            "documentos"=>"sometimes|array",
+            "documentos.*"=>"sometimes|array",
+            'documentos.*.id_modelo' => 'required|int',
+            'documentos.*.modelo' => 'required|string',
+            'documentos.*.tipo' => 'required|string',
+            'documentos.*.documento' => 'required|file'
         ];
     }
 }
