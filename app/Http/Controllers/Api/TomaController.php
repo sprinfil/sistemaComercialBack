@@ -283,14 +283,19 @@ class TomaController extends Controller
     public function medidoresPorToma($id)
     {
         try {
-            return response(MedidorResource::collection(
-                Toma::findOrFail($id)->medidores
-            ),200);
+            $medidores = Toma::findOrFail($id)
+                ->medidores()
+                ->orderByRaw("CASE WHEN estatus = 'activo' THEN 0 ELSE 1 END")
+                ->orderBy('created_at', 'desc')
+                ->get();
+        
+            return response(MedidorResource::collection($medidores), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'No se pudo encontrar los medidores '.$id
+                'error' => 'No se pudo encontrar los medidores ' . $id
             ], 500);
         }
+            
     }
     public function filtradoTomas(Request $request){
         try{
