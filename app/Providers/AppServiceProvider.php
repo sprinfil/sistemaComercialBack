@@ -39,7 +39,8 @@ class AppServiceProvider extends ServiceProvider
             'pago' => 'App\Models\Pago',
             'abono' => 'App\Models\Abono',
             'caja' => 'App\Models\Caja',
-            'orden_trabajo' => 'App\Models\OrdenTrabajo'
+            'orden_trabajo' => 'App\Models\OrdenTrabajo',
+            'cfdi' => 'App\Models\Cfdi'
         ]);
     }
 }

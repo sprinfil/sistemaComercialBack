@@ -76,7 +76,7 @@ class ContratoFactory extends Factory
             ]),
             'nombre_contrato' => $nombrec,
             'clave_catastral' => Toma::find($tomaId)->clave_catastral ?? $this->faker->regexify('[A-Z0-9]{10}'),
-            'tipo_toma' => Toma::find($tomaId)->tipo_toma ?? $this->faker->randomElement([1, 2, 3,4]),
+            'tipo_toma' => Toma::find($tomaId)->tipo_toma ?? $this->faker->randomElement([1, 2, 3, 4]),
             'servicio_contratado' => $servicio,
             'colonia' => $this->faker->streetName,
             'municipio' => $this->faker->city,
@@ -133,29 +133,30 @@ class ContratoFactory extends Factory
             }
 
             if ($contrato->estatus == 'contrato no factible') {
-                $factibilidad = Factibilidad::factory()->create([
-                    'id_contrato' => $contrato->id,
-                    'agua_estado_factible' => 'no_factible',
-                    'alc_estado_factible' => 'no_factible',
-                    'derechos_conexion' => 0
-                ]);
+                // $factibilidad = Factibilidad::factory()->create([
+                //     'id_toma' => $contrato->id,
+                //     'estado' => 'rechazada',
+                //     'agua_estado_factible' => 'no factible',
+                //     'alc_estado_factible' => 'no factible',
+                //     'derechos_conexion' => 0
+                // ]);
 
-                Cargo::factory()->create([
-                    'id_concepto' => 1,
-                    'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
-                    'id_origen' => $factibilidad->id,
-                    'modelo_origen' => 'factibilidad',
-                    'id_dueno' => $contrato->id_toma,
-                    'modelo_dueno' => 'toma',
-                    'monto' => 500.00,
-                    'iva' => (0.16 * 500.00),
-                    'estado' => 'pagado',
-                    'fecha_cargo' => now(),
-                    'fecha_liquidacion' => now(),
-                    'deleted_at' => null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                // Cargo::factory()->create([
+                //     'id_concepto' => 1,
+                //     'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
+                //     'id_origen' => $factibilidad->id,
+                //     'modelo_origen' => 'factibilidad',
+                //     'id_dueno' => $contrato->id_toma,
+                //     'modelo_dueno' => 'toma',
+                //     'monto' => 500.00,
+                //     'iva' => (0.16 * 500.00),
+                //     'estado' => 'pagado',
+                //     'fecha_cargo' => now(),
+                //     'fecha_liquidacion' => now(),
+                //     'deleted_at' => null,
+                //     'created_at' => now(),
+                //     'updated_at' => now(),
+                // ]);
             } else {
                 if ($contrato_alc != null) {
                     $cotizacion_alc = Cotizacion::factory()->create([
@@ -165,12 +166,13 @@ class ContratoFactory extends Factory
                 $cotizacion = Cotizacion::factory()->create([
                     'id_contrato' => $contrato->id,
                 ]);
-                if ($contrato->estatus != 'pendiente de inspeccion') {
+                if ($contrato->estatus != 'pendiente de factibilida') {
                     $factibilidad = Factibilidad::factory()->create([
-                        'id_contrato' => $contrato->id,
-                        'agua_estado_factible' => 'factible',
-                        'alc_estado_factible' => 'factible',
-                        'derechos_conexion' => $derechos_conexion
+                        'id_toma' => $contrato->id_toma,
+                        'estado' => 'sin revisar',
+                        'agua_estado_factible' => 'pendiente',
+                        'alc_estado_factible' => 'pendiente',
+                        'derechos_conexion' => 0
                     ]);
 
                     DatosDomiciliacion::factory()->create([
@@ -182,9 +184,50 @@ class ContratoFactory extends Factory
                         'domicilio_tarjeta' => Toma::find($contrato->id_toma)->getDireccionCompleta(),
                     ]);
 
+                    // Cargo::factory()->create([
+                    //     'id_concepto' => 1,
+                    //     'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
+                    //     'id_origen' => $factibilidad->id,
+                    //     'modelo_origen' => 'factibilidad',
+                    //     'id_dueno' => $contrato->id_toma,
+                    //     'modelo_dueno' => 'toma',
+                    //     'monto' => 351.20,
+                    //     'iva' => (0.16 * 351.20),
+                    //     'estado' => 'pagado',
+                    //     'fecha_cargo' => now(),
+                    //     'fecha_liquidacion' => now(),
+                    //     'deleted_at' => null,
+                    //     'created_at' => now(),
+                    //     'updated_at' => now(),
+                    // ]);
+
+                    // Cargo::factory()->create([
+                    //     'id_concepto' => 1,
+                    //     'nombre' => 'Derechos de conexion ' . TipoToma::find($contrato->tipo_toma)->nombre,
+                    //     'id_origen' => $factibilidad->id,
+                    //     'modelo_origen' => 'factibilidad',
+                    //     'id_dueno' => $contrato->id_toma,
+                    //     'modelo_dueno' => 'toma',
+                    //     'monto' => $derechos_conexion,
+                    //     'iva' => (0.16 * $derechos_conexion),
+                    //     'estado' => 'pagado',
+                    //     'fecha_cargo' => now(),
+                    //     'fecha_liquidacion' => now(),
+                    //     'deleted_at' => null,
+                    //     'created_at' => now(),
+                    //     'updated_at' => now(),
+                    // ]);
+                } else if ($contrato->estatus != 'pagada') {
+                    $factibilidad = Factibilidad::factory()->create([
+                        'id_toma' => $contrato->id_toma,
+                        'agua_estado_factible' => 'factible',
+                        'alc_estado_factible' => 'factible',
+                        'derechos_conexion' => $derechos_conexion
+                    ]);
+
                     Cargo::factory()->create([
-                        'id_concepto' => 1,
-                        'nombre' => 'Factibilidad ' . TipoToma::find($contrato->tipo_toma)->nombre,
+                        'id_concepto' => 147,
+                        'nombre' => 'Factibilidad y derechos de conexión ' . TipoToma::find($contrato->tipo_toma)->nombre,
                         'id_origen' => $factibilidad->id,
                         'modelo_origen' => 'factibilidad',
                         'id_dueno' => $contrato->id_toma,
@@ -199,29 +242,22 @@ class ContratoFactory extends Factory
                         'updated_at' => now(),
                     ]);
 
-                    Cargo::factory()->create([
-                        'id_concepto' => 1,
-                        'nombre' => 'Derechos de conexion ' . TipoToma::find($contrato->tipo_toma)->nombre,
-                        'id_origen' => $factibilidad->id,
-                        'modelo_origen' => 'factibilidad',
-                        'id_dueno' => $contrato->id_toma,
-                        'modelo_dueno' => 'toma',
-                        'monto' => $derechos_conexion,
-                        'iva' => (0.16 * $derechos_conexion),
-                        'estado' => 'pagado',
-                        'fecha_cargo' => now(),
-                        'fecha_liquidacion' => now(),
-                        'deleted_at' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                } else {
-                    Factibilidad::factory()->create([
-                        'id_contrato' => $contrato->id,
-                        'agua_estado_factible' => 'factible',
-                        'alc_estado_factible' => 'factible',
-                        'derechos_conexion' => $derechos_conexion
-                    ]);
+                    // Cargo::factory()->create([
+                    //     'id_concepto' => 1,
+                    //     'nombre' => 'Derechos de conexion ' . TipoToma::find($contrato->tipo_toma)->nombre,
+                    //     'id_origen' => $factibilidad->id,
+                    //     'modelo_origen' => 'factibilidad',
+                    //     'id_dueno' => $contrato->id_toma,
+                    //     'modelo_dueno' => 'toma',
+                    //     'monto' => $derechos_conexion,
+                    //     'iva' => (0.16 * $derechos_conexion),
+                    //     'estado' => 'pagado',
+                    //     'fecha_cargo' => now(),
+                    //     'fecha_liquidacion' => now(),
+                    //     'deleted_at' => null,
+                    //     'created_at' => now(),
+                    //     'updated_at' => now(),
+                    // ]);
                 }
             }
 
@@ -261,7 +297,7 @@ class ContratoFactory extends Factory
                         'Dividendos',
                         'Demas ingresos'
                     ]),
-                    'nombre'=>$contrato->toma->usuario->getNombreCompletoAttribute(),
+                    'nombre' => $contrato->toma->usuario->getNombreCompletoAttribute(),
                     'correo' => $contrato->toma->usuario->correo,
                     'razon_social' => $contrato->toma->usuario->rfc,
                     'telefono' => $contrato->toma->usuario->telefono,
