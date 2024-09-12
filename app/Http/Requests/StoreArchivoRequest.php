@@ -24,8 +24,9 @@ class StoreArchivoRequest extends FormRequest
         return [
             'id_modelo' => 'required|int',
             'modelo' => 'required|string',
-            'tipo' => 'required|string',
-            'documento' => 'required|file'
+            //'tipo' => 'required|string',
+            'documentos' => 'nullable|array',
+            'documentos.*' => 'file'
         ];
     }
 }

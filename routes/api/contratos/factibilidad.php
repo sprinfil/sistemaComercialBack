@@ -12,7 +12,8 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/factibilidad/subirArchivo/{id}", "storeFile");
         Route::get("/factibilidad/show/{id}", "show");
         Route::get("/factibilidad/constancia/{id}", "generarConstancia");
-        Route::put("/factibilidad/update/{id}", "update");
+        Route::post("/factibilidad/update/{id}", "update");
+        Route::put("/factibilidad/updateWFiles/{id}", "updateWFiles");
         //Route::delete("/factiblidad/delete/{id}" , "destroy");
         //Route::put("/factibilidad/restaurar/{id}" , "restaurar");
     });
