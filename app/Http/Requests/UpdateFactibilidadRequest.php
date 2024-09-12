@@ -30,6 +30,8 @@ class UpdateFactibilidadRequest extends FormRequest
             'alc_estado_factible' => 'required|in:pendiente,no factible,factible',
             'derechos_conexion' => 'numeric|nullable|min:0',
             //'documento' => 'nullable|file|mimes:pdf|max:2048'
+            'documentos' => 'nullable|array',
+            'documentos.*' => 'file', // Cada archivo debe ser un PDF y tener un tamaño máximo de 2 MB
             'comentario' => 'nullable|string',
         ];
     }
