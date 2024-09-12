@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
+use Point;
 
 class Contrato extends Model
 {
@@ -50,11 +52,13 @@ class Contrato extends Model
         return $this->hasOne(Factibilidad::class , 'id_contrato');
     }
 
+    /*
     // Servicio asociado a la toma
     public function servicio() : HasMany
     {
         return $this->hasMany(Servicio::class, 'id_contrato');
     }
+        */
 
     // Tipo de toma asociado al contrato
     public function tipoToma() : BelongsTo
@@ -74,6 +78,10 @@ class Contrato extends Model
     public function cargos(): MorphMany
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
+    }
+    public function cargosVigentes(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen')->where('estado','pendiente');
     }
     
     public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio

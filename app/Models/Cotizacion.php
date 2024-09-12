@@ -42,6 +42,10 @@ class Cotizacion extends Model
             $parent->cotizacionesDetalles()->each(function ($child) {
                 $child->delete();
             });
+            $parent->contrato()->each(function ($child) {
+                $child->cargos()->delete();
+            });
+            
         });
         static::restoring(function ($parent) {
             $parent->cotizacionesDetalles()->withTrashed()->restore();

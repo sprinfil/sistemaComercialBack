@@ -7,13 +7,14 @@ use Exception;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
-
+use PhpParser\Node\Expr\FuncCall;
 
 class TomaService{
-
+    /*
     public function crearToma(){
         ///generar código de toma
     }
+        */
     public function tomaTipos($filtros){
         $ruta=$filtros['ruta_id'] ?? null;
         $libro=$filtros['libro_id'] ?? null;
@@ -169,5 +170,23 @@ class TomaService{
         return $OT;
         //
 
+    }
+    public function generarCodigoToma($libro){
+        $nombre_libro = $libro->nombre;
+                    $ruta_sel = $libro->tieneRuta;
+                    $nombre_ruta = $ruta_sel->nombre;
+    
+                    // Usar una expresión regular para encontrar los números
+                    preg_match('/\d+/', $nombre_libro, $coincidencias_libro);
+                    preg_match('/\d+/', $nombre_ruta, $coincidencias_ruta);
+    
+                    $numero_libro = isset($coincidencias_libro[0]) ? (int)$coincidencias_libro[0] : null;
+                    $numero_ruta = isset($coincidencias_ruta[0]) ? (int)$coincidencias_ruta[0] : null;
+    
+                    // Generar el folio
+                    $folio = strtoupper(
+                        ''.str_pad($numero_ruta, 2, '0', STR_PAD_LEFT).''.str_pad($numero_libro, 2, '0', STR_PAD_LEFT).''.str_pad($libro->countTomas()+1, 3, '0', STR_PAD_LEFT)
+                    );
+                    return $folio;
     }
 }
