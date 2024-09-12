@@ -40,7 +40,7 @@ class CotizacionService{
         return $toma->TomaCotizada();
     }
     
-    public function TarifaPorContrato($cotizaciones){
+    public function TarifaPorContrato($cotizaciones,$cot){
         /*
         $concepto=new Collection();
         $i=0;
@@ -59,7 +59,7 @@ class CotizacionService{
         */
         
         $concepto=[];
-        $cotizacion=Cotizacion::find($cotizaciones[0]['id_cotizacion']);
+        $cotizacion=$cot;
         $contrato=$cotizacion->contrato;
      
         $concepto=$contrato->tarifaContrato();

@@ -359,72 +359,90 @@ class ContratoController extends Controller
     }
     public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
     {
-        DB::beginTransaction();
-        $data = $request->validated()['cotizacion_detalle'];
-        $detalleCot = new Collection();
-        //$costoContrato=new Collection();
-
-        $cotizacion = Cotizacion::find($data[0]['id_cotizacion']);
-        $contrato = $cotizacion->contrato;
-        $tarifas = (new CotizacionService())->TarifaPorContrato($data);
-        //return $tarifas;
-
-        $existe = Cargo::where('id_origen', $tarifas['id_contrato'])->where('modelo_origen', 'contrato')->first();
-
-        if ($existe) {
-            //return $existe;
-            return response()->json(['message' => 'No se puede generar un cargo para las cotizaciones porque ya existe un cargo de cotización asociado'], 500);
-        }
-
-        foreach ($data as $detalle) {
-            $id_concepto=$detalle['id_concepto'] ?? null;
-            $monto = 0;
-            if (!$id_concepto){
-
-            }
-            else{
-                $concepto = ConceptoCatalogo::find($id_concepto);
-                if ($concepto['tarifa_fija'] == 1) {
-                    $TarifaConcepto = TarifaConceptoDetalle::where('id_tipo_toma', $contrato['tipo_toma'])->where('id_concepto', $concepto['id'])->first();
-                    $monto = $TarifaConcepto['monto'];
-                    $detalleCot->push(CotizacionDetalle::create([
-                        'id_cotizacion' => $detalle['id_cotizacion'],
-                        'id_sector' => $detalle['id_sector'],
-                        'id_concepto' => $detalle['id_concepto'],
-                        'monto' => $monto,
-                    ]));
-                } else {
-                    $monto = $detalle['monto'];
-                    $detalleCot->push(CotizacionDetalle::create([
-                        'id_cotizacion' => $detalle['id_cotizacion'],
-                        'id_sector' => $detalle['id_sector'],
-                        'id_concepto' => $detalle['id_concepto'],
-                        'monto' => $monto,
-                    ]));
-                }
+        try{
+            DB::beginTransaction();
+            $validado=$request->validated();
+            $data = $validado['cotizacion_detalle'];
+            $id_contrato=$validado['id_contrato'];
     
+            $cotizacion = Contrato::find($id_contrato)->cotizacionesVigentes;
+            if ($cotizacion){
+                DB::rollBack();
+                return response()->json(["message"=>"Este Contrato ya tiene una cotizacion vigente"],500);
             }
-            
-            $tarifas['montoDetalle'] += $monto;
+            $fecha=helperFechaAhora();
+            $Cotiza['vigencia'] = Carbon::parse($fecha)->addMonths(1)->format('Y-m-d');
+            $Cotiza['fecha_inicio'] = $fecha;
+            $Cotiza['id_contrato'] = $id_contrato;
+            $cotizacion=Cotizacion::create($Cotiza);
+    
+            $detalleCot = new Collection();
+    
+            $contrato = Contrato::find($id_contrato);
+            $tarifas = (new CotizacionService())->TarifaPorContrato($data,$cotizacion);
+    
+            $existe = Cargo::where('id_origen', $tarifas['id_contrato'])->where('modelo_origen', 'contrato')->first();
+    
+            if ($existe) {
+                DB::rollBack();
+                return response()->json(['message' => 'No se puede generar un cargo para las cotizaciones porque ya existe un cargo de cotización asociado'], 500);
+            }
+    
+            foreach ($data as $detalle) {
+                $id_concepto=$detalle['id_concepto'] ?? null;
+                $monto = 0;
+                if (!$id_concepto){
+                    
+                }
+                else{
+                    $concepto = ConceptoCatalogo::find($id_concepto);
+                    if ($concepto['tarifa_fija'] == 1) {
+                        $TarifaConcepto = TarifaConceptoDetalle::where('id_tipo_toma', $contrato['tipo_toma'])->where('id_concepto', $concepto['id'])->first();
+                        $monto = $TarifaConcepto['monto'];
+                        $detalleCot->push(CotizacionDetalle::create([
+                            'id_cotizacion' => $cotizacion['id'],
+                            'id_sector' => $detalle['id_sector'],
+                            'id_concepto' => $detalle['id_concepto'],
+                            'monto' => $monto,
+                        ]));
+                    } else {
+                        $monto = $detalle['monto'];
+                        $detalleCot->push(CotizacionDetalle::create([
+                            'id_cotizacion' => $cotizacion['id'],
+                            'id_sector' => $detalle['id_sector'],
+                            'id_concepto' => $detalle['id_concepto'],
+                            'monto' => $monto,
+                        ]));
+                    }
+        
+                }
+                
+                $tarifas['montoDetalle'] += $monto;
+            }
+    
+            //return $tarifas;
+            //Genera los cargos por cotizacion
+    
+            $tarifas['montoDetalle'] += $tarifas['monto'];
+            $cargos = (new CotizacionService())->CargoContratos($tarifas);
+    
+    
+            $detalle = CotizacionDetalleResource::collection(
+                $detalleCot
+            );
+    
+            DB::rollBack();
+            return response()->json([
+                "contrato" => $cargos,
+                "cotizacion_detalle" => $detalle
+    
+            ], 200);
         }
-
-        //return $tarifas;
-        //Genera los cargos por cotizacion
-
-        $tarifas['montoDetalle'] += $tarifas['monto'];
-        $cargos = (new CotizacionService())->CargoContratos($tarifas);
-
-
-        $detalle = CotizacionDetalleResource::collection(
-            $detalleCot
-        );
-
-        DB::commit();
-        return response()->json([
-            "contrato" => $cargos,
-            "cotizacion_detalle" => $detalle
-
-        ], 200);
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(["message"=>"No se pudo crear una cotización para este contrato"],500);
+        }
+       
     }
     public function destroyCotDetalle(CotizacionDetalle $Cotizacion, Request $request)
     {
