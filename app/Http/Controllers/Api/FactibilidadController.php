@@ -9,6 +9,7 @@ use App\Models\Factibilidad;
 use App\Http\Requests\StoreFactibilidadRequest;
 use App\Http\Requests\UpdateFactibilidadRequest;
 use App\Http\Resources\FactibilidadResource;
+use App\Models\Archivo;
 use App\Models\Contrato;
 use App\Services\ArchivoService;
 use Exception;
@@ -89,15 +90,58 @@ class FactibilidadController extends Controller
             //     $data['documento'] = $path;
             // }
 
+            $archivos = [];
+
+            if ($request->hasFile('documentos')) {
+                foreach ($request->file('documentos') as $file) {
+                    // Guardar el archivo en el almacenamiento público
+                    $path = $file->store('documentos', 'public');
+
+                    // Determinar el tipo de archivo según la extensión
+                    $extension = $file->getClientOriginalExtension();
+                    $tipoArchivo = $this->determinarTipoArchivo($extension);
+
+                    // Agregar la información del archivo al array
+                    $archivo = [
+                        'modelo' => 'factibilidad',
+                        'id_modelo' => $id,
+                        'url' => $path,
+                        'tipo' => $tipoArchivo,
+                    ];
+
+                    $archivo = Archivo::create($archivo);
+                }
+            }
+
             $factibilidad->update($data);
             $factibilidad->save();
             return response(new FactibilidadResource($factibilidad), 200);
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'No se pudo editar la factibilidad'
+                'error' => 'No se pudo editar la factibilidad'.$e
             ], 500);
         }
     }
+
+    private function determinarTipoArchivo($extension)
+    {
+        switch (strtolower($extension)) {
+            case 'pdf':
+                return 'PDF';
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+                return 'Imagen';
+            case 'doc':
+            case 'docx':
+                return 'Documento de Word';
+            case 'xls':
+            case 'xlsx':
+                return 'Hoja de cálculo';
+            default:
+                return 'Desconocido';
+        }
+    }   
 
     /**
      * Remove the specified resource from storage.
