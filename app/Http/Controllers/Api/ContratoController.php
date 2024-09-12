@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreArchivoRequest;
 use App\Models\Contrato;
 use App\Http\Requests\StoreContratoRequest;
 use App\Http\Requests\StoreCotizacionDetalleRequest;
 use App\Http\Requests\StoreCotizacionRequest;
 use App\Http\Requests\UpdateContratoRequest;
 use App\Http\Requests\UpdateCotizacionRequest;
+use App\Http\Resources\ArchivoResource;
 use App\Http\Resources\CargoResource;
 use App\Http\Resources\ContratoResource;
 use App\Http\Resources\CotizacionDetalleResource;
@@ -23,6 +25,7 @@ use App\Models\Tarifa;
 use App\Models\TarifaConceptoDetalle;
 use App\Models\Toma;
 use App\Models\Usuario;
+use App\Services\ArchivoService;
 use App\Services\Caja\CargoService;
 use App\Services\ContratoService;
 use App\Services\CotizacionService;
@@ -89,7 +92,7 @@ class ContratoController extends Controller
             $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
             $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
             $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
-
+           
             DB::rollBack();
             return response()->json(["contrato" => ContratoResource::collection($c),/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
         }
@@ -99,7 +102,16 @@ class ContratoController extends Controller
             return response()->json(["Error" => "No se pudo crear solicitud de contrato"], 500);
         }
     }
-
+    public function storeFile(StoreArchivoRequest $request, $id)
+    {
+        try {
+            return response()->json(new ArchivoResource((new ArchivoService())->subir($request)), 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo guardar la factibilidad' . $e
+            ], 500);
+        }
+    }
     /**
      * Display the specified resource.
      */
