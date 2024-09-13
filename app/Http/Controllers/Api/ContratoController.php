@@ -97,7 +97,9 @@ class ContratoController extends Controller
             return response()->json(["contrato" => ContratoResource::collection($c),/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
         }
         try {
-        } catch (Exception $ex) {
+
+        } 
+        catch (Exception $ex) {
             DB::rollBack();
             return response()->json(["Error" => "No se pudo crear solicitud de contrato"], 500);
         }
@@ -431,7 +433,7 @@ class ContratoController extends Controller
                 $detalleCot
             );
     
-            DB::rollBack();
+            DB::commit();
             return response()->json([
                 "contrato" => $cargos,
                 "cotizacion_detalle" => $detalle
