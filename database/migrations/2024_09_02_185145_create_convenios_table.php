@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('convenios', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_convenio_catalogo');
-            $table->decimal('monto_conveniado');
-            $table->decimal('monto_total');
+            $table->decimal('monto_conveniado')->nullable();
+            $table->decimal('monto_total')->nullable();
             $table->enum('periodicidad',['mensual','quincenal']);
             $table->integer('cantidad_letras');
-            $table->string('comentario');
+            $table->enum('estado',['activo','cancelado','incumplido']);
+            $table->string('comentario')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
