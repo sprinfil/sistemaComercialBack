@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Cargo;
+use App\Models\Colonia;
 use App\Models\ConceptoCatalogo;
 use App\Models\Contrato;
 use App\Models\Cotizacion;
@@ -78,16 +79,16 @@ class ContratoFactory extends Factory
             'clave_catastral' => Toma::find($tomaId)->clave_catastral ?? $this->faker->regexify('[A-Z0-9]{10}'),
             'tipo_toma' => Toma::find($tomaId)->tipo_toma ?? $this->faker->randomElement([1, 2, 3, 4]),
             'servicio_contratado' => $servicio,
-            'colonia' => $this->faker->streetName,
-            'municipio' => $this->faker->city,
-            'localidad' => $this->faker->city,
-            'calle' => $this->faker->streetAddress,
-            'entre_calle1' => $this->faker->optional()->streetName,
-            'entre_calle2' => $this->faker->optional()->streetName,
+            'colonia' => Toma::find($tomaId)->colonia ?? $this->faker->numberBetween(1,10),
+            'municipio' =>$this->faker->randomElement(['La Paz', 'Los cabos','Comondu']),
+            'localidad' =>Toma::find($tomaId)->localidad ?? $this->faker->randomElement(['La Paz','Todos santos','Chametla','El Centenario','El Pescadero','Colonia Calafia','El Sargento','El Carrizal','Agua Amarga','Los Barriles','Buena Vista','San Bartolo','San Pedro','San Juan de los Planes','La Matanza','Puerto Chale']),
+            'calle' => Toma::find($tomaId)->calle ?? $this->faker->numberBetween(1,100),
+            'entre_calle1' => Toma::find($tomaId)->entre_calle1 ?? $this->faker->optional()->numberBetween(1,100),
+            'entre_calle2' => Toma::find($tomaId)->entre_calle2 ?? $this->faker->optional()->numberBetween(1,100),
             'num_casa' => $this->faker->numerify('###'),
-            'diametro_de_la_toma' => $this->faker->randomElement(['1/2 pulgada', '3/4 pulgada', '1 pulgada']),
-            'codigo_postal' => $this->faker->postcode,
-            'coordenada' => $this->faker->optional()->latitude . ', ' . $this->faker->optional()->longitude,
+            'diametro_toma' => Toma::find($tomaId)->diametro_toma ?? $this->faker->randomElement([' 1/2 pulgada','1/4 pulgada','1 pulgada','2 pulgadas','1/8 pulgada']),
+            'codigo_postal' => Toma::find($tomaId)->codigo_postal ?? $this->faker->postcode,
+            'coordenada' => Toma::find($tomaId)->coordenada ?? null,
             'created_at' => now(),
             'updated_at' => now(),
         ];

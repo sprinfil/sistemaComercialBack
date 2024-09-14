@@ -44,7 +44,11 @@ class DatabaseSeeder extends Seeder
         $devOperador = Operador::factory()->create([
             'nombre' => 'dev',
         ]);
-
+        //
+        Colonia::factory()->count(10)->create();
+        // Calles
+        Calle::factory()->count(100)->create();
+     
         //
         $this->call(UsuarioSeeder::class);
         //
@@ -54,10 +58,7 @@ class DatabaseSeeder extends Seeder
         //
         $this->call(RutaSeeder::class);
         //
-        Colonia::factory()->count(10)->create();
-        // Calles
-        Calle::factory()->count(100)->create();
-        //
+
         $this->call(DescuentosSeeder::class);
         // 
         $this->call(AnomaliaSeeder::class);

@@ -88,7 +88,22 @@ class Contrato extends Model
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen')->where('estado', 'pendiente');
     }
-
+    public function calle(): BelongsTo
+    {
+        return $this->belongsTo(Calle::class, "calle");
+    }
+    public function entre_calle_2(): BelongsTo
+    {
+        return $this->belongsTo(Calle::class, "entre_calle_2");
+    }
+    public function entre_calle_1(): BelongsTo
+    {
+        return $this->belongsTo(Calle::class, "entre_calle_1");
+    }
+    public function colonia(): BelongsTo
+    {
+        return $this->belongsTo(colonia::class, "colonia");
+    }
     public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
     {
 
