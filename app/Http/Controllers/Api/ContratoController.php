@@ -195,15 +195,13 @@ class ContratoController extends Controller
                     $data['estatus'] = "contratado";
                     $contrato = (new ContratoService())->update($data);
                     $toma = Toma::find($contrato['id_toma']);
-                    $tomaDato=$toma;
                     //$tomaDato['estatus'] = "activa";
                     if ($contrato['servicio_contratado'] == "agua") {
-                        $tomaDato['c_agua'] == $contrato['id'];
+                        $toma['c_agua'] == $contrato['id'];
                     } elseif ($contrato['servicio_contratado'] == "alcantarillado y saneamiento") {
-                        $tomaDato['c_alc'] == $contrato['id'];
-                        $tomaDato['c_san'] == $contrato['id'];
+                        $toma['c_alc'] == $contrato['id'];
+                        $toma['c_san'] == $contrato['id'];
                     }
-                    $toma->update($tomaDato);
                     $toma->save();
                     $contrato = (new ContratoService())->update($data);
                     return response()->json(["contrato" => new ContratoResource($contrato)], 200);
