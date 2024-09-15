@@ -66,7 +66,7 @@ class Toma extends Model
     {
         return $this->hasOneThrough(Ruta::class, Libro::class, 'id', 'id', 'id_libro', 'id_ruta');
     }
-    public function calle(): BelongsTo
+    public function calle1(): BelongsTo
     {
         return $this->belongsTo(Calle::class, "calle");
     }
@@ -78,7 +78,7 @@ class Toma extends Model
     {
         return $this->belongsTo(Calle::class, "entre_calle_1");
     }
-    public function colonia(): BelongsTo
+    public function colonia1(): BelongsTo
     {
         return $this->belongsTo(colonia::class, "colonia");
     }
@@ -137,7 +137,7 @@ class Toma extends Model
     //Toma asociada a una factibilidad
     public function factibilidad(): HasOne
     {
-        return $this->hasOne(Factibilidad::class)->latestOfMany();;
+        return $this->hasOne(Factibilidad::class)->latestOfMany();
     }
 
     public function factibilidades(): HasMany

@@ -32,7 +32,7 @@ class Contrato extends Model
         'entre_calle1',
         'entre_calle2',
         'num_casa',
-        'diametro_de_la_toma',
+        'diametro_toma',
         'codigo_postal',
         'coordenada'
     ];
@@ -88,19 +88,19 @@ class Contrato extends Model
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen')->where('estado', 'pendiente');
     }
-    public function calle(): BelongsTo
+    public function calle1(): BelongsTo
     {
         return $this->belongsTo(Calle::class, "calle");
     }
     public function entre_calle_2(): BelongsTo
     {
-        return $this->belongsTo(Calle::class, "entre_calle_2");
+        return $this->belongsTo(Calle::class, "entre_calle2");
     }
     public function entre_calle_1(): BelongsTo
     {
-        return $this->belongsTo(Calle::class, "entre_calle_1");
+        return $this->belongsTo(Calle::class, "entre_calle1");
     }
-    public function colonia(): BelongsTo
+    public function colonia1(): BelongsTo
     {
         return $this->belongsTo(colonia::class, "colonia");
     }
