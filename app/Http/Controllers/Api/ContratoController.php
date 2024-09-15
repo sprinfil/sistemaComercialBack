@@ -50,7 +50,7 @@ class ContratoController extends Controller
     public function index()
     {
         return response()->json(["contrato" => ContratoResource::collection(
-            Contrato::with('usuario', 'toma.tipoToma','calle','entre_calle_2','entre_calle_1','colonia')->orderBy('created_at', 'desc')->get()
+            Contrato::with('usuario', 'toma.tipoToma','toma','calle1','entre_calle_1','entre_calle_2','colonia1')->orderBy('created_at', 'desc')->get()
         )]);
         try {
         } catch (Exception $ex) {
@@ -68,36 +68,38 @@ class ContratoController extends Controller
     public function store(Contrato $contrato, StoreContratoRequest $request)
     {
         ////Cambiar estatus y poner id de contrato en servicios de toma
-        DB::beginTransaction();
-        $datos = $request->validated();
-        $data = $datos['contrato'];
-        $solicitud = $datos['solicitud_factibilidad'] ?? false;
-        $nuevaToma = $request->validated()['toma'] ?? null;
-        $id_usuario = $request['contrato']['id_usuario'];
-        $id_toma = $request['contrato']['id_toma'] ?? null;
-        $servicio = $request['contrato']['servicio_contratados'];
-        $OT = $request['ordenes_trabajo'][0] ?? null;
-        $contratos = Contrato::contratoRepetido($id_usuario, $servicio, $id_toma)->get();
-        // TO DO
-        if (count($contratos) != 0) {
-
-            return response()->json([
-                'message' => 'La toma ya tiene un contrato',
-                'restore' => false
-            ], 500);
-
-            //return $contratos;
-        } else {
-
-            $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
-            $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
-            $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
-           
-            DB::commit();
-            return response()->json(["contrato" => ContratoResource::collection($c),/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
-        }
+       
         try {
+            DB::beginTransaction();
+            $datos = $request->validated();
+            $data = $datos['contrato'];
+            $solicitud = $datos['solicitud_factibilidad'] ?? false;
+            $nuevaToma = $request->validated()['toma'] ?? null;
+            $id_usuario = $request['contrato']['id_usuario'];
+            $id_toma = $request['contrato']['id_toma'] ?? null;
+            $servicio = $request['contrato']['servicio_contratados'];
+            $OT = $request['ordenes_trabajo'][0] ?? null;
+            $contratos = Contrato::contratoRepetido($id_usuario, $servicio, $id_toma)->get();
+            // TO DO
+            if (count($contratos) != 0) {
+    
+                return response()->json([
+                    'message' => 'La toma ya tiene un contrato',
+                    'restore' => false
+                ], 500);
+    
+                //return $contratos;
+            } else {
+    
+                $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
+                $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
+                $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
+                
+                $toma->giroComercial;
+                DB::commit();
+                return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
 
+            }
         } 
         catch (Exception $ex) {
             DB::rollBack();
@@ -432,7 +434,7 @@ class ContratoController extends Controller
             $detalle = CotizacionDetalleResource::collection(
                 $detalleCot
             );
-    
+            
             DB::commit();
             return response()->json([
                 "contrato" => $cargos,
@@ -497,18 +499,20 @@ class ContratoController extends Controller
     {
         try {
             $contrato = Contrato::findOrFail($id);
-
+            $toma=$contrato->toma;
+            $calleNotif=$toma->direccion_notificacion ?? $toma->getDireccionCompleta();
+            $factibilidad=$toma->factibilidad;
             $data = [
                 'contrato_numero' => $contrato->folio_solicitud,
                 'direccion' => $contrato->toma->getDireccionCompleta(),
                 'numero_casa' => $contrato->numero_casa,
                 'servicio' => strtoupper($contrato->servicio_contratado),
-                'costo_conexion' => '$1,500',
-                'recibo_numero' => '789123',
-                'notificacion_calle_secundaria' => 'Calle 3',
-                'notificacion_casa_numero' => '45',
+                'costo_conexion' => $factibilidad->derechos_conexion,
+                'recibo_numero' => $contrato->folio_solicitud,
+                'notificacion_calle_secundaria' => $calleNotif,
+                'notificacion_casa_numero' => $toma->numero_casa,
                 'nombre_usuario' => $contrato->toma->usuario->getNombreCompletoAttribute(),
-                'nombre_sistema' => 'Sistema Municipal',
+                'nombre_sistema' => 'Sistema Municipal de Agua Potable',
                 'fecha' => Carbon::createFromTimestamp($contrato->updated_at)->translatedFormat('j \d\e F \d\e Y')
             ];
 

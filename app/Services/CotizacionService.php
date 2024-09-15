@@ -61,9 +61,11 @@ class CotizacionService{
         $concepto=[];
         $cotizacion=$cot;
         $contrato=$cotizacion->contrato;
-     
+        $contrato->update(['estatus'=>"pendiente de pago"]);
+        $contrato->save();
         $concepto=$contrato->tarifaContrato();
         $concepto['id_cotizacion']=$cotizacion['id'];
+    
         $concepto['id_toma']=$cotizacion->TomaCotizada->id;
         $concepto['id_contrato']=$contrato->id;
         $concepto['concepto']=$contrato->conceptoContrato()->nombre;
