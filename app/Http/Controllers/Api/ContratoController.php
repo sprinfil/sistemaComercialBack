@@ -207,8 +207,9 @@ class ContratoController extends Controller
                     $contrato = Contrato::find($data['id']);
                     $contrato['estatus']="contratado";
                     $contrato->save();
-                    return response()->json(["contrato" => new ContratoResource($contrato)], 200);
                     DB::commit();
+                    return response()->json(["contrato" => new ContratoResource($contrato)], 200);
+             
                 }
             }
         } catch (Exception $ex) {
