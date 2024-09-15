@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Cfdi;
+use App\Models\Colonia;
 use App\Models\OrdenTrabajoCatalogo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,6 +22,7 @@ class TomaResource extends JsonResource
     {
         $calle2= !empty($this->entre_calle_2)?" y ".$this->entre_calle_2 :null;
         $calle1= !empty($this->entre_calle_1)?"/".$this->entre_calle_1 :null;
+        $colonia=Colonia::find($this->colonia)->nombre;
 
         $calle= $this->relationLoaded('calle1')?new CalleResource($this->calle1) : $this->calle ;
         $calleEntre1= $this->relationLoaded('entre_calle_1')? new CalleResource($this->entre_calle_1) : $this->entre_calle1 ;
@@ -42,7 +45,7 @@ class TomaResource extends JsonResource
             "codigo_postal" => $this->codigo_postal,
             "numero_casa" => $this->numero_casa,
             "localidad" => $this->localidad,
-            "direccion_completa"=>$this->calle.$calle1.$calle2." #".$this->numero_casa." ".$this->colonia,
+            "direccion_completa"=>$this->calle1->nombre.$calle1.$calle2." #".$this->numero_casa." ".$colonia,
             "diametro_toma" => $this->diametro_toma,
             "direccion_notificacion" => $this->direccion_notificacion,
             "tipo_servicio" => $this->tipo_servicio,

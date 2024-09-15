@@ -8,6 +8,8 @@ use App\Models\Usuario;
 use Exception;
 use App\Models\Contrato;
 use App\Http\Resources\ContratoResource;
+use App\Models\Calle;
+use App\Models\Colonia;
 use App\Models\ConceptoCatalogo;
 use App\Models\Factibilidad;
 use App\Models\Lectura;
@@ -96,9 +98,14 @@ class ContratoService{
             $toma['municipio']=$data['municipio'];
             $notificacion=$toma['calle_notificaciones'] ?? null;
             if (!$notificacion){
-                $entrecalle1=$toma['entre_calle1']?"/".$toma['entre_calle1']: null;
-                $entrecalle2= $toma['entre_calle2']?" & ".$toma['entre_calle2']: null;
-                $toma['direccion_notificacion']=$toma['calle'].$entrecalle1.$entrecalle2.", ".$toma['colonia'].", ".$toma['localidad'];
+                $Calle=Calle::find($toma['calle'])->nombre;
+                $Entre1=Calle::find($toma['entre_calle1'])->nombre ?? null;
+                $Entre2=Calle::find($toma['entre_calle2'])->nombre ?? null;
+                $colonia=Colonia::find($toma['colonia'])->nombre;
+                
+                $entrecalle1=$Entre1?"/".$Entre1: null;
+                $entrecalle2= $Entre2?" & ".$Entre2: null;
+                $toma['direccion_notificacion']=$Calle.$entrecalle1.$entrecalle2.", ".$colonia.", ".$toma['localidad'];
             }
             if ($existe){
                 //$toma['estatus']="activa";
