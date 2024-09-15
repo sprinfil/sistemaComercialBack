@@ -195,7 +195,7 @@ class ContratoController extends Controller
                     $data['estatus'] = "contratado";
                     $contrato = (new ContratoService())->update($data);
                     $toma = Toma::find($contrato['id_toma']);
-                    //$tomaDato['estatus'] = "activa";
+                    $$toma['estatus'] = "pendiente de instalación";
                     if ($contrato['servicio_contratado'] == "agua") {
                         $toma['c_agua'] == $contrato['id'];
                     } elseif ($contrato['servicio_contratado'] == "alcantarillado y saneamiento") {
