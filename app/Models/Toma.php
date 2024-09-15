@@ -137,7 +137,7 @@ class Toma extends Model
     //Toma asociada a una factibilidad
     public function factibilidad(): HasOne
     {
-        return $this->hasOne(Factibilidad::class)->latestOfMany();
+        return $this->hasOne(Factibilidad::class,'id_toma')->latestOfMany();
     }
 
     public function factibilidades(): HasMany
