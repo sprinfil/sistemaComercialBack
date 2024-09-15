@@ -506,20 +506,39 @@ class ContratoController extends Controller
             $toma=$contrato->toma;
             $calleNotif=$toma->direccion_notificacion ?? $toma->getDireccionCompleta();
             $factibilidad=$toma->factibilidad;
-            $derechos=$factibilidad->derechos_conexion ?? 0;
-            $data = [
-                'contrato_numero' => $contrato->folio_solicitud,
-                'direccion' => $contrato->toma->getDireccionCompleta(),
-                'numero_casa' => $contrato->numero_casa,
-                'servicio' => strtoupper($contrato->servicio_contratado),
-                'costo_conexion' => $factibilidad->derechos_conexion,
-                'recibo_numero' => $contrato->folio_solicitud,
-                'notificacion_calle_secundaria' => $calleNotif,
-                'notificacion_casa_numero' => $toma->numero_casa,
-                'nombre_usuario' => $contrato->toma->usuario->getNombreCompletoAttribute(),
-                'nombre_sistema' => 'Sistema Municipal de Agua Potable',
-                'fecha' => Carbon::createFromTimestamp($contrato->updated_at)->translatedFormat('j \d\e F \d\e Y')
-            ];
+            if ($factibilidad){
+                $derechos=$factibilidad->derechos_conexion ?? 0;
+                $data = [
+                    'contrato_numero' => $contrato->folio_solicitud,
+                    'direccion' => $contrato->toma->getDireccionCompleta(),
+                    'numero_casa' => $contrato->numero_casa,
+                    'servicio' => strtoupper($contrato->servicio_contratado),
+                    'costo_conexion' => $factibilidad->derechos_conexion,
+                    'recibo_numero' => $contrato->folio_solicitud,
+                    'notificacion_calle_secundaria' => $calleNotif,
+                    'notificacion_casa_numero' => $toma->numero_casa,
+                    'nombre_usuario' => $contrato->toma->usuario->getNombreCompletoAttribute(),
+                    'nombre_sistema' => 'Sistema Municipal de Agua Potable',
+                    'fecha' => Carbon::createFromTimestamp($contrato->updated_at)->translatedFormat('j \d\e F \d\e Y')
+                ];
+            }
+            else{
+                $data = [
+                    'contrato_numero' => $contrato->folio_solicitud,
+                    'direccion' => $contrato->toma->getDireccionCompleta(),
+                    'numero_casa' => $contrato->numero_casa,
+                    'servicio' => strtoupper($contrato->servicio_contratado),
+                    'costo_conexion' => 0,
+                    'recibo_numero' => $contrato->folio_solicitud,
+                    'notificacion_calle_secundaria' => $calleNotif,
+                    'notificacion_casa_numero' => $toma->numero_casa,
+                    'nombre_usuario' => $contrato->toma->usuario->getNombreCompletoAttribute(),
+                    'nombre_sistema' => 'Sistema Municipal de Agua Potable',
+                    'fecha' => Carbon::createFromTimestamp($contrato->updated_at)->translatedFormat('j \d\e F \d\e Y')
+                ];
+            }
+          
+          
 
             //$pdf = FacadePdf::loadView('contrato', $data);
             $pdf = FacadePdf::loadView('contrato', $data)
