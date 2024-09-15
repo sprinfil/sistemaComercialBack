@@ -20,4 +20,12 @@ class Colonia extends Model
     {
         return $this->hasMany(Calle::class, 'id_colonia');
     }
+    public function toma():HasMany
+    {
+        return $this->hasMany(Toma::class, 'colonia');
+    }
+    public function contrato():HasMany
+    {
+        return $this->hasMany(Contrato::class, 'colonia');
+    }
 }

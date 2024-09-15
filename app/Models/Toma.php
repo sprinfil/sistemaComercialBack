@@ -66,7 +66,22 @@ class Toma extends Model
     {
         return $this->hasOneThrough(Ruta::class, Libro::class, 'id', 'id', 'id_libro', 'id_ruta');
     }
-
+    public function calle(): BelongsTo
+    {
+        return $this->belongsTo(Calle::class, "calle");
+    }
+    public function entre_calle_2(): BelongsTo
+    {
+        return $this->belongsTo(Calle::class, "entre_calle_2");
+    }
+    public function entre_calle_1(): BelongsTo
+    {
+        return $this->belongsTo(Calle::class, "entre_calle_1");
+    }
+    public function colonia(): BelongsTo
+    {
+        return $this->belongsTo(colonia::class, "colonia");
+    }
     // Giro comercial asociado a la toma
     public function giroComercial(): BelongsTo
     {

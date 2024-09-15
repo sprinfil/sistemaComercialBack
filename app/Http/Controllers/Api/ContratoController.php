@@ -50,7 +50,7 @@ class ContratoController extends Controller
     public function index()
     {
         return response()->json(["contrato" => ContratoResource::collection(
-            Contrato::with('usuario', 'toma.tipoToma')->orderBy('created_at', 'desc')->get()
+            Contrato::with('usuario', 'toma.tipoToma','calle','entre_calle_2','entre_calle_1','colonia')->orderBy('created_at', 'desc')->get()
         )]);
         try {
         } catch (Exception $ex) {
@@ -370,7 +370,7 @@ class ContratoController extends Controller
             $cotizacion = Contrato::find($id_contrato)->cotizacionesVigentes;
             if ($cotizacion){
                 DB::rollBack();
-                return response()->json(["message"=>"Este Contrato ya tiene una cotizacion vigente"],500);
+                return response()->json(["message"=>"Este Contrato ya tiene una cotización vigente"],500);
             }
             $fecha=helperFechaAhora();
             $Cotiza['vigencia'] = Carbon::parse($fecha)->addMonths(1)->format('Y-m-d');
