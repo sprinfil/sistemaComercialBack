@@ -192,10 +192,11 @@ class ContratoController extends Controller
                 if (!isEmpty($cargos)) {
                     return response()->json(['message' => 'No se pudo cerrar el contrato, tiene cargos pendientes'], 500);
                 } else {
-                    $data['estatus'] = "contratado";
-                    $contrato = (new ContratoService())->update($data);
-                    $toma = Toma::find($contrato['id_toma']);
-                    //$tomaDato['estatus'] = "activa";
+                    $toma = Toma::find($contrato['id_toma']); 
+                    if ($toma['c_agua']==null &&  $toma['c_alc']==null){
+                        $toma['estatus'] = "pendiente de instalación";
+                    }
+                    //
                     if ($contrato['servicio_contratado'] == "agua") {
                         $toma['c_agua'] == $contrato['id'];
                     } elseif ($contrato['servicio_contratado'] == "alcantarillado y saneamiento") {
@@ -203,7 +204,9 @@ class ContratoController extends Controller
                         $toma['c_san'] == $contrato['id'];
                     }
                     $toma->save();
-                    $contrato = (new ContratoService())->update($data);
+                    $contrato = Contrato::find($data['id']);
+                    $contrato['estatus']="contratado";
+                    $contrato->save();
                     return response()->json(["contrato" => new ContratoResource($contrato)], 200);
                     DB::commit();
                 }
