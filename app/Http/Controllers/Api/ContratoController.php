@@ -513,7 +513,7 @@ class ContratoController extends Controller
                     'direccion' => $contrato->toma->getDireccionCompleta(),
                     'numero_casa' => $contrato->numero_casa,
                     'servicio' => strtoupper($contrato->servicio_contratado),
-                    'costo_conexion' => $factibilidad->derechos_conexion,
+                    'costo_conexion' => $derechos,
                     'recibo_numero' => $contrato->folio_solicitud,
                     'notificacion_calle_secundaria' => $calleNotif,
                     'notificacion_casa_numero' => $toma->numero_casa,
