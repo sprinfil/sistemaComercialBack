@@ -36,7 +36,7 @@ class StoreContratoRequest extends FormRequest
             'contrato.localidad' => 'sometimes|string',
             'contrato.entre_calle1' => 'nullable|integer',
             'contrato.entre_calle2' => 'nullable|integer',
-            'contrato.diametro_de_toma' => 'sometimes|string',
+            //'contrato.diametro_toma' => 'sometimes|string',
             'contrato.num_casa' => 'sometimes|string',
             'contrato.codigo_postal' => 'sometimes|string',
             'contrato.coordenada' => 'nullable|string',

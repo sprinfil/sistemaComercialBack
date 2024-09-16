@@ -87,6 +87,7 @@ class ContratoService{
             $toma['id_tipo_toma']=$data['tipo_toma'];
             $toma['id_usuario']=$id_usuario;
             $toma['tipo_servicio']="lectura";
+            //$toma['diametro_toma']="1 pulgada";
             $toma['tipo_contratacion']="normal";
             $toma['codigo_postal']=$data['codigo_postal'];
             $toma['numero_casa']=$data['num_casa'];
