@@ -154,7 +154,7 @@ class ContratoService{
         $folio_solicitud=$filtros['folio_solicitud'] ?? null;
         $codigo_toma=$filtros['codigo_toma'] ?? null;
 
-        $query=Toma::with('giroComercial','calle1','entre_calle_2','entre_calle_1','colonia1','usuario','tipoToma','libro','factibilidad','contrato.cotizaciones')
+        $query=Toma::with('giroComercial','calle1','entre_calle2','entre_calle1','colonia1','usuario','tipoToma','libro','factibilidad','contrato.cotizaciones')
         ->when($tipo_tomas, function (Builder $q) use($tipo_tomas)  {
             $q->whereIn('id_tipo_toma',$tipo_tomas);///aplicar esto en OT
 

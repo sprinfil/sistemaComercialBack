@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Calle;
 use App\Models\Cfdi;
 use App\Models\Colonia;
 use App\Models\OrdenTrabajoCatalogo;
@@ -20,13 +21,13 @@ class TomaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $calle2= !empty($this->entre_calle_2)?" y ".$this->entre_calle_2 :null;
-        $calle1= !empty($this->entre_calle_1)?"/".$this->entre_calle_1 :null;
-        $colonia=Colonia::find($this->colonia)->nombre;
+        $calle2= !empty($this->entre_calle_2)?" y ". Calle::find($this->entre_calle_2)->nombre :null;
+        $calle1= !empty($this->entre_calle_1)?"/".Calle::find($this->entre_calle_1)->nombre :null;
+        $col=Colonia::find($this->colonia)->nombre;
 
         $calle= $this->relationLoaded('calle1')?new CalleResource($this->calle1) : $this->calle ;
-        $calleEntre1= $this->relationLoaded('entre_calle_1')? new CalleResource($this->entre_calle_1) : $this->entre_calle1 ;
-        $calleEntre2= $this->relationLoaded('entre_calle_2')? new CalleResource($this->entre_calle_2) : $this->entre_calle2 ;
+        $calleEntre1= $this->relationLoaded('entre_calle1')? new CalleResource($this->entre_calle1) : $this->entre_calle_1 ;
+        $calleEntre2= $this->relationLoaded('entre_calle2')? new CalleResource($this->entre_calle2) : $this->entre_calle_2 ;
         $colonia= $this->relationLoaded('colonia1')? new ColoniaResource($this->colonia1) : $this->colonia ;
         return [
             "id" => $this->id,
@@ -45,7 +46,7 @@ class TomaResource extends JsonResource
             "codigo_postal" => $this->codigo_postal,
             "numero_casa" => $this->numero_casa,
             "localidad" => $this->localidad,
-            "direccion_completa"=>$this->calle1->nombre.$calle1.$calle2." #".$this->numero_casa." ".$colonia,
+            "direccion_completa"=>$this->calle1->nombre.$calle1.$calle2." #".$this->numero_casa." ".$col,
             "diametro_toma" => $this->diametro_toma,
             "direccion_notificacion" => $this->direccion_notificacion,
             "tipo_servicio" => $this->tipo_servicio,

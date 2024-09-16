@@ -29,7 +29,7 @@ class TomaService{
         $codigo=$filtros['codigo_toma'] ?? null;
 
          // HIPER MEGA QUERY INSANO
-         $query=Toma::with('calle1','entre_calle_2','entre_calle_1','colonia1','usuario','tipoToma','libro','ruta')
+         $query=Toma::with('calle1','entre_calle2','entre_calle1','colonia1','usuario','tipoToma','libro','ruta')
         ->when($ruta, function (Builder $q) use($ruta,$libro)  {
 
         $q->when($libro, function (Builder $a2) use($ruta,$libro){

@@ -146,7 +146,7 @@ class Usuario extends Model
         }
         else{
             $nuvUsuario=str_replace(" ","%",$usuario);
-            $data = Usuario::with(["tomas.ordenesTrabajo"=> function($query){
+            $data = Usuario::with(['tomas.calle1','tomas.entre_calle1','tomas.entre_calle2','tomas.colonia1','tomas.ordenesTrabajo'=> function($query){
                 $query->where('estado','No asignada');
               }])
               ->whereRaw("
@@ -174,7 +174,7 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::with("tomas.ordenesTrabajo")
+        $data = Usuario::with('tomas.calle1','tomas.entre_calle1','tomas.entre_calle2','tomas.colonia1','tomas.ordenesTrabajo')//,
         ->where("codigo_usuario",$usuario)->paginate(10);
           return $data;
     }

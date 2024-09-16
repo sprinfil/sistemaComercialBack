@@ -70,11 +70,11 @@ class Toma extends Model
     {
         return $this->belongsTo(Calle::class, "calle");
     }
-    public function entre_calle_2(): BelongsTo
+    public function entre_calle2(): BelongsTo
     {
         return $this->belongsTo(Calle::class, "entre_calle_2");
     }
-    public function entre_calle_1(): BelongsTo
+    public function entre_calle1(): BelongsTo
     {
         return $this->belongsTo(Calle::class, "entre_calle_1");
     }
