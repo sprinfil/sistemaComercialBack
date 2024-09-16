@@ -96,7 +96,8 @@ class ContratoService{
             $toma['colonia']=$data['colonia'];
             $toma['localidad']=$data['localidad'];
             $toma['municipio']=$data['municipio'];
-            $notificacion=$toma['direccion_notificacion'] ?? null;
+            $toma['clave_catastral']=$data['clave_catastral'];
+            $notificacion=$nuevaToma['direccion_notificacion'] ?? null;
             if (!$notificacion){
                 $Calle=Calle::find($toma['calle'])->nombre;
                 $Entre1=Calle::find($toma['entre_calle_1'])->nombre ?? null;
