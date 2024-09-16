@@ -91,12 +91,12 @@ class ContratoService{
             $toma['codigo_postal']=$data['codigo_postal'];
             $toma['numero_casa']=$data['num_casa'];
             $toma['calle']=$data['calle'];
-            $toma['entre_calle1']=$data['entre_calle1'] ?? null;
-            $toma['entre_calle2']=$data['entre_calle2'] ?? null;
+            $toma['entre_calle_1']=$data['entre_calle1'] ?? null;
+            $toma['entre_calle_2']=$data['entre_calle2'] ?? null;
             $toma['colonia']=$data['colonia'];
             $toma['localidad']=$data['localidad'];
             $toma['municipio']=$data['municipio'];
-            $notificacion=$toma['calle_notificaciones'] ?? null;
+            $notificacion=$data['direccion_notificacion'] ?? null;
             if (!$notificacion){
                 $Calle=Calle::find($toma['calle'])->nombre;
                 $Entre1=Calle::find($toma['entre_calle1'])->nombre ?? null;
