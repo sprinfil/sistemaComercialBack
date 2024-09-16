@@ -504,7 +504,7 @@ class ContratoController extends Controller
         try {
             $contrato = Contrato::findOrFail($id);
             $toma=$contrato->toma;
-            $calleNotif=$toma->direccion_notificacion ?? $toma->getDireccionCompleta();
+            $calleNotif=$toma->direccion_notificacion;
             $factibilidad=$toma->factibilidad;
             if ($factibilidad){
                 $derechos=$factibilidad->derechos_conexion ?? 0;
