@@ -47,7 +47,7 @@ class StoreContratoRequest extends FormRequest
             //"toma.calle"=>'sometimes|integer',
             //"toma.colonia"=>'sometimes|integer',
             //"toma.localidad"=>'sometimes|integer',
-            "toma.direccion_notificacion"=>'sometimes|string',
+            "toma.direccion_notificacion"=>'nullable|string',
             "toma.tipo_servicio"=> 'sometimes|in:lectura,promedio',
             //"toma.tipo_contratacion"=> 'sometimes|in:normal, condicionado, desarrollador',
             "toma.posicion"=>'nullable|array',
