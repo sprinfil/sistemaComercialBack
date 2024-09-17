@@ -32,7 +32,7 @@ class ConvenioService{
           $cargosAplicables = [];
           $nxt = 0;
           $temp = [];
-          foreach ($cargos as $cargo)
+          foreach ($cargos as $cargo) //pendiente eliminar consultas en ciclos
           {
             $temp = ConceptoAplicable::where('id_concepto_catalogo',$cargo['id_concepto'])
             ->where('modelo','convenio_catalogo')
@@ -75,9 +75,9 @@ class ConvenioService{
         "id_convenio_catalogo" => $data['id_convenio_catalogo'], 
         "monto_conveniado" => null, //Este elemento es calculado posteriormente
         "monto_total" => null, //Este elemento es calculado posteriormente
-        "periodicidad" => $data['periodicidad'],
+        "periodicidad" => "mensual",
         "cantidad_letras" => $data['cantidad_letras'],
-        "estado" => $data['estado'],
+        "estado" => "activo",
         "comentario" => $data['comentario']  
         ];
         //La lista de cargos que se desean conveniar
@@ -85,7 +85,7 @@ class ConvenioService{
         $cargos = $data['cargos_conveniados'];
         $cargosConveniados = [];
 
-        foreach($cargos as $cargo)
+        foreach($cargos as $cargo) //pendiente eliminar consultas en ciclos
         {
           $cargoTemp = Cargo::find($cargo['id']);
          
@@ -154,7 +154,6 @@ class ConvenioService{
 
         $montoPorLetra = $convenio->monto_total/$convenio->cantidad_letras;
 
-         $quincena = new DateInterval('P15D'); // 'P15D' significa un período de 15 días
          $mensuaildad = new DateInterval('P1M');  //Sumar meses o años: Puedes usar P1M para un mes o P1Y para un año en lugar de días.
 
         for ($i=0; $i < $data['cantidad_letras']; $i++) { 
@@ -173,14 +172,7 @@ class ConvenioService{
          
           $fechaCobro = Carbon::parse($fechaCobro);
           
-
-          if ($data['periodicidad'] == "quincenal" ) {
-           $fechaCobro->add($quincena);
-           
-          }
-          if ($data['periodicidad'] == "mensual" ) {
-            $fechaCobro->add($mensuaildad);
-          }
+          $fechaCobro->add($mensuaildad);
          
         }
       

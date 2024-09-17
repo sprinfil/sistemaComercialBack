@@ -149,6 +149,7 @@ class ConvenioController extends Controller
 
     public function RegistrarConvenio(StoreConvenioRequest $request)
     {
+       
         try {
             DB::beginTransaction();
             $data = $request->validated();
@@ -156,6 +157,7 @@ class ConvenioController extends Controller
             DB::commit();
             return $convenio;
         } catch (Exception $ex) {
+            
             DB::rollBack();
             return response()->json([
                 'message' => 'Ocurrio un error al registrar el convenio.'
