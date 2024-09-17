@@ -102,7 +102,7 @@ class ContratoController extends Controller
                 $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
  
                 $toma->giroComercial;
-                DB::rollBack();
+                DB::commit();
                 return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
 
             }
