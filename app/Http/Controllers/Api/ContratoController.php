@@ -243,9 +243,10 @@ class ContratoController extends Controller
     {
         try {
             $contrato = Contrato::findOrFail($request["id"]);
-            $contrato->delete();
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
-        } catch (\Exception $e) {
+            $contrato->update(['estatus'=>"cancelado"]);
+            $contrato->save();
+            return response()->json(['message' => 'Contrato cancelado correctamente'], 200);
+        } catch (Exception $e) {
 
             return response()->json(['message' => 'error'], 500);
         }
