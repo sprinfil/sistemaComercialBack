@@ -374,6 +374,7 @@ class ContratoController extends Controller
     }
     public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
     {
+        
         try{
             DB::beginTransaction();
             $validado=$request->validated();
@@ -397,7 +398,7 @@ class ContratoController extends Controller
             $tarifas = (new CotizacionService())->TarifaPorContrato($data,$cotizacion);
     
             $existe = Cargo::where('id_origen', $tarifas['id_contrato'])->where('modelo_origen', 'contrato')->first();
-    
+            $DetCollec=null;
             if ($existe) {
                 DB::rollBack();
                 return response()->json(['message' => 'No se puede generar un cargo para las cotizaciones porque ya existe un cargo de cotización asociado'], 500);
@@ -409,7 +410,7 @@ class ContratoController extends Controller
                                         ->whereIn('id_concepto', $conceptoIds)
                                         ->get()
                                         ->keyBy('id_concepto');
-
+    
             foreach ($data as $detalle) {
                 $id_concepto=$detalle['id_concepto'] ?? null;
                 $monto = 0;
@@ -448,10 +449,16 @@ class ContratoController extends Controller
             $tarifas['montoDetalle'] += $tarifas['monto'];
             $cargos = (new CotizacionService())->CargoContratos($tarifas);
     
-          
+    
+          if ( $DetCollec){
             $detalle = CotizacionDetalleResource::collection(
                 $DetCollec
             );
+          }
+          else{
+            $detalle=$tarifas;
+          }
+         
             DB::commit();
             return response()->json([
                 "contrato" => $cargos,
@@ -471,7 +478,7 @@ class ContratoController extends Controller
             $Cotizacion = CotizacionDetalle::findOrFail($request["id"]);
             $Cotizacion->delete();
             return response()->json(['message' => 'Eliminado correctamente'], 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return response()->json(['message' => 'error'], 500);
         }
