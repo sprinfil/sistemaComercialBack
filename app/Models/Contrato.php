@@ -146,24 +146,27 @@ class Contrato extends Model
 
 
         if ($folio) {
-            $num = intval(substr($folio, 0, 5)) + 1;
+            $num = intval(substr($folio, 0, 6)) + 1;
             switch (strlen(strval($num))) {
                 case 1:
-                    $num = "0000" . $num;
+                    $num = "00000" . $num;
                     break;
                 case 2:
-                    $num = "000" . $num;
+                    $num = "0000" . $num;
                     break;
                 case 3:
-                    $num = "00" . $num;
+                    $num = "000" . $num;
                     break;
                 case 4:
+                    $num = "00" . $num;
+                    break;
+                case 5:
                     $num = "0" . $num;
                     break;
             }
-            $folio = $num . substr($folio, 5, 5);
+            $folio = $num . substr($folio, 6, 5);
         } else {
-            $folio = "00001/" . Carbon::now()->format('Y');
+            $folio = "000001/" . Carbon::now()->format('Y');
         }
         return $folio;
     }
