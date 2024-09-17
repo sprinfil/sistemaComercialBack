@@ -22,12 +22,14 @@ class UsuarioResource extends JsonResource
             "nombre" => $this->nombre,
             "apellido_paterno" => $this->apellido_paterno,
             "apellido_materno" => $this->apellido_materno,
+            "nombre_completo" => $this->nombre." ".$this->apellido_paterno." ".$this->apellido_materno,
             "nombre_contacto" => $this->nombre_contacto,
             "telefono" => $this->telefono,
             "curp" => $this->curp,
             "rfc" => $this->rfc,
             "correo" => $this->correo,
-            'tomas' =>$this->tomas?? TomaResource::collection($this->whenLoaded('tomas')),
+            'tomas' =>TomaResource::collection($this->whenLoaded('tomas')),//$this->tomas?? 
+            'toma' =>TomaResource::collection($this->whenLoaded('toma')),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratos')),
             'descuento_asociado' => new DescuentoAsociadoResource($this->whenLoaded('descuento_asociado')),
             'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes')))

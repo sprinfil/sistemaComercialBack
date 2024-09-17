@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Caja extends Model
@@ -22,12 +23,23 @@ class Caja extends Model
         'fondo_final',
         'fecha_apertura',
         'fecha_cierre',
+        'estado',
     ];
 
     //Caja con pagos
     public function pagos() : HasMany
     {
-        return $this->hasMany(Pago::class , 'id_caja'); 
+        return $this->hasMany(Pago::class, 'id_caja')
+                ->with('abonos')
+                ->orderBy('created_at', 'desc');
+    }
+
+    //Caja con pagos
+    public function pagosConDetalle() : HasMany
+    {
+        return $this->hasMany(Pago::class, 'id_caja')
+                ->with(['duenoUsuario', 'abonosConCargos'])
+                ->orderBy('created_at', 'desc');
     }
 
     public function pagosPorTipo(string $tipo)
@@ -85,5 +97,14 @@ class Caja extends Model
     public function catalogoCaja () : BelongsTo
     {
         return $this->belongsTo(CajaCatalogo::class , 'id_caja_catalogo'); //ya
+    }
+
+    public function retiro() : HasMany {
+        return $this->hasMany(RetiroCaja::class , 'id_sesion_caja');
+    }
+
+    public function cargos(): MorphMany
+    {
+        return $this->morphMany(CargoDirecto::class, 'origen', 'modelo_origen', 'id_origen');
     }
 }

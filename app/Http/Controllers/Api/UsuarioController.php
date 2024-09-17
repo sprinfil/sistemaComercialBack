@@ -110,14 +110,15 @@ class UsuarioController extends Controller
      */
     public function show(string $usuario)
     {
+       
         try{
             $data = Usuario::ConsultarPorNombresCodigo($usuario);
-        return UsuarioResource::collection(
-            $data
-        );
+     
+           // return response()->json($data);
+           return UsuarioResource::collection($data);
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+            return response()->json(['error' => 'No se encontraron usuarios'], 500);
         }
     }
     public function showContacto(string $usuario)
@@ -129,7 +130,7 @@ class UsuarioController extends Controller
         );
         }
         catch(Exception $ex){
-            return response()->json(['error' => 'No se encontraron usuarios'], 200);
+            return response()->json(['error' => 'No se encontraron usuarios'], 500);
         }
     }
     public function showDireccion(string $usuario)
@@ -176,7 +177,7 @@ class UsuarioController extends Controller
     {
         try{
             $data = Usuario::ConsultarPorCodigo($usuario);
-            return new UsuarioResource(
+            return UsuarioResource::collection(
                 $data
             );
         }

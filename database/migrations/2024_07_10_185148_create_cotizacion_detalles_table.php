@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_cotizacion');
             $table->unsignedBigInteger('id_sector');
-            $table->string('nombre_concepto');
+            $table->string('id_concepto');
             $table->decimal('monto');
             $table->softDeletes();
             $table->timestamps();

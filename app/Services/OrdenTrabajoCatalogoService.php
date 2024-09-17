@@ -12,6 +12,16 @@ use Illuminate\Database\Eloquent\Collection;
 class OrdenTrabajoCatalogoService{
 
     public function store(array $requestCatalogo){
+        $catalogo=OrdenTrabajoCatalogo::where('nombre',$requestCatalogo['nombre'])->first();
+        if ($catalogo){
+            return "Existe";
+        }
+        else{
+            
+            return $OrdenCatalogo=OrdenTrabajoCatalogo::create($requestCatalogo);
+        }
+
+        /*
         $ordenCatalogo=$requestCatalogo['orden_trabajo_catalogo'];
         $idCatalogo=$ordenCatalogo['id'] ?? null;
 
@@ -21,12 +31,18 @@ class OrdenTrabajoCatalogoService{
             return "Existe";
         }
         else{
-            $OrdenCatalogo=OrdenTrabajoCatalogo::updateOrCreate( ['id' => $idCatalogo],$ordenCatalogo);
+            
             return new OrdenTrabajoCatalogoResource($OrdenCatalogo);
         }
+            */
        
     }
-   
+    public function update(array $requestCatalogo){
+        $ordenCatalogo=OrdenTrabajoCatalogo::find($requestCatalogo['id']);
+        $ordenCatalogo->update($requestCatalogo);
+        return new OrdenTrabajoCatalogoResource($ordenCatalogo);
+       
+    }
     public static function delete($idOrden){
         $ordenTrabajo=OrdenTrabajoCatalogo::findOrFail($idOrden);
         $OT=$ordenTrabajo->ordenTrabajo;

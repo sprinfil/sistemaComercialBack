@@ -2,8 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Calle;
+use App\Models\Cfdi;
+use App\Models\Colonia;
+use App\Models\OrdenTrabajoCatalogo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+
+use function PHPUnit\Framework\isNull;
 
 class TomaResource extends JsonResource
 {
@@ -15,40 +21,56 @@ class TomaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $calle2= !empty($this->entre_calle_2)?" y ". Calle::find($this->entre_calle_2)->nombre :null;
+        $calle1= !empty($this->entre_calle_1)?"/".Calle::find($this->entre_calle_1)->nombre :null;
+        $col=Colonia::find($this->colonia)->nombre;
+
+        $calle= $this->relationLoaded('calle1')?new CalleResource($this->calle1) : $this->calle ;
+        $calleEntre1= $this->relationLoaded('entre_calle1')? new CalleResource($this->entre_calle1) : $this->entre_calle_1 ;
+        $calleEntre2= $this->relationLoaded('entre_calle2')? new CalleResource($this->entre_calle2) : $this->entre_calle_2 ;
+        $colonia= $this->relationLoaded('colonia1')? new ColoniaResource($this->colonia1) : $this->colonia ;
         return [
             "id" => $this->id,
             "posicion" => $this->posicion,
             "id_usuario" => $this->id_usuario,
             "id_giro_comercial" => $this->id_giro_comercial,
             "id_libro" => $this->id_libro,
-            "id_codigo_toma" => $this->id_codigo_toma,
+            "codigo_toma" => $this->codigo_toma,
+            "id_tipo_toma" => $this->id_tipo_toma,
             "estatus" => $this->estatus,
             "clave_catastral" => $this->clave_catastral,
-            "calle" => $this->calle,
-            "entre_calle_1" => $this->entre_calle_1,
-            "entre_calle_2" => $this->entre_calle_2,
-            "colonia" => $this->colonia,
+            "calle" =>  $calle,
+            "entre_calle_1" => $calleEntre1,
+            "entre_calle_2" => $calleEntre2,
+            "colonia" => $colonia,
             "codigo_postal" => $this->codigo_postal,
             "numero_casa" => $this->numero_casa,
             "localidad" => $this->localidad,
+            "direccion_completa"=>$this->calle1->nombre.$calle1.$calle2." #".$this->numero_casa." ".$col,
             "diametro_toma" => $this->diametro_toma,
-            "calle_notificaciones" => $this->calle_notificaciones,
-            "entre_calle_notificaciones_1" => $this->entre_calle_notificaciones_1,
-            "entre_calle_notificaciones_2" => $this->entre_calle_notificaciones_2,
+            "direccion_notificacion" => $this->direccion_notificacion,
             "tipo_servicio" => $this->tipo_servicio,
-            "tipo_toma" => $this->tipo_toma,
             "tipo_contratacion" => $this->tipo_contratacion,
             "c_agua" => $this->c_agua,
             "c_alc" => $this->c_alc,
             "c_san" => $this->c_san,
-            'usuario' => new UsuarioResource($this->usuario),
+            'tipo_toma' => new TipoTomaResource($this->whenLoaded('tipoToma')),
+            'libro' => new LibroSimplificado($this->whenLoaded('libro')),
+            'ruta' => new RutaSimplificado($this->whenLoaded('ruta')),
+            'usuario' => new UsuarioResource($this->whenLoaded('usuario')),
             'contratos' => ContratoResource::collection($this->whenLoaded('contratovigente')),
             'giroComercial' => new GiroComercialCatalogoResource($this->whenLoaded('giroComercial')),
             'medidor' => $this->whenLoaded('medidor'),
             'consumo' => $this->whenLoaded('consumo'),
             'ordenes_trabajo' => OrdenTrabajoResource::collection($this->whenLoaded('ordenesTrabajo')),
-            'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes')))
+            'cargos' => CargoResource::collection($this->whenLoaded(('cargosVigentes'))),
+            'saldo' =>  number_format($this->saldo, 2, '.', '') ?? number_format($this->saldoToma(), 2, '.', ''),
         ];
         //return parent::toArray($request);
+    }
+    protected function hasRequestedSaldo($request)
+    {
+        // Example: Check if a query parameter indicates saldo should be included
+        return $request->has('cargos');
     }
 }

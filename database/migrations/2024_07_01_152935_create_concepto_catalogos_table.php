@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string("nombre");
             $table->text("descripcion")->nullable();
             $table->enum('estado', ['activo', 'inactivo'])->nullable();
+            $table->enum('categoria', ['contrato', 'todas', 'toma', 'ordenes de trabajo', 'facturacion', 'factibilidad'])->nullable();
+            $table->enum('tipo_tarifa', ['M2', 'M3', 'litros', 'L3', 'ML', 'PUL', 'MILLARES'])->nullable();
             $table->integer("prioridad_abono");
             $table->boolean("prioridad_por_antiguedad")->nullable();
             $table->boolean("genera_iva")->nullable();

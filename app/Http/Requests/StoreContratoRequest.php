@@ -22,23 +22,43 @@ class StoreContratoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_usuario' => 'required|exists:usuarios,id',
-            'id_toma' => 'sometimes|required|exists:toma,id',
-            'estatus' => 'sometimes|in:pendiente de inspeccion,contrato no factible,inspeccionado,pendiente de pago,contratado,terminado',
-            'nombre_contrato' => 'sometimes|string',
-            'clave_catastral' => 'nullable|string|min:9|max:12',
-            'tipo_toma' => 'sometimes|string',
-            'servicio_contratados.*' => 'sometimes|in:agua,alcantarillado y saneamiento',
-            'colonia' => 'sometimes|string',
-            'calle' => 'sometimes|string',
-            'municipio' => 'sometimes|string',
-            'localidad' => 'sometimes|string',
-            'entre_calle1' => 'nullable|string',
-            'entre_calle2' => 'nullable|string',
-            'domicilio' => 'sometimes|string',
-            'diametro_de_la_toma' => 'sometimes|string',
-            'codigo_postal' => 'sometimes|string|numeric',
-            'coordenada' => 'nullable|string',
+            "contrato"=>"required|array",
+            'contrato.id_usuario' => 'required|exists:usuarios,id',
+            'contrato.id_toma' => 'sometimes|exists:toma,id',
+            'contrato.estatus' => 'sometimes|in:pendiente de inspeccion,contrato no factible,inspeccionado,pendiente de pago,contratado,terminado',
+            'contrato.nombre_contrato' => 'sometimes|string',
+            'contrato.clave_catastral' => 'nullable|string|min:9|max:15',
+            'contrato.tipo_toma' => 'sometimes|integer',
+            'contrato.servicio_contratados.*' => 'sometimes|in:agua,alcantarillado y saneamiento',
+            'contrato.colonia' => 'sometimes|integer',
+            'contrato.calle' => 'sometimes|integer',
+            'contrato.municipio' => 'sometimes|string',
+            'contrato.localidad' => 'sometimes|string',
+            'contrato.entre_calle1' => 'nullable|integer',
+            'contrato.entre_calle2' => 'nullable|integer',
+            //'contrato.diametro_toma' => 'sometimes|string',
+            'contrato.num_casa' => 'sometimes|string',
+            'contrato.codigo_postal' => 'sometimes|string',
+            'contrato.coordenada' => 'nullable|string',
+
+            "toma"=>"sometimes|array",
+            "toma.id_giro_comercial"=>'sometimes|exists:giro_comercial_catalogos,id',
+            "toma.id_libro"=>'sometimes|exists:libros,id',
+            //"toma.calle"=>'sometimes|integer',
+            //"toma.colonia"=>'sometimes|integer',
+            //"toma.localidad"=>'sometimes|integer',
+            "toma.direccion_notificacion"=>'nullable|string',
+            "toma.tipo_servicio"=> 'sometimes|in:lectura,promedio',
+            //"toma.tipo_contratacion"=> 'sometimes|in:normal, condicionado, desarrollador',
+            "toma.posicion"=>'nullable|array',
+            
+            "ordenes_trabajo"=> "sometimes",
+            "ordenes_trabajo.id_toma" => "sometimes|exists:toma,id",
+            "ordenes_trabajo.posicion_OT" => "sometimes|point",
+            "ordenes_trabajo.genera_OT_encadenadas" => "sometimes|boolean",
+            "solicitud_factibilidad"=>"sometimes|boolean"
+
+   
         ];
     }
 }

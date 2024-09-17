@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreOperadorAsignado extends FormRequest
+class StoreOperadorAsignadoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,11 @@ class StoreOperadorAsignado extends FormRequest
     public function rules(): array
     {
         return [
-            "id_operador"=>"required|integer|gt:0",
-            "id_caja_catalogo"=>"required|integer|gt:0",
+            "operadores_asignados"=>"required|array",
+            "operadores_asignados.*"=>"required|array:id,id_operador,id_caja_catalogo",
+            "id.*."=>"sometimes|numeric",
+            "id_operador.*."=>"required|integer|gt:0",
+            "id_caja_catalogo.*."=>"required|integer|gt:0",
         ];
     }
 }

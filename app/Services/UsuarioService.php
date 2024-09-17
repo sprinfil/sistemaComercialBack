@@ -71,7 +71,7 @@ class UsuarioService{
         return $tomas;
     }
     public function UsuarioCodigoToma($id){
-        $tomas=Toma::where('id_codigo_toma',$id)->with('usuario')
+        $tomas=Toma::where('codigo_toma',$id)->with('usuario')
         ->paginate(10);
         return $tomas;
     }

@@ -3,16 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreMedidorRequest;
 use App\Models\Toma;
 use App\Http\Requests\StoreTomaRequest;
+use App\Http\Requests\UpdateMedidorRequest;
 use App\Http\Requests\UpdateTomaRequest;
 use App\Http\Resources\CargoResource;
+use App\Http\Resources\MedidorResource;
 use App\Http\Resources\OrdenTrabajoResource;
+use App\Http\Resources\PagoResource;
 use App\Http\Resources\TomaResource;
+use App\Models\Medidor;
+use App\Models\OrdenTrabajo;
+use App\Services\TomaService;
 use App\Services\UsuarioService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class TomaController extends Controller
@@ -102,7 +111,7 @@ class TomaController extends Controller
     public function buscarCodigoToma($codigo)
     {
         try {
-            $toma = Toma::where('id_codigo_toma', $codigo)->first();
+            $toma = Toma::where('codigo_toma', $codigo)->with("usuario",'calle1','entre_calle2','entre_calle1','colonia1')->first();
             return response(new TomaResource($toma), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -114,7 +123,7 @@ class TomaController extends Controller
     public function buscarCodigoTomas($codigo)
     {
         try {
-            $toma = Toma::where('id_codigo_toma', $codigo)->get();
+            $toma = Toma::where('codigo_toma', $codigo)->get();
             return response(TomaResource::collection($toma), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -127,13 +136,15 @@ class TomaController extends Controller
     /**
      * Cargos por toma
      */
-    public function cargosPorToma($id)
+    public function cargosPorToma($codigo_toma)
     {
         try {
-            
-            $toma = Toma::where("id_codigo_toma",$id)->first();
-            return CargoResource::collection($toma->cargos);
-
+            $toma = Toma::where("codigo_toma", $codigo_toma)->first();
+            // Ordena los cargos por el atributo 'prioridad' del concepto asociado
+            $cargosOrdenados = $toma->cargos()->with('concepto')->get()->sortBy(function($cargo) {
+                return $cargo->concepto->prioridad_abono;
+            });
+            return CargoResource::collection($cargosOrdenados);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => $e->getMessage()
@@ -141,20 +152,41 @@ class TomaController extends Controller
         }
     }
 
+
     /**
      * Pagos por toma
      */
     public function pagosPorToma($id)
     {
         try {
-            $toma = Toma::where("id_codigo_toma",$id)->first();
-            return $toma->pagos;
+            // Buscar la toma por su código
+            $toma = Toma::where("codigo_toma", $id)->first();
+            
+            // Verificar si la toma existe
+            if($toma) {
+                // Cargar los pagos con los abonos relacionados
+                $pagos = $toma->pagos()->with('abonosConCargos')->get();
+
+                // Verificar si existen pagos
+                if($pagos->isNotEmpty()) {
+                    // Retornar los pagos utilizando el PagoResource para transformar los datos
+                    return PagoResource::collection($pagos);
+                } else {
+                    // Si no hay pagos, retornar null o algún mensaje vacío
+                    return response()->json(['message' => 'No se encontraron pagos para esta toma.'], 200);
+                }
+            } else {
+                // Si la toma no existe, retornar un error 404
+                return response()->json(['error' => 'Toma no encontrada'], 404);
+            }
         } catch (ModelNotFoundException $e) {
+            // Capturar cualquier excepción de modelo no encontrado y retornar un error
             return response()->json([
                 'error' => 'Error al consultar los pagos'
             ], 500);
         }
     }
+
 
     /**
      * guardar posicion
@@ -172,9 +204,26 @@ class TomaController extends Controller
     public function ordenesToma($id)
     {
         try {
-            $toma = Toma::findOrFail($id);
-            $ordenes=$toma->ordenesTrabajo;
-            return OrdenTrabajoResource::collection($ordenes);
+            $toma = Toma::where('codigo_toma',$id)->first();
+            //$ordenes=$toma->ordenesTrabajo;
+            //return OrdenTrabajoResource::collection($ordenes);
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.calle1','toma.entre_calle2','toma.entre_calle1','toma.colonia1','toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->orderBy('created_at','desc')->paginate(20);
+            return OrdenTrabajoResource::collection($ordenes); 
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Error al consultar las ordenes de trabajo'
+            ], 500);
+        }
+    }
+    public function ordenesTomaSinAsignadas($id)
+    {
+        try {
+            $toma = Toma::where('codigo_toma',$id)->first();
+            $hoy=Carbon::now('America/Denver')->startOfDay();
+            $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
+            $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
+            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['usuario','toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at','desc')->paginate(20);
+           return OrdenTrabajoResource::collection($ordenes); 
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Error al consultar las ordenes de trabajo'
@@ -191,5 +240,85 @@ class TomaController extends Controller
                 'error' => 'Error al consultar las ordenes de trabajo'
             ], 500);
         }
+    }
+
+    public function registrarNuevoMedidor(StoreMedidorRequest $request){
+        
+        try {
+            $data = $request->validated();
+            //Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
+            //$data['estatus'] = 'activo';
+            $medidorActivo = Toma::findOrFail($data['id_toma'])->medidorActivo;
+            if($medidorActivo && $data['estatus']=='activo'){
+                Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
+            }
+            $data['fecha_instalacion'] = Carbon::now();
+            $medidor = Medidor::create($data);
+            return response(new MedidorResource($medidor), 201);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el medidor para la toma '
+            ], 500);
+        }
+    }
+
+    /**
+    * Display the specified resource.
+    */
+    public function medidorActivoPorToma($id)
+    {
+        try {
+            $medidor = Toma::findOrFail($id)->medidorActivo;
+            return response(new MedidorResource($medidor), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el medidor para la toma '.$id
+            ], 500);
+        }
+    }
+
+    /**
+    * Display the specified resource.
+    */
+    public function medidoresPorToma($id)
+    {
+        try {
+            $medidores = Toma::findOrFail($id)
+                ->medidores()
+                ->orderByRaw("CASE WHEN estatus = 'activo' THEN 0 ELSE 1 END")
+                ->orderBy('created_at', 'desc')
+                ->get();
+        
+            return response(MedidorResource::collection($medidores), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar los medidores ' . $id
+            ], 500);
+        }
+            
+    }
+    public function filtradoTomas(Request $request){
+        try{
+            DB::beginTransaction();
+            //$filtros=$request->validated();
+            $filtros=$request->all();
+            $data=(new TomaService())->tomaTipos($filtros);
+            //return $data;
+            // return $data;
+            if (!$data){
+                return response()->json(["message"=>"No ha seleccionado un filtro para tomas, por favor especifique algún parametro"],500);
+            }
+            else
+            {
+                DB::commit();
+                return response()->json(['tomas'=>TomaResource::collection($data)]);
+                //return response()->json(['tomas'=>$data]);
+                //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
+            }
+           }
+           catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(["error"=>"No se pudo consultar tomas ".$ex],500);
+           }
     }
 }

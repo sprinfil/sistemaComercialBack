@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('fecha_concluida');
             $table->date('fecha_asignacion');
             $table->enum('tipo_carga' , ['lectura' , 'facturacion' , 'facturacion en sitio']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -15,10 +15,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('id_ruta');
             $table->unsignedInteger('id_tarifa');
+            $table->string('nombre');
+            $table->date('periodo');
             $table->date('facturacion_fecha_inicio');
             $table->date('facturacion_fecha_final');
             $table->date('lectura_inicio');
             $table->date('lectura_final');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

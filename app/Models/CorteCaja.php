@@ -18,16 +18,37 @@ class CorteCaja extends Model
         'id_caja',
         'id_operador',
         'estatus',
+        'cantidad_centavo_10',
+        'cantidad_centavo_20',
+        'cantidad_centavo_50',
+        'cantidad_moneda_1',
+        'cantidad_moneda_2',
+        'cantidad_moneda_5',
+        'cantidad_moneda_10',
+        'cantidad_moneda_20',
+        'cantidad_billete_20',
+        'cantidad_billete_50',
+        'cantidad_billete_100',
+        'cantidad_billete_200',
+        'cantidad_billete_500',
+        'cantidad_billete_1000',
         'total_efectivo_registrado',
         'total_efectivo_real',
-        'total_tarjetas_registrado',
-        'total_tarjetas_real',
+        'total_tarjetas_credito_registrado',
+        'total_tarjetas_credito_real',
+        'total_tarjetas_debito_registrado',
+        'total_tarjetas_debito_real',
         'total_cheques_registrado',
         'total_cheques_real',
+        'total_transferencias_registrado',
+        'total_transferencias_real',
+        'total_documentos_registrado',
+        'total_documentos_real',
         'total_registrado',
         'total_real',
         'discrepancia',
         'discrepancia_monto',
+        'descripcion',
         'fecha_corte',
     ];
     public function pagos() {
@@ -38,8 +59,5 @@ class CorteCaja extends Model
     {
         return $this->belongsTo(Caja::class , 'id_caja'); 
     }
-    //Retiro de un corte de caja
-    public function retiro() : HasMany {
-        return $this->hasMany(RetiroCaja::class , 'id_corte_caja');
-    }
+   
 }
