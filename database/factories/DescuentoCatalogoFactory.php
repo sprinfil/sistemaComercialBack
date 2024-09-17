@@ -35,12 +35,14 @@ class DescuentoCatalogoFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (DescuentoCatalogo $descuento) {
-            for ($i = 1; $i <= 11; $i++) {
+            $conceptos = ConceptoCatalogo::all(); // Asumiendo que el nombre del modelo es ConceptoCatalogo
+
+            foreach ($conceptos as $concepto) {
                 ConceptoAplicable::factory()->create([
-                    'id_concepto_catalogo'=>$i,
+                    'id_concepto_catalogo'=>$concepto->id,
                     'id_modelo'=>$descuento->id,
                     'modelo'=>'descuento_catalogo',
-                ]); 
+                ]);
             }            
         });
     }

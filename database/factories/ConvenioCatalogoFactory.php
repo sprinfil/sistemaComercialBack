@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ConceptoAplicable;
+use App\Models\ConceptoCatalogo;
 use App\Models\ConvenioCatalogo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -34,13 +35,16 @@ class ConvenioCatalogoFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (ConvenioCatalogo $convenio) {
-            for ($i = 1; $i <= 11; $i++) {
+            $conceptos = ConceptoCatalogo::all(); // Asumiendo que el nombre del modelo es ConceptoCatalogo
+
+            foreach ($conceptos as $concepto) {
                 ConceptoAplicable::factory()->create([
-                    'id_concepto_catalogo'=>$i,
-                    'id_modelo'=>$convenio->id,
-                    'modelo'=>'convenio_catalogo',
-                ]); 
-            }            
+                    'id_concepto_catalogo' => $concepto->id,
+                    'id_modelo' => $convenio->id,
+                    'modelo' => 'convenio_catalogo',
+                ]);
+            }
+                     
         });
     }
 }
