@@ -79,6 +79,7 @@ class ContratoService{
             if ($existe['id_usuario']!=$id_usuario && $existe['tipo_contratacion']!="pre-contrato"){
                 return [ 'message' => 'Esta toma o toma asociada a la clave catastral, ya esta contratada a otro usuario'];
             }
+            $toma=$existe;
             
         }
         else{
