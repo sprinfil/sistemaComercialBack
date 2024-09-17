@@ -119,6 +119,9 @@ class FactibilidadController extends Controller
 
             $factibilidad->update($data);
             $factibilidad->save();
+
+            $factibilidad->load('archivos', 'toma');
+
             return response(new FactibilidadResource($factibilidad), 200);
         } catch (Exception $e) {
             return response()->json([
