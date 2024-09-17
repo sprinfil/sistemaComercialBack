@@ -195,7 +195,8 @@ class ContratoController extends Controller
                 return response()->json(['message' => 'No se pudo cerrar el contrato, estado del contrato invalido'], 500);
             } else {
                 $cargos = $contrato->cargosVigentes;
-                if (!isEmpty($cargos)) {
+          
+                if (count($cargos)!=0) {
                     return response()->json(['message' => 'No se pudo cerrar el contrato, tiene cargos pendientes'], 500);
                 } else {
                     $toma = Toma::find($contrato['id_toma']); 
