@@ -153,7 +153,6 @@ class ConvenioController extends Controller
         try {
             DB::beginTransaction();
             $data = $request->validated();
-            return $data;
             $convenio = (new ConvenioService())->RegistrarConvenioService($data);
             DB::commit();
             return $convenio;
