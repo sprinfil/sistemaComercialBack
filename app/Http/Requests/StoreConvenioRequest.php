@@ -25,13 +25,11 @@ class StoreConvenioRequest extends FormRequest
             "porcentaje_conveniado"=>"required|integer|gt:0",
   
             "id_convenio_catalogo" => "required|integer|gt:0",
-            "periodicidad" => "required|string|in:mensual,quincenal",
             "cantidad_letras" => "required|integer|min:1",
-            "estado" => "required|string|in:activo",
             "comentario" => "nullable|string|max:50",
           
             "cargos_conveniados"=>"required|array",
-            "cargos_conveniados.*.id"=>"required|integer|gt:0",
+            "cargos_conveniados.*.id"=>"required|integer|gt:0"
         ];
     }
 }
