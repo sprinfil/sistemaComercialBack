@@ -137,6 +137,16 @@ class Usuario extends Model
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
                     ->with(['abonosConCargos']);
     }
+
+    public function convenios(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
+
+    public function conveniosActivos(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
+    }
     
   
     public static function ConsultarPorNombresCodigo(string $usuario){

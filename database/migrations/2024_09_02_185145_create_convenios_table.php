@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('convenios', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_convenio_catalogo');
+            $table->unsignedBigInteger('id_modelo');
+            $table->enum('modelo_origen',['toma','usuario']);
             $table->decimal('monto_conveniado')->nullable();
             $table->decimal('monto_total')->nullable();
             $table->enum('periodicidad',['mensual','quincenal']);
