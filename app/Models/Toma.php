@@ -80,7 +80,7 @@ class Toma extends Model
     }
     public function colonia1(): BelongsTo
     {
-        return $this->belongsTo(colonia::class, "colonia");
+        return $this->belongsTo(Colonia::class, "colonia");
     }
     // Giro comercial asociado a la toma
     public function giroComercial(): BelongsTo
