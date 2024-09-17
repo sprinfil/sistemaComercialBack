@@ -68,7 +68,7 @@ class ContratoController extends Controller
     public function store(Contrato $contrato, StoreContratoRequest $request)
     {
         ////Cambiar estatus y poner id de contrato en servicios de toma
-       
+     
         try {
             DB::beginTransaction();
             $datos = $request->validated();
@@ -93,8 +93,14 @@ class ContratoController extends Controller
     
                 $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
                 $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
+                if (isset($toma['message'])){
+                    return response()->json([
+                        'message' => $toma['message']
+                    ], 500);
+                }
+
                 $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
-                
+ 
                 $toma->giroComercial;
                 DB::commit();
                 return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
@@ -243,9 +249,10 @@ class ContratoController extends Controller
     {
         try {
             $contrato = Contrato::findOrFail($request["id"]);
-            $contrato->delete();
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
-        } catch (\Exception $e) {
+            $contrato->update(['estatus'=>"cancelado"]);
+            $contrato->save();
+            return response()->json(['message' => 'Contrato cancelado correctamente'], 200);
+        } catch (Exception $e) {
 
             return response()->json(['message' => 'error'], 500);
         }

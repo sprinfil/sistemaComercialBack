@@ -77,10 +77,10 @@ class ContratoService{
         $existe=Toma::find($idToma) ?? null;
         if  (!$nuevaToma){
             if ($existe['id_usuario']!=$id_usuario && $existe['tipo_contratacion']!="pre-contrato"){
-                return response()->json([
-                    'message' => 'Esta toma esta contratada a otro usuario'
-                ], 500);
+                return [ 'message' => 'Esta toma o toma asociada a la clave catastral, ya esta contratada a otro usuario'];
             }
+            $toma=$existe;
+            
         }
         else{
             $toma=$nuevaToma;

@@ -173,7 +173,7 @@ class TomaController extends Controller
                     return PagoResource::collection($pagos);
                 } else {
                     // Si no hay pagos, retornar null o algún mensaje vacío
-                    return response()->json(['message' => 'No se encontraron pagos para esta toma.'], 404);
+                    return response()->json(['message' => 'No se encontraron pagos para esta toma.'], 200);
                 }
             } else {
                 // Si la toma no existe, retornar un error 404

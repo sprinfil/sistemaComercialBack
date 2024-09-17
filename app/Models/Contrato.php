@@ -102,7 +102,7 @@ class Contrato extends Model
     }
     public function colonia1(): BelongsTo
     {
-        return $this->belongsTo(colonia::class, "colonia");
+        return $this->belongsTo(Colonia::class, "colonia");
     }
     public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
     {
