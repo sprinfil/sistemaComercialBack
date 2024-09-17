@@ -14,6 +14,7 @@ use App\Http\Requests\UpdateTarifaServiciosDetalleRequest;
 use App\Http\Resources\StoreTarifaConceptoDetalleResource;
 use App\Http\Resources\TarifaConceptoDetalleResource;
 use App\Http\Resources\TarifaResource;
+use App\Http\Resources\TarifaServicioResource;
 use App\Http\Resources\TarifaServiciosDetalleResource;
 use App\Models\ConceptoCatalogo;
 use App\Models\TarifaConceptoDetalle;
@@ -519,6 +520,51 @@ class TarifaService{
             ], 500);
          }
         
+    }
+
+    public function indexTarifaServicio ()
+    {
+        try {
+            return TarifaServicioResource::collection(
+                TarifaServicio::all()
+            );
+           } catch (Exception $ex) {
+    
+            return response()->json([
+                'message' => 'No se encontraron no se encontraron registros de servicios de tarifas.'
+            ], 200);
+           }
+    }
+
+    public function showTarifaServicio ($idtarifaservicio)
+    {
+        try {
+            $tarifaServicio = TarifaServicio::findOrFail($idtarifaservicio);
+            return response(new TarifaServicioResource($tarifaServicio), 200);
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No se encontro ningun servicio de la tarifa'
+            ], 500);
+        }
+    }
+
+
+    public function updateTarifaServicio (array $data , $id)
+    {
+        try {
+            $tarifaServicio = TarifaServicio::findOrFail($id);
+            if ($data['id_tarifa'] != $tarifaServicio->id_tarifa || $data['id_tipo_toma'] != $tarifaServicio->id_tipo_toma) {
+                return response()->json(['error' => 'No existe una tarifa para el servicio o el tipo de toma no corresponde para el servicio'] , 400);
+            }
+            else{
+                $tarifaServicio->update($data);                
+                return response()->json(new TarifaServicioResource($tarifaServicio), 200);
+            }
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'No se edito el servicio.' .$ex
+            ], 500);
+        }
     }
 
 

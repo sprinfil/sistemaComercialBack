@@ -11,6 +11,7 @@ use App\Http\Requests\StoreTarifaServiciosDetalleRequest;
 use App\Http\Requests\UpdateTarifaConceptoDetalle;
 use App\Http\Requests\UpdateTarifaRequest;
 use App\Http\Requests\UpdateTarifaServiciosDetalleRequest;
+use App\Http\Requests\UpdateTarifasServicioRequest;
 use App\Http\Resources\StoreTarifaConceptoDetalleResource;
 use App\Http\Resources\TarifaConceptoDetalleResource;
 use App\Http\Resources\TarifaResource;
@@ -348,6 +349,53 @@ class TarifaController extends Controller
             DB::rollBack();
             return response()->json([
                 'error' => 'Ocurrio un error en la busqueda.'
+            ], 500);
+        }
+    }
+
+    public function indexTarifaServicio ()
+    {
+        try {
+            DB::beginTransaction();
+            $tarifa = (new TarifaService())->indexTarifaServicio();
+            DB::commit();
+            return $tarifa;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No se encontro registros de servicios.'
+            ], 500);
+        }
+    }
+
+    public function showTarifaServicio ($idtarifaservicio)
+    {
+        try {
+            DB::beginTransaction();
+           $tarifaConcepto = (new TarifaService())->showTarifaServicio($idtarifaservicio);
+           DB::commit();
+           return $tarifaConcepto;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al mostrar el servicio de la tarifa.'
+            ], 500);
+        }
+    }
+
+    public function updateTarifaServicio (UpdateTarifasServicioRequest $request, $id)
+    {
+        try {
+            $data = $request->validated();
+            $id = $request->id;
+            DB::beginTransaction();
+            $tarifaservicio = (new TarifaService())->updateTarifaServicio($data, $id);
+            DB::commit();
+            return $tarifaservicio;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al actualizar el servicio.' .$ex
             ], 500);
         }
     }

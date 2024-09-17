@@ -35,4 +35,12 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/tarifaServicioDetalle/show/{id}","showTarifaServicioDetalle");
         Route::put("/tarifaServicioDetalle/update/{id}","updateTarifaServicioDetalle");
     });
+
+    //Tarifa Servicios
+    Route::controller(TarifaController::class)->group(function(){
+        Route::get("/tarifaServicio/index","indexTarifaServicio");
+        Route::get("/tarifaServicio/show/{id}","showTarifaServicio");
+        Route::put("/tarifaServicio/update/{id}","updateTarifaServicio");
+    });
+    
 });
