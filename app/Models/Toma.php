@@ -206,6 +206,16 @@ class Toma extends Model
         return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
     }
 
+    public function convenios(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
+
+    public function conveniosActivos(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
+    }
+
     public function saldoToma()
     {
         $total_final = 0;
