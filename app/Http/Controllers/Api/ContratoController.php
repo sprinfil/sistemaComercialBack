@@ -68,44 +68,44 @@ class ContratoController extends Controller
     public function store(Contrato $contrato, StoreContratoRequest $request)
     {
         ////Cambiar estatus y poner id de contrato en servicios de toma
-     
-        try {
-            DB::beginTransaction();
-            $datos = $request->validated();
-            $data = $datos['contrato'];
-            $solicitud = $datos['solicitud_factibilidad'] ?? false;
-            $nuevaToma = $request->validated()['toma'] ?? null;
-            $id_usuario = $request['contrato']['id_usuario'];
-            $id_toma = $request['contrato']['id_toma'] ?? null;
-            $servicio = $request['contrato']['servicio_contratados'];
-            $OT = $request['ordenes_trabajo'][0] ?? null;
-            $contratos = Contrato::contratoRepetido($id_usuario, $servicio, $id_toma)->get();
-            // TO DO
-            if (count($contratos) != 0) {
-    
+        DB::beginTransaction();
+        $datos = $request->validated();
+        $data = $datos['contrato'];
+        $solicitud = $datos['solicitud_factibilidad'] ?? false;
+        $nuevaToma = $request->validated()['toma'] ?? null;
+        $id_usuario = $request['contrato']['id_usuario'];
+        $id_toma = $request['contrato']['id_toma'] ?? null;
+        $servicio = $request['contrato']['servicio_contratados'];
+        $OT = $request['ordenes_trabajo'][0] ?? null;
+        $contratos = Contrato::contratoRepetido($id_usuario, $servicio, $id_toma)->get();
+        // TO DO
+        if (count($contratos) != 0) {
+
+            return response()->json([
+                'message' => 'La toma ya tiene un contrato',
+                'restore' => false
+            ], 500);
+
+            //return $contratos;
+        } else {
+
+            $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
+            $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
+            if (isset($toma['message'])){
                 return response()->json([
-                    'message' => 'La toma ya tiene un contrato',
-                    'restore' => false
+                    'message' => $toma['message']
                 ], 500);
-    
-                //return $contratos;
-            } else {
-    
-                $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
-                $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
-                if (isset($toma['message'])){
-                    return response()->json([
-                        'message' => $toma['message']
-                    ], 500);
-                }
-
-                $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
- 
-                $toma->giroComercial;
-                DB::commit();
-                return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
-
             }
+
+            $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
+
+            $toma->giroComercial;
+            DB::rollBack();
+            return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
+
+        }
+        try {
+           
         } 
         catch (Exception $ex) {
             DB::rollBack();
@@ -298,21 +298,17 @@ class ContratoController extends Controller
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
         }
     }
-    public function crearCotizacion(Cotizacion $cotizacion, StoreCotizacionRequest $request)
+    public function crearCotizacion(Cotizacion $cotizacion, Request $request)
     {
 
         try {
-            $data = $request->validated();
-            $data['vigencia'] = Carbon::now()->addMonths(1)->format('Y-m-d');
-            $data['fecha_inicio'] = Carbon::now()->format('Y-m-d');
-            $id_contrato = $request['id_contrato'];
-            $cotizacion = Contrato::find($id_contrato)->cotizacionesVigentes;
-            if ($cotizacion) {
-                return response()->json(['message' => 'El contrato ya tiene una cotización vigente'], 200);
-            } else {
-
-                return new CotizacionResource(Cotizacion::create($data));
-            }
+      
+            $contrato=Contrato::find($request->all()['id_contrato']);
+        
+            $concepto=$contrato->tarifaContrato();
+            $concepto->concepto;
+            return response()->json(["Tarifa"=> $concepto]) ;
+          
         } catch (Exception $ex) {
             return response()->json(['error' => 'No se pudo crear la cotización, introduzca datos correctos'], 200);
         }

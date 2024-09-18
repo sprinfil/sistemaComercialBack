@@ -34,6 +34,23 @@ class ContratoService{
             $CrearContrato['folio_solicitud']=Contrato::darFolio();
             $CrearContrato['servicio_contratado']=$sev;
             $CrearContrato['id_toma']=$toma['id'];
+            $coordenada=$data['coordenada'] ?? null;
+            if ($coordenada){
+                $CrearContrato['coordenada']=$data['coordenada'][0]." ".$data['coordenada'][1];
+            }
+            else{
+                $geometry = $toma->posicion;
+                $jsonData = $geometry->toJson();
+
+                $decodedData = json_decode($jsonData, true);
+
+                $longitude = $decodedData['coordinates'][0];
+                $latitude = $decodedData['coordinates'][1];
+        
+                $CrearContrato['coordenada']= $latitude." ".  $longitude;
+  
+            }
+
             if ( $estado && $estado=="pre-contrato"){
                 $CrearContrato['estatus']="contratado";
                 
@@ -80,6 +97,10 @@ class ContratoService{
                 return [ 'message' => 'Esta toma o toma asociada a la clave catastral, ya esta contratada a otro usuario'];
             }
             $toma=$existe;
+            if ($toma['tipo_contratacion']=="pre-contrato"){
+                $toma->update(["tipo_contratacion"=>"normal"]);
+            }
+            ///TO DO CARGOS A TOMA CAMBIO DE NOMBRE
             
         }
         else{
@@ -98,6 +119,8 @@ class ContratoService{
             $toma['localidad']=$data['localidad'];
             $toma['municipio']=$data['municipio'];
             $toma['clave_catastral']=$data['clave_catastral'];
+            $coords=new Point($data['coordenada'][0],$data['coordenada'][1]);
+            $toma['posicion']=$coords;
             $notificacion=$nuevaToma['direccion_notificacion'] ?? null;
             if (!$notificacion){
                 $Calle=Calle::find($toma['calle'])->nombre;
