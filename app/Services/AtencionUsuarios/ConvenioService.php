@@ -41,7 +41,6 @@ class ConvenioService{
           $cargos = Cargo::where('modelo_dueno',$data->tipo)
           ->where('id_dueno',$data->id)
           ->where('estado','pendiente')
-          ->where('id_convenio',null)
           ->get();
           
           $cargos = $cargos->toArray();
@@ -84,12 +83,14 @@ class ConvenioService{
 
         $fecha = helperFechaAhora();
         $fechaCobro =Carbon::parse($fecha)->format('Y-m-d');
-
+        $montoLetraSuma = 0;
         //El porcentaje que se convenio de los cargos
-        $porcentajeConveniado = $data['porcentaje_conveniado'];
+        
         //La informacion del registro convenio, el resto se calcula durante el proceso
         $convenio = [
         "id_convenio_catalogo" => $data['id_convenio_catalogo'], 
+        "id_modelo"=>$data['id_modelo'],
+        "modelo_origen"=>$data['modelo_origen'],
         "monto_conveniado" => null, //Este elemento es calculado posteriormente
         "monto_total" => null, //Este elemento es calculado posteriormente
         "periodicidad" => "mensual",
@@ -124,11 +125,12 @@ class ConvenioService{
           
         }
 
-        $convenio = Convenio::create($convenio); //Esta comentado para que deje de crear convenios en lo que avanzo
+        $convenio = Convenio::create($convenio); //Crea el registro de convenio
 
         $montoConveniadoTotal = 0;
         $montoFinalPendienteTotal = 0;
        
+        //Registro para actualizar los cargos
         $cargoUpdt = [
           "estado" => "conveniado", 
           "id_convenio" => $convenio->id //Este elemento es calculado posteriormente
@@ -136,21 +138,20 @@ class ConvenioService{
 
         foreach($cargos as $cargo)
         {
-          //Pendiente actualziar el estado del cargo a conveniado y meterle al id de convenio
           $cargoTemp = Cargo::find($cargo['id']); //obtengo los datos del cargo
           $montoOriginalPendiente = $cargoTemp->montoPendiente(); //este es el monto original pendiente
-          $montoConveniado = ($porcentajeConveniado * $montoOriginalPendiente)/100; //monto del convenio aplicando el porcentaje conveniado
+          $montoConveniado = ($cargo['porcentaje_conveniado'] * $montoOriginalPendiente)/100; //monto del convenio aplicando el porcentaje conveniado
           $montoFinalPendiente = $montoOriginalPendiente - $montoConveniado; // Es el monto original restandole el convenio aplicado
-
+          //Actualiza los cargos
           $cargoTemp->update($cargoUpdt);
 
-          
+          //Registro de cargos conveniados
           $cargosConveniados =[
             "id_cargo" => $cargo['id'],
             "id_convenio" => $convenio->id,
             "monto_original_pendiente" => $montoOriginalPendiente,
             "monto_final_pendiente" => $montoFinalPendiente,
-            "porcentaje_conveniado" => $porcentajeConveniado,
+            "porcentaje_conveniado" => $cargo['porcentaje_conveniado'],
             "monto_conveniado" => $montoConveniado,
           ];
 
@@ -160,7 +161,7 @@ class ConvenioService{
           $montoFinalPendienteTotal += $montoFinalPendiente;
 
         }
-
+        //Actualizar el registro de convenio con los montos
         $convenioMontos = [
           "monto_conveniado" => $montoConveniadoTotal,
           "monto_total" => $montoFinalPendienteTotal,
@@ -169,13 +170,18 @@ class ConvenioService{
         $convenio->update($convenioMontos); 
         $convenio->save();
 
-        $montoPorLetra = $convenio->monto_total/$convenio->cantidad_letras;
+        //Registra las letras
+        $montoPorLetra = round($convenio->monto_total/$convenio->cantidad_letras, 2);
 
-         $mensuaildad = new DateInterval('P1M');  //Sumar meses o años: Puedes usar P1M para un mes o P1Y para un año en lugar de días.
+         $mensualidad = new DateInterval('P1M');  //Sumar meses o años: Puedes usar P1M para un mes o P1Y para un año en lugar de días.
 
         for ($i=0; $i < $data['cantidad_letras']; $i++) { 
 
          $fechaCobro =Carbon::parse($fechaCobro)->format('Y-m-d');
+
+         if ($i==($data['cantidad_letras']-1)) {
+          $montoPorLetra = ceil($convenio->monto_total-$montoLetraSuma);
+         }
           
           $letrasArray = [
             "id_convenio" => $convenio->id,
@@ -183,16 +189,20 @@ class ConvenioService{
             "monto" => $montoPorLetra,
             "vigencia" => $fechaCobro,
           ];
+          $montoLetraSuma += $montoPorLetra;
           
           $letra = Letra::create($letrasArray);
-          $ArregloLetras[$i] = $letrasArray;
+          $ArregloLetras[$i] = $letra;
          
           $fechaCobro = Carbon::parse($fechaCobro);
           
-          $fechaCobro->add($mensuaildad);
+          $fechaCobro->add($mensualidad);
          
         }
-      
+
+        //Aqui van los cargos
+
+        return json_encode($ArregloLetras);
        
       } catch (Exception $ex) {
         return response()->json([
@@ -200,4 +210,10 @@ class ConvenioService{
         ]);
       }
     }
+
+    public function CancelarConvenioService(Request $data)
+    {
+
+    }
+
 }
