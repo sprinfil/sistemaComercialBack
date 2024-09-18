@@ -12,11 +12,13 @@ class DescuentoAsociado extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        "id_usuario",
-        "id_toma",
         "id_descuento",
-        "folio",
-        "evidencia",
+        "modelo_dueno",
+        "id_modelo",
+        "id_registra",
+        "vigencia",
+        "estatus",
+        "folio"
     ];
 
     // Usuario asociado al descuento
