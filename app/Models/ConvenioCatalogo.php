@@ -18,14 +18,13 @@ class ConvenioCatalogo extends Model
         "estado",
     ];
 
-    public function conceptosAplicables(): MorphMany
+    public function conceptosAplicables() : MorphMany
     {
         return $this->morphMany(ConceptoAplicable::class, 'conceptosAplicables', 'modelo', 'id_modelo');
     }
 
-   
-
-    public function Convenio():HasMany{
+    public function Convenio() : HasMany
+    {
         return $this->hasMany(Convenio::class, "id_convenio_catalogo", "id");
     }
 }
