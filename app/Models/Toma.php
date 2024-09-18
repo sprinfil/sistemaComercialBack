@@ -142,7 +142,7 @@ class Toma extends Model
 
     public function factibilidades(): HasMany
     {
-        return $this->hasMany(Factibilidad::class);
+        return $this->hasMany(Factibilidad::class, 'id_toma')->orderBy('created_at', 'desc');
     }
 
     public function ordenesTrabajo(): HasMany
