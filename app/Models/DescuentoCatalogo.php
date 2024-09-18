@@ -19,7 +19,7 @@ class DescuentoCatalogo extends Model
     ];
 
     // Descuentos asociados a tipo de descuento (monitor)
-    public function descuentos() : HasMany
+    public function descuentos(): HasMany
     {
         return $this->hasMany(Toma::class, 'id_descuento_aplicado');
     }
@@ -27,5 +27,10 @@ class DescuentoCatalogo extends Model
     public function conceptosAplicables(): MorphMany
     {
         return $this->morphMany(ConceptoAplicable::class, 'conceptosAplicables', 'modelo', 'id_modelo');
+    }
+
+    public function tipoTomaAplicables(): MorphMany
+    {
+        return $this->morphMany(TipoTomaAplicable::class, "tipoTomasAplicables", "modelo", "id_modelo");
     }
 }

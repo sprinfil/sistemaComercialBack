@@ -19,11 +19,12 @@ class ConceptoAplicableFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_concepto_catalogo'=>0,
-            'id_modelo'=>'ninguno',
-            'modelo'=>'ninguno',
-            'rango_minimo'=>$this->faker->numberBetween(0, 50),
-            'rango_maximo'=>$this->faker->numberBetween(50, 100),
+            'id_concepto_catalogo' => 0,
+            'id_modelo' => 'ninguno',
+            'modelo' => 'ninguno',
+            'tipo_bonificacion' => $this->faker->randomElement(['porcentual', 'fija']),
+            'porcentaje_bonificable' => $this->faker->numberBetween(0, 100),
+            'monto_bonificable' => $this->faker->numberBetween(0, 1000),
         ];
     }
 }

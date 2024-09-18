@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\ConceptoAplicable;
 use App\Models\ConceptoCatalogo;
 use App\Models\DescuentoCatalogo;
+use App\Models\TipoToma;
+use App\Models\TipoTomaAplicable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,7 +28,7 @@ class DescuentoCatalogoFactory extends Factory
             'estado' => $this->faker->randomElement(['activo', 'inactivo']),
         ];
     }
-    
+
     /**
      * Configure the factory.
      *
@@ -35,15 +37,25 @@ class DescuentoCatalogoFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (DescuentoCatalogo $descuento) {
-            $conceptos = ConceptoCatalogo::all(); // Asumiendo que el nombre del modelo es ConceptoCatalogo
+            $conceptos = ConceptoCatalogo::all();
 
             foreach ($conceptos as $concepto) {
                 ConceptoAplicable::factory()->create([
-                    'id_concepto_catalogo'=>$concepto->id,
-                    'id_modelo'=>$descuento->id,
-                    'modelo'=>'descuento_catalogo',
+                    'id_concepto_catalogo' => $concepto->id,
+                    'id_modelo' => $descuento->id,
+                    'modelo' => 'descuento_catalogo',
                 ]);
-            }            
+            }
+
+            $tipo_tomas = TipoToma::all();
+
+            foreach ($tipo_tomas as $tipo_toma) {
+                TipoTomaAplicable::factory()->create([
+                    'id_tipo_toma' => $tipo_toma->id,
+                    'id_modelo' => $descuento->id,
+                    'modelo_origen' => 'descuento_catalogo',
+                ]);
+            }
         });
     }
 }

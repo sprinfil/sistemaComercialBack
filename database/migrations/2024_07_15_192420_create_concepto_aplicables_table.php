@@ -16,8 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_concepto_catalogo');
             $table->unsignedBigInteger('id_modelo');
             $table->string('modelo');
-            $table->decimal('rango_minimo');
-            $table->decimal('rango_maximo');
+            $table->enum('tipo_bonificacion', ['porcentual', 'fija']);
+            $table->decimal('porcentaje_bonificable')->nullable();
+            $table->decimal('monto_bonificable')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
