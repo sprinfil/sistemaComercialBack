@@ -9,6 +9,7 @@ use App\Http\Requests\StoreTomaRequest;
 use App\Http\Requests\UpdateMedidorRequest;
 use App\Http\Requests\UpdateTomaRequest;
 use App\Http\Resources\CargoResource;
+use App\Http\Resources\FactibilidadResource;
 use App\Http\Resources\MedidorResource;
 use App\Http\Resources\OrdenTrabajoResource;
 use App\Http\Resources\PagoResource;
@@ -118,8 +119,11 @@ class TomaController extends Controller
                 'error' => 'No se pudo encontrar la toma'
             ], 500);
         }
-        //
     }
+
+    /**
+    * Display the specified resource.
+    */
     public function buscarCodigoTomas($codigo)
     {
         try {
@@ -187,7 +191,6 @@ class TomaController extends Controller
         }
     }
 
-
     /**
      * guardar posicion
      */
@@ -200,7 +203,9 @@ class TomaController extends Controller
         $toma->save();
     }
     
-    
+    /**
+    * Display the specified resource.
+    */
     public function ordenesToma($id)
     {
         try {
@@ -215,6 +220,10 @@ class TomaController extends Controller
             ], 500);
         }
     }
+
+    /**
+    * Display the specified resource.
+    */
     public function ordenesTomaSinAsignadas($id)
     {
         try {
@@ -230,6 +239,10 @@ class TomaController extends Controller
             ], 500);
         }
     }
+
+    /**
+    * Display the specified resource.
+    */
     public function general($id)
     {
         try {
@@ -242,6 +255,9 @@ class TomaController extends Controller
         }
     }
 
+    /**
+    * Display the specified resource.
+    */
     public function registrarNuevoMedidor(StoreMedidorRequest $request){
         
         try {
@@ -297,6 +313,7 @@ class TomaController extends Controller
         }
             
     }
+
     public function filtradoTomas(Request $request){
         try{
             DB::beginTransaction();
@@ -321,4 +338,21 @@ class TomaController extends Controller
             return response()->json(["error"=>"No se pudo consultar tomas ".$ex],500);
            }
     }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function factibilidades($codigo)
+    {
+        $toma = Toma::where('codigo_toma', $codigo)->first();
+    
+        if (!$toma) {
+            return response()->json(['message' => 'Toma no encontrada'], 404);
+        }
+    
+        $factibilidades = $toma->factibilidades()->with('toma', 'archivos')->get();
+    
+        return response(FactibilidadResource::collection($factibilidades), 200);
+    }
+    
 }

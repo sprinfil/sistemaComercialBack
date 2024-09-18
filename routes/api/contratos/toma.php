@@ -19,6 +19,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/Toma/general/{id}","general");
         Route::get("/Toma/codigo/{codigo}","buscarCodigoToma");
         Route::get("/Tomas/codigo/{codigo}","buscarCodigoTomas");
+        Route::get("/Tomas/factibilidades/{codigo}","factibilidades");
         Route::post("/Toma/save_position/{toma_id}","save_position");
         Route::post("/Toma/tipo/", "filtradoTomas");
     });
