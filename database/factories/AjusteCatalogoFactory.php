@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\AjusteCatalogo;
 use App\Models\ConceptoAplicable;
+use App\Models\ConceptoCatalogo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -33,14 +34,16 @@ class AjusteCatalogoFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterCreating(function (AjusteCatalogo $ajuste) {
-            for ($i = 1; $i <= 11; $i++) {
+        return $this->afterCreating(function (AjusteCatalogo $ajuste) { 
+            $conceptos = ConceptoCatalogo::all(); // Asumiendo que el nombre del modelo es ConceptoCatalogo
+
+            foreach ($conceptos as $concepto) {
                 ConceptoAplicable::factory()->create([
-                    'id_concepto_catalogo'=>$i,
+                    'id_concepto_catalogo'=>$concepto->id,
                     'id_modelo'=>$ajuste->id,
                     'modelo'=>'ajuste_catalogo',
                 ]); 
-            }            
+            }          
         });
     }
 }

@@ -21,13 +21,29 @@ class ConvenioService{
 
     public function BuscarConceptosConveniablesService(Request $data)
     {
-      try { //falta condicion para que no pueda crear un convenio si tiene algun convenio ya activo
-        //  $conceptoAplicable = [];
+      try { 
+
+          if ($data->tipo == "toma") {
+            $conveniado = Toma::find($data->id);
+            $conveniado = $conveniado->conveniosActivos;
+                       
+          }
+          if ($data->tipo == "usuario") {
+            $conveniado = Usuario::find($data->id);
+            $conveniado = $conveniado->conveniosActivos;
+            
+          }
+          if (count($conveniado) != 0) {
+            return response()->json([
+              'El usuario o la toma seleccionada ya cuenta con un convenio.'
+            ],400);
+          }
           $cargos = Cargo::where('modelo_dueno',$data->tipo)
           ->where('id_dueno',$data->id)
           ->where('estado','pendiente')
           ->where('id_convenio',null)
           ->get();
+          
           $cargos = $cargos->toArray();
           $cargosAplicables = [];
           $nxt = 0;
@@ -38,7 +54,8 @@ class ConvenioService{
             ->where('modelo','convenio_catalogo')
             ->where('id_modelo',$data['id_convenio_catalogo'])
             ->get();
-           
+            
+          
             if (count($temp) != 0) {
               $cargosAplicables[$nxt] = $cargo;
               $cargosAplicables[$nxt]['aplicable'] = "si";
@@ -56,7 +73,7 @@ class ConvenioService{
 
       } catch (Exception $ex) {
         return response()->json([
-          'Ocurio un error durante la busqueda de cargos aplicables.'
+          'Ocurrio un error durante la busqueda de cargos aplicables.'
         ],500);
       }
     }
@@ -176,7 +193,6 @@ class ConvenioService{
          
         }
       
-       // return $ArregloLetras;
        
       } catch (Exception $ex) {
         return response()->json([
