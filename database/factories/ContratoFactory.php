@@ -67,13 +67,13 @@ class ContratoFactory extends Factory
             'id_usuario' => $usuarioId,
             'folio_solicitud' => $this->faker->unique()->regexify('(\d{6}/2024)'),
             'estatus' => $this->faker->randomElement([
-                'pendiente de inspeccion',
+                // 'pendiente de inspeccion',
                 'contrato no factible',
                 'inspeccionado',
                 'pendiente de pago',
                 'contratado',
-                'terminado',
-                'cancelado',
+                'pendiente de factibilidad',
+                // 'cancelado',
             ]),
             'nombre_contrato' => $nombrec,
             'clave_catastral' => Toma::find($tomaId)->clave_catastral ?? $this->faker->regexify('[A-Z0-9]{10}'),
@@ -167,7 +167,7 @@ class ContratoFactory extends Factory
                 $cotizacion = Cotizacion::factory()->create([
                     'id_contrato' => $contrato->id,
                 ]);
-                if ($contrato->estatus != 'pendiente de factibilida') {
+                if ($contrato->estatus != 'pendiente de factibilidad') {
                     $factibilidad = Factibilidad::factory()->create([
                         'id_toma' => $contrato->id_toma,
                         'estado' => 'sin revisar',
