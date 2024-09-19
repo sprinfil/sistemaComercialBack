@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('convenios', function (Blueprint $table) {
+        Schema::create('ajustes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_convenio_catalogo');
-            $table->unsignedBigInteger('id_modelo');
-            $table->enum('modelo_origen', ['toma', 'usuario']);
-            $table->decimal('monto_conveniado')->nullable();
+            $table->unsignedBigInteger('id_ajuste_catalogo');
+            $table->unsignedBigInteger('id_modelo_dueno');
+            $table->enum('modelo_dueno', ['toma', 'usuario']);
+            $table->unsignedBigInteger('id_operador');
+            $table->decimal('monto_ajustado')->nullable();
             $table->decimal('monto_total')->nullable();
-            $table->enum('periodicidad', ['mensual', 'quincenal']);
-            $table->integer('cantidad_letras');
             $table->enum('estado', ['activo', 'cancelado', 'incumplido']);
             $table->string('comentario')->nullable();
             $table->string('motivo_cancelacion')->nullable();
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('convenios');
+        Schema::dropIfExists('ajustes');
     }
 };

@@ -409,11 +409,11 @@ class PagoService
         }
     }
 
-    public function cancelarPagoYConsolidarCargos($id_pago)
+    public function cancelarPagoYConsolidarCargos($origen, $id_origen)
     {
         try {
-            $abonos = Abono::where('modelo_origen', 'pago')
-                ->where('id_origen', $id_pago)
+            $abonos = Abono::where('modelo_origen', $origen)
+                ->where('id_origen', $id_origen)
                 ->get();
 
             if ($abonos->isEmpty()) {
@@ -457,7 +457,7 @@ class PagoService
 
             return 'Pago cancelado y cargos consolidados correctamente.';
         } catch (Exception $ex) {
-            return response()->json(['error' => $ex->getMessage()], 500);
+            throw $ex;
         }
     }
 
