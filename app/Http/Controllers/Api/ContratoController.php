@@ -67,7 +67,9 @@ class ContratoController extends Controller
      */
     public function store(Contrato $contrato, StoreContratoRequest $request)
     {
-        ////Cambiar estatus y poner id de contrato en servicios de toma
+       
+        try {
+            ////Cambiar estatus y poner id de contrato en servicios de toma
         DB::beginTransaction();
         $datos = $request->validated();
         $data = $datos['contrato'];
@@ -100,12 +102,10 @@ class ContratoController extends Controller
             $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
 
             $toma->giroComercial;
-            DB::rollBack();
+            DB::commit();
             return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
 
         }
-        try {
-           
         } 
         catch (Exception $ex) {
             DB::rollBack();
