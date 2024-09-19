@@ -25,7 +25,7 @@ class StoreDescuentoAsociadoRequest extends FormRequest
             "id_descuento"=>"required|int",
             "id_modelo"=>"required|int",
             "modelo_dueno"=>"required|in:toma,usuario",
-            "id_evidencia"=>"required|int",
+            "id_evidencia"=>" nullable|int",
             "id_registra"=>"required|int",
             "vigencia"=>"nullable|date",
             "estatus"=>"required|in:vigente,no_vigente",

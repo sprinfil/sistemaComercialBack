@@ -13,8 +13,9 @@ class DescuentoAsociado extends Model
 
     protected $fillable = [
         "id_descuento",
-        "modelo_dueno",
         "id_modelo",
+        "modelo_dueno",
+        "id_evidencia",
         "id_registra",
         "vigencia",
         "estatus",
