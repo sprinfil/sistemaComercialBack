@@ -1665,6 +1665,18 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 0,
                 "tarifa_fija" => 0,
             ],
+            [
+                "nombre" => "Letra de convenio",
+                "descripcion" => "Pago de letra por convenio",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 2,
+                "prioridad_por_antiguedad" => 1,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
+            ],
             // Agrega más elementos aquí según sea necesario
         ];
 
