@@ -170,15 +170,13 @@ class ConvenioController extends Controller
        
         try {
             DB::beginTransaction();
-           // $data = $request->validated();
             $convenio = (new ConvenioService())->CancelarConvenioService($request);
             DB::commit();
             return $convenio;
         } catch (Exception $ex) {
-            
             DB::rollBack();
             return response()->json([
-                'message' => 'Ocurrio un error al registrar el convenio.'
+                'message' => 'Ocurrio un error al cancelar el convenio.'
             ]); 
         }
     }

@@ -16,5 +16,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         // Registro de convenio
         Route::post("/Convenio/BuscarConceptosConveniables","BuscarConceptosConveniables");
         Route::post("/Convenio/RegistrarConvenio","RegistrarConvenio");
+        Route::put("/Convenio/CancelarConvenio", "CancelarConvenio");
     });
 });
