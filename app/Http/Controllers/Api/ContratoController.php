@@ -327,6 +327,7 @@ class ContratoController extends Controller
             $cotizacion = Contrato::find($id_contratos['id'])->cotizacionesVigentes;
             $cotizacion->cotizacionesDetalles;
             $contrato=$cotizacion->contrato->tarifaContrato();
+            $contrato->concepto;
 
             return response()->json(["cotizacion" => $cotizacion, "cargo_contrato"=>$contrato]);
         } catch (Exception $ex) {
