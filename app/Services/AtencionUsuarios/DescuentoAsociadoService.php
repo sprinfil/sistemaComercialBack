@@ -21,21 +21,7 @@ public function index ()
 public function store (array $data)
 {
     /*  
-    {
-        "id_descuento" : 1,
-        "id_modelo" : 1,
-        "modelo_dueno" : "toma",
-        "id_registra" : 1,
-        "vigencia" : "2024-08-16",
-        "estatus" : "no_vigente",
-        "folio" : "JASNDKAD"
-    }
 
-    Al registrar un descuento asociado
-este se justifica con un documento que tiene un Folio. 
-
-Se tiene que verificar que ese folio no este registrado con un
-descuento activo y que la toma no tenga un descuento ya registrado
 
     */
     try {
@@ -43,7 +29,6 @@ descuento activo y que la toma no tenga un descuento ya registrado
         $id_evidencia = $data['id_evidencia'];
         $descuentos = DescuentoAsociado::where('folio' , $folio)
         ->orWhere('id_evidencia' , $id_evidencia)->exists();
-        $tomaexists = DescuentoAsociado::where('toma')->get();
 
             if ($descuentos) {
                return response()->json(['message'=>'Ya existe un folio o una evidencia'] , 400);

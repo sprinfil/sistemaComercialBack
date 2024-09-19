@@ -29,9 +29,12 @@ class DescuentoAsociado extends Model
     }
 
     // Toma asociada al descuento
-    public function toma() : BelongsTo
+    public function dueno() 
     {
-        return $this->belongsTo(Toma::class, 'id_toma');
+       if ($this->modelo_dueno == 'toma') {
+        return $this->belongsTo(Toma::class, 'id_modelo');
+       }
+       return $this->belongsTo(Usuario::class, 'id_modelo');
     }
 
     // Origen del descuento
