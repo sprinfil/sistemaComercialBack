@@ -374,4 +374,16 @@ class CajasController extends Controller
             ], 500);
         }
     }
+
+    public function cargarLetra($id)
+    {
+        try {
+            return response()->json($this->cajaService->cargarLetra($id), 200);
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No se pudo cargar la letra: ' . $ex->getMessage()
+            ], 500);
+        }
+    }
 }
