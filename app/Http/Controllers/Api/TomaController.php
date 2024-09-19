@@ -354,5 +354,4 @@ class TomaController extends Controller
     
         return response(FactibilidadResource::collection($factibilidades), 200);
     }
-    
 }

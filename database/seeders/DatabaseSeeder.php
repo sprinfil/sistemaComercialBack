@@ -58,8 +58,7 @@ class DatabaseSeeder extends Seeder
         //
         $this->call(RutaSeeder::class);
         //
-
-        //$this->call(DescuentosSeeder::class);
+        $this->call(DescuentosSeeder::class);
         // 
         $this->call(AnomaliaSeeder::class);
         $this->call(AjusteSeeder::class);
