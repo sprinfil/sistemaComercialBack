@@ -13,7 +13,10 @@ use App\Http\Resources\RetiroCajaResource;
 use App\Http\Resources\SolicitudCancelacionPagoResource;
 use App\Models\Caja;
 use App\Models\CajaCatalogo;
+use App\Models\Cargo;
+use App\Models\ConceptoCatalogo;
 use App\Models\CorteCaja;
+use App\Models\Letra;
 use App\Models\OperadorAsignado;
 use App\Models\Pago;
 use App\Models\RetiroCaja;
@@ -789,6 +792,28 @@ class CajaService
       return response()->json([
         'error' => 'Ocurrio un error durante la busqueda.'
       ], 500);
+    }
+  }
+
+  public function cargarLetra($id){
+    try{
+      $letra = Letra::findOrFail($id);
+      $convenio = $letra->Convenio;
+      $concepto = ConceptoCatalogo::findOrFail(148);
+      $data = [];
+      $data['id_concepto'] = $concepto->id;
+      $data['nombre'] = $concepto->nombre;
+      $data['id_origen'] = $convenio->id;
+      $data['modelo_origen'] = 'convenio';
+      $data['id_dueno'] = $convenio->id_modelo;
+      $data['modelo_dueno'] = $convenio->modelo_origen;
+      $data['monto'] = $letra->monto;
+      $data['iva'] = 0;
+      $data['estado'] = 'pendiente';
+      $data['fecha_cargo'] = now();
+      return Cargo::create($data);
+    }catch(Exception $ex){
+      throw $ex;
     }
   }
 }
