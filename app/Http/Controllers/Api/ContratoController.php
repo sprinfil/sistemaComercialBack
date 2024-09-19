@@ -101,11 +101,15 @@ class ContratoController extends Controller
 
            $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
            $cargos=null;
-           if ($toma['tipo_contratacion']=="pre-contrato"){
+        
+           ///opcional
+           $CargoPreContrato=false;
+           if ($toma['tipo_contratacion']=="pre-contrato" && $CargoPreContrato){
                $concepto=ConceptoCatalogo::where('id',32)->get(); ///cambio de propietario
                $cargos=(new OrdenTrabajoService())->generarCargo($toma,'toma',$toma,'toma',$concepto);
            }
            $toma->giroComercial;
+           $toma=$toma->fresh();
            DB::commit();
            return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma, "cargo"=>$cargos], 201);
 
@@ -205,11 +209,12 @@ class ContratoController extends Controller
                 return response()->json(['message' =>$error], 500);
             } else {
                 $cargos = $contrato->cargosVigentes;
-                $cargoToma=Toma::find($contrato['id_toma'])->cargosVigentesConConcepto;
+                //$cargoToma=Toma::find($contrato['id_toma'])->cargosVigentesConConcepto; TO DO
              
                 if (count($cargos)!=0) {
                     return response()->json(['message' => 'No se pudo cerrar el contrato, tiene cargos pendientes: '. $cargos[0]->nombre ], 500);
                 }
+                /*
                 else if(count($cargoToma)!=0){
                     //return $cargoToma[0]->nombre;
                     /// funciona distinto por los loles nomas
@@ -225,7 +230,8 @@ class ContratoController extends Controller
                      
                     }
                     return response()->json(['message' =>  $error.$message ], 500);
-                } 
+                }
+                    */ 
                 else {
                     $toma = Toma::find($contrato['id_toma']); 
                     if ($toma['tipo_contratacion']=="pre-contrato"){

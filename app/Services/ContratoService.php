@@ -52,8 +52,8 @@ class ContratoService{
             }
 
             if ( $estado && $estado=="pre-contrato"){
-                $CrearContrato['estatus']="pendiente de pago";
-                
+                //$CrearContrato['estatus']="pendiente de pago";
+                $CrearContrato['estatus']="contratado";
             }
             else{
                 if ($solicitud){
@@ -68,7 +68,7 @@ class ContratoService{
             $cont=Contrato::create($CrearContrato);
             $c->push($cont);
 
-            /*
+            
             if  ($cont['estatus']=="contratado"){
 
                 if ($cont['servicio_contratado']=="agua"){
@@ -79,7 +79,7 @@ class ContratoService{
                     $toma->update(["c_san"=>$cont['id']]);
                 }
             }
-                */
+                
             $id_empleado_asigno=auth()->user()->operador->id;
             if ($solicitud==true){
                 $factibilidad->push(Factibilidad::create([
@@ -100,13 +100,11 @@ class ContratoService{
                 return [ 'message' => 'Esta toma ya esta contratada a otro usuario'];
             }
             $toma=$existe;
-            /*
+            
             if ($toma['tipo_contratacion']=="pre-contrato"){
                 $toma->update(["tipo_contratacion"=>"normal"]);
+                $toma->update(["id_usuario"=>$data['id_usuario']]);
             }
-                */
-
-            ///TO DO CARGOS A TOMA CAMBIO DE NOMBRE
 
         }
         else{
