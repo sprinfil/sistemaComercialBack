@@ -19,6 +19,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/descuentos-asociado", "index");
         Route::post("/descuentos-asociado/store", "store");
         Route::get("/descuentos-asociado/{id}", "show");
+        Route::get("/descuentos-asociado" , "ConsultarPorTomaUsuario");
         Route::put("/descuentos-asociado/{id}", "update");
         Route::delete("/descuentos-asociado/{id}", "destroy");
     });

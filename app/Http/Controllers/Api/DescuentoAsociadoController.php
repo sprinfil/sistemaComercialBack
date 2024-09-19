@@ -7,9 +7,11 @@ use App\Models\DescuentoAsociado;
 use App\Http\Requests\StoreDescuentoAsociadoRequest;
 use App\Http\Requests\UpdateDescuentoAsociadoRequest;
 use App\Http\Resources\DescuentoAsociadoResource;
+use App\Models\Archivo;
 use App\Services\AtencionUsuarios\DescuentoAsociadoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DescuentoAsociadoController extends Controller
@@ -48,12 +50,27 @@ class DescuentoAsociadoController extends Controller
         try{
             $data = $request->validated();
             DB::beginTransaction();
+            if ($request->hasFile('evidencia')) {
+                foreach ($request->file('evidencia') as $file) {
+                    $path = $file->store('evidencia' , 'public');
+                    $filename = basename($path);
+                    $extension = $file->getClientOriginalExtension();
+                    $tipoArchivo = $this->determinarTipoArchivo($extension);
+                        $archivo = [
+                            'modelo' => 'descuento_asociado',
+                            'id_modelo' => $data['id_evidencia'],
+                            'url' => $filename,
+                            'tipo' => $tipoArchivo
+                        ];
+                        $archivo = Archivo::create($archivo);
+                }
+            }
             $descuento = (new DescuentoAsociadoService())->store($data);
             DB::commit();
             return $descuento;
         } catch(Exception $e) {
             return response()->json([
-                'error' => 'No se pudo guardar el descuento'
+                'error' => 'No se pudo guardar el descuento ' .$e
             ], 500);
         }
     }
@@ -71,6 +88,21 @@ class DescuentoAsociadoController extends Controller
                 'error' => 'No se pudo encontrar el descuento'
             ], 500);
         }
+    }
+
+    public function ConsultarPorTomaUsuario(Request $request)
+    {
+      try {
+        $id_modelo = $request->input('id_modelo');
+        $modelo_dueno = $request->input('modelo_dueno');
+        //$data = DescuentoAsociado::findOrFail($id);
+        $dueno = (new DescuentoAsociadoService())->filtro($id_modelo, $modelo_dueno);
+        return $dueno;
+      } catch (ModelNotFoundException $ex) {
+        return response()->json([
+            'error' => 'No se pudo consultar el modelo' .$ex
+        ], 500);
+      }  
     }
 
     /**
@@ -106,4 +138,23 @@ class DescuentoAsociadoController extends Controller
             ], 500);
         }
     }
+    private function determinarTipoArchivo($extension)
+    {
+        switch (strtolower($extension)) {
+            case 'pdf':
+                return 'PDF';
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+                return 'Imagen';
+            case 'doc':
+            case 'docx':
+                return 'Documento de Word';
+            case 'xls':
+            case 'xlsx':
+                return 'Hoja de cálculo';
+            default:
+                return 'Desconocido';
+        }
+    }  
 }
