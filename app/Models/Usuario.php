@@ -185,7 +185,9 @@ class Usuario extends Model
 
     public static function ConsultarPorCodigo(string $usuario){
         $data = Usuario::with('tomas.calle1','tomas.entre_calle1','tomas.entre_calle2','tomas.colonia1','tomas.ordenesTrabajo')//,
-        ->where("codigo_usuario",$usuario)->paginate(10);
+        ->where("codigo_usuario",$usuario)->orWhereHas('tomas',function($q) use ($usuario){
+            $q->where('codigo_toma',$usuario);
+        })->paginate(10);
           return $data;
     }
 

@@ -266,7 +266,28 @@ class OrdenTrabajoService{
         switch($tipo_modelo){
             case "toma":
                 $OTModelo=Toma::find($ordenTrabajo['id_toma']);
-                $dato=[$Accion['campo']=>$Accion['valor']];
+
+                //Checa caso especifico de instalación o dada de baja de servicios
+                if ($Accion['campo']=="c_agua" || $Accion['campo']=="c_alc" || $Accion['campo']=="c_san" ){
+                    $servicio=$Accion['campo'];
+                    $estado=$Accion['valor'];
+                    if ($estado=="activa"){
+                        $valor=match($servicio){
+                            'c_agua'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','agua')->first()->id,
+                            'c_alc'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
+                            'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
+                        };
+                        $dato=[$servicio=>$valor];
+                    }
+                    else if ($estado=="de baja"){
+                        $dato=[$servicio=>null];
+                    }
+                    
+
+                }
+                else{
+                    $dato=[$Accion['campo']=>$Accion['valor']];
+                }
                 $OTModelo->update($dato);
                 $OTModelo->save();
                 
@@ -416,7 +437,7 @@ class OrdenTrabajoService{
                 'monto' => $tarifa['monto'],
                 'iva' => $iva,
                 'estado' => "pendiente",
-                'fecha_cargo' => Carbon::today()->format('Y-m-d'),
+                'fecha_cargo' => helperFechaAhora(),
             ]));
         }
         return $cargos;
