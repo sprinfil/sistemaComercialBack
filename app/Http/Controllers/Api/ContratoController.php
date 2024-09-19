@@ -343,7 +343,7 @@ class ContratoController extends Controller
             //$cot=;
             return response()->json(["cotizacion" => $newCollection,"id_cotizacion"=> $cotizacion['id']]);
         } catch (Exception $ex) {
-            return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
+            return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 500);
         }
     }
     public function crearCotizacion(Cotizacion $cotizacion, Request $request)
@@ -358,7 +358,7 @@ class ContratoController extends Controller
             return response()->json(["Tarifa"=> $concepto]) ;
           
         } catch (Exception $ex) {
-            return response()->json(['error' => 'No se pudo crear la cotización, introduzca datos correctos'], 200);
+            return response()->json(['error' => 'No se pudo crear la cotización, introduzca datos correctos'], 500);
         }
     }
     public function terminarCotizacion(Cotizacion $cotizacion, UpdateCotizacionRequest $request)
