@@ -167,7 +167,7 @@ class ConvenioService{
           "monto_total" => $montoFinalPendienteTotal,
         ];
 
-        $convenio->update($convenioMontos); 
+        $convenio->update($convenioMontos);  //redondea las variables desde aqui
         $convenio->save();
 
         //Registra las letras
@@ -180,7 +180,7 @@ class ConvenioService{
          $fechaCobro =Carbon::parse($fechaCobro)->format('Y-m-d');
 
          if ($i==($data['cantidad_letras']-1)) {
-          $montoPorLetra = ceil($convenio->monto_total-$montoLetraSuma);
+          $montoPorLetra = $convenio->monto_total-$montoLetraSuma;
          }
           
           $letrasArray = [
@@ -213,7 +213,36 @@ class ConvenioService{
 
     public function CancelarConvenioService(Request $data)
     {
+      try {
+        $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
+        ->where('id_modelo',$data->id_modelo)
+        ->where('estado','activo')
+        ->first();
+        $cargos = Cargo::where('id_convenio',$convenio->id)
+        ->get();
+        $letras = Letra::where('id_convenio',$convenio->id)
+        ->get();
+       
+        $arregloCargo = $cargos->toArray();
+        $arregloLetra = $letras->toArray();
 
+        $convenioUpdt = [
+          "estado" => "cancelado" 
+        ];
+
+        $cargoUpdt = [
+          "estado" => "pendiente"
+        ];
+
+        $letraUpdt = [
+           "estado" => "cancelado"
+        ];
+
+        $convenio->update($convenioUpdt);
+        
+      } catch (Exception $ex) {
+        
+      }
     }
 
 }
