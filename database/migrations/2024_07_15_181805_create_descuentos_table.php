@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('descuentos', function (Blueprint $table) {
             $table->id();
-            $table->string('id_descuento_aplicado');
+            $table->unsignedBigInteger('id_descuento_aplicado');
             $table->unsignedBigInteger('id_descuento_asociado');
             $table->decimal('monto_total');
             $table->softDeletes();

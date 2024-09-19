@@ -17,11 +17,14 @@ class DescuentoAsociadoResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "id_usuario" => $this->id_usuario,
-            "id_toma" => $this->id_toma,
             "id_descuento" => $this->id_descuento,
+            "id_modelo" => $this->id_modelo,
+            "modelo_dueno" => $this->modelo_dueno,
+            "id_evidencia" => $this->id_evidencia,
+            "id_registra" => $this->id_registra,
+            "vigencia" => $this->vigencia,
+            "estatus" => $this->estatus,
             "folio" => $this->folio,
-            "evidencia" => $this->evidencia,
         ];
     }
 }

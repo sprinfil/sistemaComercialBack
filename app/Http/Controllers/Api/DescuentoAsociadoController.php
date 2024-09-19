@@ -7,20 +7,32 @@ use App\Models\DescuentoAsociado;
 use App\Http\Requests\StoreDescuentoAsociadoRequest;
 use App\Http\Requests\UpdateDescuentoAsociadoRequest;
 use App\Http\Resources\DescuentoAsociadoResource;
+use App\Services\AtencionUsuarios\DescuentoAsociadoService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class DescuentoAsociadoController extends Controller
 {
+    protected $descuentoasociado;
+
+    /**
+     * Constructor del controller
+     */
+    public function __construct(DescuentoAsociado $_descuentoasociado)
+    {
+        $this->descuentoasociado = $_descuentoasociado;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         try{
-            return response(DescuentoAsociadoResource::collection(
-                DescuentoAsociado::all()
-            ),200);
+            DB::beginTransaction();
+            $descuentoasociado = (new DescuentoAsociadoService())->index();
+            DB::commit();
+            return $descuentoasociado;
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No fue posible consultar los descuentos'
@@ -35,8 +47,10 @@ class DescuentoAsociadoController extends Controller
     {
         try{
             $data = $request->validated();
-            $descuento = DescuentoAsociado::create($data);
-            return response(new DescuentoAsociadoResource($descuento), 201);
+            DB::beginTransaction();
+            $descuento = (new DescuentoAsociadoService())->store($data);
+            DB::commit();
+            return $descuento;
         } catch(Exception $e) {
             return response()->json([
                 'error' => 'No se pudo guardar el descuento'
