@@ -52,7 +52,7 @@ class ContratoService{
             }
 
             if ( $estado && $estado=="pre-contrato"){
-                $CrearContrato['estatus']="contratado";
+                $CrearContrato['estatus']="pendiente de pago";
                 
             }
             else{
@@ -67,6 +67,8 @@ class ContratoService{
             
             $cont=Contrato::create($CrearContrato);
             $c->push($cont);
+
+            /*
             if  ($cont['estatus']=="contratado"){
 
                 if ($cont['servicio_contratado']=="agua"){
@@ -77,6 +79,7 @@ class ContratoService{
                     $toma->update(["c_san"=>$cont['id']]);
                 }
             }
+                */
             $id_empleado_asigno=auth()->user()->operador->id;
             if ($solicitud==true){
                 $factibilidad->push(Factibilidad::create([
@@ -94,14 +97,17 @@ class ContratoService{
         $existe=Toma::find($idToma) ?? null;
         if  (!$nuevaToma){
             if ($existe['id_usuario']!=$id_usuario && $existe['tipo_contratacion']!="pre-contrato"){
-                return [ 'message' => 'Esta toma o toma asociada a la clave catastral, ya esta contratada a otro usuario'];
+                return [ 'message' => 'Esta toma ya esta contratada a otro usuario'];
             }
             $toma=$existe;
+            /*
             if ($toma['tipo_contratacion']=="pre-contrato"){
                 $toma->update(["tipo_contratacion"=>"normal"]);
             }
+                */
+
             ///TO DO CARGOS A TOMA CAMBIO DE NOMBRE
-            
+
         }
         else{
             $toma=$nuevaToma;

@@ -437,7 +437,7 @@ class OrdenTrabajoService{
                 'monto' => $tarifa['monto'],
                 'iva' => $iva,
                 'estado' => "pendiente",
-                'fecha_cargo' => Carbon::today()->format('Y-m-d'),
+                'fecha_cargo' => helperFechaAhora(),
             ]));
         }
         return $cargos;
