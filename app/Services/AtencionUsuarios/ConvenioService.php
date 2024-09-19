@@ -10,6 +10,7 @@ use App\Models\Convenio;
 use App\Models\Letra;
 use App\Models\Toma;
 use App\Models\Usuario;
+use App\Services\Caja\PagoService;
 use Carbon\Carbon;
 use DateInterval;
 use Exception;
@@ -175,6 +176,7 @@ class ConvenioService{
         $montoPorLetra = round($convenio->monto_total/$convenio->cantidad_letras, 2);
 
          $mensualidad = new DateInterval('P1M');  //Sumar meses o años: Puedes usar P1M para un mes o P1Y para un año en lugar de días.
+         $letrasCargo = [];
 
         for ($i=0; $i < $data['cantidad_letras']; $i++) { 
 
@@ -190,9 +192,13 @@ class ConvenioService{
             "monto" => $montoPorLetra,
             "vigencia" => $fechaCobro,
           ];
+         
           $montoLetraSuma += $montoPorLetra;
           
           $letra = Letra::create($letrasArray);
+          if ($i==0) {
+            $letrasCargo =  $letra;
+          }
           $ArregloLetras[$i] = $letra;
          
           $fechaCobro = Carbon::parse($fechaCobro);
@@ -202,26 +208,32 @@ class ConvenioService{
         }
         
         //Aqui van los cargos to do pendiente el concepto que se le asigna al convenio debe estar definido en una configuracion 
-        /*
+        
         $concepto = ConceptoCatalogo::find(148);
+        $fecha = helperFechaAhora();
+        $fecha = Carbon::parse($fecha)->format('Y-m-d');
+        
         $RegistroCargo = [
           "id_concepto" => $concepto->id,
           "nombre" => $concepto->nombre,
 
-          "id_origen" => $letrasArray[0]['id'],
+          "id_origen" => $letrasCargo['id'],
           "modelo_origen" => 'letra',
 
           "id_dueno" => $data['id_modelo'],
           "modelo_dueno" => $data['modelo_origen'],
 
-          "monto" => $convenio->id,
+          "monto" => $letrasCargo['monto'],
           "iva" => 0,
           "estado" => 'pendiente',
           "id_convenio" => null,
-          "fecha_cargo" => $convenio->id,
-          "fecha_liquidacion" => $convenio->id,
 
-        ];*/
+          "fecha_cargo" => $fecha,
+          "fecha_liquidacion" => null,
+
+        ];
+        $cargo = Cargo::create($RegistroCargo);
+        
 
         return json_encode($ArregloLetras);
        
@@ -257,6 +269,12 @@ class ConvenioService{
         $arregloCargo = $cargos->toArray();
         $arregloLetra = $letras->toArray();
 
+       
+       $cargosLetrados = Cargo::where('id_origen',$arregloLetra)
+        ->where('modelo_origen','letra') 
+        ->update(['estado' => 'cancelado']);
+      
+
         $convenioUpdt = [
           "estado" => "cancelado" 
         ];
@@ -264,6 +282,10 @@ class ConvenioService{
         $convenio->update($convenioUpdt);
         Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
         Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
+
+        //
+        $estatus = (new PagoService())->consolidarEstados($convenio->id_modelo, $convenio->modelo_origen);
+        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
 
         return response()->json([
           'El convenio se ha cancelado correctamente.'
