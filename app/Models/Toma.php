@@ -142,7 +142,7 @@ class Toma extends Model
 
     public function factibilidades(): HasMany
     {
-        return $this->hasMany(Factibilidad::class);
+        return $this->hasMany(Factibilidad::class, 'id_toma')->orderBy('created_at', 'desc');
     }
 
     public function ordenesTrabajo(): HasMany
@@ -204,6 +204,16 @@ class Toma extends Model
     public function getDireccionCompleta()
     {
         return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
+    }
+
+    public function convenios(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
+
+    public function conveniosActivos(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
     }
 
     public function saldoToma()
