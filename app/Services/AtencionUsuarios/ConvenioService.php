@@ -5,6 +5,7 @@ use App\Http\Requests\StoreConvenioRequest;
 use App\Models\Cargo;
 use App\Models\CargosConveniado;
 use App\Models\ConceptoAplicable;
+use App\Models\ConceptoCatalogo;
 use App\Models\Convenio;
 use App\Models\Letra;
 use App\Models\Toma;
@@ -200,22 +201,27 @@ class ConvenioService{
          
         }
         
-        //Aqui van los cargos to do pendiente 
+        //Aqui van los cargos to do pendiente el concepto que se le asigna al convenio debe estar definido en una configuracion 
+        /*
+        $concepto = ConceptoCatalogo::find(148);
         $RegistroCargo = [
-          "id_concepto" => $convenio->id,
-          "nombre" => $convenio->id,
-          "id_origen" => $convenio->id,
+          "id_concepto" => $concepto->id,
+          "nombre" => $concepto->nombre,
+
+          "id_origen" => $letrasArray[0]['id'],
           "modelo_origen" => 'letra',
-          "id_dueno" => $convenio->id,
-          "modelo_dueno" => $convenio->id,
+
+          "id_dueno" => $data['id_modelo'],
+          "modelo_dueno" => $data['modelo_origen'],
+
           "monto" => $convenio->id,
-          "iva" => $convenio->id,
-          "estado" => $convenio->id,
-          "id_convenio" => $convenio->id,
+          "iva" => 0,
+          "estado" => 'pendiente',
+          "id_convenio" => null,
           "fecha_cargo" => $convenio->id,
           "fecha_liquidacion" => $convenio->id,
 
-        ];
+        ];*/
 
         return json_encode($ArregloLetras);
        
@@ -232,6 +238,7 @@ class ConvenioService{
       ->where('id_modelo',$data->id_modelo)
       ->where('estado','activo')
       ->with('letra')
+      ->with('ConvenioCatalogo')
       ->first();
       return json_encode($convenio);
     }
@@ -239,17 +246,14 @@ class ConvenioService{
     public function CancelarConvenioService(Request $data)
     {
       try {
-        $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
-        ->where('id_modelo',$data->id_modelo)
-        ->where('estado','activo')
-        ->first();
+        $convenio = Convenio::find($data['id_convenio']);
         $cargos = Cargo::select('id')
         ->where('id_convenio',$convenio->id)
         ->get();
         $letras = Letra::select('id')
         ->where('id_convenio',$convenio->id)
         ->get();
-
+        
         $arregloCargo = $cargos->toArray();
         $arregloLetra = $letras->toArray();
 
