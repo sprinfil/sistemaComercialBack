@@ -341,7 +341,7 @@ class ContratoController extends Controller
             })->toArray();
             $newCollection[]=($contrato);
             //$cot=;
-            return response()->json(["cotizacion" => $newCollection]);
+            return response()->json(["cotizacion" => $newCollection,"id_cotizacion"=> $cotizacion['id']]);
         } catch (Exception $ex) {
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
         }
