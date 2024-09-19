@@ -167,7 +167,7 @@ class ConvenioService{
           "monto_total" => $montoFinalPendienteTotal,
         ];
 
-        $convenio->update($convenioMontos); 
+        $convenio->update($convenioMontos);  //redondea las variables desde aqui
         $convenio->save();
 
         //Registra las letras
@@ -180,7 +180,7 @@ class ConvenioService{
          $fechaCobro =Carbon::parse($fechaCobro)->format('Y-m-d');
 
          if ($i==($data['cantidad_letras']-1)) {
-          $montoPorLetra = ceil($convenio->monto_total-$montoLetraSuma);
+          $montoPorLetra = $convenio->monto_total-$montoLetraSuma;
          }
           
           $letrasArray = [
@@ -199,8 +199,23 @@ class ConvenioService{
           $fechaCobro->add($mensualidad);
          
         }
+        
+        //Aqui van los cargos to do pendiente 
+        $RegistroCargo = [
+          "id_concepto" => $convenio->id,
+          "nombre" => $convenio->id,
+          "id_origen" => $convenio->id,
+          "modelo_origen" => 'letra',
+          "id_dueno" => $convenio->id,
+          "modelo_dueno" => $convenio->id,
+          "monto" => $convenio->id,
+          "iva" => $convenio->id,
+          "estado" => $convenio->id,
+          "id_convenio" => $convenio->id,
+          "fecha_cargo" => $convenio->id,
+          "fecha_liquidacion" => $convenio->id,
 
-        //Aqui van los cargos
+        ];
 
         return json_encode($ArregloLetras);
        
@@ -211,9 +226,50 @@ class ConvenioService{
       }
     }
 
+    public function ConsultarConvenioService(Request $data)
+    {
+      $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
+      ->where('id_modelo',$data->id_modelo)
+      ->where('estado','activo')
+      ->with('letra')
+      ->first();
+      return json_encode($convenio);
+    }
+
     public function CancelarConvenioService(Request $data)
     {
+      try {
+        $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
+        ->where('id_modelo',$data->id_modelo)
+        ->where('estado','activo')
+        ->first();
+        $cargos = Cargo::select('id')
+        ->where('id_convenio',$convenio->id)
+        ->get();
+        $letras = Letra::select('id')
+        ->where('id_convenio',$convenio->id)
+        ->get();
 
+        $arregloCargo = $cargos->toArray();
+        $arregloLetra = $letras->toArray();
+
+        $convenioUpdt = [
+          "estado" => "cancelado" 
+        ];
+
+        $convenio->update($convenioUpdt);
+        Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
+        Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
+
+        return response()->json([
+          'El convenio se ha cancelado correctamente.'
+        ]);
+        
+      } catch (Exception $ex) {
+         return response()->json([
+          'Ocurio un error durante la cancelación del convenio.'.$ex
+        ]);
+      }
     }
 
 }

@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\ConceptoAplicable;
 use App\Models\ConceptoCatalogo;
 use App\Models\ConvenioCatalogo;
+use App\Models\TipoToma;
+use App\Models\TipoTomaAplicable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -44,7 +46,16 @@ class ConvenioCatalogoFactory extends Factory
                     'modelo' => 'convenio_catalogo',
                 ]);
             }
-                     
+
+            $tipo_tomas = TipoToma::all();
+
+            foreach ($tipo_tomas as $tipo_toma) {
+                TipoTomaAplicable::factory()->create([
+                    'id_tipo_toma' => $tipo_toma->id,
+                    'id_modelo' => $convenio->id,
+                    'modelo_origen' => 'convenio_catalogo',
+                ]);
+            }
         });
     }
 }

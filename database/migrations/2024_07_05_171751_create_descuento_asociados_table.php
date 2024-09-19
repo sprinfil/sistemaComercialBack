@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('descuento_asociados', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('id_usuario')->unsigned()->default('1'); 
-            $table->bigInteger('id_toma')->unsigned()->default('1'); 
-            $table->bigInteger('id_descuento')->unsigned()->default('1'); 
-            $table->string('folio');
-            $table->string('evidencia')->nullable();;
+            $table->unsignedBigInteger('id_descuento')->nullable();
+            $table->unsignedBigInteger('id_modelo')->nullable();
+            $table->enum('modelo_dueno', ['toma' , 'usuario'])->nullable();
+            $table->unsignedBigInteger('id_evidencia')->nullable();
+            $table->unsignedBigInteger('id_registra')->nullable();
+            $table->dateTime('vigencia')->nullable();
+            $table->enum('estatus' , ['vigente' , 'no_vigente'])->nullable();
+            $table->string('folio')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

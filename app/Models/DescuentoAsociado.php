@@ -12,11 +12,14 @@ class DescuentoAsociado extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        "id_usuario",
-        "id_toma",
         "id_descuento",
-        "folio",
-        "evidencia",
+        "id_modelo",
+        "modelo_dueno",
+        "id_evidencia",
+        "id_registra",
+        "vigencia",
+        "estatus",
+        "folio"
     ];
 
     // Usuario asociado al descuento
@@ -26,9 +29,12 @@ class DescuentoAsociado extends Model
     }
 
     // Toma asociada al descuento
-    public function toma() : BelongsTo
+    public function dueno() 
     {
-        return $this->belongsTo(Toma::class, 'id_toma');
+       if ($this->modelo_dueno == 'toma') {
+        return $this->belongsTo(Toma::class, 'id_modelo');
+       }
+       return $this->belongsTo(Usuario::class, 'id_modelo');
     }
 
     // Origen del descuento
