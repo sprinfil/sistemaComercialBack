@@ -151,16 +151,16 @@ class ConvenioService{
           $cargosConveniados =[
             "id_cargo" => $cargo['id'],
             "id_convenio" => $convenio->id,
-            "monto_original_pendiente" => $montoOriginalPendiente,
-            "monto_final_pendiente" => $montoFinalPendiente,
+            "monto_original_pendiente" =>  round($montoOriginalPendiente, 2),
+            "monto_final_pendiente" =>  round($montoFinalPendiente, 2),
             "porcentaje_conveniado" => $cargo['porcentaje_conveniado'],
-            "monto_conveniado" => $montoConveniado,
+            "monto_conveniado" => round($montoConveniado, 2),
           ];
 
           CargosConveniado::create($cargosConveniados); 
 
-          $montoConveniadoTotal += $montoConveniado;
-          $montoFinalPendienteTotal += $montoFinalPendiente;
+          $montoConveniadoTotal += round($montoConveniado, 2);
+          $montoFinalPendienteTotal += round($montoFinalPendiente, 2);
 
         }
         //Actualizar el registro de convenio con los montos
