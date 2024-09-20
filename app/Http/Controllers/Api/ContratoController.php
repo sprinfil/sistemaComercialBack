@@ -331,11 +331,17 @@ class ContratoController extends Controller
         try {
             $id_contratos = $request->all()['contrato'];
             $cotizacion = Contrato::find($id_contratos['id'])->cotizacionesVigentes;
-            $cotizacion->cotizacionesDetalles;
+           $detalles=$cotizacion->cotizacionesDetalles;
             $contrato=$cotizacion->contrato->tarifaContrato();
             $contrato->concepto;
-
-            return response()->json(["cotizacion" => $cotizacion, "cargo_contrato"=>$contrato]);
+            $newCollection = $detalles->map(function ($det) {
+                $nuevo=$det;
+                $nuevo['concepto']=$det->concepto;
+                return $det;
+            })->toArray();
+            $newCollection[]=($contrato);
+            //$cot=;
+            return response()->json(["cotizacion" => $newCollection,"id_cotizacion"=> $cotizacion['id']]);
         } catch (Exception $ex) {
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
         }
@@ -376,11 +382,15 @@ class ContratoController extends Controller
     }
     public function destroyCot(Cotizacion $cotizacion, Request $request)
     {
-        $cotizacion = Cotizacion::findOrFail($request["id"]);
-        $cotizacion->delete();
-        return response()->json(['message' => 'Eliminado correctamente'], 200);
+  
+        
         try {
-        } catch (\Exception $e) {
+            DB::beginTransaction();
+            $cotizacion = Cotizacion::findOrFail($request["id"]);
+            $cotizacion->delete();
+            DB::commit();
+            return response()->json(['message' => 'Eliminado correctamente'], 200);
+        } catch (Exception $e) {
 
             return response()->json(['message' => 'error'], 500);
         }
