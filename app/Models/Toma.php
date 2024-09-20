@@ -213,7 +213,7 @@ class Toma extends Model
 
     public function conveniosActivos(): MorphMany
     {
-        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo')->first();
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
     }
 
     public function saldoToma()

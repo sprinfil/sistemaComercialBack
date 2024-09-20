@@ -74,7 +74,7 @@ class ConvenioService{
 
       } catch (Exception $ex) {
         return response()->json([
-          'Ocurrio un error durante la busqueda de cargos aplicables.'
+          'Ocurrio un error durante la busqueda de cargos aplicables.'.$ex
         ],500);
       }
     }
@@ -246,55 +246,72 @@ class ConvenioService{
 
     public function ConsultarConvenioService(Request $data)
     {
-      $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
-      ->where('id_modelo',$data->id_modelo)
-      ->where('estado','activo')
-      ->with('letra')
-      ->with('ConvenioCatalogo')
-      ->first();
-      return json_encode($convenio);
+      try {
+        $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
+        ->where('id_modelo',$data->id_modelo)
+        ->where('estado','activo')
+        ->with('letra')
+        ->with('ConvenioCatalogo')
+        ->first();
+        if ($convenio == null) {
+          return response()->json([
+            'error'=>'No se encontro convenio asociado a la toma o el usuario seleccionado.'
+          ]);
+        }
+        return json_encode($convenio);
+      } catch (Exception $ex) {
+        return response()->json([
+          'error'=>'Ocurrio un error al consultar el convenio.'.$ex
+        ],400);
+      }
+     
     }
 
     public function CancelarConvenioService(Request $data)
     {
       try {
         $convenio = Convenio::find($data['id_convenio']);
-        $cargos = Cargo::select('id')
-        ->where('id_convenio',$convenio->id)
-        ->get();
-        $letras = Letra::select('id')
-        ->where('id_convenio',$convenio->id)
-        ->get();
-        
-        $arregloCargo = $cargos->toArray();
-        $arregloLetra = $letras->toArray();
 
+        if ($convenio->estado == "activo") {
+
+          $cargos = Cargo::select('id')
+          ->where('id_convenio',$convenio->id)
+          ->get();
+          $letras = Letra::select('id')
+          ->where('id_convenio',$convenio->id)
+          ->get();
+          
+          $arregloCargo = $cargos->toArray();
+          $arregloLetra = $letras->toArray();
+          
+         $cargosLetrados = Cargo::where('id_origen',$arregloLetra)
+          ->where('modelo_origen','letra') 
+          ->update(['estado' => 'cancelado']);
+         
+          $convenioUpdt = [
+            "estado" => "cancelado" 
+          ];
+  
+          $convenio->update($convenioUpdt);
+          Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
+          Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
+          //
+          $estatus = (new PagoService())->consolidarEstados($convenio->id_modelo, $convenio->modelo_origen);
+          $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
+          return response()->json([
+            'El convenio se ha cancelado correctamente.'
+          ]);
+          
+        }else{
+          return response()->json([
+            'error'=>'No se encontro convenio seleccionado.'
+          ],400);
+        }
        
-       $cargosLetrados = Cargo::where('id_origen',$arregloLetra)
-        ->where('modelo_origen','letra') 
-        ->update(['estado' => 'cancelado']);
-      
-
-        $convenioUpdt = [
-          "estado" => "cancelado" 
-        ];
-
-        $convenio->update($convenioUpdt);
-        Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
-        Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
-
-        //
-        $estatus = (new PagoService())->consolidarEstados($convenio->id_modelo, $convenio->modelo_origen);
-        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
-
-        return response()->json([
-          'El convenio se ha cancelado correctamente.'
-        ]);
-        
       } catch (Exception $ex) {
          return response()->json([
           'Ocurio un error durante la cancelación del convenio.'.$ex
-        ]);
+        ],400);
       }
     }
 
