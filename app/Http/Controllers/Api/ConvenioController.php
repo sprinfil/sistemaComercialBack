@@ -197,4 +197,19 @@ class ConvenioController extends Controller
             ]); 
         }
     }
+
+    public function ConsultarListaConvenio()
+    {
+        try {
+            DB::beginTransaction();
+            $convenio = (new ConvenioService())->ConsultarListaConvenioService();
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al registrar el convenio.'
+            ]); 
+        }
+    }
 }
