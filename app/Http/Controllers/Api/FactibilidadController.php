@@ -10,6 +10,8 @@ use App\Http\Requests\StoreFactibilidadRequest;
 use App\Http\Requests\UpdateFactibilidadRequest;
 use App\Http\Resources\FactibilidadResource;
 use App\Models\Archivo;
+use App\Models\Cargo;
+use App\Models\ConceptoCatalogo;
 use App\Models\Contrato;
 use App\Services\ArchivoService;
 use Exception;
@@ -119,6 +121,29 @@ class FactibilidadController extends Controller
 
             $factibilidad->update($data);
             $factibilidad->save();
+
+            $factibilidad_cargada = Factibilidad::findOrFail($factibilidad->id);
+            $concepto = ConceptoCatalogo::findOrFail(43);
+            $RegistroCargo = [
+                "id_concepto" => $concepto->id,
+                "nombre" => $concepto->nombre,
+      
+                "id_origen" => $factibilidad->id,
+                "modelo_origen" => 'factibilidad',
+      
+                "id_dueno" => $factibilidad->id_toma,
+                "modelo_dueno" => 'toma',
+      
+                "monto" => $factibilidad->derechos_conexion ?? 0,
+                "iva" => $factibilidad->derechos_conexion*0.12,
+                "estado" => 'pendiente',
+                "id_convenio" => null,
+      
+                "fecha_cargo" => now(),
+                "fecha_liquidacion" => null,
+      
+            ];
+            $cargo = Cargo::create($RegistroCargo);
 
             $factibilidad->load('archivos', 'toma');
 
