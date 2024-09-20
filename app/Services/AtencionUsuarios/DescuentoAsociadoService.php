@@ -64,13 +64,19 @@ public function store (array $data)
 public function filtro($id_modelo, $modelo_dueno)
 {
     try {
-        $filt = DescuentoAsociado::where('modelo_dueno' , $modelo_dueno)
-        ->orWhere('id_modelo' , $id_modelo)
+        $filtro = DescuentoAsociado::when($id_modelo, function ($query, $id_modelo){
+            return $query->where('id_modelo' , $id_modelo);
+        })
+        ->when($modelo_dueno , function($query , $modelo_dueno){
+            return $query->where('modelo_dueno' , $modelo_dueno);
+        })
         ->get();
-        if (!$filt) {
-            return response()->json(['message' => 'No se encontraron resultados']);
+        if ($filtro->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron resultados'] , 404);
         }
-        return $filt;
+        else{
+            return response()->json($filtro, 200);
+        }
     } catch (Exception $ex) {
         return response()->json(['error' => 'Ocurrio un error al consultar el descuento asociado. ' . $ex], 500);
     }
@@ -82,7 +88,7 @@ public function CancelarDescuento (array $data , $id)
         $status = $data['estatus'];
         $estatus = DescuentoAsociado::findOrFail($id);
         if (!$estatus) {
-            return response()->json(['message' => 'No se encontraron resultados. ', 400]);
+            return response()->json(['message' => 'No se encontraron resultados. ', 404]);
         }
         $estatus->update(['estatus' => $status]);
         $estatus->save();
