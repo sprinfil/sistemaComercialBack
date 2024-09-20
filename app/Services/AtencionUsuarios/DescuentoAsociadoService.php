@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\AtencionUsuarios;
 
 use App\Http\Resources\DescuentoAsociadoResource;
@@ -9,126 +10,119 @@ use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\Console\Input\Input;
 
-class DescuentoAsociadoService {
-
-public function index ()
-{
-    try {
-        return response(DescuentoAsociadoResource::collection(
-            DescuentoAsociado::all()
-        ),200);
-    } catch (Exception $ex) {
-        return response()->json(['error' => 'Ocurrio un error al buscar los descuentos asociados'] , 500);
-    }
-}
-
-public function store (array $data)
+class DescuentoAsociadoService
 {
 
-    try {
-        $folio = $data['folio'];
-
-        $id_modelo = $data['id_modelo'];
-        $modelo_dueno = $data['modelo_dueno'];
-
-
-        //Si el id_modelo / modelo dueño existen en descuentos asociados
-        $dueno = DescuentoAsociado::where('id_modelo', $id_modelo)
-        ->Where('modelo_dueno', $modelo_dueno)
-        ->exists();
-
-        $descuentos = DescuentoAsociado::where('folio' , $folio)
-        ->exists();
-
-        if ($dueno || $descuentos) {
-            return false;
+    public function index()
+    {
+        try {
+            return response(DescuentoAsociadoResource::collection(
+                DescuentoAsociado::all()
+            ), 200);
+        } catch (Exception $ex) {
+            return response()->json(['error' => 'Ocurrio un error al buscar los descuentos asociados'], 500);
         }
+    }
+
+    public function store(array $data)
+    {
+
+        try {
+            $folio = $data['folio'];
+            $id_modelo = $data['id_modelo'];
+            $modelo_dueno = $data['modelo_dueno'];
+
+            //Si el id_modelo / modelo dueño existen en descuentos asociados
+            $dueno = DescuentoAsociado::where('id_modelo', $id_modelo)
+                ->Where('modelo_dueno', $modelo_dueno)
+                ->where("estatus", "vigente")
+                ->exists();
+
+            $folio_igual = DescuentoAsociado::where('folio', $folio)->exists();
+
             if ($dueno) {
-            return response()->json(['message'=>'Ya existe un descuento asociado'] , 400);
+                return response()->json(['message' => 'Ya tiene un Descuento activo'], 400);
             }
-                if ($descuentos) {
-               return response()->json(['message'=>'Ya existe un folio o una evidencia'] , 400);
-                }
-                else{
+            if ($folio_igual) {
+                return response()->json(['message' => 'El folio no esta disponible'], 400);
+            } else {
                 $descuento = DescuentoAsociado::create($data);
             }
-        return response(new DescuentoAsociadoResource($descuento), 201);
-    } catch (Exception $ex) {
-       return response()->json(['error' => 'Ocurrio un error al registrar el descuento asociado. ' . $ex], 500);
-    }
-}
-
-public function filtro($id_modelo, $modelo_dueno)
-{
-    try {
-        $filtro = DescuentoAsociado::when($id_modelo, function ($query, $id_modelo){
-            return $query->where('id_modelo' , $id_modelo);
-        })
-        ->when($modelo_dueno , function($query , $modelo_dueno){
-            return $query->where('modelo_dueno' , $modelo_dueno);
-        })
-        ->get();
-        if ($filtro->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron resultados'] , 404);
+            return response(new DescuentoAsociadoResource($descuento), 201);
+        } catch (Exception $ex) {
+            return response()->json(['error' => 'Ocurrio un error al registrar el descuento asociado. ' . $ex], 500);
         }
-        else{
-            return response()->json($filtro, 200);
+    }
+
+    public function filtro($id_modelo, $modelo_dueno)
+    {
+        try {
+            $filtro = DescuentoAsociado::when($id_modelo, function ($query, $id_modelo) {
+                return $query->where('id_modelo', $id_modelo);
+            })
+                ->when($modelo_dueno, function ($query, $modelo_dueno) {
+                    return $query->where('modelo_dueno', $modelo_dueno);
+                })
+                ->get();
+            if ($filtro->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron resultados'], 404);
+            } else {
+                return response()->json($filtro, 200);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['error' => 'Ocurrio un error al consultar el descuento asociado. ' . $ex], 500);
         }
-    } catch (Exception $ex) {
-        return response()->json(['error' => 'Ocurrio un error al consultar el descuento asociado. ' . $ex], 500);
     }
-}
 
-public function CancelarDescuento (array $data , $id)
-{
-    try {
-        $status = $data['estatus'];
-        $estatus = DescuentoAsociado::findOrFail($id);
-        if (!$estatus) {
-            return response()->json(['message' => 'No se encontraron resultados. ', 404]);
+    public function CancelarDescuento(array $data, $id)
+    {
+        try {
+            $status = $data['estatus'];
+            $estatus = DescuentoAsociado::findOrFail($id);
+            if (!$estatus) {
+                return response()->json(['message' => 'No se encontraron resultados. ', 404]);
+            }
+            $estatus->update(['estatus' => $status]);
+            $estatus->save();
+            return response(new DescuentoAsociadoResource($estatus), 200);
+        } catch (Exception $ex) {
+            return response()->json(['error' => 'Ocurrio un error al cancelar el descuento. ' . $ex], 500);
         }
-        $estatus->update(['estatus' => $status]);
-        $estatus->save();
-        return response(new DescuentoAsociadoResource($estatus), 200);
-    } catch (Exception $ex) {
-        return response()->json(['error'=> 'Ocurrio un error al cancelar el descuento. ' .$ex] , 500);
     }
-}
 
-public function guardarArchivo ($file,$data)
-{
-    $path = $file->store('evidencia', 'public');
-    $filename = basename($path);
-    $extension = $file->getClientOriginalExtension();
-    $tipoArchivo = $this->determinarTipoArchivo($extension);
+    public function guardarArchivo($file, $data)
+    {
+        $path = $file->store('evidencia', 'public');
+        $filename = basename($path);
+        $extension = $file->getClientOriginalExtension();
+        $tipoArchivo = $this->determinarTipoArchivo($extension);
 
-    $archivo = [
-        'modelo' => 'descuento_asociado',
-        'id_modelo' => $data['id_modelo'],
-        'url' => $filename,
-        'tipo' => $tipoArchivo,
-    ];
-    return Archivo::create($archivo);
-}
-
-private function determinarTipoArchivo($extension)
-{
-    switch (strtolower($extension)) {
-        case 'pdf':
-            return 'PDF';
-        case 'jpg':
-        case 'jpeg':
-        case 'png':
-            return 'Imagen';
-        case 'doc':
-        case 'docx':
-            return 'Documento de Word';
-        case 'xls':
-        case 'xlsx':
-            return 'Hoja de cálculo';
-        default:
-            return 'Desconocido';
+        $archivo = [
+            'modelo' => 'descuento_asociado',
+            'id_modelo' => $data['id_modelo'],
+            'url' => $filename,
+            'tipo' => $tipoArchivo,
+        ];
+        return Archivo::create($archivo);
     }
-}
 
+    private function determinarTipoArchivo($extension)
+    {
+        switch (strtolower($extension)) {
+            case 'pdf':
+                return 'PDF';
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+                return 'Imagen';
+            case 'doc':
+            case 'docx':
+                return 'Documento de Word';
+            case 'xls':
+            case 'xlsx':
+                return 'Hoja de cálculo';
+            default:
+                return 'Desconocido';
+        }
+    }
 }
