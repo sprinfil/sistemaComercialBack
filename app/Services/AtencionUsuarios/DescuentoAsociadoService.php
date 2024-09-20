@@ -27,12 +27,10 @@ public function store (array $data)
 
     try {
         $folio = $data['folio'];
-        $id_evidencia = $data['id_evidencia'];
 
         $id_modelo = $data['id_modelo'];
         $modelo_dueno = $data['modelo_dueno'];
 
-        $id_descuento = $data['id_descuento'];
 
         //Si el id_modelo / modelo dueño existen en descuentos asociados
         $dueno = DescuentoAsociado::where('id_modelo', $id_modelo)
@@ -40,7 +38,6 @@ public function store (array $data)
         ->exists();
 
         $descuentos = DescuentoAsociado::where('folio' , $folio)
-        ->orWhere('id_evidencia' , $id_evidencia)
         ->exists();
 
         if ($dueno || $descuentos) {
@@ -107,7 +104,7 @@ public function guardarArchivo ($file,$data)
 
     $archivo = [
         'modelo' => 'descuento_asociado',
-        'id_modelo' => $data['id_evidencia'],
+        'id_modelo' => $data['id_modelo'],
         'url' => $filename,
         'tipo' => $tipoArchivo,
     ];
