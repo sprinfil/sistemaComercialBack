@@ -31,6 +31,7 @@ class TomaFactibilidadResource extends JsonResource
             "codigo_postal" => $this->codigo_postal,
             "numero_casa" => $this->numero_casa,
             "localidad" => $this->localidad,
+            "posicion" => $this->posicion,
             "direccion_completa" => $this->calle . "/" . $this->entre_calle_1 . $calle2 . " #" . $this->numero_casa . " " . $this->colonia,
             'tipo_toma' => new TipoTomaResource($this->whenLoaded('tipoToma')),
             'libro' => new LibroSimplificado($this->whenLoaded('libro')),

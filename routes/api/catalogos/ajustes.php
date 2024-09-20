@@ -18,7 +18,8 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(AjusteController::class)->group(function () {
         // ajustes a.u.
         Route::get("/Ajuste", "index");
-        Route::get("/Ajuste/show", "show");
+        Route::get("/Ajuste/show/{id}", "show");
+        Route::get("/Ajuste/showPorDueno", "showPorToma");
         Route::get("/Ajuste/comparar", "compare");
         Route::post("/Ajuste/create", "store");
         Route::put("/Ajuste/cancelar", "cancel");

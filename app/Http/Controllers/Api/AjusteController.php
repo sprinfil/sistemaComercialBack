@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateAjusteRequest;
 use App\Http\Resources\AjusteResource;
 use App\Services\AtencionUsuarios\AjusteService;
 use Exception;
+use Illuminate\Http\Request;
 
 class AjusteController extends Controller
 {
@@ -83,6 +84,21 @@ class AjusteController extends Controller
         try {
             return response(
                 $this->ajusteService->consultarAjuste($id),
+                200
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'No fue posible consultar los ajustes'
+            ], 500);
+        }
+    }
+
+    public function showPorToma(Request $request)
+    {
+        try {
+            $data = $request->all();
+            return response(
+                $this->ajusteService->consultarAjuste($data),
                 200
             );
         } catch (Exception $e) {

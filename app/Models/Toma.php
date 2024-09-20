@@ -203,7 +203,14 @@ class Toma extends Model
 
     public function getDireccionCompleta()
     {
-        return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
+        $calle1 = $this->calle1->nombre ?? '';
+        $calle2 = $this->entre_calle1->nombre ?? '';
+        $calle3 = $this->entre_calle2->nombre ?? '';
+        $calle4 = $this->colonia1->nombre ?? '';
+        $calle5 = $this->$this->codigo_postal ?? '';
+        $calle6 = $this->localidad ?? '';
+        $direccion = "{$calle1}, entre {$calle2} y {$calle3}, {$calle4}, {$calle5}, {$calle6}";
+        return $direccion;
     }
 
     public function convenios(): MorphMany
