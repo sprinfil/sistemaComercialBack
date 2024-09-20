@@ -56,16 +56,18 @@ class ConvenioService{
             ->where('id_modelo',$data['id_convenio_catalogo'])
             ->get();
             
+            $cargo_selecionado = Cargo::findOrFail($cargo['id_concepto']);
           
             if (count($temp) != 0) {
               $cargosAplicables[$nxt] = $cargo;
               $cargosAplicables[$nxt]['aplicable'] = "si";
               $cargosAplicables[$nxt]['rango_minimo'] = $temp[0]['rango_minimo'];
-              $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];             
+              $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];         
+              $cargosAplicables[$nxt]['monto_pendiente'] = $cargo_selecionado->montoPendiente();             
             }
             else{
               $cargosAplicables[$nxt] = $cargo;
-              $cargosAplicables[$nxt]['aplicable'] = "No";
+              $cargosAplicables[$nxt]['aplicable'] = "No";          
             }          
             $nxt++;
           }
@@ -183,7 +185,7 @@ class ConvenioService{
          $fechaCobro =Carbon::parse($fechaCobro)->format('Y-m-d');
 
          if ($i==($data['cantidad_letras']-1)) {
-          $montoPorLetra = $convenio->monto_total-$montoLetraSuma;
+          $montoPorLetra = round($convenio->monto_total-$montoLetraSuma,2);
          }
           
           $letrasArray = [
