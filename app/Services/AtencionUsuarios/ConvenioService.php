@@ -315,4 +315,23 @@ class ConvenioService{
       }
     }
 
+    public function ConsultarListaConvenioService()
+    {
+      try {
+        $convenio = Convenio::with('letra')
+        ->with('ConvenioCatalogo')
+        ->get();
+        if ($convenio == null) {
+          return response()->json([
+            'error'=>'No se encontraron registros de convenios.'
+          ]);
+        }
+        return json_encode($convenio);
+      } catch (Exception $ex) {
+        return response()->json([
+          'error'=>'Ocurrio un error al consultar el convenio.'.$ex
+        ],400);
+      }
+    }
+
 }
