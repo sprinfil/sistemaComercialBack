@@ -50,25 +50,20 @@ class DescuentoAsociadoController extends Controller
         try{
             $data = $request->validated();
             DB::beginTransaction();
+            $descuentoAsociado = new DescuentoAsociadoService();
+            $descuento = $descuentoAsociado->store($data);
+            if (!$descuento) {
+                return response()->json(['message' => 'Ya existe un descuento asociado, un folio o una evidencia'], 400);
+            }
             if ($request->hasFile('evidencia')) {
                 foreach ($request->file('evidencia') as $file) {
-                    $path = $file->store('evidencia' , 'public');
-                    $filename = basename($path);
-                    $extension = $file->getClientOriginalExtension();
-                    $tipoArchivo = $this->determinarTipoArchivo($extension);
-                        $archivo = [
-                            'modelo' => 'descuento_asociado',
-                            'id_modelo' => $data['id_evidencia'],
-                            'url' => $filename,
-                            'tipo' => $tipoArchivo
-                        ];
-                        $archivo = Archivo::create($archivo);
+                    $descuentoAsociado->guardarArchivo($file, $data);
                 }
             }
-            $descuento = (new DescuentoAsociadoService())->store($data);
             DB::commit();
             return $descuento;
         } catch(Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'error' => 'No se pudo guardar el descuento ' .$e
             ], 500);
@@ -123,6 +118,22 @@ class DescuentoAsociadoController extends Controller
         }
     }
 
+    public function CancelarDescuento (UpdateDescuentoAsociadoRequest $request , $id)
+    {
+        try {
+            $data = $request->validated();
+            DB::beginTransaction();
+            $corte = (new DescuentoAsociadoService())->CancelarDescuento($data , $id);
+            DB::commit();
+            return $corte;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al cancelar el descuento. '.$ex
+            ], 500);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -138,23 +149,5 @@ class DescuentoAsociadoController extends Controller
             ], 500);
         }
     }
-    private function determinarTipoArchivo($extension)
-    {
-        switch (strtolower($extension)) {
-            case 'pdf':
-                return 'PDF';
-            case 'jpg':
-            case 'jpeg':
-            case 'png':
-                return 'Imagen';
-            case 'doc':
-            case 'docx':
-                return 'Documento de Word';
-            case 'xls':
-            case 'xlsx':
-                return 'Hoja de cálculo';
-            default:
-                return 'Desconocido';
-        }
-    }  
+
 }
