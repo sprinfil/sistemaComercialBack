@@ -39,10 +39,10 @@ class StoreContratoRequest extends FormRequest
             //'contrato.diametro_toma' => 'sometimes|string',
             'contrato.num_casa' => 'sometimes|string',
             'contrato.codigo_postal' => 'sometimes|string',
-            'contrato.coordenada' => 'nullable|string',
+            'contrato.coordenada' => 'nullable|array',
 
             "toma"=>"sometimes|array",
-            "toma.id_giro_comercial"=>'sometimes|exists:giro_comercial_catalogos,id',
+            "toma.id_giro_comercial"=>'nullable|exists:giro_comercial_catalogos,id',
             "toma.id_libro"=>'sometimes|exists:libros,id',
             //"toma.calle"=>'sometimes|integer',
             //"toma.colonia"=>'sometimes|integer',

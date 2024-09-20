@@ -56,6 +56,9 @@ class ConceptoCatalogo extends Model
     {
         return $this->hasMany(OrdenesTrabajoCargo::class,'id_concepto_catalogo','id');
     }
+    public function CotizacionDetalle():HasMany{
+        return $this->hasMany(CotizacionDetalle::class,'id_concepto');
+    }
 
     // Busqueda por nombre
     public static function buscarPorNombre(string $nombre){

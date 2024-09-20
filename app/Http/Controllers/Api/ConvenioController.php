@@ -165,13 +165,12 @@ class ConvenioController extends Controller
         }
     }
 
-    public function CancelarConvenio(Request $request)
+    public function ConsultarConvenio(Request $request)
     {
        
         try {
             DB::beginTransaction();
-           // $data = $request->validated();
-            $convenio = (new ConvenioService())->CancelarConvenioService($request);
+            $convenio = (new ConvenioService())->ConsultarConvenioService($request);
             DB::commit();
             return $convenio;
         } catch (Exception $ex) {
@@ -179,6 +178,22 @@ class ConvenioController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Ocurrio un error al registrar el convenio.'
+            ]); 
+        }
+    }
+
+    public function CancelarConvenio(Request $request)
+    {
+       
+        try {
+            DB::beginTransaction();
+            $convenio = (new ConvenioService())->CancelarConvenioService($request);
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al cancelar el convenio.'
             ]); 
         }
     }

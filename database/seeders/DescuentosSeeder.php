@@ -42,6 +42,6 @@ class DescuentosSeeder extends Seeder
             ]);
         }
 
-        DescuentoAsociado::factory()->count(10)->create();
+        //DescuentoAsociado::factory()->count(10)->create();
     }
 }
