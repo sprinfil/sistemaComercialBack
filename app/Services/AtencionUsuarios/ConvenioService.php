@@ -183,7 +183,7 @@ class ConvenioService{
          $fechaCobro =Carbon::parse($fechaCobro)->format('Y-m-d');
 
          if ($i==($data['cantidad_letras']-1)) {
-          $montoPorLetra = $convenio->monto_total-$montoLetraSuma;
+          $montoPorLetra = round($convenio->monto_total-$montoLetraSuma,2);
          }
           
           $letrasArray = [
