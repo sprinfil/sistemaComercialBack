@@ -189,17 +189,21 @@ class FactibilidadController extends Controller
     {
         try {
             $factibilidad = Factibilidad::findOrFail($id);
+            $calle1 = $factibilidad->toma->calle1->nombre ?? '';
+            $calle2 = $factibilidad->toma->entre_calle1->nombre ?? '';
+            $calle3 = $factibilidad->toma->entre_calle2->nombre ?? '';
+            $calle4 = $factibilidad->toma->getDireccionCompleta() ?? '';
             $data = [
                 'factibilidad' => $factibilidad->id,
-                'calle' =>  $factibilidad->toma->calle,
+                'calle' =>  $calle1 ?? '',
                 'numero_casa' => $factibilidad->toma->numero_casa,
                 'estado_agua' => strtoupper($factibilidad->agua_estado_factible),
                 'estado_alcantarillado' => strtoupper($factibilidad->alc_estado_factible),
-                'calle_entre' => $factibilidad->toma->entre_calle_1,
-                'calle_y' => $factibilidad->toma->entre_calle_2,
+                'calle_entre' => $calle2 ?? '',
+                'calle_y' => $calle3 ?? '',
                 'costo_factibilidad' => $factibilidad->derechos_conexion,
                 'toma' => $factibilidad->toma->codigo_toma,
-                'notificacion_calle' => $factibilidad->toma->direccion_notificacion,
+                'notificacion_calle' => $calle4 ?? '',
                 'nombre_solicitante' => $factibilidad->toma->usuario->getNombreCompletoAttribute(),
                 'nombre_sistema' => 'Sistema Municipal',
             ];
