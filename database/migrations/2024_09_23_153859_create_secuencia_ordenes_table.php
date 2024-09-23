@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_secuencia');
             $table->unsignedBigInteger('id_toma');
             $table->integer('numero_secuencia');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
