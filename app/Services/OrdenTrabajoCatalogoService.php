@@ -87,6 +87,7 @@ class OrdenTrabajoCatalogoService{
         OrdenesTrabajoEncadenada::where('id_OT_Catalogo_padre', $OrdenEncadenadas[0]['id_OT_Catalogo_padre'])
         ->whereNotIn('id', $OrdenEncadenadas_id)
         ->delete();
+        $OrdenEncadenadas=OrdenesTrabajoEncadenada::with('OrdenCatalogoEncadenadas')->whereIn('id', $OrdenEncadenadas_id)->get();
         return OrdenesTrabajoEncadenadaResource::collection($OrdenEncadenadas);
     }
 }

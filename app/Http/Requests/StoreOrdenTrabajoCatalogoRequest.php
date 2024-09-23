@@ -44,7 +44,7 @@ class StoreOrdenTrabajoCatalogoRequest extends FormRequest
             "orden_trabajo_accion.*.accion"=>"sometimes|in:registrar,modificar,quitar",
             "orden_trabajo_accion.*.modelo"=>"sometimes|in:toma,medidores,contratos,lecturas,usuarios",
             "orden_trabajo_accion.*.campo"=>"sometimes|in:estatus,c_agua,c_alc,c_san,tipo_servicio,tipo_contratacion,",
-            "orden_trabajo_accion.*.valor"=>"sometimes|in:activa,inactivo,baja temporal,baja definitiva,pendiente de inspección,pendiente de instalación,en proceso,limitado,contrato no factible,inspeccionado,pendiente de pago,contratado,terminado,cancelado,lectura,promedio,normal,condicionado,desarrollador",
+            "orden_trabajo_accion.*.valor"=>"sometimes|in:activa,inactivo,baja temporal,baja definitiva,pendiente de instalación,en proceso,limitado,contrato no factible,inspeccionado,pendiente de pago,contratado,cancelado,lectura,promedio,normal,condicionado,desarrollador,de baja",
             "orden_trabajo_accion.*.opcional"=>"sometimes|boolean",
              "orden_trabajo_accion.*.id_orden_trabajo_acc_encadena"=>"sometimes|string",
             "orden_trabajo_accion.*.id_orden_trabajo_acc_alterna"=>"sometimes|string",
