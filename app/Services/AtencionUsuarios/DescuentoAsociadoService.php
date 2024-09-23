@@ -86,6 +86,7 @@ class DescuentoAsociadoService
             }
             $estatus->update(['estatus' => $status]);
             $estatus->save();
+            $estatus->load('descuento_catalogo');
             return response(new DescuentoAsociadoResource($estatus), 200);
         } catch (Exception $ex) {
             return response()->json(['error' => 'Ocurrio un error al cancelar el descuento. ' . $ex], 500);
