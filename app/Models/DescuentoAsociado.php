@@ -42,4 +42,8 @@ class DescuentoAsociado extends Model
     {
         return $this->belongsTo(Descuento::class, 'id_descuento');
     }
+    public function descuento_catalogo() : BelongsTo
+    {
+        return $this->belongsTo(DescuentoCatalogo::class, 'id_descuento');
+    }
 }

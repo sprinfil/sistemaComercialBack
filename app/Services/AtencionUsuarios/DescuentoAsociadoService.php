@@ -61,7 +61,8 @@ public function store (array $data)
 public function filtro($id_modelo, $modelo_dueno)
 {
     try {
-        $filtro = DescuentoAsociado::when($id_modelo, function ($query, $id_modelo){
+        $filtro = DescuentoAsociado::with('descuento_catalogo')
+        ->when($id_modelo, function ($query, $id_modelo){
             return $query->where('id_modelo' , $id_modelo);
         })
         ->when($modelo_dueno , function($query , $modelo_dueno){
