@@ -47,6 +47,7 @@ class DescuentoAsociadoService
                 return response()->json(['message' => 'El folio no esta disponible'], 400);
             } else {
                 $descuento = DescuentoAsociado::create($data);
+                $descuento->load('descuento_catalogo');
             }
             return response(new DescuentoAsociadoResource($descuento), 201);
         } catch (Exception $ex) {
@@ -64,6 +65,7 @@ class DescuentoAsociadoService
                 ->when($modelo_dueno, function ($query, $modelo_dueno) {
                     return $query->where('modelo_dueno', $modelo_dueno);
                 })
+                ->orderBy('id', 'desc')
                 ->get();
             if ($filtro->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron resultados'], 404);
@@ -85,6 +87,7 @@ class DescuentoAsociadoService
             }
             $estatus->update(['estatus' => $status]);
             $estatus->save();
+            $estatus->load('descuento_catalogo');
             return response(new DescuentoAsociadoResource($estatus), 200);
         } catch (Exception $ex) {
             return response()->json(['error' => 'Ocurrio un error al cancelar el descuento. ' . $ex], 500);
