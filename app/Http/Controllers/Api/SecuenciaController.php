@@ -49,6 +49,7 @@ class SecuenciaController extends Controller
         //ruta
         //codigo_empleado
         //tipo de secuencia
+        
 
     }
 }
