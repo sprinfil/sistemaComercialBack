@@ -43,10 +43,8 @@ class DescuentoAsociado extends Model
     {
         return $this->belongsTo(Descuento::class, 'id_descuento');
     }
-
-    // Origen del descuento
-    public function descuento_catalogo(): HasOne
+    public function descuento_catalogo() : BelongsTo
     {
-        return $this->hasOne(DescuentoCatalogo::class, 'id_descuento');
+        return $this->belongsTo(DescuentoCatalogo::class, 'id_descuento');
     }
 }
