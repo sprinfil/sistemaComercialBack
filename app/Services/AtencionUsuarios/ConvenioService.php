@@ -56,16 +56,18 @@ class ConvenioService{
             ->where('id_modelo',$data['id_convenio_catalogo'])
             ->get();
             
+            $cargo_selecionado = Cargo::findOrFail($cargo['id_concepto']);
           
             if (count($temp) != 0) {
               $cargosAplicables[$nxt] = $cargo;
               $cargosAplicables[$nxt]['aplicable'] = "si";
               $cargosAplicables[$nxt]['rango_minimo'] = $temp[0]['rango_minimo'];
-              $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];             
+              $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];         
+              $cargosAplicables[$nxt]['monto_pendiente'] = $cargo_selecionado->montoPendiente();             
             }
             else{
               $cargosAplicables[$nxt] = $cargo;
-              $cargosAplicables[$nxt]['aplicable'] = "No";
+              $cargosAplicables[$nxt]['aplicable'] = "No";          
             }          
             $nxt++;
           }
@@ -74,7 +76,7 @@ class ConvenioService{
 
       } catch (Exception $ex) {
         return response()->json([
-          'Ocurrio un error durante la busqueda de cargos aplicables.'
+          'Ocurrio un error durante la busqueda de cargos aplicables.'.$ex
         ],500);
       }
     }
@@ -151,16 +153,16 @@ class ConvenioService{
           $cargosConveniados =[
             "id_cargo" => $cargo['id'],
             "id_convenio" => $convenio->id,
-            "monto_original_pendiente" => $montoOriginalPendiente,
-            "monto_final_pendiente" => $montoFinalPendiente,
+            "monto_original_pendiente" =>  round($montoOriginalPendiente, 2),
+            "monto_final_pendiente" =>  round($montoFinalPendiente, 2),
             "porcentaje_conveniado" => $cargo['porcentaje_conveniado'],
-            "monto_conveniado" => $montoConveniado,
+            "monto_conveniado" => round($montoConveniado, 2),
           ];
 
           CargosConveniado::create($cargosConveniados); 
 
-          $montoConveniadoTotal += $montoConveniado;
-          $montoFinalPendienteTotal += $montoFinalPendiente;
+          $montoConveniadoTotal += round($montoConveniado, 2);
+          $montoFinalPendienteTotal += round($montoFinalPendiente, 2);
 
         }
         //Actualizar el registro de convenio con los montos
@@ -183,7 +185,7 @@ class ConvenioService{
          $fechaCobro =Carbon::parse($fechaCobro)->format('Y-m-d');
 
          if ($i==($data['cantidad_letras']-1)) {
-          $montoPorLetra = $convenio->monto_total-$montoLetraSuma;
+          $montoPorLetra = round($convenio->monto_total-$montoLetraSuma,2);
          }
           
           $letrasArray = [
@@ -246,55 +248,91 @@ class ConvenioService{
 
     public function ConsultarConvenioService(Request $data)
     {
-      $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
-      ->where('id_modelo',$data->id_modelo)
-      ->where('estado','activo')
-      ->with('letra')
-      ->with('ConvenioCatalogo')
-      ->first();
-      return json_encode($convenio);
+      try {
+        $convenio = Convenio::where('modelo_origen',$data->modelo_origen)
+        ->where('id_modelo',$data->id_modelo)
+        ->where('estado','activo')
+        ->with('letra')
+        ->with('ConvenioCatalogo')
+        ->first();
+        if ($convenio == null) {
+          return response()->json([
+            'error'=>'No se encontro convenio asociado a la toma o el usuario seleccionado.'
+          ]);
+        }
+        return json_encode($convenio);
+      } catch (Exception $ex) {
+        return response()->json([
+          'error'=>'Ocurrio un error al consultar el convenio.'.$ex
+        ],400);
+      }
+     
     }
 
     public function CancelarConvenioService(Request $data)
     {
       try {
         $convenio = Convenio::find($data['id_convenio']);
-        $cargos = Cargo::select('id')
-        ->where('id_convenio',$convenio->id)
-        ->get();
-        $letras = Letra::select('id')
-        ->where('id_convenio',$convenio->id)
-        ->get();
-        
-        $arregloCargo = $cargos->toArray();
-        $arregloLetra = $letras->toArray();
 
+        if ($convenio->estado == "activo") {
+
+          $cargos = Cargo::select('id')
+          ->where('id_convenio',$convenio->id)
+          ->get();
+          $letras = Letra::select('id')
+          ->where('id_convenio',$convenio->id)
+          ->get();
+          
+          $arregloCargo = $cargos->toArray();
+          $arregloLetra = $letras->toArray();
+          
+         $cargosLetrados = Cargo::where('id_origen',$arregloLetra)
+          ->where('modelo_origen','letra') 
+          ->update(['estado' => 'cancelado']);
+         
+          $convenioUpdt = [
+            "estado" => "cancelado" 
+          ];
+  
+          $convenio->update($convenioUpdt);
+          Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
+          Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
+          //
+          $estatus = (new PagoService())->consolidarEstados($convenio->id_modelo, $convenio->modelo_origen);
+          $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
+          return response()->json([
+            'El convenio se ha cancelado correctamente.'
+          ]);
+          
+        }else{
+          return response()->json([
+            'error'=>'No se encontro convenio seleccionado.'
+          ],400);
+        }
        
-       $cargosLetrados = Cargo::where('id_origen',$arregloLetra)
-        ->where('modelo_origen','letra') 
-        ->update(['estado' => 'cancelado']);
-      
-
-        $convenioUpdt = [
-          "estado" => "cancelado" 
-        ];
-
-        $convenio->update($convenioUpdt);
-        Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
-        Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
-
-        //
-        $estatus = (new PagoService())->consolidarEstados($convenio->id_modelo, $convenio->modelo_origen);
-        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
-
-        return response()->json([
-          'El convenio se ha cancelado correctamente.'
-        ]);
-        
       } catch (Exception $ex) {
          return response()->json([
           'Ocurio un error durante la cancelación del convenio.'.$ex
-        ]);
+        ],400);
+      }
+    }
+
+    public function ConsultarListaConvenioService()
+    {
+      try {
+        $convenio = Convenio::with('letra')
+        ->with('ConvenioCatalogo')
+        ->get();
+        if ($convenio == null) {
+          return response()->json([
+            'error'=>'No se encontraron registros de convenios.'
+          ]);
+        }
+        return json_encode($convenio);
+      } catch (Exception $ex) {
+        return response()->json([
+          'error'=>'Ocurrio un error al consultar el convenio.'.$ex
+        ],400);
       }
     }
 

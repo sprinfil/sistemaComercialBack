@@ -5,6 +5,7 @@ namespace App\Services\AtencionUsuarios;
 use App\Models\Ajuste;
 use App\Models\AjusteCatalogo;
 use App\Models\Cargo;
+use App\Models\Toma;
 use App\Services\Caja\PagoService;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,17 @@ class AjusteService
             return Ajuste::findOrFail($id);
         } catch (Exception $e) {
             return $e;
+        }
+    }
+    public function consultarAjustePorCodigo($data)
+    {
+        try {
+            return Ajuste::where("id_modelo_dueno", $data['id'])
+             ->where("modelo", $data['modelo'])
+             ->get();
+
+        } catch (Exception $e) {
+            return $e->getMessage(); // Retornar el mensaje del error en lugar del objeto Exception
         }
     }
     public function conceptosAjustables($data)
