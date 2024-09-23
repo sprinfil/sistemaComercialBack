@@ -22,7 +22,17 @@ class StoreSecuenciaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "Secuencia"=>"required",
+            "Secuencia.id"=>"nullable",
+            "Secuencia.id_empleado"=>"nullable",
+            "Secuencia.id_libro"=>"required",
+            "Secuencia.tipo_secuencia"=>"required|in:padre,personalizada",
+            ///Secuencia ordenes
+            "Secuencia_ordenes"=>"sometimes",
+            "Secuencia_ordenes.*"=>"sometimes|array",
+            "Secuencia_ordenes.*.id_secuencia"=>"sometimes", //|exists:secuencias,id
+            "Secuencia_ordenes.*.id_toma"=>"sometimes|exists:toma,id",
+            "Secuencia_ordenes.*.numero_secuencia"=>"sometimes|integer",
         ];
     }
 }
