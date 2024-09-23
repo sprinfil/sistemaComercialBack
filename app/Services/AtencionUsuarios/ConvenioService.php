@@ -320,7 +320,7 @@ class ConvenioService{
           Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
 
           Pago::whereIn('id',$arregloPagosIds)->update(['estado' => 'pendiente']);
-          //falta arreglar el metodo de pagos
+          //to do falta arreglar el metodo de pagos 
           $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
           return response()->json([
             'El convenio se ha cancelado correctamente.'
