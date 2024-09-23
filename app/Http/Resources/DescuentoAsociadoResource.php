@@ -25,6 +25,7 @@ class DescuentoAsociadoResource extends JsonResource
             "vigencia" => $this->vigencia,
             "estatus" => $this->estatus,
             "folio" => $this->folio,
+            'descuento_catalogo' => $this->whenLoaded('descuento_catalogo')
         ];
     }
 }

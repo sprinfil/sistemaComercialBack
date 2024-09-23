@@ -47,6 +47,7 @@ class DescuentoAsociadoService
                 return response()->json(['message' => 'El folio no esta disponible'], 400);
             } else {
                 $descuento = DescuentoAsociado::create($data);
+                $descuento->load('descuento_catalogo');
             }
             return response(new DescuentoAsociadoResource($descuento), 201);
         } catch (Exception $ex) {
