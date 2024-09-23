@@ -65,6 +65,7 @@ class DescuentoAsociadoService
                 ->when($modelo_dueno, function ($query, $modelo_dueno) {
                     return $query->where('modelo_dueno', $modelo_dueno);
                 })
+                ->orderBy('id', 'desc')
                 ->get();
             if ($filtro->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron resultados'], 404);
