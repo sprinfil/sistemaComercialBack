@@ -19,5 +19,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/Convenio/CancelarConvenio", "CancelarConvenio");
         Route::get("/Convenio/ConsultarConvenio", "ConsultarConvenio");
         Route::get("/Convenio/ConsultarListaConvenio", "ConsultarListaConvenio");
+        Route::get("/Convenio/ConsultarLetras", "ConsultarLetras");
     });
 });
