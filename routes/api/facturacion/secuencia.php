@@ -8,5 +8,7 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(SecuenciaController::class)->group(function() {
         Route::get("/secuencia","index");
         Route::post("/secuencia/crear","store");
+        Route::post("/secuencia/filtros","filtros");
+        Route::delete("/secuencia/log_delete","delete");
     });
 });
