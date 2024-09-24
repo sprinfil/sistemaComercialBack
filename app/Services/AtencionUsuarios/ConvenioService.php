@@ -86,7 +86,7 @@ class ConvenioService{
     public function RegistrarConvenioService(array $data)
     {
       try {
-
+        //Nota el front debe regresar los conceptos conveniables al usuario, este metodo convenia todos los cargos enviados asumiendo que son correctos
         $fecha = helperFechaAhora();
         $fechaCobro =Carbon::parse($fecha)->format('Y-m-d');
         $montoLetraSuma = 0;
@@ -191,10 +191,11 @@ class ConvenioService{
          }
           
           $letrasArray = [
-            "id_convenio" => $convenio->id,
+            "id_convenio" => $convenio->id,//crear el numero de la letra
             "estado" => "pendiente",
             "monto" => $montoPorLetra,
             "vigencia" => $fechaCobro,
+            "numero_letra" => $i+1,
           ];
          
           $montoLetraSuma += $montoPorLetra;
