@@ -26,6 +26,7 @@ class DescuentoAsociadoResource extends JsonResource
             "vigencia" => $this->vigencia,
             "estatus" => $this->estatus,
             "folio" => $this->folio,
+            "descuento_catalogo" => $this->descuento_catalogo,
             "archivo" => $this->when($this->archivo, function (){
                 return [
                     'url' => Storage::url('evidencia/' .$this->archivo->url),

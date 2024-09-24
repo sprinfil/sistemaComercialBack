@@ -86,7 +86,7 @@ class ConvenioService{
     public function RegistrarConvenioService(array $data)
     {
       try {
-
+        //Nota el front debe regresar los conceptos conveniables al usuario, este metodo convenia todos los cargos enviados asumiendo que son correctos
         $fecha = helperFechaAhora();
         $fechaCobro =Carbon::parse($fecha)->format('Y-m-d');
         $montoLetraSuma = 0;
@@ -191,10 +191,11 @@ class ConvenioService{
          }
           
           $letrasArray = [
-            "id_convenio" => $convenio->id,
+            "id_convenio" => $convenio->id,//crear el numero de la letra
             "estado" => "pendiente",
             "monto" => $montoPorLetra,
             "vigencia" => $fechaCobro,
+            "numero_letra" => $i+1,
           ];
          
           $montoLetraSuma += $montoPorLetra;
@@ -257,6 +258,34 @@ class ConvenioService{
         ->with('letra')
         ->with('ConvenioCatalogo')
         ->first();
+        if ($convenio == null) {
+          return response()->json([
+            'error'=>'No se encontro convenio asociado a la toma o el usuario seleccionado.'
+          ]);
+        }
+        return json_encode($convenio);
+      } catch (Exception $ex) {
+        return response()->json([
+          'error'=>'Ocurrio un error al consultar el convenio.'.$ex
+        ],400);
+      }
+    }
+
+    public function ConsultarLetrasPendientes(Request $data)
+    {
+      try {
+        $convenio = Convenio::where('modelo_origen', $data->modelo_origen)
+        ->where('id_modelo', $data->id_modelo)
+        ->where('estado', 'activo')
+        ->whereHas('letra', function($query) {
+            $query->where('estado', 'pendiente');
+        })
+        ->with(['letra' => function($query) {
+            $query->where('estado', 'pendiente');
+        }])
+        ->with('ConvenioCatalogo')
+        ->first();
+
         if ($convenio == null) {
           return response()->json([
             'error'=>'No se encontro convenio asociado a la toma o el usuario seleccionado.'

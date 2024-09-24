@@ -16,7 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_convenio');
             $table->enum('estado',['pendiente','saldado','cancelado']);
             $table->decimal('monto');
-            $table->date('vigencia');
+            $table->date('vigencia');//campo numero [1,2,3 etc] sera un int
+            $table->integer('numero_letra');
             $table->softDeletes();
             $table->timestamps();
             

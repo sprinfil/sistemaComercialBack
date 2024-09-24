@@ -92,7 +92,7 @@ class DescuentoAsociadoController extends Controller
         $modelo_dueno = $request->input('modelo_dueno');
         //$data = DescuentoAsociado::findOrFail($id);
         $dueno = (new DescuentoAsociadoService())->filtro($id_modelo, $modelo_dueno);
-        return new DescuentoAsociadoResource($dueno);
+        return $dueno;
       } catch (ModelNotFoundException $ex) {
         return response()->json([
             'error' => 'No se pudo consultar el modelo' .$ex
