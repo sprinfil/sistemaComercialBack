@@ -70,7 +70,7 @@ class DescuentoAsociadoService
             if ($filtro->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron resultados'], 404);
             } else {
-               return DescuentoAsociadoResource::collection($filtro);
+                return DescuentoAsociadoResource::collection($filtro);
             }
         } catch (Exception $ex) {
             return response()->json(['error' => 'Ocurrio un error al consultar el descuento asociado. ' . $ex], 500);
