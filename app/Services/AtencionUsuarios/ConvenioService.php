@@ -278,10 +278,12 @@ class ConvenioService{
         ->where('id_modelo', $data->id_modelo)
         ->where('estado', 'activo')
         ->whereHas('letra', function($query) {
-            $query->where('estado', 'pendiente');
+            $query->where('estado', 'pendiente')
+                  ->doesntHave('origen'); // Filtra letras que no tienen un registro en la relación origen
         })
         ->with(['letra' => function($query) {
-            $query->where('estado', 'pendiente');
+            $query->where('estado', 'pendiente')
+                  ->doesntHave('origen'); // Asegura que las letras pendientes no tengan relación origen
         }])
         ->with('ConvenioCatalogo')
         ->first();

@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ConstanciaSeeder::class);
         $this->call(BonificacionCatalogoSeeder::class);
         //
-        $this->call(CajaSeeder::class);
+        //$this->call(CajaSeeder::class);
         $this->call(OperadorAsignadoSeeder::class);
         $this->call(CajaCatalogoSeeder::class);
         $this->call(PagoSeeder::class);
@@ -78,8 +78,8 @@ class DatabaseSeeder extends Seeder
         //
         $this->call(PeriodoSeeder::class);
         $this->call(CargaTrabajoSeeder::class);
-        $this->call(LecturaSeeder::class);
-        $this->call(ConsumoSeeder::class);
+        //$this->call(LecturaSeeder::class);
+        //$this->call(ConsumoSeeder::class);
         //$this->call(FacturaSeeder::class);
         $this->call(AsignacionGeograficaSeeder::class);
         //
