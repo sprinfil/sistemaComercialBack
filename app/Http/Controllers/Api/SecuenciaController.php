@@ -9,8 +9,6 @@ use App\Services\SecuenciaService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Builder\Function_;
-use PhpParser\Node\Expr\FuncCall;
 
 class SecuenciaController extends Controller
 {
@@ -23,11 +21,13 @@ class SecuenciaController extends Controller
             DB::beginTransaction();
             $data=$request->validated();
             $secuencia=(new SecuenciaService())->Store($data['secuencia']);
-
-            if (!$secuencia || $secuencia=="Invalido"){
+            if (!$secuencia || $secuencia=="Invalido" || $secuencia=="Operador" ||$secuencia=="Padre" ||$secuencia=="No perso" ){
                 $error=match($secuencia){
-                    null=>"No se pudo crear secuencia padre: El libro ya tiene una secuencia padre vigente",
-                    "Invalido"=>"Una secuencia padre solo se puede crear o eliminar, no se puede modificar"
+                    "Padre"=>"No se pudo crear secuencia padre: El libro ya tiene una secuencia padre vigente",
+                    "Invalido"=>"Una secuencia padre solo se puede crear o eliminar, no se puede modificar",
+                    "Operador"=>"No se puede asignar un operador a una secuencia padre",
+                    "Personalizada"=>"No se pudo crear secuencia padre: El libro ya tiene una secuencia personalizada vigente para este operador",
+                    "No perso"=>"No se puede cambiar el tipo de secuencia de una secuencia padre ",
                 };
                 return response()->json(["error"=>$error],400);
             }

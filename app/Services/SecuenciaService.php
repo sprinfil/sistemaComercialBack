@@ -35,18 +35,32 @@ class SecuenciaService{
         $tipo=$secuencia['tipo_secuencia'];
 
         
-        $Existe=Secuencia::where('id_libro',$secuencia['id_libro'])->first();
-        if($Existe && !$id_secuencia){
-            return null;
-        }
+        
         if ($tipo=="personalizada"){
+            ///Existe personalizada igual
+            $Existe=Secuencia::where('id_libro',$secuencia['id_libro'])->where('id_empleado',$secuencia['id_empleado'] ?? null)->where('id',$id_secuencia)->first();
+            if($Existe && !$id_secuencia){
+                return "Personalizada";
+            }
+            else if($Existe && $Existe['tipo_secuencia']!=$secuencia['tipo_secuencia']){
+                return "No perso";
+            }
             $NuevaSecuencia=Secuencia::UpdateOrCreate(['id'=>$id_secuencia],$secuencia); //Secuencia personalizada
         }
         else{
+            //Existe secuencia padre igual
+            $Existe=Secuencia::where('id_libro',$secuencia['id_libro'])->where('tipo_secuencia',"padre")->first();
+            if($Existe && !$id_secuencia){
+                return "Padre";
+            }
             if ($id_secuencia){
                 ///Si la secuencia padre ya existe, no se le mueve nada, no deberia ser fácil mover una secuencia padre.
-                $NuevaSecuencia=$Existe;
-                if ($NuevaSecuencia!=$secuencia){
+                $id_operador=$secuencia['id_empleado'] ?? null;
+                if ($id_operador){
+                    return "Operador";
+                }
+                $NuevaSecuencia=Secuencia::find($id_secuencia);
+                if ($NuevaSecuencia['id_libro']!=$secuencia['id_libro'] || $NuevaSecuencia['tipo_secuencia']!=$secuencia['tipo_secuencia'] ){
                     return "Invalido";
                 }
             }
