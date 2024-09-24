@@ -15,7 +15,8 @@ class Letra extends Model
         'id_convenio',
         'estado',
         'monto',
-        'vigencia'
+        'vigencia',
+        'numero_letra'
     ];
 
     public function Convenio():BelongsTo{
