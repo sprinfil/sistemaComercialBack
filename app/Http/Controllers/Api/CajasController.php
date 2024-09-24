@@ -386,4 +386,22 @@ class CajasController extends Controller
             ], 500);
         }
     }
+
+    public function cargarLetras(Request $request)
+    {
+        try {
+            // Obtenemos el array de IDs de letras desde el request
+            // Aquí asumimos que el JSON contiene un campo 'ids' con un array de IDs
+            $ids = $request->input('ids');
+
+            // Llamamos al método del servicio pasando el array de IDs
+            return response()->json($this->cajaService->cargarLetras($ids), 200);
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No se pudo cargar la letra: ' . $ex->getMessage()
+            ], 500);
+        }
+    }
+
 }
