@@ -72,6 +72,14 @@ class Pago extends Model
         return $this->morphMany(Abono::class, 'origen', 'modelo_origen', 'id_origen');
     }
 
+    public function abonosVigentes(): HasMany
+    {
+        return $this->hasMany(Abono::class, 'id_cargo')
+            ->whereHas('cargo', function ($query) {
+                $query->where('estado', '!=', 'cancelado');
+            });
+    }
+
     public function cargos()
     {
         return $this->abonos()->with('cargo')->get();
@@ -84,7 +92,7 @@ class Pago extends Model
 
     public function pendiente()
     {
-        $abonos = $this->abonos;
+        $abonos = $this->abonosVigentes;
         $total_aplicado = 0;
         foreach($abonos as $abono){
             $total_aplicado += $abono->total_abonado;

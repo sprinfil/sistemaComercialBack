@@ -28,24 +28,29 @@ class DescuentoAsociadoService
     {
 
         try {
+            $count = 0;
             $folio = $data['folio'];
             $id_modelo = $data['id_modelo'];
             $modelo_dueno = $data['modelo_dueno'];
 
             //Si el id_modelo / modelo dueño existen en descuentos asociados
             $dueno = DescuentoAsociado::where('id_modelo', $id_modelo)
-                ->Where('modelo_dueno', $modelo_dueno)
-                ->where("estatus", "vigente")
-                ->exists();
+                ->where('modelo_dueno', $modelo_dueno)
+                ->where('estatus', 'vigente')
+                ->get();
 
             $folio_igual = DescuentoAsociado::where('folio', $folio)->exists();
-
-            if ($dueno) {
+            if (!$dueno->isEmpty()) {
+                $count = $dueno->count();
+                if ($count >= 1) {
+                    return response()->json(['message' => 'El usuario o la toma tiene 1 descuento registrado'], 400);
+                }
                 return response()->json(['message' => 'Ya tiene un Descuento activo'], 400);
             }
             if ($folio_igual) {
                 return response()->json(['message' => 'El folio no esta disponible'], 400);
             } else {
+                $band = true;
                 $descuento = DescuentoAsociado::create($data);
                 $descuento->load('descuento_catalogo');
             }

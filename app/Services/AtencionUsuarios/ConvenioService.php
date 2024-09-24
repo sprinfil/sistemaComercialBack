@@ -2,12 +2,14 @@
 namespace App\Services\AtencionUsuarios;
 
 use App\Http\Requests\StoreConvenioRequest;
+use App\Models\Abono;
 use App\Models\Cargo;
 use App\Models\CargosConveniado;
 use App\Models\ConceptoAplicable;
 use App\Models\ConceptoCatalogo;
 use App\Models\Convenio;
 use App\Models\Letra;
+use App\Models\Pago;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\PagoService;
@@ -276,16 +278,34 @@ class ConvenioService{
 
         if ($convenio->estado == "activo") {
 
+          //Cargos originales asociados al convenio
           $cargos = Cargo::select('id')
           ->where('id_convenio',$convenio->id)
           ->get();
+          //Letras del convenio
           $letras = Letra::select('id')
           ->where('id_convenio',$convenio->id)
           ->get();
           
           $arregloCargo = $cargos->toArray();
           $arregloLetra = $letras->toArray();
-          
+
+          //Aqui
+         $cargosLetrasIds = Cargo::select('id')
+          ->where('id_origen',$arregloLetra)
+          ->where('modelo_origen','letra')
+          ->get();
+
+          $arregloCargosLetrasIds =  $cargosLetrasIds->toArray();
+
+          $pagosIds = Abono::select('id_origen')
+          ->where('modelo_origen',"pago")
+          ->where('id_cargo',$arregloCargosLetrasIds)
+          ->get();
+
+          $arregloPagosIds = $pagosIds->toArray();
+
+          //Cargos asociados a las letras del convenio, actualiza su estado
          $cargosLetrados = Cargo::where('id_origen',$arregloLetra)
           ->where('modelo_origen','letra') 
           ->update(['estado' => 'cancelado']);
@@ -293,12 +313,14 @@ class ConvenioService{
           $convenioUpdt = [
             "estado" => "cancelado" 
           ];
-  
+          
+          //Actualiza el estado del convenio, cargos originales y las letras del convenio
           $convenio->update($convenioUpdt);
           Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
           Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
-          //
-          $estatus = (new PagoService())->consolidarEstados($convenio->id_modelo, $convenio->modelo_origen);
+
+          Pago::whereIn('id',$arregloPagosIds)->update(['estado' => 'pendiente']);
+          //to do falta arreglar el metodo de pagos 
           $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
           return response()->json([
             'El convenio se ha cancelado correctamente.'
