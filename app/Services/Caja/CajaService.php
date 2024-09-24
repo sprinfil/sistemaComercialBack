@@ -30,7 +30,7 @@ use PhpParser\Node\Stmt\Return_;
 
 class CajaService
 {
-
+  //pendiente to do modificar un corte cancelado o proceso equivalente
   public function iniciarCaja(array $data)
   {
     try {
@@ -141,7 +141,7 @@ class CajaService
         ->whereDate('fecha_apertura', $fechaApertura)
         ->where('estado', 'activo')
         ->first();
-
+      
 
 
 
