@@ -3,6 +3,8 @@ namespace App\Services;
 
 use App\Models\Secuencia;
 use App\Models\Secuencia_orden;
+use App\Models\Toma;
+use Exception;
 use Illuminate\Contracts\Database\Query\Builder;
 
 class SecuenciaService{
@@ -76,6 +78,19 @@ class SecuenciaService{
         $id_secuencia=$secuencia_padre['id'];
         $secuenciaOrden=[];
         $ids = [];
+        $tomaLibro=Toma::whereIn('id',array_column($ordenes,'id_toma'))->whereNot('id_libro',$secuencia_padre['id_libro'])->get();
+
+        if (count($tomaLibro)!=0){
+            $errores=null;
+            foreach ($tomaLibro as $error){
+                $errores=$errores.$error['codigo_toma'].",";
+            }
+            throw new Exception("La(s) toma(s) con código: ".$errores .". No pertenece al libro de la secuencia o su numero de secuencia se repite.");
+            
+        }
+        $counts = array_column($ordenes,'numero_secuencia');
+        return  array_unique($counts);
+
         foreach ($ordenes as $orden){
             $id=$orden['id'] ?? null;
             $secuenciaOrden[]=[
