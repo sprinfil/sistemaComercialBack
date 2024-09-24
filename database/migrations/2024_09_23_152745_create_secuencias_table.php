@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_empleado')->nullable();
             $table->unsignedBigInteger('id_libro');
             $table->enum('tipo_secuencia',['padre','personalizada']);
-            $table->enum('tipo_secuencia',['padre','personalizada']);
             $table->softDeletes();
             $table->timestamps();
         });

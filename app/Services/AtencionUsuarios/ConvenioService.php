@@ -269,6 +269,34 @@ class ConvenioService{
           'error'=>'Ocurrio un error al consultar el convenio.'.$ex
         ],400);
       }
+    }
+
+    public function ConsultarLetrasPendientes(Request $data)
+    {
+      try {
+        $convenio = Convenio::where('modelo_origen', $data->modelo_origen)
+        ->where('id_modelo', $data->id_modelo)
+        ->where('estado', 'activo')
+        ->whereHas('letra', function($query) {
+            $query->where('estado', 'pendiente');
+        })
+        ->with(['letra' => function($query) {
+            $query->where('estado', 'pendiente');
+        }])
+        ->with('ConvenioCatalogo')
+        ->first();
+
+        if ($convenio == null) {
+          return response()->json([
+            'error'=>'No se encontro convenio asociado a la toma o el usuario seleccionado.'
+          ]);
+        }
+        return json_encode($convenio);
+      } catch (Exception $ex) {
+        return response()->json([
+          'error'=>'Ocurrio un error al consultar el convenio.'.$ex
+        ],400);
+      }
      
     }
 
