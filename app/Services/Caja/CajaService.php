@@ -15,6 +15,7 @@ use App\Models\Caja;
 use App\Models\CajaCatalogo;
 use App\Models\Cargo;
 use App\Models\ConceptoCatalogo;
+use App\Models\ConvenioCatalogo;
 use App\Models\CorteCaja;
 use App\Models\Letra;
 use App\Models\OperadorAsignado;
@@ -816,4 +817,41 @@ class CajaService
       throw $ex;
     }
   }
+
+  public function cargarLetras(array $ids)
+{
+    try {
+        // Se utilizará para almacenar los cargos creados
+        $cargos = [];
+        
+        // Iteramos sobre cada ID de letra proporcionado
+        foreach ($ids as $id) {
+            $letra = Letra::findOrFail($id);
+            $convenio = $letra->Convenio;
+            $concepto = ConceptoCatalogo::findOrFail(148);
+            $tipo = ConvenioCatalogo::findOrFail($convenio->id_convenio_catalogo);
+            
+            $data = [];
+            $data['id_concepto'] = $concepto->id;
+            $data['nombre'] = $concepto->nombre.' '.$letra->id.' de '.$tipo->nombre;
+            $data['id_origen'] = $letra->id;
+            $data['modelo_origen'] = 'convenio';
+            $data['id_dueno'] = $convenio->id_modelo;
+            $data['modelo_dueno'] = $convenio->modelo_origen;
+            $data['monto'] = $letra->monto;
+            $data['iva'] = 0;
+            $data['estado'] = 'pendiente';
+            $data['fecha_cargo'] = now();
+            
+            // Crear el cargo y agregarlo a la lista
+            $cargos[] = Cargo::create($data);
+        }
+        
+        // Retornamos la lista de cargos creados
+        return $cargos;
+    } catch (Exception $ex) {
+        throw $ex;
+    }
+}
+
 }
