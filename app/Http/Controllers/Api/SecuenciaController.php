@@ -3,53 +3,42 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreSecuenciaRequest;
+use App\Models\Secuencia;
+use App\Services\SecuenciaService;
+use Exception;
 use Illuminate\Http\Request;
-use PhpParser\Builder\Function_;
-use PhpParser\Node\Expr\FuncCall;
+use Illuminate\Support\Facades\DB;
 
 class SecuenciaController extends Controller
 {
     public function index(){
-
+        return Secuencia::with('ordenesSecuencia')->take(100)->get();
     }
-    public function SecuenciaStore($secuencia){
-        //Guardar y actualizar secuencias
-        //no de secuencias padres??
-
-
-        ///Recibe id secuencia, si es nulo es un create doble, si no es nulo es un createordUpdate de orden_secuencia
-        //Si el tipo es una secuencia tipo personalizada, recibe id_operador, esto lo valido en el request.
-
-        $id_secuencia=$secuencia['id_secuencia'] ?? null;
-        if  ($id_secuencia){
-            //Sucuencia nueva, usa Create y Create
+    public function store(StoreSecuenciaRequest $request){
+      
+        try{
+            DB::beginTransaction();
+            $data=$request->validated();
+            $secuencia=(new SecuenciaService())->Store($data['secuencia']);
+            if (!$secuencia || $secuencia=="Invalido" || $secuencia=="Operador" ||$secuencia=="Padre" ||$secuencia=="No perso" ){
+                $error=match($secuencia){
+                    "Padre"=>"No se pudo crear secuencia padre: El libro ya tiene una secuencia padre vigente",
+                    "Invalido"=>"Una secuencia padre solo se puede crear o eliminar, no se puede modificar",
+                    "Operador"=>"No se puede asignar un operador a una secuencia padre",
+                    "Personalizada"=>"No se pudo crear secuencia padre: El libro ya tiene una secuencia personalizada vigente para este operador",
+                    "No perso"=>"No se puede cambiar el tipo de secuencia de una secuencia padre ",
+                };
+                return response()->json(["error"=>$error],400);
+            }
+            $secuencia_ordenes=(new SecuenciaService())->SecuenciaOrdenStore($secuencia,$data['secuencia_ordenes']);
+            DB::commit();
+            return response()->json(["secuencia"=>$secuencia,"secuencia_ordenes"=>$secuencia_ordenes],200) ;
         }
-        else{
-            //Secuencia ya existente, usa Update y createOrUpdate.
-            //Las tomas que no tengan ordenes secuencia seran eliminadas.
-
-            //Las tomas que no esten en la secuencia padre, se buscan y se borran de la secuencia personalizada.
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json(["error"=>"Ha habido un error: ".$ex],500);
         }
-
-        //Devuelvo la secuencia padre y las secuencias ordenes hijas
-
     }
-    public function NuevaSecuencia($secuencia){
-
-    }
-    public function UpdateSecuencia($secuencia){
-
-    }
-    public function DeleteSecuencia(){
-        //Borra una secuencia padre/personalizada y sus secuencias ordenes
-        //Si borra una secuencia padre, se borran todas las personalizadas asociadas.
-    }
-    public function Filtros($parametros){
-        //libro
-        //ruta
-        //codigo_empleado
-        //tipo de secuencia
-        
-
-    }
+    
 }

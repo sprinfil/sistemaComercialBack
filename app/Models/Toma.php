@@ -222,6 +222,9 @@ class Toma extends Model
     {
         return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
     }
+    public function secuenciaOrdenes():HasMany{
+        return $this->hasMany(Secuencia_orden::class, 'id_toma');
+    }
 
     public function saldoToma()
     {
