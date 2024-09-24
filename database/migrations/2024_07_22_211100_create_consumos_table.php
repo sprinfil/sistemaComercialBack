@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_toma');
             $table->unsignedBigInteger('id_lectura_anterior')->nullable();
             $table->unsignedBigInteger('id_lectura_actual')->nullable();
+            $table->enum('tipo_facturacion', ['promedio', 'lectura']);
             $table->integer('consumo');
             $table->softDeletes();
             $table->timestamps();

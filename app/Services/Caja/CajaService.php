@@ -843,8 +843,14 @@ class CajaService
             $data['estado'] = 'pendiente';
             $data['fecha_cargo'] = now();
             
-            // Crear el cargo y agregarlo a la lista
-            $cargos[] = Cargo::create($data);
+            // Crear el cargo
+            $cargo = Cargo::create($data);
+            
+            // Cargar la relación concepto
+            $cargo->load('concepto');
+            
+            // Agregarlo a la lista
+            $cargos[] = $cargo;
         }
         
         // Retornamos la lista de cargos creados
