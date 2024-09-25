@@ -22,15 +22,15 @@ class PeriodoResource extends JsonResource
             'id_tarifa' => $this->id_tarifa,
             'tarifa' => new TarifaResource($this->whenLoaded('tarifa')),
             'nombre' => $this->nombre,
-            'periodo' => $this->periodo->toDateString(),
-            'facturacion_fecha_inicio' => $this->facturacion_fecha_inicio->toDateString(),
-            'facturacion_fecha_final' => $this->facturacion_fecha_final->toDateString(),
-            'lectura_inicio' => $this->lectura_inicio->toDateString(),
-            'lectura_final' => $this->lectura_final->toDateString(),
+            'periodo' => $this->periodo,
+            'facturacion_fecha_inicio' => $this->facturacion_fecha_inicio,
+            'facturacion_fecha_final' => $this->facturacion_fecha_final,
+            'lectura_inicio' => $this->lectura_inicio,
+            'lectura_final' => $this->lectura_final,
             'facturas' => FacturaResource::collection($this->whenLoaded('factura')),
             //'carga_trabajo' => CargaTrabajoResource::collection($this->whenLoaded('cargaTrabajo')),
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

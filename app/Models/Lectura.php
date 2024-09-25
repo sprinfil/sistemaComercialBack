@@ -32,17 +32,17 @@ class Lectura extends Model
 
     public function operador() : HasOne
     {
-        return $this->hasOne(Operador::class, 'id_operador');
+        return $this->hasOne(Operador::class, 'id', 'id_operador');
     }
 
     public function periodo() : BelongsTo
     {
-        return $this->belongsTo(Toma::class, 'id_periodo');
+        return $this->belongsTo(Periodo::class, 'id_periodo');
     }
 
     public function anomalia() : HasOne
     {
-        return $this->hasOne(Toma::class, 'id_anomalia');
+        return $this->hasOne(AnomaliaCatalogo::class, 'id','id_anomalia');
     }
 
     public function origen(): MorphOne
