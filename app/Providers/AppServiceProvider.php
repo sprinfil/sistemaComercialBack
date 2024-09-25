@@ -43,7 +43,8 @@ class AppServiceProvider extends ServiceProvider
             'cfdi' => 'App\Models\Cfdi',
             'ajuste' => 'App\Models\Ajuste',
             'descuento' => 'App\Models\DescuentoAsociado',
-            'letra' => 'App\Models\Letra'
+            'letra' => 'App\Models\Letra',
+            'carga_trabajos' => 'App\Models\CargaTrabajo'
         ]);
     }
 }
