@@ -10,6 +10,10 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNan;
+use function PHPUnit\Framework\isNull;
+
 class SecuenciaController extends Controller
 {
     public function index(){
@@ -32,12 +36,12 @@ class SecuenciaController extends Controller
                 return response()->json(["error"=>$error],400);
             }
             $secuencia_ordenes=(new SecuenciaService())->SecuenciaOrdenStore($secuencia,$data['secuencia_ordenes']);
-            DB::commit();
+            DB::rollBack();
             return response()->json(["secuencia"=>$secuencia,"secuencia_ordenes"=>$secuencia_ordenes],200) ;
         }
         catch(Exception $ex){
             DB::rollBack();
-            return response()->json(["error"=>"Ha habido un error: ".$ex],500);
+            return response()->json(["error"=>"Ha habido un error: ".$ex->getMessage()],500);
         }
     }
     
