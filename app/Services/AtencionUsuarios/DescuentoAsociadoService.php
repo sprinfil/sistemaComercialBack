@@ -6,6 +6,7 @@ use App\Http\Resources\DescuentoAsociadoResource;
 use App\Models\Archivo;
 use App\Models\DescuentoAsociado;
 use App\Models\DescuentoCatalogo;
+use App\Models\Toma;
 use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\Console\Input\Input;
@@ -40,7 +41,7 @@ class DescuentoAsociadoService
                 ->where('estatus', 'vigente')
                 ->exists();
             $folio_igual = DescuentoAsociado::where('folio', $folio)->exists();
-            if ($dueno && $estatus == 'vigente') {
+            if ($dueno) {
                 return response()->json(['message' => 'Ya tiene un Descuento activo'], 400);
             }
             if ($folio_igual) {
