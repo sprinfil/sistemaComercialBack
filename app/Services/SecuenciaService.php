@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Secuencia;
 use App\Models\Secuencia_orden;
 use App\Models\Toma;
+use ErrorException;
 use Exception;
 use Illuminate\Contracts\Database\Query\Builder;
 
@@ -79,17 +80,21 @@ class SecuenciaService{
         $secuenciaOrden=[];
         $ids = [];
         $tomaLibro=Toma::whereIn('id',array_column($ordenes,'id_toma'))->whereNot('id_libro',$secuencia_padre['id_libro'])->get();
+        //$secOrd=Secuencia_orden::where('id_secuencia',$secuencia_padre['id'])->get();
 
         if (count($tomaLibro)!=0){
             $errores=null;
             foreach ($tomaLibro as $error){
                 $errores=$errores.$error['codigo_toma'].",";
             }
-            throw new Exception("La(s) toma(s) con código: ".$errores .". No pertenece al libro de la secuencia o su numero de secuencia se repite.");
+            throw new Exception("La(s) toma(s) con código: ".$errores .". No pertenece al libro de la secuencia o su numero de secuencia se repite.",400);
             
         }
         $counts = array_column($ordenes,'numero_secuencia');
-        //return  array_unique($counts);
+        $unicos=array_unique($counts);
+       if (count($counts)!=count($unicos)){
+        throw new ErrorException("No se pueden subir tomas que tengan el mismo numero de orden de secuencia, asigne ordenes differentes para cada toma en la secuencia",400);
+       }
 
         foreach ($ordenes as $orden){
             $id=$orden['id'] ?? null;
@@ -103,6 +108,7 @@ class SecuenciaService{
                 $ids[] = $id;
             }
         }
+        Secuencia_orden::whereNotIn('id',$ids)->delete();
         $Ordenado=Secuencia_orden::upsert($secuenciaOrden, uniqueBy: ['id']);
         $updatedRecords = Secuencia_orden::where('id_secuencia',$id_secuencia)->orWhereIn('id', $ids)->get();
         return $updatedRecords;
