@@ -89,7 +89,7 @@ class SecuenciaService{
             
         }
         $counts = array_column($ordenes,'numero_secuencia');
-        return  array_unique($counts);
+        //return  array_unique($counts);
 
         foreach ($ordenes as $orden){
             $id=$orden['id'] ?? null;

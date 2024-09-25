@@ -98,7 +98,7 @@ class TomaFactory extends Factory
                 'nombre_contrato' => $usuario->nombre . ' ' . $usuario->apellido_paterno . ' ' . $usuario->apellido_materno,
                 'colonia' => $toma->colonia,
                 'calle' => $toma->calle,
-                'municipio' => $this->faker->randomElement(['La Paz', 'Los cabos','Comondu']),
+                'municipio' => $this->faker->randomElement(['La Paz']),
                 'localidad' => $toma->localidad,
                 'num_casa' => $this->faker->numerify('###'),
             ]);

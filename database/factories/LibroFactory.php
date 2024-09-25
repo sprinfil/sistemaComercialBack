@@ -67,7 +67,7 @@ class LibroFactory extends Factory
                             'id_libro' => $libro->id,
                             'id_usuario' => $usuario->id,
                             'codigo_toma' => $folio,
-                            'posicion' => new Point($longitud, $latitud),
+                            'posicion' => new Point( $this->faker->randomFloat(4, 24.1163, 24.1455), $this->faker->randomFloat(4, 110.3432, 110.2892)),
                         ]);
                 }
             });
