@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreConceptoAplicableRequest;
+use App\Http\Requests\UpdateConceptoAplicableRequest;
 use App\Services\AtencionUsuarios\ConceptoAplicableService;
 use Exception;
 use Illuminate\Http\Request;
@@ -60,7 +61,7 @@ class ConceptoAplicableController extends Controller
         }
     }
 
-    public function updateConceptoAplicable(Request $request)
+    public function updateConceptoAplicable(UpdateConceptoAplicableRequest $request)
     {
         try {
             $data = $request->validated();
@@ -76,18 +77,34 @@ class ConceptoAplicableController extends Controller
         }
     }
 
-    public function deleteConceptoAplicable(Request $request)
+    public function destroyConceptoAplicable(Request $request)
     {
         try {
             $data = $request->input('id');
             DB::beginTransaction();
-            $conceptoAplicable = (new ConceptoAplicableService())->deleteConceptoAplicableService($data);
+            $conceptoAplicable = (new ConceptoAplicableService())->destroyConceptoAplicableService($data);
             DB::commit();
             return $conceptoAplicable;
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
                 'message' => 'Ocurrio un error al eliminar el concepto aplicable.'.$ex
+            ]); 
+        }
+    }
+
+    public function restaurarConceptoAplicable(Request $request)
+    {
+        try {
+            $data = $request->input('id');
+            DB::beginTransaction();
+            $conceptoAplicable = (new ConceptoAplicableService())->restaurarConceptoAplicableService($data);
+            DB::commit();
+            return $conceptoAplicable;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al restaurar el concepto aplicable.'.$ex
             ]); 
         }
     }

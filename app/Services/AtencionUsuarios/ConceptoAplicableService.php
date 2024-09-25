@@ -26,11 +26,19 @@ class ConceptoAplicableService{
   public function StoreService(array $data)
   {
     try {
-      $regPrevio = ConceptoAplicable::where('id_concepto_catalogo',$data['id_concepto_catalogo'])
+      $regPrevio = ConceptoAplicable::withTrashed()->where('id_concepto_catalogo',$data['id_concepto_catalogo'])
         ->where('id_modelo',$data['id_modelo'])
         ->where('modelo',$data['modelo'])
         ->first();
       if ($regPrevio) {
+        if ($regPrevio->trashed())
+        {
+          return response()->json([
+            'message' => 'El Concepto aplicable ya existe pero ha sido eliminado, ¿Desea restaurarlo?',
+            'restore' => true,
+            'concepto_aplicable_id' => $regPrevio->id
+        ], 200);
+        }
         return response()->json([
           'error' => 'El concepto ya es aplicable a este modelo.'
           ],400); 
@@ -50,8 +58,8 @@ class ConceptoAplicableService{
   {
     try {
       
-      if ($data['modelo'] == "ajuste_catalogo" || $data['modelo'] == "descuento_catalogo" || $data['modelo'] == "convenio_catalogo") {
-        $conceptosAplicables = ConceptoAplicable::where('modelo',$data['modelo'])
+      if ($data == "ajuste_catalogo" || $data == "descuento_catalogo" || $data == "convenio_catalogo") {
+        $conceptosAplicables = ConceptoAplicable::where('modelo',$data)
         ->with('concepto')
         ->with('conceptosAplicables')
         ->get();
@@ -73,7 +81,7 @@ class ConceptoAplicableService{
   public function busquedaPorConceptoService(string $data)
   {
     try {
-      $conceptosAplicables = ConceptoAplicable::where('id_concepto_catalogo',$data['id_concepto_catalogo'])
+      $conceptosAplicables = ConceptoAplicable::where('id_concepto_catalogo',$data)
       ->with('concepto')
       ->with('conceptosAplicables')
       ->get();
@@ -96,9 +104,13 @@ class ConceptoAplicableService{
   public function updateConceptoAplicableService(array $data)
   {
     try {
-      $conceptoAplicable = ConceptoAplicable::find($data['id'])->first();
+      $conceptoAplicable = ConceptoAplicable::where('id',$data['id'])->first();
       if ($conceptoAplicable) {
         $conceptoAplicable->update($data['concepto_aplicable'][0]);
+        return response()->json([
+          'message' => 'El concepto Aplicable se ha modificado correctamente.',
+          'registro'=> $conceptoAplicable
+          ]); 
       }
       else{
         return response()->json([
@@ -112,12 +124,16 @@ class ConceptoAplicableService{
     }
   }
 
-  public function deleteConceptoAplicableService(string $data)
+  public function destroyConceptoAplicableService(string $data)
   {
     try {
-      $conceptoAplicable = ConceptoAplicable::find($data['id'])->first();
+      $conceptoAplicable = ConceptoAplicable::where('id',$data)->first();
       if ($conceptoAplicable) {
         $conceptoAplicable->delete();
+        return response()->json([
+          'message' => 'El concepto Aplicable se ha eliminado correctamente.',
+          'registro'=> $conceptoAplicable
+          ]); 
       }
       else {
         return response()->json([
@@ -131,4 +147,27 @@ class ConceptoAplicableService{
     }
   }
   
+  public function restaurarConceptoAplicableService($data)
+  {
+    try {
+      
+      $conceptoAplicable = ConceptoAplicable::onlyTrashed()->where('id',$data)->first();
+      if ($conceptoAplicable) {
+        $conceptoAplicable->restore();
+        return response()->json([
+          'message' => 'El concepto Aplicable se ha restaurado correctamente.',
+          'registro'=> $conceptoAplicable
+          ]); 
+      }
+      else {
+        return response()->json([
+          'error' => 'No se encontro el registro a restaurar.'
+          ],400); 
+      }
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error al restaurar el concepto aplicable.'.$ex
+        ],400); 
+    }
+  }
 }
