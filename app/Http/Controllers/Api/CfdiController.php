@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateCfdiRequest;
 use App\Http\Resources\CfdiResource;
 use App\Models\DatoFiscal;
 use App\Models\Pago;
+use App\Services\Caja\CfdiService;
 use Faker\Factory as FakerFactory;
 use Exception;
 
@@ -58,14 +59,14 @@ class CfdiController extends Controller
                 $query->whereHas('pagos', function ($q) use ($request) {
                     $id_dueno = $request->input('codigo');
                     $tipo_dueno = $request->input('modelo_dueno');
-                    
+
                     if ($tipo_dueno === 'usuario') {
                         $q->where('codigo_usuario', $id_dueno);
                     } elseif ($tipo_dueno === 'toma') {
                         $q->where('codigo_toma', $id_dueno);
                     }
                 });
-            }            
+            }
 
             if ($request->has('forma_pago')) {
                 $query->whereHas('pagos', function ($q) use ($request) {
@@ -148,34 +149,8 @@ class CfdiController extends Controller
         try {
             // Validar los datos del request
             $data = $request->validated();
-
-            // Lista de posibles estados
-            $estados = ['pendiente', 'fallido', 'realizado', 'cancelado'];
-
-            // Seleccionar un estado aleatoriamente
-            $data['estado'] = $estados[array_rand($estados)];
-
-            $pago = Pago::where('folio', $data['folio'])->first();
-            $datos_fiscales = $pago->dueno->datos_fiscales;
-            if(!$datos_fiscales){
-                $datos_fiscales = $pago->duenoUsuario->datos_fiscales;
-            }
-            $res = DatoFiscal::findOrFail($datos_fiscales->id ?? 0);
-            $data['id_datos_fiscales'] = $datos_fiscales->id;
-
-            // Instanciar Faker para generar la imagen
-            $faker = FakerFactory::create();
-
-            // Si el estado es 'realizado' o 'cancelado', generar y guardar la imagen
-            if ($data['estado'] === 'realizado' || $data['estado'] === 'cancelado') {
-                $data['documento'] = $faker->imageUrl(640, 480, 'cats', true, 'Faker', true);
-            }
-
-            // Crear el registro en la base de datos
-            $cfdi = Cfdi::create($data);
-
             // Retornar la respuesta con el recurso creado
-            return response(new CfdiResource($cfdi), 201);
+            return response(new CfdiResource((new CfdiService())->timbrarPago($data)), 201);
         } catch (Exception $e) {
             // Manejo de errores y retorno de una respuesta de error
             return response()->json([
@@ -193,7 +168,7 @@ class CfdiController extends Controller
         try {
             // Cargar el Cfdi con las relaciones pagos y datoFiscal
             $cfdi = Cfdi::with('pagos', 'datoFiscal')->findOrFail($id);
-            
+
             // Retornar la respuesta con el recurso Cfdi
             return response(new CfdiResource($cfdi), 200);
         } catch (ModelNotFoundException $e) {
