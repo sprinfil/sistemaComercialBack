@@ -2,6 +2,7 @@
 namespace App\Services\Facturacion;
 
 use App\Models\Lectura;
+use Illuminate\Database\Eloquent\Collection;
 use Exception;
 
 class LecturaService
@@ -57,4 +58,31 @@ class LecturaService
             throw $ex;
         }
     }
+
+    public function importarLecturas($lecturas)
+    {
+        try {
+            $nuevasLecturas = new Collection();
+            foreach ($lecturas as $lectura) {
+                $toma = [
+                    "id_operador" => $lectura['id_operador'],
+                    "id_toma" => $lectura['id_toma'],
+                    "id_periodo" => $lectura['id_periodo'],
+                    "id_origen" => $lectura['id_origen'],
+                    "modelo_origen" => $lectura['modelo_origen'],
+                    "id_anomalia" => $lectura['id_anomalia'],
+                    "lectura" => $lectura['lectura'],
+                    "comentario" => $lectura['comentario']
+                ];
+
+                // Crear la nueva lectura y agregarla a la colección
+                $nuevasLecturas->push(Lectura::create($toma));
+            }
+            return $nuevasLecturas;
+        } catch (Exception $ex) {
+            // Manejar cualquier excepción que ocurra durante el proceso
+            throw $ex;
+        }
+    }
+
 }
