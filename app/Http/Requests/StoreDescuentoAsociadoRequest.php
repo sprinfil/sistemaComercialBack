@@ -28,7 +28,7 @@ class StoreDescuentoAsociadoRequest extends FormRequest
             //"id_evidencia"=>" nullable|int", //Segun se ocupa guardar el file y al guardar el id_evidencia
             "evidencia"=> "nullable|array",
             "evidencia.*" => "file",
-            "curp" => "required|string|size:18|unique:usuarios,curp",
+            "curp" => "required|string|size:18",
             "id_registra"=>"required|int",
             "vigencia"=>"nullable|date",
             "estatus"=>"required|in:vigente,no_vigente",

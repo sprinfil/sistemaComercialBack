@@ -29,11 +29,10 @@ class DescuentoAsociadoService
     {
 
         try {
-            $count = 0;
             $folio = $data['folio'];
             $id_modelo = $data['id_modelo'];
             $modelo_dueno = $data['modelo_dueno'];
-            $estatus = $data['estatus'];
+            $curp = $data['curp'];
 
             //Si el id_modelo / modelo dueño existen en descuentos asociados
             $dueno = DescuentoAsociado::where('id_modelo', $id_modelo)

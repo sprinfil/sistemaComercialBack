@@ -16,6 +16,7 @@ class DescuentoAsociado extends Model
         "id_descuento",
         "id_modelo",
         "modelo_dueno",
+        "curp",
         "id_evidencia",
         "id_registra",
         "vigencia",
