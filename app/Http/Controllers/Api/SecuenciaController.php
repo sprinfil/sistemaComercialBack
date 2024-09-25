@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSecuenciaRequest;
 use App\Models\Secuencia;
 use App\Services\SecuenciaService;
+use ErrorException;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Psy\CodeCleaner\ReturnTypePass;
 
 use function PHPUnit\Framework\isEmpty;
 use function PHPUnit\Framework\isNan;
@@ -39,10 +41,19 @@ class SecuenciaController extends Controller
             DB::commit();
             return response()->json(["secuencia"=>$secuencia,"secuencia_ordenes"=>$secuencia_ordenes],200) ;
         }
-        catch(Exception $ex){
+        catch(Exception | ErrorException $ex){
+           
             DB::rollBack();
-            return response()->json(["error"=>"Ha habido un error: ".$ex->getMessage()],500);
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de petición: ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+
         }
+        
     }
     
 }
