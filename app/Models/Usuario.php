@@ -52,7 +52,7 @@ class Usuario extends Model
     }
     public function descuento_asociado() : HasOne
     {
-        return $this->hasOne(DescuentoAsociado::class, 'id_usuario');
+        return $this->hasOne(DescuentoAsociado::class, 'id_modelo');
     }
     
 

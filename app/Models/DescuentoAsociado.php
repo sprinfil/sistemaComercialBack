@@ -26,7 +26,7 @@ class DescuentoAsociado extends Model
     // Usuario asociado al descuento
     public function usuario(): BelongsTo
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario');
+        return $this->belongsTo(Usuario::class, 'id_modelo');
     }
 
     // Toma asociada al descuento

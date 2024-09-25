@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_descuento')->nullable();
             $table->unsignedBigInteger('id_modelo')->nullable();
             $table->enum('modelo_dueno', ['toma' , 'usuario'])->nullable();
-            //$table->unsignedBigInteger('id_evidencia')->nullable();
+            $table->string('curp')->unique();
             $table->unsignedBigInteger('id_registra')->nullable();
             $table->dateTime('vigencia')->nullable();
             $table->enum('estatus' , ['vigente' , 'no_vigente'])->nullable();
