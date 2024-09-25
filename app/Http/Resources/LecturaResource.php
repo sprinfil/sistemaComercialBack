@@ -30,8 +30,8 @@ class LecturaResource extends JsonResource
             'anomalia' => new AnomaliaCatalogoResource($this->whenLoaded('anomalia')),
             'lectura' => $this->lectura,
             'comentario' => $this->comentario,
-            'fecha_creacion' => $this->created_at->toDateTimeString(),
-            'fecha_actualizacion' => $this->updated_at->toDateTimeString(),
+            'fecha_creacion' => $this->created_at->format('Y-m-d H:i'),
+            'fecha_actualizacion' => $this->updated_at->format('Y-m-d H:i'),
         ];
     }
 }
