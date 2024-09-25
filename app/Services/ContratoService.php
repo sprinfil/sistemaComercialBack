@@ -206,7 +206,6 @@ class ContratoService{
             $q->where('codigo_toma',$codigo_toma);///aplicar esto en OT
 
         })->orderBy('created_at','desc')
-        ->take(100)
         ->get();
 
        return $query;
