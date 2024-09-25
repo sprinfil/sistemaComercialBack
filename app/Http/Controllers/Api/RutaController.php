@@ -16,6 +16,7 @@ use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreRutaRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateRutaRequest;
+use App\Http\Resources\RutaSimplificado;
 use App\Services\Facturacion\RutaService;
 use Faker\Core\Coordinates;
 use MatanYadaev\EloquentSpatial\Objects\Point;
@@ -34,6 +35,13 @@ class RutaController extends Controller
         //pediente asignar permisos
         return RutaResource::collection(
             Ruta::orderby("id")->get()
+        );
+    }
+    public function secuencias()
+    {
+        //pediente asignar permisos
+        return RutaSimplificado::collection(
+            Ruta::with(['Libros.tomas','Libros.secuencias.ordenesSecuencia.toma:id,codigo_toma'])->orderby("id")->get()
         );
     }
 
