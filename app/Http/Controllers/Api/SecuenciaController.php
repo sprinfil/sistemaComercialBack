@@ -36,7 +36,7 @@ class SecuenciaController extends Controller
                 return response()->json(["error"=>$error],400);
             }
             $secuencia_ordenes=(new SecuenciaService())->SecuenciaOrdenStore($secuencia,$data['secuencia_ordenes']);
-            DB::rollBack();
+            DB::commit();
             return response()->json(["secuencia"=>$secuencia,"secuencia_ordenes"=>$secuencia_ordenes],200) ;
         }
         catch(Exception $ex){
