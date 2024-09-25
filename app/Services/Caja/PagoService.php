@@ -114,6 +114,16 @@ class PagoService
             $pago_final->total_abonado = number_format($pago_final->total_abonado(), 2, '.', '');
             $pago_final->save();
 
+            $datos_fiscales = $dueno->datos_fiscales;
+            if ($datos_fiscales) {
+                $cfdi_data = [];
+                $cfdi_data['folio'] = $pago_final->folio;
+                $cfdi_data['id_timbro'] = $caja->id_operador;
+                $cfdi_data['metodo'] = 'directo';
+
+                $estado_timbrado = (new CfdiService())->timbrarPago($cfdi_data); // TODO que deberia pasar si un timbrado falla?
+            }
+
             DB::commit();
 
             //throw new Exception("L");
