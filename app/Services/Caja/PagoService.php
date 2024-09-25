@@ -54,8 +54,8 @@ class PagoService
             $id_modelo = $data['id_dueno'];
             $dueno = helperGetOwner($modelo, $id_modelo);
             // se obtiene la caja y se registra el pago
-            $caja = Caja::find($data['id_caja']);
-            $numeroPagos = $caja->pagos()->count() + 1;
+            $caja = Caja::findOrFail($data['id_caja']);
+            $numeroPagos = $caja->pagos()->count() ?? 0 + 1;
             $folio = strtoupper('C' . str_pad($caja->id, 2, '0', STR_PAD_LEFT) . 'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT));
             $data['folio'] = $folio;
             $data['fecha_pago'] = date('Y-m-d');
@@ -322,7 +322,7 @@ class PagoService
                     // cada pago puede tener abonos
                     $total_abonado = 0;
                     $total_pagado = $pago->total_pagado;
-                    $abonos_aplicados = $pago->abonos;
+                    $abonos_aplicados = $pago->abonosVigentes;
 
                     // se recorren los abonos realizados para saber
                     // si queda saldo por aplicar de los pagos

@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         //
-    
+
         // Crear el usuario 'admin' y su operador asociado
         /*$adminUser = User::factory()->create([
             'name' => 'admin',
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
         Colonia::factory()->count(10)->create();
         // Calles
         Calle::factory()->count(100)->create();
-     
+
         //
         $this->call(UsuarioSeeder::class);
         //
@@ -68,7 +68,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BonificacionCatalogoSeeder::class);
         //
         //$this->call(CajaSeeder::class);
-        $this->call(OperadorAsignadoSeeder::class);
+        //$this->call(OperadorAsignadoSeeder::class);
         $this->call(CajaCatalogoSeeder::class);
         $this->call(PagoSeeder::class);
         //$this->call(CorteCajaSeeder::class);
