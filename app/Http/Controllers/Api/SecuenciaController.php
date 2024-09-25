@@ -10,6 +10,10 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNan;
+use function PHPUnit\Framework\isNull;
+
 class SecuenciaController extends Controller
 {
     public function index(){
@@ -37,7 +41,7 @@ class SecuenciaController extends Controller
         }
         catch(Exception $ex){
             DB::rollBack();
-            return response()->json(["error"=>"Ha habido un error: ".$ex],500);
+            return response()->json(["error"=>"Ha habido un error: ".$ex->getMessage()],500);
         }
     }
     

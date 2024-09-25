@@ -131,7 +131,7 @@ class OrdenTrabajoController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Los cargos de la OT no se pudieron registar/actualizar.'
-            ], 200);
+            ], 500);
         }
  
     }
