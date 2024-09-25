@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('consumos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_toma');
+            $table->unsignedBigInteger('id_periodo');
             $table->unsignedBigInteger('id_lectura_anterior')->nullable();
             $table->unsignedBigInteger('id_lectura_actual')->nullable();
-            $table->enum('tipo_facturacion', ['promedio', 'lectura']);
+            $table->enum('tipo', ['promedio', 'lectura']);
+            $table->enum('estado', ['activo', 'cancelado']);
             $table->integer('consumo');
             $table->softDeletes();
             $table->timestamps();
