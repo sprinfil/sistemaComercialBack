@@ -354,7 +354,7 @@ class OrdenTrabajoService{
                 $dato['estatus']="activo";
                 $MedidorExiste=Toma::find($dato['id_toma'])->medidorActivo;
                 if ($MedidorExiste){
-                    $MedidorExiste->delete();
+                    $MedidorExiste->update(["estatus"=>"inactivo"]);
                 }
                 $dato['id_toma']=$ordenTrabajo['id_toma'];
                 $OTModelo=Medidor::create($dato);
