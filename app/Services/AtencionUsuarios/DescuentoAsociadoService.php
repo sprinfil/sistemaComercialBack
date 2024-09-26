@@ -47,8 +47,7 @@ class DescuentoAsociadoService
                 return response()->json(['message' => 'El folio no esta disponible'], 400);
             } else {
                 $descuento = DescuentoAsociado::create($data);
-                $descuento->load('descuento_catalogo');
-                $descuento->load('archivos');
+                $descuento->load('descuento_catalogo' , 'archivos');
             }
             return response(new DescuentoAsociadoResource($descuento), 201);
         } catch (Exception $ex) {
@@ -95,11 +94,11 @@ class DescuentoAsociadoService
         }
     }
 
-    public function guardarArchivo($file, $data)
+    public function guardarArchivo($files, $data)
     {
-        $path = $file->store('evidencia', 'public');
+        $path = $files->store('evidencia', 'public');
         $filename = basename($path);
-        $extension = $file->getClientOriginalExtension();
+        $extension = $files->getClientOriginalExtension();
         $tipoArchivo = $this->determinarTipoArchivo($extension);
         $archivo = [
             'modelo' => 'descuento_asociado',
