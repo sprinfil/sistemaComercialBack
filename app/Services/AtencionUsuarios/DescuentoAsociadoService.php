@@ -48,6 +48,7 @@ class DescuentoAsociadoService
             } else {
                 $descuento = DescuentoAsociado::create($data);
                 $descuento->load('descuento_catalogo');
+                $descuento->load('archivos');
             }
             return response(new DescuentoAsociadoResource($descuento), 201);
         } catch (Exception $ex) {
@@ -100,14 +101,13 @@ class DescuentoAsociadoService
         $filename = basename($path);
         $extension = $file->getClientOriginalExtension();
         $tipoArchivo = $this->determinarTipoArchivo($extension);
-
         $archivo = [
             'modelo' => 'descuento_asociado',
             'id_modelo' => $data['id_modelo'],
             'url' => $filename,
             'tipo' => $tipoArchivo,
         ];
-        return Archivo::create($archivo);
+        Archivo::create($archivo);
     }
 
     private function determinarTipoArchivo($extension)

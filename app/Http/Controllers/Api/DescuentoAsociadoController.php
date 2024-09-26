@@ -57,7 +57,7 @@ class DescuentoAsociadoController extends Controller
             }
             if ($request->hasFile('evidencia')) {
                 foreach ($request->file('evidencia') as $file) {
-                    $descuentoAsociado->guardarArchivo($file, $data);
+                    $descuentoAsociado->guardarArchivo($file , $data);
                 }
             }
             DB::commit();
