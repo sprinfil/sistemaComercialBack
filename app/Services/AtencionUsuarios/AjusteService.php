@@ -160,4 +160,9 @@ class AjusteService
             return $e;
         }
     }
+    public function generarReportes($filtros){
+        $ReporteAjustes=array(Ajuste::all()->toArray());
+
+        return $ReporteAjustes;
+    }
 }
