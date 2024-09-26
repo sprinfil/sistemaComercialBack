@@ -266,10 +266,17 @@ class OrdenTrabajoService{
         switch($tipo_modelo){
             case "toma":
                 $OTModelo=Toma::find($ordenTrabajo['id_toma']);
-
+                $servicio=match($Accion['campo']){
+                    'contrato_agua'=>"c_agua",
+                    'contrato_alcantarillado'=>"c_alc",
+                    'contrato_saneamiento'=>"c_san",
+                    default=>null
+                };
                 //Checa caso especifico de instalación o dada de baja de servicios
-                if ($Accion['campo']=="c_agua" || $Accion['campo']=="c_alc" || $Accion['campo']=="c_san" ){
-                    $servicio=$Accion['campo'];
+                if ($Accion['campo']=="contrato_agua" || $Accion['campo']=="contrato_alcantarillado" || $Accion['campo']=="contrato_saneamiento" ){
+                    //$servicio=$Accion['campo'];
+
+                  
                     $estado=$Accion['valor'];
                     if ($estado=="activa"){
                         $valor=match($servicio){
@@ -286,7 +293,7 @@ class OrdenTrabajoService{
 
                 }
                 else{
-                    $dato=[$Accion['campo']=>$Accion['valor']];
+                    $dato=[$Accion['campo']=>$servicio];
                 }
                 $OTModelo->update($dato);
                 $OTModelo->save();
@@ -345,6 +352,10 @@ class OrdenTrabajoService{
             case "medidores":
                 $dato=$modelos['medidores'];
                 $dato['estatus']="activo";
+                $MedidorExiste=Toma::find($dato['id_toma'])->medidorActivo;
+                if ($MedidorExiste){
+                    $MedidorExiste->delete();
+                }
                 $dato['id_toma']=$ordenTrabajo['id_toma'];
                 $OTModelo=Medidor::create($dato);
                 break;
