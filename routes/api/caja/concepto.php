@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ConceptoController;
-use App\Http\Controllers\ConceptoAplicableController;
+use App\Http\Controllers\Api\ConceptoAplicableController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'audit'])->group(function () {
