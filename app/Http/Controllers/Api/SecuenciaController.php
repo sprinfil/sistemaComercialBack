@@ -55,5 +55,11 @@ class SecuenciaController extends Controller
         }
         
     }
+    public function CargarSecuencia(Request $request){
+       
+    }
+    public function Delete(Request $request){
+
+    }
     
 }

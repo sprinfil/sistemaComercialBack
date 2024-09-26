@@ -108,16 +108,11 @@ class SecuenciaService{
                 $ids[] = $id;
             }
         }
-        Secuencia_orden::whereNotIn('id',$ids)->delete();
+        Secuencia_orden::where('id_secuencia',$id_secuencia)->whereNotIn('id',$ids)->delete();
         $Ordenado=Secuencia_orden::upsert($secuenciaOrden, uniqueBy: ['id']);
         $updatedRecords = Secuencia_orden::where('id_secuencia',$id_secuencia)->orWhereIn('id', $ids)->get();
         return $updatedRecords;
     }
-    /*
-    public function UpdateSecuencia($secuencia){
-
-    }
-    */
     public function DeleteSecuencia(){
         //Borra una secuencia padre/personalizada y sus secuencias ordenes
         //Si borra una secuencia padre, se borran todas las personalizadas asociadas.
