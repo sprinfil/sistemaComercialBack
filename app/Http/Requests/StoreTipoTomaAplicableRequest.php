@@ -11,7 +11,7 @@ class StoreTipoTomaAplicableRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class StoreTipoTomaAplicableRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "id_modelo" => "required|integer|gt:0",
+
+             "modelo_origen" => "required|string|
+             in:ajuste_catalogo,descuento_catalogo,convenio_catalogo",
+
+             "id_tipo_toma" => "required|integer|gt:0",
         ];
     }
 }
