@@ -23,6 +23,7 @@ class Convenio extends Model
         'cantidad_letras',
         'estado',
         'comentario',
+        'motivo_cancelacion',
     ];
 
     public function ConvenioCatalogo() : BelongsTo
