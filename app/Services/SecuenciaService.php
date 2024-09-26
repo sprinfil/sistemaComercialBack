@@ -92,7 +92,11 @@ class SecuenciaService{
         }
         $counts = array_column($ordenes,'numero_secuencia');
         $unicos=array_unique($counts);
-       if (count($counts)!=count($unicos)){
+        $filtered = array_filter($unicos, function($value) {
+            return $value !== 0;
+        });
+  
+       if (count($counts)!=count($filtered)){
         throw new ErrorException("No se pueden subir tomas que tengan el mismo numero de orden de secuencia, asigne ordenes differentes para cada toma en la secuencia",400);
        }
 
