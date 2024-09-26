@@ -18,12 +18,26 @@ class Secuencia extends Model
         "tipo_secuencia"
     ];
     public function ordenesSecuencia():HasMany{
-        return $this->hasMany(Secuencia_orden::class,'id_secuencia');
+        return $this->hasMany(Secuencia_orden::class,'id_secuencia')->orderBy('numero_secuencia', 'asc');
     }
     public function empleado():BelongsTo{
         return $this->belongsTo(Operador::class,'id_empleado');
     }
     public function libro():BelongsTo{
         return $this->belongsTo(Libro::class,'id_libro');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::deleting(function ($parent) {
+            // Soft delete related child models
+            $parent->ordenesSecuencia()->each(function ($child) {
+                $child->forceDelete();
+            });
+
+        });
+        
     }
 }
