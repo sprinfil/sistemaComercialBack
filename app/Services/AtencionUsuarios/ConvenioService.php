@@ -12,6 +12,7 @@ use App\Models\ConceptoCatalogo;
 use App\Models\Convenio;
 use App\Models\Letra;
 use App\Models\Pago;
+use App\Models\TipoTomaAplicable;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\PagoService;
@@ -380,6 +381,39 @@ class ConvenioService
     } catch (Exception $ex) {
       return response()->json([
         'error' => 'Ocurrio un error al consultar el convenio.' . $ex
+      ], 400);
+    }
+  }
+
+  public function buscarConveniosAplicablesTipoTomaService(int $data)
+  {
+    try {
+      $toma = Toma::where('id', $data)->first();
+      //return $toma->id_tipo_toma;
+      if ($toma) {
+        $conveniosAplicables = TipoTomaAplicable::where('id_tipo_toma', $toma->id_tipo_toma)
+        ->where('modelo_origen','convenio_catalogo')
+        ->with('origen')
+        ->get();
+       
+        if (count($conveniosAplicables) != 0) {
+          return json_encode($conveniosAplicables);
+        }
+        else {
+          return response()->json([
+            'error' => 'El tipo de toma no es aplicable a ningun registro de convenio.'
+          ]);
+        }
+      }
+      else {
+        return response()->json([
+          'error' => 'El registro de toma no existe.'
+        ]);
+      }
+     
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda de los convenios aplicables al tipo de toma.' . $ex
       ], 400);
     }
   }
