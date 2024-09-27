@@ -29,11 +29,10 @@ class DescuentoAsociadoService
     {
 
         try {
-            $count = 0;
             $folio = $data['folio'];
             $id_modelo = $data['id_modelo'];
             $modelo_dueno = $data['modelo_dueno'];
-            $estatus = $data['estatus'];
+            $curp = $data['curp'];
 
             //Si el id_modelo / modelo dueño existen en descuentos asociados
             $dueno = DescuentoAsociado::where('id_modelo', $id_modelo)
@@ -46,11 +45,10 @@ class DescuentoAsociadoService
             }
             if ($folio_igual) {
                 return response()->json(['message' => 'El folio no esta disponible'], 400);
-            } else {
-                $descuento = DescuentoAsociado::create($data);
-                $descuento->load('descuento_catalogo');
             }
-            return response(new DescuentoAsociadoResource($descuento), 201);
+            $descuento = DescuentoAsociado::create($data);
+            $descuento->load('descuento_catalogo' , 'archivos');
+            return $descuento;
         } catch (Exception $ex) {
             return response()->json(['error' => 'Ocurrio un error al registrar el descuento asociado. ' . $ex], 500);
         }
@@ -59,7 +57,7 @@ class DescuentoAsociadoService
     public function filtro($id_modelo, $modelo_dueno)
     {
         try {
-            $filtro = DescuentoAsociado::with('descuento_catalogo')
+            $filtro = DescuentoAsociado::with('descuento_catalogo' , 'archivos')
                 ->when($id_modelo, function ($query, $id_modelo) {
                     return $query->where('id_modelo', $id_modelo);
                 })
@@ -95,20 +93,16 @@ class DescuentoAsociadoService
         }
     }
 
-    public function guardarArchivo($file, $data)
+    public function guardarArchivo($files, $descuentoAsociado)
     {
-        $path = $file->store('evidencia', 'public');
+        $path = $files->store('evidencia', 'public');
         $filename = basename($path);
-        $extension = $file->getClientOriginalExtension();
+        $extension = $files->getClientOriginalExtension();
         $tipoArchivo = $this->determinarTipoArchivo($extension);
-
-        $archivo = [
-            'modelo' => 'descuento_asociado',
-            'id_modelo' => $data['id_modelo'],
+        $descuentoAsociado->archivos()->create([
             'url' => $filename,
-            'tipo' => $tipoArchivo,
-        ];
-        return Archivo::create($archivo);
+            'tipo' => $tipoArchivo
+        ]);
     }
 
     private function determinarTipoArchivo($extension)

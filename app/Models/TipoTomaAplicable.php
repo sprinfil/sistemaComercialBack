@@ -18,9 +18,9 @@ class TipoTomaAplicable extends Model
         'id_tipo_toma'
     ];
 
-    public function tipoTomasAplicables(): MorphTo
+    public function origen(): MorphTo 
     {
-        return $this->morphTo(__FUNCTION__, 'modelo', 'id_modelo');
+        return $this->morphTo(__FUNCTION__, 'modelo_origen', 'id_modelo');
     }
 
     public function tipoToma(): BelongsTo
