@@ -297,6 +297,7 @@ class ConvenioService
   public function CancelarConvenioService(Request $data)
   {
     try {
+      $motivoCancelacion = $data['motivo_cancelacion'];
       $convenio = Convenio::findOrFail($data['id_convenio']);
       DB::beginTransaction();
       if ($convenio->estado == "activo") {
@@ -334,7 +335,8 @@ class ConvenioService
           ->update(['estado' => 'cancelado']);
 
         $convenioUpdt = [
-          "estado" => "cancelado"
+          "estado" => "cancelado",
+          "motivo_cancelacion" => $motivoCancelacion
         ];
 
         //Actualiza el estado del convenio, cargos originales y las letras del convenio

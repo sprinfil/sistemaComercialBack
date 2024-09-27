@@ -11,6 +11,7 @@ use App\Services\Facturacion\LecturaService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LecturaController extends Controller
 {
@@ -72,6 +73,20 @@ class LecturaController extends Controller
             return response()->json([
                 'error' => 'No se pudo encontrar la lectura por su id ' . $id
             ], 500);
+        }
+    }
+
+    public function import(Request $request)
+    {
+
+        try {
+            DB::beginTransaction();
+            $data = $request->all()['lecturas'];
+            $lecturas = (new LecturaService())->importarLecturas($data);
+            DB::commit();
+            return response()->json(['lecturas' => LecturaResource::collection($lecturas)], 200);
+        } catch (Exception $ex) {
+            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas'], 500);
         }
     }
 }

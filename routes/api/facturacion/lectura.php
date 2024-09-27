@@ -9,5 +9,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/lectura","index");
         Route::post("/lectura/store","store");
         Route::get("/lectura/show/{id}","show");
+        Route::post("/lectura/import","import");
     });
 });

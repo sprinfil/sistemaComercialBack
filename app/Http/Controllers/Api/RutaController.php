@@ -16,7 +16,10 @@ use App\Http\Resources\LibroResource;
 use App\Http\Requests\StoreRutaRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateRutaRequest;
+use App\Http\Resources\RutaSimplificado;
+use App\Models\Secuencia;
 use App\Services\Facturacion\RutaService;
+use App\Services\SecuenciaService;
 use Faker\Core\Coordinates;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
@@ -34,6 +37,13 @@ class RutaController extends Controller
         //pediente asignar permisos
         return RutaResource::collection(
             Ruta::orderby("id")->get()
+        );
+    }
+    public function secuencias()
+    {
+        //pediente asignar permisos
+        return RutaSimplificado::collection(
+            Ruta::with(['Libros.tomas','Libros.secuencias.ordenesSecuencia.toma:id,codigo_toma'])->orderby("id")->get()
         );
     }
 
@@ -153,6 +163,7 @@ class RutaController extends Controller
 
     public function masive_store(Request $request)
     {
+        DB::beginTransaction();
         $data = $request["data"];
         foreach ($data as $nombre_ruta => $ruta_data) {
             $ruta = new Ruta();
@@ -174,15 +185,28 @@ class RutaController extends Controller
 
                     $libro->polygon = $polygon;
                     $libro->save();
-
+                    $secuencia_input=[
+                        "tipo_secuencia"=>"padre",
+                        "id_libro"=>$libro->id,
+                    ];
+                    $secuencia=(new SecuenciaService())->store($secuencia_input);
+                    $orden=[];
+                    $i=1;
                     $tomasDentroDelPoligono = Toma::whereWithin('posicion', $libro->polygon)->get();
                     foreach ($tomasDentroDelPoligono as $toma) {
                         $toma->id_libro = $libro->id;
                         $toma->save();
+                        $orden[]=[
+                            "id_toma"=>$toma->id,
+                            "numero_secuencia"=>$i++,
+                        ];
                     }
+                    $Secuencia_orden=(new SecuenciaService())->SecuenciaOrdenStore($secuencia, $orden);
                 }
             }
         }
+        //Secuencia::insert([$secuencia]);
+        DB::commit();
     }
 
     public function masive_store_deprecated(Request $request)
@@ -220,6 +244,7 @@ class RutaController extends Controller
     {
         Libro::withTrashed()->forceDelete();
         Ruta::withTrashed()->forceDelete();
+        Secuencia::withTrashed()->forceDelete();
     }
 
     public function masive_polygon_delete_deprecated()

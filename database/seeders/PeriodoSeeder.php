@@ -17,7 +17,7 @@ class PeriodoSeeder extends Seeder
         $mesInicial = 1; // Enero
         $anoInicial = 2024;
 
-        for ($i = 0; $i < 4; $i++) {
+        for ($i = 0; $i < 9; $i++) {
             $mes = ($mesInicial + $i) % 12 ?: 12; // Asegura que el mes esté entre 1 y 12
             $ano = $anoInicial + floor(($mesInicial + $i - 1) / 12); // Incrementa el ano cuando se pasa de diciembre
 

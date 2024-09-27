@@ -25,6 +25,7 @@ class LibroSimplificado extends JsonResource
             "Puntos" => $this->Puntos,
             "tomas" => TomaResource::collection($this->whenLoaded('tomas')), 
             "ruta" => RutaSimplificado::collection($this->whenLoaded('ruta')), 
+            "secuencias" =>$this->whenLoaded('secuencias'), 
         
         ];
     }
