@@ -13,7 +13,7 @@ class LecturaService
             $lecturas = null;
             if ($data) {
                 // Aquí puedes agregar filtros si es necesario usando los datos de $data
-                // Ejemplo: $lecturas = Lectura::where('campo', $data['valor'])->with([...])->get();
+                // Ejemplo: $lecturas = Lectura::where('campo', $data['valor'])->with([...])->latest()->first();
             } else {
                 $lecturas = Lectura::with([
                     'operador',
@@ -21,7 +21,7 @@ class LecturaService
                     'periodo',
                     //'origen',
                     'anomalia'
-                ])->get();
+                ])->latest()->first(); // Obtiene la última lectura
             }
             return $lecturas;
         } catch (Exception $ex) {
