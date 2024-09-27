@@ -22,4 +22,9 @@ class AjusteCatalogo extends Model
     {
         return $this->morphMany(ConceptoAplicable::class, 'conceptosAplicables', 'modelo', 'id_modelo');
     }
+
+    public function tipoTomaAplicable(): MorphMany
+    {
+        return $this->morphMany(TipoTomaAplicable::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
 }

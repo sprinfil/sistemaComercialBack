@@ -14,6 +14,11 @@ class TipoTomaAplicableResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            "id" => $this->id,
+            "id_modelo" => $this->id_modelo,
+            "modelo_origen" => $this->modelo_origen,
+            "id_tipo_toma" => $this->id_tipo_toma
+        ];
     }
 }

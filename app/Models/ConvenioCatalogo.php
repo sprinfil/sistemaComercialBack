@@ -27,4 +27,9 @@ class ConvenioCatalogo extends Model
     {
         return $this->hasMany(Convenio::class, "id_convenio_catalogo", "id");
     }
+
+    public function tipoTomaAplicable(): MorphMany
+    {
+        return $this->morphMany(TipoTomaAplicable::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
 }
