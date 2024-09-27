@@ -167,7 +167,7 @@ class ConvenioService
       //Actualizar el registro de convenio con los montos
       $convenioMontos = [
         "monto_conveniado" => $montoConveniadoTotal,
-        "monto_total" => $montoFinalPendienteTotal,
+        "monto_total" => $montoFinalPendienteTotal,//esta es la de el cambio a letras aqui estoy
       ];
 
       $convenio->update($convenioMontos);  //redondea las variables desde aqui
