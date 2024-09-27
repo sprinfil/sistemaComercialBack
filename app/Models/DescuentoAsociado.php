@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DescuentoAsociado extends Model
@@ -16,6 +18,7 @@ class DescuentoAsociado extends Model
         "id_descuento",
         "id_modelo",
         "modelo_dueno",
+        "curp",
         "id_evidencia",
         "id_registra",
         "vigencia",
@@ -47,8 +50,8 @@ class DescuentoAsociado extends Model
     {
         return $this->belongsTo(DescuentoCatalogo::class, 'id_descuento');
     }
-    public function archivo()
+    public function archivos(): MorphMany
     {
-        return $this->hasOne(Archivo::class, 'id_modelo', 'id_modelo');    
+        return $this->morphMany(Archivo::class, 'origen', 'modelo', 'id_modelo');
     }
 }
