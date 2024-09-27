@@ -49,7 +49,7 @@ class DescuentoAsociadoService
                 $descuento = DescuentoAsociado::create($data);
                 $descuento->load('descuento_catalogo' , 'archivos');
             }
-            return response(new DescuentoAsociadoResource($descuento), 201);
+            return $descuento;
         } catch (Exception $ex) {
             return response()->json(['error' => 'Ocurrio un error al registrar el descuento asociado. ' . $ex], 500);
         }

@@ -56,13 +56,14 @@ class DescuentoAsociadoController extends Controller
             if (!$descuento) {
                 return response()->json(['message' => 'Ya existe un descuento asociado, un folio o una evidencia'], 400);
             }
+            $data['id_modelo'] = $descuento->id;
             if ($request->hasFile('evidencia')) {
                 foreach ($request->file('evidencia') as $file) {
                     $descuentoAsociado->guardarArchivo($file ,  $data);
                 }
             }
             DB::commit();
-            return $descuento;
+            return new DescuentoAsociadoResource($descuento);
         } catch(Exception $e) {
             DB::rollBack();
             return response()->json([
