@@ -48,7 +48,7 @@ class ConceptoAplicableService{
       }
     } catch (Exception $ex) {
       return response()->json([
-        'error' => 'Ocurrio un error al registrar el la configuracion del concepto.'.$ex
+        'error' => 'Ocurrio un error al registrar la configuracion del concepto.'.$ex
         ],400); 
     }
     
@@ -61,7 +61,7 @@ class ConceptoAplicableService{
       if ($data == "ajuste_catalogo" || $data == "descuento_catalogo" || $data == "convenio_catalogo") {
         $conceptosAplicables = ConceptoAplicable::where('modelo',$data)
         ->with('concepto')
-        ->with('conceptosAplicables')
+        ->with('origen')
         ->get();
         return $conceptosAplicables;
       }
@@ -83,7 +83,7 @@ class ConceptoAplicableService{
     try {
       $conceptosAplicables = ConceptoAplicable::where('id_concepto_catalogo',$data)
       ->with('concepto')
-      ->with('conceptosAplicables')
+      ->with('origen')
       ->get();
 
       if ($conceptosAplicables) {
