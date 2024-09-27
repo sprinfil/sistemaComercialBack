@@ -117,7 +117,7 @@ class ContratoController extends Controller
         } 
         catch (Exception $ex) {
             DB::rollBack();
-            return response()->json(["Error" => "No se pudo crear solicitud de contrato"], 500);
+            return response()->json(["Error" => "No se pudo crear solicitud de contrato: ".$ex], 500);
         }
     }
     public function storeFile(StoreArchivoRequest $request)
