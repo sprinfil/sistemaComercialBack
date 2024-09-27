@@ -14,6 +14,7 @@ use App\Models\ConceptoCatalogo;
 use App\Models\Factibilidad;
 use App\Models\Lectura;
 use App\Models\Libro;
+use App\Models\Secuencia_orden;
 use FFI;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -147,8 +148,16 @@ class ContratoService{
                 $libro=Libro::find($toma['id_libro']);
                 $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
                 $toma=Toma::create($toma);
+                $secuencia=$libro->secuenciasPadre;
+                $orden=[];
+                $orden[]=[
+                    "id_secuencia"=>$secuencia->id,
+                    "id_toma"=>$toma->id,
+                    "numero_secuencia"=>0,
+                ];
+                $Secuencia_orden=Secuencia_orden::insert($orden);
             }
-            
+
         }
         return $toma;
     }

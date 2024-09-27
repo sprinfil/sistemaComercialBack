@@ -112,7 +112,7 @@ class SecuenciaService{
                 $ids[] = $id;
             }
         }
-        Secuencia_orden::where('id_secuencia',$id_secuencia)->whereNotIn('id',$ids)->delete();
+        //Secuencia_orden::where('id_secuencia',$id_secuencia)->whereNotIn('id',$ids)->delete();
         $Ordenado=Secuencia_orden::upsert($secuenciaOrden, uniqueBy: ['id']);
         $updatedRecords = Secuencia_orden::where('id_secuencia',$id_secuencia)->orWhereIn('id', $ids)->get();
         return $updatedRecords;

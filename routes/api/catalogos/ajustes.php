@@ -23,6 +23,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/Ajuste/comparar", "compare");
         Route::post("/Ajuste/create", "store");
         Route::put("/Ajuste/cancelar", "cancel");
-        Route::post("/Ajuste/reporte","reportes");
+        Route::get("/Ajuste/reporte","reportes");
     });
 });

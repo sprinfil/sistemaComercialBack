@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Carbon\Carbon;
 
 class AjusteController extends Controller
 {
@@ -131,12 +132,12 @@ class AjusteController extends Controller
         try {
             $data = $request->all();
             $reporte=(new AjusteService())->generarReportes($data);
-            $reporte['casilla']=true;
-      
-            $data = [];
-            $data['monto_total'] = 0;
-            return $reporte[0][0];
-            $pdf = FacadePDF::loadView('ajuste',$data)
+            //$reporte['casilla']=true;
+      //            <input type="checkbox" name="" id="" checked="true"><p>{{ $reporte['casilla'] }}</p>
+             //return $reporte['casilla'];
+             $fecha=helperFechaAhora();
+             $fecha=Carbon::parse($fecha)->format('Y-m-d'); 
+            $pdf = FacadePDF::loadView('ajuste',["reporte"=>$reporte, "fecha"=>$fecha])
             ->setPaper('A4', 'portrait') // Tamaño de papel y orientación
             ->setOption('margin-top', 0)
             ->setOption('margin-right', 0)

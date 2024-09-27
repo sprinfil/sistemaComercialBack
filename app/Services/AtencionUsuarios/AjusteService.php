@@ -7,6 +7,7 @@ use App\Models\AjusteCatalogo;
 use App\Models\Cargo;
 use App\Models\Toma;
 use App\Services\Caja\PagoService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -161,8 +162,12 @@ class AjusteService
         }
     }
     public function generarReportes($filtros){
-        $ReporteAjustes=array(Ajuste::all()->toArray());
-
+        //$ReporteAjustes=Ajuste::get()->toArray();
+        $ReporteAjustes=Ajuste::with('ajusteCatalogo','dueno','operador')->get()->map(function ($ajuste) {
+            // Process the 'name' attribute and add it as a new field
+            $ajuste->created_at=Carbon::parse($ajuste->created_at,"GMT-7")->format("Y-m-d");
+            return $ajuste;
+        });
         return $ReporteAjustes;
     }
 }
