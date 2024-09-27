@@ -52,18 +52,18 @@ class DescuentoAsociadoController extends Controller
             DB::beginTransaction();
             $descuentoAsociado = new DescuentoAsociadoService();
             $descuento = $descuentoAsociado->store($data);
-            //$data['modelo_id'] = $descuento['id'];
             if (!$descuento) {
                 return response()->json(['message' => 'Ya existe un descuento asociado, un folio o una evidencia'], 400);
             }
             $data['id_modelo'] = $descuento->id;
             if ($request->hasFile('evidencia')) {
                 foreach ($request->file('evidencia') as $file) {
-                    $descuentoAsociado->guardarArchivo($file ,  $data);
+                    $descuentoAsociado->guardarArchivo($file ,  $descuento);
                 }
             }
+            $descuento->load('archivos');
             DB::commit();
-            return new DescuentoAsociadoResource($descuento);
+            return response(new DescuentoAsociadoResource($descuento), 201);
         } catch(Exception $e) {
             DB::rollBack();
             return response()->json([

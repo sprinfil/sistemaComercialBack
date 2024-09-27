@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
             'orden_trabajo' => 'App\Models\OrdenTrabajo',
             'cfdi' => 'App\Models\Cfdi',
             'ajuste' => 'App\Models\Ajuste',
-            'descuento' => 'App\Models\DescuentoAsociado',
+            //'descuento' => 'App\Models\DescuentoAsociado',
             'letra' => 'App\Models\Letra',
             'carga_trabajos' => 'App\Models\CargaTrabajo',
             'descuento_asociado' => 'App\Models\DescuentoAsociado'
