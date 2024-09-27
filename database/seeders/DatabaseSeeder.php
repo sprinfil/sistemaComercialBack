@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
         //
         $this->call(PeriodoSeeder::class);
         $this->call(CargaTrabajoSeeder::class);
-        //$this->call(LecturaSeeder::class);
+        $this->call(LecturaSeeder::class);
         //$this->call(ConsumoSeeder::class);
         //$this->call(FacturaSeeder::class);
         $this->call(AsignacionGeograficaSeeder::class);
