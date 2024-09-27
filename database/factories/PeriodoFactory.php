@@ -34,14 +34,14 @@ class PeriodoFactory extends Factory
         $periodo = Carbon::createFromDate($ano, $mes, 1);
 
         return [
-           'id_ruta' => Libro::all()->random()->id,
-           'id_tarifa' => Tarifa::all()->random()->id,
-           'nombre' => $periodo->translatedFormat('F Y'),  // Nombre en formato "Mes Ano"
-           'periodo' => $periodo->format('m-Y'),  // Periodo en formato "MM-YYYY"
-           'facturacion_fecha_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
-           'facturacion_fecha_final' => $periodo->endOfMonth(),  // Fin de mes del periodo
-           'lectura_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
-           'lectura_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
+            'id_ruta' => Libro::all()->random()->id,
+            'id_tarifa' => Tarifa::all()->random()->id,
+            'nombre' => $periodo->translatedFormat('F Y'),  // Nombre en formato "Mes Ano"
+            'periodo' => $periodo->format('m-Y'),  // Periodo en formato "MM-YYYY"
+            'facturacion_fecha_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
+            'facturacion_fecha_final' => $periodo->endOfMonth(),  // Fin de mes del periodo
+            'lectura_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
+            'lectura_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
         ];
     }
 
@@ -57,7 +57,7 @@ class PeriodoFactory extends Factory
                 'facturacion_fecha_inicio' => $periodo->startOfMonth(),
                 'facturacion_fecha_final' => $periodo->endOfMonth(),
                 'lectura_inicio' => $periodo->startOfMonth(),
-                'lectura_final' => $periodo->endOfMonth()->addDays(30),
+                'lectura_final' => $periodo->endOfMonth(),
             ];
         });
     }
@@ -69,19 +69,18 @@ class PeriodoFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterCreating(function (Periodo $periodo) 
-        {
+        return $this->afterCreating(function (Periodo $periodo) {
             $tomas = Toma::whereNotNull('c_agua')->get();
 
-            foreach($tomas as $toma){
+            foreach ($tomas as $toma) {
                 Factura::factory()->create([
-                    'id_periodo'=> $periodo->id,
-                    'id_toma'=> $toma->id,
-                    'id_consumo'=> 0,//Consumo::all()->random()->id,
-                    'id_tarifa_servicio'=> $periodo->id_tarifa,
-                    'monto'=>$this->faker->numberBetween(1,400),
-                    'fecha'=>$periodo->periodo,
-                ]);  
+                    'id_periodo' => $periodo->id,
+                    'id_toma' => $toma->id,
+                    'id_consumo' => 0, //Consumo::all()->random()->id,
+                    'id_tarifa_servicio' => $periodo->id_tarifa,
+                    'monto' => $this->faker->numberBetween(1, 400),
+                    'fecha' => $periodo->periodo,
+                ]);
             }
         });
     }
