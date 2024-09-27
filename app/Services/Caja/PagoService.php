@@ -114,8 +114,14 @@ class PagoService
             $pago_final->total_abonado = number_format($pago_final->total_abonado(), 2, '.', '');
             $pago_final->save();
 
-            $datos_fiscales = $dueno->datos_fiscales;
-            if ($datos_fiscales) {
+            $datos_fiscales = null;
+            try{
+                $datos_fiscales = $dueno->datos_fiscales;
+            }catch(Exception $ex){
+                
+            }
+            
+            if ($datos_fiscales != null) {
                 $cfdi_data = [];
                 $cfdi_data['folio'] = $pago_final->folio;
                 $cfdi_data['id_timbro'] = $caja->id_operador;
