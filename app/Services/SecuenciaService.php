@@ -129,4 +129,11 @@ class SecuenciaService{
 
 
     }
+    public function secuencia($id_libro){
+        $secuencia=Secuencia::where('id_libro',$id_libro)->where('tipo_secuencia',"padre")->first();
+        return $secuencia;
+        $secuencia_ordenes=Secuencia_orden::where('id_secuencia',$secuencia->id)->orderby("numero_secuencia",'asc')->get();
+        return $secuencia_ordenes;
+        
+        }
 }

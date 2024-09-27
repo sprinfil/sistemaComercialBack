@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSecuenciaRequest;
+use App\Models\Libro;
 use App\Models\Secuencia;
 use App\Services\SecuenciaService;
 use ErrorException;
@@ -54,6 +55,27 @@ class SecuenciaController extends Controller
 
         }
         
+    }
+    public function secuenciasPadre(Request $request)
+    {
+        //pediente asignar permisos
+        try {
+            DB::beginTransaction();
+            $data=$request->all();
+       
+            $libro=Libro::find($data['id_libro']);
+
+            $secuencias = (new SecuenciaService())->secuencia($libro);
+
+            return response()->json(["secuencia"=>$secuencias]);
+            DB::commit();
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'No se encontraron secuencia del libro: '.$ex
+            ], 200);
+        }
+       
     }
     public function CargarSecuencia(Request $request){
        
