@@ -640,7 +640,7 @@ class ContratoController extends Controller
             DB::commit();
             return response()->json(['tomas' => TomaResource::collection($precontratos)], 200);
         } catch (Exception $ex) {
-            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas'], 500);
+            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas: '.$ex], 500);
         }
     }
 }
