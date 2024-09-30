@@ -117,7 +117,7 @@ class ContratoController extends Controller
         } 
         catch (Exception $ex) {
             DB::rollBack();
-            return response()->json(["Error" => "No se pudo crear solicitud de contrato"], 500);
+            return response()->json(["Error" => "No se pudo crear solicitud de contrato: ".$ex], 500);
         }
     }
     public function storeFile(StoreArchivoRequest $request)
@@ -199,7 +199,7 @@ class ContratoController extends Controller
             $data = $request->validated()['contrato'];
             $contrato = Contrato::find($data['id']);
     
-            if ($contrato['estatus'] != "pendiente de pago") {
+            if ($contrato['estatus'] != "pendiente de pago" || $contrato['estatus'] != "pagado" ) { //quitar pendiente de pago cuando se haga el cambio de estatus en caja
                 if ($contrato['estatus']=="contratado"){
                     $error="No se puede cerrar un contrato que ya se encuentra concluido";
                 }
@@ -248,6 +248,9 @@ class ContratoController extends Controller
                         $toma->update(["c_alc"=>$contrato['id'],
                         "c_san"=>$contrato['id']
                     ]);
+                    }
+                    if ($toma->estatus=="pendiente de inspeccion"){
+                        $toma->estatus=="pendiente de instalacion";
                     }
                     $toma->save();
                     //$contrato = Contrato::find($data['id']);
@@ -640,7 +643,7 @@ class ContratoController extends Controller
             DB::commit();
             return response()->json(['tomas' => TomaResource::collection($precontratos)], 200);
         } catch (Exception $ex) {
-            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas'], 500);
+            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas: '.$ex], 500);
         }
     }
 }

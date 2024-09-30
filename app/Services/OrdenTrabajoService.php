@@ -13,6 +13,7 @@ use App\Models\OrdenTrabajo;
 use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
+use App\Models\Secuencia_orden;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\ConceptoService;
@@ -285,6 +286,22 @@ class OrdenTrabajoService{
                             'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
                         };
                         $dato=[$servicio=>$valor];
+                        
+                        if ($valor=="c_agua"){
+                            $libro=$OTModelo->libro;
+                            $secuencia=$libro->secuenciasPadre;
+                            $orden=[];
+                            $orden[]=[
+                                "id_secuencia"=>$secuencia->id,
+                                "id_toma"=>$OTModelo->id,
+                                "numero_secuencia"=>0,
+                            ];
+                            $Secuencia_orden=Secuencia_orden::insert($orden);
+                        }
+                        if ($OTModelo['estatus']=="pendiente de instalacion"){
+                            $OTModelo['estatus']=="activa";
+                        }
+                     
                     }
                     else if ($estado=="de baja"){
                         $dato=[$servicio=>null];

@@ -112,7 +112,7 @@ class SecuenciaService{
                 $ids[] = $id;
             }
         }
-        Secuencia_orden::where('id_secuencia',$id_secuencia)->whereNotIn('id',$ids)->delete();
+        //Secuencia_orden::where('id_secuencia',$id_secuencia)->whereNotIn('id',$ids)->delete();
         $Ordenado=Secuencia_orden::upsert($secuenciaOrden, uniqueBy: ['id']);
         $updatedRecords = Secuencia_orden::where('id_secuencia',$id_secuencia)->orWhereIn('id', $ids)->get();
         return $updatedRecords;
@@ -129,4 +129,11 @@ class SecuenciaService{
 
 
     }
+    public function secuencia($id_libro){
+        $secuencia=Secuencia::where('id_libro',$id_libro)->where('tipo_secuencia',"padre")->first();
+        return $secuencia;
+        $secuencia_ordenes=Secuencia_orden::where('id_secuencia',$secuencia->id)->orderby("numero_secuencia",'asc')->get();
+        return $secuencia_ordenes;
+        
+        }
 }

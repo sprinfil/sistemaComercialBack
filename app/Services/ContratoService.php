@@ -14,6 +14,7 @@ use App\Models\ConceptoCatalogo;
 use App\Models\Factibilidad;
 use App\Models\Lectura;
 use App\Models\Libro;
+use App\Models\Secuencia_orden;
 use FFI;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -147,8 +148,9 @@ class ContratoService{
                 $libro=Libro::find($toma['id_libro']);
                 $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
                 $toma=Toma::create($toma);
+               
             }
-            
+
         }
         return $toma;
     }
@@ -221,6 +223,7 @@ class ContratoService{
     }
     public function PreContrato($tomas){
         $PreContrato=new Collection();
+        $orden=[];
         foreach ($tomas as $toma){
             $libro=Libro::where('nombre',$toma['nombre'])->first();
             if (!$libro){
@@ -235,10 +238,21 @@ class ContratoService{
                 $coords=new Point($toma['posicion'][0],$toma['posicion'][1]);
                 $toma['posicion']=$coords;
                 unset($toma['nombre']);
-                $PreContrato->push(Toma::create($toma));
+                $nuevaToma=Toma::create($toma);
+                $PreContrato->push($nuevaToma);
+
+                $secuencia=$libro->secuenciasPadre;
+              
+                $orden[]=[
+                    "id_secuencia"=>$secuencia->id,
+                    "id_toma"=>$nuevaToma->id,
+                    "numero_secuencia"=>0,
+                ];
+              
             }
          
         }
+        $Secuencia_orden=Secuencia_orden::insert($orden);
         return $PreContrato;
     }
 }

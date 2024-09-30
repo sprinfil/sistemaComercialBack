@@ -4,12 +4,15 @@ namespace App\Services\Facturacion;
 use App\Http\Resources\LibroResource;
 use App\Models\AsignacionGeografica;
 use App\Models\Libro;
+use App\Models\Secuencia;
+use App\Models\Secuencia_orden;
 use COM;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
 use Exception;
 use Illuminate\Http\Client\Request;
+use PhpParser\Node\Expr\FuncCall;
 
 class LibroService{
 
@@ -238,4 +241,7 @@ class LibroService{
         $libro->save();
     }
 
+public function secuenciaOperador(){
+
+}
 }
