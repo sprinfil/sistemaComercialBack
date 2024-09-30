@@ -78,7 +78,12 @@ class SecuenciaController extends Controller
        
     }
     public function CargarSecuencia(Request $request){
-       
+       try{
+        
+       }
+       catch(Exception $ex){
+
+       }
     }
     public function Delete(Request $request){
 
