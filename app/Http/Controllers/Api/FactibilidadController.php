@@ -91,7 +91,8 @@ class FactibilidadController extends Controller
             //     // Agregar la ruta del archivo al campo correspondiente
             //     $data['documento'] = $path;
             // }
-
+            
+            // Agregar id de contrato
             $archivos = [];
 
             if ($request->hasFile('documentos')) {
