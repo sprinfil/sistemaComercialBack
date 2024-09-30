@@ -21,7 +21,7 @@ class LecturaService
                     'periodo',
                     //'origen',
                     'anomalia'
-                ])->latest()->first(); // Obtiene la última lectura
+                ])->orderBy('created_at', 'asc')->get(); // Obtiene la última lectura
             }
             return $lecturas;
         } catch (Exception $ex) {
