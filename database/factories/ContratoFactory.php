@@ -168,13 +168,25 @@ class ContratoFactory extends Factory
                     'id_contrato' => $contrato->id,
                 ]);
                 if ($contrato->estatus != 'pendiente de factibilidad') {
-                    $factibilidad = Factibilidad::factory()->create([
-                        'id_toma' => $contrato->id_toma,
-                        'estado' => 'sin revisar',
-                        'agua_estado_factible' => 'pendiente',
-                        'alc_estado_factible' => 'pendiente',
-                        'derechos_conexion' => 0
-                    ]);
+                    if ($contrato->servicio_contratado=="agua"){
+                        $factibilidad = Factibilidad::factory()->create([
+                            'id_toma' => $contrato->id_toma,
+                            'estado' => 'sin revisar',
+                            'servicio' => 'agua',
+                            'estado_servicio' => 'pendiente',
+                            'derechos_conexion' => 0
+                        ]);
+                    }
+                    else{
+                        $factibilidad = Factibilidad::factory()->create([
+                            'id_toma' => $contrato->id_toma,
+                            'estado' => 'sin revisar',
+                            'servicio' => 'alcantarillado y saneamiento',
+                            'estado_servicio' => 'pendiente',
+                            'derechos_conexion' => 0
+                        ]);
+                    }
+                   
 
                     DatosDomiciliacion::factory()->create([
                         'id_toma' => $contrato->id_toma,
@@ -219,12 +231,25 @@ class ContratoFactory extends Factory
                     //     'updated_at' => now(),
                     // ]);
                 } else if ($contrato->estatus != 'pagada') {
-                    $factibilidad = Factibilidad::factory()->create([
-                        'id_toma' => $contrato->id_toma,
-                        'agua_estado_factible' => 'factible',
-                        'alc_estado_factible' => 'factible',
-                        'derechos_conexion' => $derechos_conexion
-                    ]);
+             
+                    if ($contrato->servicio_contratado=="agua"){
+                        $factibilidad = Factibilidad::factory()->create([
+                            'id_toma' => $contrato->id_toma,
+                            'estado' => 'sin revisar',
+                            'servicio' => 'agua',
+                            'estado_servicio' => 'factible',
+                            'derechos_conexion' => 0
+                        ]);
+                    }
+                    else{
+                        $factibilidad = Factibilidad::factory()->create([
+                            'id_toma' => $contrato->id_toma,
+                            'estado' => 'sin revisar',
+                            'servicio' => 'alcantarillado y saneamiento',
+                            'estado_servicio' => 'factible',
+                            'derechos_conexion' => 0
+                        ]);
+                    }
 
                     Cargo::factory()->create([
                         'id_concepto' => 147,

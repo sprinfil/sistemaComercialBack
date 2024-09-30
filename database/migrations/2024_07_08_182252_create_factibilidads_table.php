@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_solicitante');
             $table->unsignedBigInteger('id_revisor')->nullable();
             $table->enum('estado', ['sin revisar', 'rechazada', 'pendiente de pago', 'pagada'])->default('sin revisar');
-            $table->enum('agua_estado_factible', ['pendiente', 'no factible', 'factible'])->default('pendiente');
-            $table->enum('alc_estado_factible', ['pendiente', 'no factible', 'factible'])->default('pendiente');
+            $table->enum('servicio', ['agua', 'alcantarillado y saneamiento']);
+            $table->enum('estado_servicio', ['pendiente', 'no factible', 'factible'])->default('pendiente');
+            //$table->enum('alc_estado_factible', ['pendiente', 'no factible', 'factible'])->default('pendiente');
             //$table->enum('san_estado_factible', ['pendiente', 'no factible', 'factible'])->default('pendiente');
             $table->decimal('derechos_conexion', total: 8, places: 2)->nullable(); //Cambio a decimal.
             //$table->string('documento')->nullable();

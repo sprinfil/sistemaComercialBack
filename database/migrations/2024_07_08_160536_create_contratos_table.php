@@ -24,6 +24,7 @@ return new class extends Migration
                 'pendiente de pago', 
                 'contratado',
                 'terminado', 
+                'pagado',
                 'cancelado'
             ]);
             $table->string('nombre_contrato');

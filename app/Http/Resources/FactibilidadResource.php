@@ -23,8 +23,8 @@ class FactibilidadResource extends JsonResource
             'id_revisor' => $this->id_revisor,
             'revisor' => $this->revisor ? $this->revisor->nombre : null ?? 'sin revisor', // Si tienes una relación revisor
             'estatus' => strtoupper($this->estado),
-            'agua_estado_factible' => strtoupper($this->agua_estado_factible),
-            'alcantarillado_estado_factible' => strtoupper($this->alc_estado_factible),
+            'servicio' => strtoupper($this->servicio),
+            'estado_servicio' => strtoupper($this->estado_servicio),
             //'saneamiento_estado_factible' => $this->san_estado_factible,
             'derechos_conexion' => $this->derechos_conexion ?? 0,
             'toma' => $this->whenLoaded('toma', function () {

@@ -286,7 +286,7 @@ class OrdenTrabajoService{
                             'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
                         };
                         $dato=[$servicio=>$valor];
-                        
+
                         if ($valor=="c_agua"){
                             $libro=$OTModelo->libro;
                             $secuencia=$libro->secuenciasPadre;
@@ -297,6 +297,7 @@ class OrdenTrabajoService{
                                 "numero_secuencia"=>0,
                             ];
                             $Secuencia_orden=Secuencia_orden::insert($orden);
+                            ///TO DO ACTUALIZAR SECUENCIAS HIJO
                         }
                      
                     }

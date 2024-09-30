@@ -23,8 +23,8 @@ class FactibilidadFactory extends Factory
             'id_solicitante' => 1,
             'id_revisor' => null,
             //'estado'=>'concluida',
-            'agua_estado_factible' => 'factible', //['no_factible', 'factible'],
-            'alc_estado_factible' => 'factible', //['no_factible', 'factible'],
+            'servicio' => 'agua', //['no_factible', 'factible'],
+            'estado_servicio' => 'factible', //['no_factible', 'factible'],
             //'san_estado_factible'=> 'factible',//['no_factible', 'factible'],
             'derechos_conexion' => 0,
             //'documento' => $this->faker->imageUrl(640, 480, 'cats', true, 'Faker', true)
