@@ -64,10 +64,10 @@ class DescuentoAsociadoController extends Controller
             $descuento->load('archivos');
             DB::commit();
             return response(new DescuentoAsociadoResource($descuento), 201);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'error' => 'No se pudo guardar el descuento ' .$e
+                'error' => 'No se pudo guardar el descuento, ' .$e->getMessage()
             ], 500);
         }
     }
