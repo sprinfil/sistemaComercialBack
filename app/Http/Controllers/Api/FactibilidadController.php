@@ -46,8 +46,8 @@ class FactibilidadController extends Controller
         try {
             $data = $request->validated();
             $data['estado'] = 'sin revisar';
-            $data['agua_estado_factible'] = 'pendiente';
-            $data['alc_estado_factible'] = 'pendiente';
+            $data['servicio'] = 'agua';
+            $data['estado_servicio'] = 'pendiente';
             //$data['san_estado_factible'] = 'pendiente';
             $factibilidad = Factibilidad::create($data);
             return response(new FactibilidadResource($factibilidad), 201);
@@ -123,7 +123,13 @@ class FactibilidadController extends Controller
             $factibilidad->save();
 
             $factibilidad_cargada = Factibilidad::findOrFail($factibilidad->id);
-            $concepto = ConceptoCatalogo::findOrFail(43);
+            if ($factibilidad_cargada->servicio=="agua"){
+                $concepto = ConceptoCatalogo::findOrFail(43);
+            }
+            else{
+                $concepto = ConceptoCatalogo::findOrFail(44);
+            }
+          
             $RegistroCargo = [
                 "id_concepto" => $concepto->id,
                 "nombre" => $concepto->nombre,
@@ -222,8 +228,8 @@ class FactibilidadController extends Controller
                 'factibilidad' => $factibilidad->id,
                 'calle' =>  $calle1 ?? '',
                 'numero_casa' => $factibilidad->toma->numero_casa,
-                'estado_agua' => strtoupper($factibilidad->agua_estado_factible),
-                'estado_alcantarillado' => strtoupper($factibilidad->alc_estado_factible),
+                'servicio' => strtoupper($factibilidad->servicio),
+                'estado_servicio' => strtoupper($factibilidad->estado_servicio),
                 'calle_entre' => $calle2 ?? '',
                 'calle_y' => $calle3 ?? '',
                 'costo_factibilidad' => $factibilidad->derechos_conexion,

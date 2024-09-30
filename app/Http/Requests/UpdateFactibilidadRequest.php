@@ -26,8 +26,8 @@ class UpdateFactibilidadRequest extends FormRequest
             //"derechos_conexion"=>"numeric|nullable|min:0",
             'id_revisor' => 'required|int',
             'estado' => 'required|in:sin revisar,rechazada,pendiente de pago,pagada',
-            'agua_estado_factible' => 'required|in:pendiente,no factible,factible',
-            'alc_estado_factible' => 'required|in:pendiente,no factible,factible',
+            'servicio' => 'required|in:agua,alcantarillado y saneamiento',
+            'estado_servicio' => 'required|in:pendiente,no factible,factible',
             'derechos_conexion' => 'numeric|nullable|min:0',
             //'documento' => 'nullable|file|mimes:pdf|max:2048'
             'documentos' => 'nullable|array',

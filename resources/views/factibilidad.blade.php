@@ -95,10 +95,10 @@
                     <td style="border-bottom: 1px solid black; padding: 8px;">{{ $toma }}</td>
                 </tr>
                 <tr>
-                    <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Agua potable:</td>
-                    <td style="border-bottom: 1px solid black; padding: 8px;">{{ $estado_agua }}</td>
-                    <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Alcantarillado:</td>
-                    <td style="border-bottom: 1px solid black; padding: 8px;">{{ $estado_alcantarillado }}</td>
+                    <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Servicio</td>
+                    <td style="border-bottom: 1px solid black; padding: 8px;">{{ $servicio }}</td>
+                    <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Estado servicio</td>
+                    <td style="border-bottom: 1px solid black; padding: 8px;">{{ $estado_servicio }}</td>
                 </tr>
                 <tr>
                     <td class="label" style="border-bottom: 1px solid black; padding: 8px;">Calle.:</td>
