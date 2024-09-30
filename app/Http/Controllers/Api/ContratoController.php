@@ -199,7 +199,7 @@ class ContratoController extends Controller
             $data = $request->validated()['contrato'];
             $contrato = Contrato::find($data['id']);
     
-            if ($contrato['estatus'] != "pendiente de pago") {
+            if ($contrato['estatus'] != "pendiente de pago" || $contrato['estatus'] != "pagado" ) { //quitar pendiente de pago cuando se haga el cambio de estatus en caja
                 if ($contrato['estatus']=="contratado"){
                     $error="No se puede cerrar un contrato que ya se encuentra concluido";
                 }
@@ -248,6 +248,9 @@ class ContratoController extends Controller
                         $toma->update(["c_alc"=>$contrato['id'],
                         "c_san"=>$contrato['id']
                     ]);
+                    }
+                    if ($toma->estatus=="pendiente de inspeccion"){
+                        $toma->estatus=="pendiente de instalacion";
                     }
                     $toma->save();
                     //$contrato = Contrato::find($data['id']);

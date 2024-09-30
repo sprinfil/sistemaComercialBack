@@ -298,6 +298,9 @@ class OrdenTrabajoService{
                             ];
                             $Secuencia_orden=Secuencia_orden::insert($orden);
                         }
+                        if ($OTModelo['estatus']=="pendiente de instalacion"){
+                            $OTModelo['estatus']=="activa";
+                        }
                      
                     }
                     else if ($estado=="de baja"){
