@@ -3,10 +3,11 @@ require_once app_path('Helpers/route_helpers.php');
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LecturaController;
 
 // api login
 Route::post('/login', [AuthController::class, "login"]);
-
+Route::post('/lectura/stores', [LecturaController::class, "store"]);
 Route::middleware('auth:sanctum')->group(function () {
     // Incluir todos los archivos de rutas en la carpeta 'api'
     includeRouteFiles(base_path('routes/api'));
@@ -113,7 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //     //Consulta general
     //     Route::get("/usuarios/consulta/general/{codigo}", "general");
     //     Route::get("/usuarios/consulta/tomas/{id}", "showTomas");
-        
+
     //     //log delete significa borrado logico
     //     Route::delete("/usuarios/log_delete/{id}", "destroy");
     //     //datos fiscales del usuario
@@ -177,7 +178,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //     Route::delete("/OrdenTrabajo/log_delete/{id}", "deleteOrden");
     //     Route::get("/OrdenTrabajo/show/{id}", "showOrden");
     // });
-    
+
     // // Gestion de contribuyentes
     // Route::controller(DatoFiscalController::class)->group(function () {
     //     Route::get("/datos_fiscales", "index");
@@ -308,7 +309,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::controller(OperadorController::class)->group(function () {
     //     Route::get("/Operador", "index");
     //     Route::post("/Operador/create", "store");
-        
+
     //     Route::post("/Operador/create2", "store_2");
 
     //     Route::put("/Operador/update/{id}", "update");
@@ -391,7 +392,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //     Route::delete("/calle/delete/{id}", "destroy");
     //     Route::put("/calle/restore/{id}", "restaurarDato");
     // });
-  
+
     //  // Colonia
     //  Route::controller(ColoniaController::class)->group(function() {
     //     Route::get("/colonia","index");
