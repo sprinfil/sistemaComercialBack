@@ -299,6 +299,9 @@ class OrdenTrabajoService{
                             $Secuencia_orden=Secuencia_orden::insert($orden);
                             ///TO DO ACTUALIZAR SECUENCIAS HIJO
                         }
+                        if ($OTModelo['estatus']=="pendiente de instalacion"){
+                            $OTModelo['estatus']=="activa";
+                        }
                      
                     }
                     else if ($estado=="de baja"){

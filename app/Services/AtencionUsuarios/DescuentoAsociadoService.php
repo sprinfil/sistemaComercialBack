@@ -28,7 +28,6 @@ class DescuentoAsociadoService
     public function store(array $data)
     {
 
-        try {
             $folio = $data['folio'];
             $id_modelo = $data['id_modelo'];
             $modelo_dueno = $data['modelo_dueno'];
@@ -41,17 +40,16 @@ class DescuentoAsociadoService
                 ->exists();
             $folio_igual = DescuentoAsociado::where('folio', $folio)->exists();
             if ($dueno) {
-                return response()->json(['message' => 'Ya tiene un Descuento activo'], 400);
+                 throw new \Exception('ya tiene un Descuento activo', 400);
+                //return response()->json(['message' => 'Ya tiene un Descuento activo'], 400);
             }
             if ($folio_igual) {
-                return response()->json(['message' => 'El folio no esta disponible'], 400);
+                 throw new \Exception('el folio no esta disponible', 400);
+                //return response()->json(['message' => 'El folio no esta disponible'], 400);
             }
             $descuento = DescuentoAsociado::create($data);
             $descuento->load('descuento_catalogo' , 'archivos');
             return $descuento;
-        } catch (Exception $ex) {
-            return response()->json(['error' => 'Ocurrio un error al registrar el descuento asociado. ' . $ex], 500);
-        }
     }
 
     public function filtro($id_modelo, $modelo_dueno)
