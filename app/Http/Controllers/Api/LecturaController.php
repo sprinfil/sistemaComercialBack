@@ -86,7 +86,7 @@ class LecturaController extends Controller
             DB::commit();
             return response()->json(['lecturas' => LecturaResource::collection($lecturas)], 200);
         } catch (Exception $ex) {
-            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas'], 500);
+            return response()->json(['error' => 'No se pudo importar las lecturas'.$ex->getMessage()], 418);
         }
     }
 }

@@ -48,6 +48,10 @@ class LecturaService
         try{
             $lectura = null;
             if($data){
+                $data['id_operador'] = 0;
+                $data['id_periodo'] = 0;
+                $data['id_origen'] = 0;
+                $data['modelo_origen'] = '';
                 $lectura = Lectura::create($data);
                 if($lectura){} else{
                     throw new Exception("fallo al registrar la lectura");
@@ -65,14 +69,14 @@ class LecturaService
             $nuevasLecturas = new Collection();
             foreach ($lecturas as $lectura) {
                 $toma = [
-                    "id_operador" => $lectura['id_operador'],
-                    "id_toma" => $lectura['id_toma'],
-                    "id_periodo" => $lectura['id_periodo'],
-                    "id_origen" => $lectura['id_origen'],
-                    "modelo_origen" => $lectura['modelo_origen'],
-                    "id_anomalia" => $lectura['id_anomalia'],
-                    "lectura" => $lectura['lectura'],
-                    "comentario" => $lectura['comentario']
+                    "id_operador" => $lectura['id_operador'] ?? 0,
+                    "id_toma" => $lectura['id_toma'] ?? 0,
+                    "id_periodo" => $lectura['id_periodo'] ?? 0,
+                    "id_origen" => $lectura['id_origen'] ?? 0,
+                    "modelo_origen" => $lectura['modelo_origen'] ?? '',
+                    "id_anomalia" => $lectura['id_anomalia'] ?? 0,
+                    "lectura" => $lectura['lectura'] ?? 0,
+                    "comentario" => $lectura['comentario'] ?? ''
                 ];
 
                 // Crear la nueva lectura y agregarla a la colección
