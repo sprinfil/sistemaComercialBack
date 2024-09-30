@@ -60,7 +60,9 @@ class OrdenesTrabajoSeeder extends Seeder
     
             ["nombre" => "Insp consumo elevado", "servicio" => "OTRO", "descripcion" => "Inspecciones por consumo elevado", "vigencias" => 24.00, "momento_cargo" => "No genera", "genera_masiva" => 1, "asigna_masiva" => 1, "cancela_masiva" => 1, "cierra_masiva" => 0, "publico_general" => 1, "limite_ordenes" => 2],
             
-            ["nombre" => "Reconexión", "servicio" => "CONSUMO DE AGUA POTABLE", "descripcion" => "Reconexión", "vigencias" => 24.00, "momento_cargo" => "No genera", "genera_masiva" => 1, "asigna_masiva" => 1, "cancela_masiva" => 1, "cierra_masiva" => 0, "publico_general" => 1, "limite_ordenes" => 1]
+            ["nombre" => "Reconexión", "servicio" => "CONSUMO DE AGUA POTABLE", "descripcion" => "Reconexión", "vigencias" => 24.00, "momento_cargo" => "No genera", "genera_masiva" => 1, "asigna_masiva" => 1, "cancela_masiva" => 1, "cierra_masiva" => 0, "publico_general" => 1, "limite_ordenes" => 1],
+
+            ["nombre" => "Instalación agua", "servicio" => "CONSUMO DE AGUA POTABLE", "descripcion" => "servicio de agua", "vigencias" => 24.00, "momento_cargo" => "No genera", "genera_masiva" => 1, "asigna_masiva" => 1, "cancela_masiva" => 1, "cierra_masiva" => 0, "publico_general" => 1, "limite_ordenes" => 1]
 
             // ["nombre" => "Suspensión de servicios", "descripcion" => "Suspensión de servicios del contrato", "vigencias" => 72.00, "genera_masiva" => 0],
             // ["nombre" => "Inactivar contrato", "descripcion" => "Inactivar contrato para cancelación", "vigencias" => 96.00, "genera_masiva" => 0],
