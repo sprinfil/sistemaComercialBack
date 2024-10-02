@@ -37,6 +37,8 @@ class ConvenioResource extends JsonResource
             'cantidad_letras' => $this->cantidad_letras,
             'estado' => $this->estado,
             'comentario' => $this->comentario,
+            'motivo_cancelacion' => $this->motivo_cancelacion,
+            'pago_inicial' => $this->pago_inicial,
             'letras' => LetraResource::collection($this->whenLoaded('letra')),
             'cargos_conveniados' => CargoResource::collection($this->whenLoaded('CargosConveniados')),
             'origen' => $this->whenLoaded('origen'),

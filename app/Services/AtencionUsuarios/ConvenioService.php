@@ -10,8 +10,10 @@ use App\Models\CargosConveniado;
 use App\Models\ConceptoAplicable;
 use App\Models\ConceptoCatalogo;
 use App\Models\Convenio;
+use App\Models\ConvenioCatalogo;
 use App\Models\Letra;
 use App\Models\Pago;
+use App\Models\TipoTomaAplicable;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\PagoService;
@@ -90,7 +92,6 @@ class ConvenioService
       $fechaCobro = Carbon::parse($fecha)->format('Y-m-d');
       $montoLetraSuma = 0;
       //El porcentaje que se convenio de los cargos
-
       //La informacion del registro convenio, el resto se calcula durante el proceso
       $convenio = [
         "id_convenio_catalogo" => $data['id_convenio_catalogo'],
@@ -101,8 +102,36 @@ class ConvenioService
         "periodicidad" => "mensual",
         "cantidad_letras" => $data['cantidad_letras'],
         "estado" => "activo",
-        "comentario" => $data['comentario']
+        "comentario" => $data['comentario'],
+        "pago_inicial" => $data['pago_inicial']
       ];
+      
+      //Registra el porcentaje de pago inicial
+      $porcentajePagoInicialAutorizado = ConvenioCatalogo::where('id',$data['id_convenio_catalogo'])
+      ->first();
+      if ($porcentajePagoInicialAutorizado->pago_inicial != null && $porcentajePagoInicialAutorizado->pago_inicial != 0) {
+
+        if ($data['pago_inicial'] != null) {
+
+          if ($data['pago_inicial'] < $porcentajePagoInicialAutorizado->pago_inicial) {
+
+            return response()->json([
+              'error' => 'El porcentaje del pago inicial seleccionado es menor al porcentaje de pago inicial autorizado.'
+            ], 400);
+  
+          }        
+        }else{
+          return response()->json([
+            'error' => 'El porcentaje de pago inicial es requerido para este convenio.'
+          ], 400);
+        }      
+      }
+      if ($data['pago_inicial'] >= 100) {
+        return response()->json([
+          'error' => 'El porcentaje del pago inicial seleccionado no debe alcanzar o superar el 100%.'
+        ], 400);
+      }
+      $pagoInicial = $data['pago_inicial'];
       //La lista de cargos que se desean conveniar
       $cargoTemp = "";
       $cargos = $data['cargos_conveniados'];
@@ -164,26 +193,41 @@ class ConvenioService
         $montoFinalPendienteTotal += round($montoFinalPendiente, 2);
       }
       //Actualizar el registro de convenio con los montos
+      $pagoInicial = round(($montoFinalPendienteTotal * $pagoInicial)/100,2);
       $convenioMontos = [
         "monto_conveniado" => $montoConveniadoTotal,
-        "monto_total" => $montoFinalPendienteTotal,
+        "monto_total" => $montoFinalPendienteTotal,//esta es la de el cambio a letras aqui estoy
       ];
 
       $convenio->update($convenioMontos);  //redondea las variables desde aqui
       $convenio->save();
 
       //Registra las letras
-      $montoPorLetra = round($convenio->monto_total / $convenio->cantidad_letras, 2);
+      $montoPorLetra = round(($convenio->monto_total-$pagoInicial) / $convenio->cantidad_letras, 2);
 
       $mensualidad = new DateInterval('P1M');  //Sumar meses o años: Puedes usar P1M para un mes o P1Y para un año en lugar de días.
       $letrasCargo = [];
+
+      if ($convenio->pago_inicial > 0) {
+        $letrasArray = [
+          "id_convenio" => $convenio->id, //crear el numero de la letra
+          "estado" => "pendiente",
+          "monto" => $pagoInicial,
+          "vigencia" => $fechaCobro,
+          "numero_letra" => 0,
+          "tipo_letra" => "pago_inicial",
+        ];
+        $letra = Letra::create($letrasArray);
+        $letrasCargo =  $letra;
+      }
+
 
       for ($i = 0; $i < $data['cantidad_letras']; $i++) {
 
         $fechaCobro = Carbon::parse($fechaCobro)->format('Y-m-d');
 
         if ($i == ($data['cantidad_letras'] - 1)) {
-          $montoPorLetra = round($convenio->monto_total - $montoLetraSuma, 2);
+          $montoPorLetra = round($convenio->monto_total- $pagoInicial  - $montoLetraSuma, 2);
         }
 
         $letrasArray = [
@@ -192,12 +236,13 @@ class ConvenioService
           "monto" => $montoPorLetra,
           "vigencia" => $fechaCobro,
           "numero_letra" => $i + 1,
+          "tipo_letra" => "letra",
         ];
 
         $montoLetraSuma += $montoPorLetra;
 
         $letra = Letra::create($letrasArray);
-        if ($i == 0) {
+        if ($i == 0 && $letrasCargo == null ) {
           $letrasCargo =  $letra;
         }
         $ArregloLetras[$i] = $letra;
@@ -380,6 +425,39 @@ class ConvenioService
     } catch (Exception $ex) {
       return response()->json([
         'error' => 'Ocurrio un error al consultar el convenio.' . $ex
+      ], 400);
+    }
+  }
+
+  public function buscarConveniosAplicablesTipoTomaService(int $data)
+  {
+    try {
+      $toma = Toma::where('id', $data)->first();
+      //return $toma->id_tipo_toma;
+      if ($toma) {
+        $conveniosAplicables = TipoTomaAplicable::where('id_tipo_toma', $toma->id_tipo_toma)
+        ->where('modelo_origen','convenio_catalogo')
+        ->with('origen')
+        ->get();
+       
+        if (count($conveniosAplicables) != 0) {
+          return json_encode($conveniosAplicables);
+        }
+        else {
+          return response()->json([
+            'error' => 'El tipo de toma no es aplicable a ningun registro de convenio.'
+          ]);
+        }
+      }
+      else {
+        return response()->json([
+          'error' => 'El registro de toma no existe.'
+        ]);
+      }
+     
+    } catch (Exception $ex) {
+      return response()->json([
+        'error' => 'Ocurrio un error durante la busqueda de los convenios aplicables al tipo de toma.' . $ex
       ], 400);
     }
   }

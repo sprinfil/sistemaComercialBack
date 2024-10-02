@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("nombre")->nullable();
             $table->text("descripcion")->nullable();
             $table->enum('estado', ['activo', 'inactivo'])->nullable();
+            $table->decimal('pago_inicial')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

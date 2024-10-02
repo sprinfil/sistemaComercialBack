@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('estado', ['activo', 'cancelado', 'incumplido']);
             $table->string('comentario')->nullable();
             $table->string('motivo_cancelacion')->nullable();
+            $table->decimal('pago_inicial')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

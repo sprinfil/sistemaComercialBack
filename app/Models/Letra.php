@@ -18,7 +18,8 @@ class Letra extends Model
         'estado',
         'monto',
         'vigencia',
-        'numero_letra'
+        'numero_letra',
+        'tipo_letra'
     ];
 
     public function Convenio(): BelongsTo

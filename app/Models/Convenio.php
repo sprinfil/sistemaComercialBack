@@ -24,6 +24,7 @@ class Convenio extends Model
         'estado',
         'comentario',
         'motivo_cancelacion',
+        'pago_inicial',
     ];
 
     public function ConvenioCatalogo() : BelongsTo

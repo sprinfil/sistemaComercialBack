@@ -16,7 +16,7 @@ class ConvenioCatalogoService{
        
        try {
         return ConvenioCatalogoResource::collection(
-            ConvenioCatalogo::orderby("id", "desc")->get()
+            ConvenioCatalogo::where('estado','activo')->orderby("id", "desc")->get()
         );
        } catch (Exception $ex) {
 
@@ -55,7 +55,7 @@ class ConvenioCatalogoService{
        
          } catch (Exception $ex) {
              return response()->json([
-                 'message' => 'Ocurrio un error al registrar el convenio.'
+                 'message' => 'Ocurrio un error al registrar el convenio.' .$ex
              ], 200);
          }
               
