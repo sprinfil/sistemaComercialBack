@@ -36,10 +36,10 @@ class SecuenciaService{
 
     }
         */
-    public function Store($secuencia){
+    public function Store($secuencia , $reiniciar){
         $id_secuencia=$secuencia['id'] ?? null;
         $tipo=$secuencia['tipo_secuencia'];
-
+        $reini=$reiniciar?? null;
         
         
         if ($tipo=="personalizada"){
@@ -72,6 +72,14 @@ class SecuenciaService{
             }
             else{
                 $NuevaSecuencia=Secuencia::create($secuencia);
+            }
+            if ($reini){
+                $perso=$Existe->secuenciasPersonalizadas;
+                foreach ($perso as $p){
+                    $p->delete();
+                }
+             
+
             }
            
         }

@@ -28,6 +28,9 @@ class Secuencia extends Model
     public function secuenciasPersonalizadas():HasMany{
         return $this->hasMany(Secuencia::class,'id_secuencia_padre');
     }
+    public function secuenciaPadre():BelongsTo{
+        return $this->belongsTo(Secuencia::class,'id_secuencia_padre');
+    }
     public function empleado():BelongsTo{
         return $this->belongsTo(Operador::class,'id_empleado');
     }
