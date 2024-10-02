@@ -8,6 +8,9 @@ use ErrorException;
 use Exception;
 use Illuminate\Contracts\Database\Query\Builder;
 
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNull;
+
 class SecuenciaService{
     /*
     public function SecuenciaStore($secuencia){
@@ -33,10 +36,10 @@ class SecuenciaService{
 
     }
         */
-    public function Store($secuencia){
+    public function Store($secuencia , $reiniciar){
         $id_secuencia=$secuencia['id'] ?? null;
         $tipo=$secuencia['tipo_secuencia'];
-
+        $reini=$reiniciar?? null;
         
         
         if ($tipo=="personalizada"){
@@ -69,6 +72,14 @@ class SecuenciaService{
             }
             else{
                 $NuevaSecuencia=Secuencia::create($secuencia);
+            }
+            if ($reini){
+                $perso=$Existe->secuenciasPersonalizadas;
+                foreach ($perso as $p){
+                    $p->delete();
+                }
+             
+
             }
            
         }
@@ -117,6 +128,23 @@ class SecuenciaService{
         $updatedRecords = Secuencia_orden::where('id_secuencia',$id_secuencia)->orWhereIn('id', $ids)->get();
         return $updatedRecords;
     }
+    public function AgregarSecuencias($libro,$toma_id){
+        $secuencia=$libro->secuenciasPadre;
+        $secuencia_perso=$secuencia->secuenciasPersonalizadas;
+        $orden[]=[
+            "id_secuencia"=>$secuencia->id,
+            "id_toma"=>$toma_id,
+            "numero_secuencia"=>0,
+        ];
+        foreach($secuencia_perso as $perso){
+            $orden[]=[
+                "id_secuencia"=>$perso->id,
+                "id_toma"=>$toma_id,
+                "numero_secuencia"=>0,
+            ];
+        }
+        return $orden;
+    }
     public function DeleteSecuencia(){
         //Borra una secuencia padre/personalizada y sus secuencias ordenes
         //Si borra una secuencia padre, se borran todas las personalizadas asociadas.
@@ -130,10 +158,13 @@ class SecuenciaService{
 
     }
     public function secuencia($id_libro){
-        $secuencia=Secuencia::where('id_libro',$id_libro)->where('tipo_secuencia',"padre")->first();
+        if (!($id_libro)){
+            throw new ErrorException("No existe libro asociado",400);
+        }
+        $secuencia=Secuencia::where('id_libro',$id_libro->id)->where('tipo_secuencia',"padre")->first();
+        $secuencia->ordenesSecuencia;
+        $secuencia->ordenesSecuenciaCero;
+        $secuencia->secuenciasPersonalizadas;
         return $secuencia;
-        $secuencia_ordenes=Secuencia_orden::where('id_secuencia',$secuencia->id)->orderby("numero_secuencia",'asc')->get();
-        return $secuencia_ordenes;
-        
         }
 }

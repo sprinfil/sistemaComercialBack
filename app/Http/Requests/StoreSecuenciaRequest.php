@@ -22,9 +22,11 @@ class StoreSecuenciaRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "Reiniciar"=>"nullable|boolean",
             "secuencia"=>"required",
             "secuencia.id"=>"nullable|integer",
             "secuencia.id_empleado"=>"nullable|exists:operadores,id",
+            "secuencia.id_secuencia_padre"=>"nullable|integer",
             "secuencia.id_libro"=>"required|exists:libros,id",
             "secuencia.tipo_secuencia"=>"required|in:padre,personalizada",
             ///Secuencia ordenes
