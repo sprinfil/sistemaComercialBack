@@ -29,6 +29,7 @@ class StoreConvenioRequest extends FormRequest
             in:toma,usuario",
             "cantidad_letras" => "required|integer|min:1",
             "comentario" => "nullable|string|max:50",
+            "pago_inicial" => "required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0|max:100",
           
             "cargos_conveniados"=>"required|array",
             "cargos_conveniados.*.id"=>"required|integer|gt:0",

@@ -20,5 +20,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/Convenio/ConsultarConvenio", "ConsultarConvenio");
         Route::get("/Convenio/ConsultarListaConvenio", "ConsultarListaConvenio");
         Route::get("/Convenio/ConsultarLetras", "ConsultarLetras");
+        Route::get("/Convenio/buscarConveniosAplicablesTipoToma", "buscarConveniosAplicablesTipoToma");
     });
 });

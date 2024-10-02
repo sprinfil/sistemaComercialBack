@@ -229,4 +229,20 @@ class ConvenioController extends Controller
             ]); 
         }
     }
+
+    public function buscarConveniosAplicablesTipoToma(Request $request)
+  {
+    try {
+     $data = $request->input('id_toma');
+      DB::beginTransaction();
+      $convenio = (new ConvenioService())->buscarConveniosAplicablesTipoTomaService($data);
+      DB::commit();
+      return $convenio;
+    } catch (Exception $ex) {
+      DB::rollBack();
+      return response()->json([
+        'message' => 'Ocurrio un error al buscar los convenios.'
+    ]); 
+    }
+  }
 }
