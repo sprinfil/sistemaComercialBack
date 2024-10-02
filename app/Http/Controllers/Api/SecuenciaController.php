@@ -27,7 +27,7 @@ class SecuenciaController extends Controller
         try{
             DB::beginTransaction();
             $data=$request->validated();
-            $secuencia=(new SecuenciaService())->Store($data['secuencia'] ,$data['Reiniciar'] ?? null);
+            $secuencia=(new SecuenciaService())->Store($data['secuencia'] ,$data['Reiniciar'] ?? false);
             if (!$secuencia || $secuencia=="Invalido" || $secuencia=="Operador" ||$secuencia=="Padre" ||$secuencia=="No perso" ){
                 $error=match($secuencia){
                     "Padre"=>"No se pudo crear secuencia padre: El libro ya tiene una secuencia padre vigente",
