@@ -24,13 +24,14 @@ class DescuentoAsociadoFactory extends Factory
         static $id_usuario = 0;
         $id_usuario++;
         return [
-            'id_usuario' => $id_usuario,
-            'id_toma' => Usuario::find($id_usuario)->tomas->first()->id,
             'id_descuento' => DescuentoCatalogo::inRandomOrder()->first()->id,
+            'id_modelo' => 1,
+            'modelo_dueno' => 'toma',
+            'id_evidencia' => $this->faker->optional()->randomDigitNotNull,
+            'id_registra' => Usuario::find($id_usuario)->tomas->first()->id,
+            'vigencia' => now(),
+            'estatus' => 'vigente',
             'folio' => Str::random(10),
-            'evidencia' => $this->faker->optional()->imageUrl(),
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 }

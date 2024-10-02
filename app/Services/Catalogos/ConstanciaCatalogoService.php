@@ -15,7 +15,7 @@ class ConstanciaCatalogoService{
        
        try {
         return ConstanciaCatalogoResource::collection(
-            ConstanciaCatalogo::all()
+            ConstanciaCatalogo::orderby("id", "desc")->get()
         );
        } catch (Exception $ex) {
 

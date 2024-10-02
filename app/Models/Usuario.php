@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Hamcrest\Type\IsNumeric;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -45,15 +46,19 @@ class Usuario extends Model
     {
         return $this->hasMany(Toma::class, 'id_usuario');
     }
+    public function toma() : HasOne
+    {
+        return $this->hasOne(Toma::class, 'id_usuario');
+    }
     public function descuento_asociado() : HasOne
     {
-        return $this->hasOne(DescuentoAsociado::class, 'id_usuario');
+        return $this->hasOne(DescuentoAsociado::class, 'id_modelo');
     }
     
 
     public function datos_fiscales(): MorphOne
     {
-        return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo');
+        return $this->morphOne(DatoFiscal::class, 'origen', 'modelo', 'id_modelo')->latestOfMany();
     }
 
     public function cargos(): MorphMany
@@ -62,8 +67,15 @@ class Usuario extends Model
     }
     public function cargosVigentes(): MorphMany
     {
-        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente')->with('concepto');
     }
+    public function cargosVigentesConConcepto(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->where('estado', 'pendiente')
+                    ->with('concepto'); // Cargar la relación 'concepto' junto con los cargos
+    }
+    
     public function saldoCargosUsuario(){
         $total=0;
         $cargos=$this->cargosVigentes;
@@ -78,6 +90,40 @@ class Usuario extends Model
         return $total;
     }
 
+    /*public function saldoPendiente(){
+        $total=0;
+        $cargos=$this->cargosVigentes;
+        foreach ($cargos as $cargo){
+            $total+=$cargo->monto;
+            $abonos=$cargo->abonos;
+            foreach ($abonos as $abono){
+                $total-=$abono->total_abonado;
+            }
+
+        }
+        return $total;
+    }*/
+
+    public function saldoPendiente(){
+        $total_final = 0;
+        $cargos_pendientes = $this->cargosVigentes;
+        foreach($cargos_pendientes as $cargo)
+        {
+            $total_final += $cargo->montoPendiente();
+        }
+        return $total_final;
+    }
+
+    public function saldoSinAplicar(){
+        $total_final = 0;
+        $pagos_pendientes = $this->pagosPendientes;
+        foreach($pagos_pendientes as $pago)
+        {
+            $total_final += $pago->pendiente();
+        }
+        return $total_final;
+    }
+
     public function pagos(): MorphMany
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno');
@@ -86,16 +132,42 @@ class Usuario extends Model
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado','pendiente');
     }
+    public function pagosConDetalle(): MorphMany
+    {
+        return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
+                    ->with(['abonosConCargos']);
+    }
 
-    public static function ConsultarPorNombres(string $usuario){
-        $nuvUsuario=str_replace(" ","%",$usuario);
-        $data = Usuario::whereRaw("
-        CONCAT(
-            COALESCE(nombre, ''), ' ', 
-            COALESCE(apellido_paterno, ''), ' ', 
-            COALESCE(apellido_materno, '')
-        )  LIKE ?", ['%'.$nuvUsuario.'%'])->paginate(10);
-          return $data;
+    public function convenios(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
+
+    public function conveniosActivos(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
+    }
+    
+  
+    public static function ConsultarPorNombresCodigo(string $usuario){
+        if (is_numeric($usuario)){
+            return Usuario::ConsultarPorCodigo($usuario);
+            //return Toma::ConsultarUsuarioPorCodigo($usuario);
+        }
+        else{
+            $nuvUsuario=str_replace(" ","%",$usuario);
+            $data = Usuario::with(['tomas.calle1','tomas.entre_calle1','tomas.entre_calle2','tomas.colonia1','tomas.ordenesTrabajo'=> function($query){
+                $query->where('estado','No asignada');
+              }])
+              ->whereRaw("
+            CONCAT(
+                COALESCE(nombre, ''), ' ', 
+                COALESCE(apellido_paterno, ''), ' ', 
+                COALESCE(apellido_materno, '')
+            )  LIKE ?", ['%'.$nuvUsuario.'%'])->paginate(10);
+              return $data;
+        }
+       
     }
     public static function ConsultarPorNombreContacto(string $usuario){
         $data = Usuario::where('nombre_contacto','like','%'.$usuario.'%')->paginate(10);
@@ -112,7 +184,10 @@ class Usuario extends Model
     }
 
     public static function ConsultarPorCodigo(string $usuario){
-        $data = Usuario::where("codigo_usuario",$usuario)->first();
+        $data = Usuario::with('tomas.calle1','tomas.entre_calle1','tomas.entre_calle2','tomas.colonia1','tomas.ordenesTrabajo')//,
+        ->where("codigo_usuario",$usuario)->orWhereHas('tomas',function($q) use ($usuario){
+            $q->where('codigo_toma',$usuario);
+        })->paginate(10);
           return $data;
     }
 

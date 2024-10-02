@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class DescuentoAsociadoResource extends JsonResource
 {
@@ -17,11 +18,19 @@ class DescuentoAsociadoResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "id_usuario" => $this->id_usuario,
-            "id_toma" => $this->id_toma,
             "id_descuento" => $this->id_descuento,
+            "id_modelo" => $this->id_modelo,
+            "modelo_dueno" => $this->modelo_dueno,
+            "curp" => $this->curp,
+            "id_evidencia" => $this->id_evidencia,
+            "id_registra" => $this->id_registra,
+            "vigencia" => $this->vigencia,
+            "estatus" => $this->estatus,
             "folio" => $this->folio,
-            "evidencia" => $this->evidencia,
+            "descuento_catalogo" => $this->descuento_catalogo,
+            "archivos" => $this->whenLoaded('archivos', function () {
+                return ArchivoResource::collection($this->archivos);
+            }),
         ];
     }
 }

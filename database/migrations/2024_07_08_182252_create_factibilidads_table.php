@@ -13,10 +13,16 @@ return new class extends Migration
     {
         Schema::create('factibilidad', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_contrato')->default('1');
-            $table->enum('agua_estado_factible', ['no_factible', 'factible'])->default('no_factible');
-            $table->enum('alc_estado_factible', ['no_factible', 'factible'])->default('no_factible');
-            $table->decimal('derechos_conexion' , total:8 , places:2)->nullable(); //Cambio a decimal.
+            $table->unsignedBigInteger('id_toma');
+            $table->unsignedBigInteger('id_solicitante');
+            $table->unsignedBigInteger('id_revisor')->nullable();
+            $table->enum('estado', ['sin revisar', 'rechazada', 'pendiente de pago', 'pagada'])->default('sin revisar');
+            $table->enum('agua_estado_factible', ['pendiente', 'no factible', 'factible'])->default('pendiente');
+            $table->enum('alc_estado_factible', ['pendiente', 'no factible', 'factible'])->default('pendiente');
+            //$table->enum('san_estado_factible', ['pendiente', 'no factible', 'factible'])->default('pendiente');
+            $table->decimal('derechos_conexion', total: 8, places: 2)->nullable(); //Cambio a decimal.
+            //$table->string('documento')->nullable();
+            $table->string('comentario')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

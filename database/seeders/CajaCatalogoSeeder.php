@@ -13,6 +13,6 @@ class CajaCatalogoSeeder extends Seeder
      */
     public function run(): void
     {
-        CajaCatalogo::factory()->count(100)->create();
+        CajaCatalogo::factory()->count(50)->create();
     }
 }

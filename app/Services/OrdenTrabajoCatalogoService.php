@@ -1,60 +1,93 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\OrdenesTrabajoCargoResource;
+use App\Http\Resources\OrdenesTrabajoEncadenadaResource;
+use App\Http\Resources\OrdenTrabajoCatalogoResource;
 use App\Models\OrdenesTrabajoCargo;
+use App\Models\OrdenesTrabajoEncadenada;
 use App\Models\OrdenTrabajoCatalogo;
 use Illuminate\Database\Eloquent\Collection;
 
 class OrdenTrabajoCatalogoService{
 
     public function store(array $requestCatalogo){
+        $catalogo=OrdenTrabajoCatalogo::where('nombre',$requestCatalogo['nombre'])->first();
+        if ($catalogo){
+            return "Existe";
+        }
+        else{
+            
+            return $OrdenCatalogo=OrdenTrabajoCatalogo::create($requestCatalogo);
+        }
+
+        /*
         $ordenCatalogo=$requestCatalogo['orden_trabajo_catalogo'];
-        $dataConf=$requestCatalogo['orden_trabajo_accion'] ?? null;
-        $dataCargos=$requestCatalogo['orden_trabajo_cargos'] ?? null;
-        $dataEncadenadas=$requestCatalogo['orden_trabajo_encadenadas'] ?? null;
+        $idCatalogo=$ordenCatalogo['id'] ?? null;
 
         //create catalogo
         $catalogo=OrdenTrabajoCatalogo::where('nombre',$ordenCatalogo['nombre'])->first();
-        if ($catalogo){
-            return null;
+        if ($catalogo && $idCatalogo==null){
+            return "Existe";
         }
         else{
-            $OrdenCatalogo=OrdenTrabajoCatalogo::create($ordenCatalogo);
-            if  ($dataConf){
-                $dataConf['id_orden_trabajo_catalogo']=$OrdenCatalogo['id'];
-                $OrdenCatalogo['orden_trabajo_accion']=(new OrdenTrabajoAccionService())->store($dataConf);
-               
-            }
-            if  ($dataCargos){
-                $dataCargos['id_orden_trabajo_catalogo']=$OrdenCatalogo['id'];
-                $OrdenCatalogo['orden_trabajo_accion']=$this->storeCargos($dataCargos);
-               
-            }
-            if  ($dataEncadenadas){
-                $dataEncadenadas['id_OT_catalogo_padre']=$OrdenCatalogo['id'];
-                $OrdenCatalogo['orden_trabajo_accion']=$this->storeEncadenadas($dataEncadenadas);
-               
-            }
-            //return $OrdenCatalogo;
+            
+            return new OrdenTrabajoCatalogoResource($OrdenCatalogo);
         }
+            */
+       
     }
-   
+    public function update(array $requestCatalogo){
+        $ordenCatalogo=OrdenTrabajoCatalogo::find($requestCatalogo['id']);
+        $ordenCatalogo->update($requestCatalogo);
+        return new OrdenTrabajoCatalogoResource($ordenCatalogo);
+       
+    }
     public static function delete($idOrden){
         $ordenTrabajo=OrdenTrabajoCatalogo::findOrFail($idOrden);
-        $ordenTrabajo->delete();
-    }
-    public static function storeCargos(array $ordenCatalogo){
-        $OrdenCargos=[];
-        foreach ($ordenCatalogo as $concepto){
-        $OrdenCargos[]=OrdenesTrabajoCargo::create($concepto);
+        $OT=$ordenTrabajo->ordenTrabajo;
+        if (count($OT)!=0){
+            return "No valido";
         }
-
-        return $OrdenCargos;
+        else{
+            $ordenTrabajo->delete();
+            return "Valido";
+        }
+ 
     }
-    public function storeEncadenadas(array $ordenCatalogo){
-
+    public function storeCargos(array $ordenCatalogo){
+        $requestCargos=$ordenCatalogo['orden_trabajo_cargos'];
+        $OrdenCargos=[];
+        $ordenesCargos_id=[];
+        //$id=$idcatalogo ?? $requestCargos[0]['id'];
+        foreach ($requestCargos as $cargo){
+            $idCargo=$cargo['id'] ?? null;
+            $OTCatalogo=$cargo['id_orden_trabajo_catalogo'] ?? null;
+            $ordenCargo=OrdenesTrabajoCargo::updateOrCreate(['id' =>$idCargo,'id_orden_trabajo_catalogo' =>$OTCatalogo],$cargo);
+            $OrdenCargos[]=$ordenCargo;
+            $ordenesCargos_id[]=$ordenCargo['id'];
+        }
+        OrdenesTrabajoCargo::where('id_orden_trabajo_catalogo', $OrdenCargos[0]['id_orden_trabajo_catalogo'])
+        ->whereNotIn('id', $ordenesCargos_id)
+        ->delete();
+        return OrdenesTrabajoCargoResource::collection($OrdenCargos);
+       
     }
-    public static function storeOTEncadenadas(){
-        
+    public function storeOTEncadenadas(array $ordenCatalogo){
+        $requestEncadenadas=$ordenCatalogo['orden_trabajo_encadenadas'];
+        $OrdenEncadenadas=[];
+        $OrdenEncadenadas_id=[];
+        foreach ($requestEncadenadas as $OT){
+            $idEncadenada=$OT['id'] ?? null;
+            $idOTpadre=$OT['id_OT_Catalogo_padre'] ?? null;
+            $ordenEncadenada=OrdenesTrabajoEncadenada::updateOrCreate(['id' =>$idEncadenada,'id_OT_Catalogo_padre' =>$idOTpadre],$OT);
+            $OrdenEncadenadas[]=$ordenEncadenada;
+            $OrdenEncadenadas_id[]=$ordenEncadenada['id'];
+        }
+        OrdenesTrabajoEncadenada::where('id_OT_Catalogo_padre', $OrdenEncadenadas[0]['id_OT_Catalogo_padre'])
+        ->whereNotIn('id', $OrdenEncadenadas_id)
+        ->delete();
+        $OrdenEncadenadas=OrdenesTrabajoEncadenada::with('OrdenCatalogoEncadenadas')->whereIn('id', $OrdenEncadenadas_id)->get();
+        return OrdenesTrabajoEncadenadaResource::collection($OrdenEncadenadas);
     }
 }

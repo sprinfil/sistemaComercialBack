@@ -14,16 +14,19 @@ return new class extends Migration
         Schema::create('orden_trabajos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_toma');
-            $table->unsignedBigInteger('id_empleado_asigno');
+            $table->unsignedBigInteger('id_empleado_genero');
+            $table->unsignedBigInteger('id_empleado_asigno')->nullable();
             $table->unsignedBigInteger('id_empleado_encargado')->nullable();
             $table->unsignedBigInteger('id_orden_trabajo_catalogo');
             $table->enum('estado',['No asignada','Concluida','En proceso','Cancelada']);
+            $table->date('fecha_asignacion')->nullable();
             $table->date('fecha_finalizada')->nullable();
             $table->date('fecha_vigencia')->nullable();
-            $table->string('obervaciones')->nullable();
+            $table->string('obervaciones')->nullable();/////////////XDDDDDD
             $table->string('evidencia')->nullable();
             $table->string('material_utilizado')->nullable();
             $table->point('posicion_OT')->nullable();
+            $table->boolean('genera_OT_encadenadas')->default('0');
             $table->softDeletes();
             $table->timestamps();
         });

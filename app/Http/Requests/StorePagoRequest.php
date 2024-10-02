@@ -26,10 +26,20 @@ class StorePagoRequest extends FormRequest
             "id_dueno"=>"required|integer",
             "modelo_dueno"=>"required|string|max:55",
             "total_pagado"=>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            //
+            //"total_abonado" => "required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            //"saldo_anterior" => "required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            //"saldo_actual" =>"required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            //"saldo_no_aplicado" => "required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "recibido" => "required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            "cambio" => "required|numeric|regex:/^\d+(\.\d{1,2})?$/",
+            //
             "forma_pago"=>"required|string|max:55",
             "fecha_pago"=>"required|date",
             "estado"=>"nullable|string|max:55",
-            "abonos.*"=>"nullable|array",
+            "timbrado"=>"nullable|string|max:55",
+            "referencia"=>"nullable|string|max:55",
+            "cargos.*"=>"nullable|array",
             "bonificaciones.*"=>"nullable|array"
         ];
     }

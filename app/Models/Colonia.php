@@ -18,6 +18,14 @@ class Colonia extends Model
     // Calles de la colonia
     public function calles() : HasMany
     {
-        return $this->hasMany(Calle::class, 'id_colonia');
+        return $this->hasMany(Calle::class, 'id_colonia','id');
+    }
+    public function toma():HasMany
+    {
+        return $this->hasMany(Toma::class, 'colonia','id');
+    }
+    public function contrato():HasMany
+    {
+        return $this->hasMany(Contrato::class, 'colonia','id');
     }
 }

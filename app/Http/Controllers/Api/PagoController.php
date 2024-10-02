@@ -21,17 +21,17 @@ class PagoController extends Controller
     {
         $this->pagoService = $_pagoService;
     }
-    
+
     /**
      * Consulta todos los pagos registrados
      */
     public function index()
     {
-        try{
+        try {
             return response(PagoResource::collection(
                 $this->pagoService->obtenerPagos()
-            ),200);
-        } catch(Exception $e) {
+            ), 200);
+        } catch (Exception $e) {
             return response()->json([
                 'error' => 'No fue posible consultar el pago'
             ], 500);
@@ -44,13 +44,13 @@ class PagoController extends Controller
      */
     public function store(StorePagoRequest $request)
     {
-        try{
+        try {
             return response(new PagoResource(
                 $this->pagoService->registrarPago($request)
             ), 201);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
-                'error' => 'No se pudo procesar el pago'.$e
+                'error' => 'No se pudo procesar el pago: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -66,7 +66,36 @@ class PagoController extends Controller
             ), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'No se pudo encontrar el pago por su id '.$id
+                'error' => 'No se pudo encontrar el pago por su id ' . $id
+            ], 500);
+        }
+    }
+
+    /**
+     * Consulta historial de pagos por modelo pagosPorModeloConDetalle
+     */
+    public function pagosPorModelo(Request $request)
+    {
+        try {
+            return response(PagoResource::collection(
+                $this->pagoService->pagosPorModelo($request)
+            ), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los pagos'
+            ], 500);
+        }
+    }
+
+    public function pagosPorModeloConDetalle(Request $request)
+    {
+        try {
+            return response(PagoResource::collection(
+                $this->pagoService->pagosPorModeloConDetalle($request)
+            ), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudieron encontrar los pagos'
             ], 500);
         }
     }
@@ -74,15 +103,45 @@ class PagoController extends Controller
     /**
      * Consulta historial de pagos por modelo
      */
-    public function pagosPorModelo(Request $request)
+    public function totalPendiente(Request $request)
     {
         try {
-            return response(PagoResource::collection(
-                $this->pagoService->pagosPorModelo($request)
-            ),200);
+            return response($this->pagoService->totalPendiente($request), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudieron encontrar los pagos'
+            ], 500);
+        }
+    }
+
+    /**
+     * Consulta un cargo especifico por su id
+     */
+    public function test($id)
+    {
+        try {
+            return response(
+                $this->pagoService->pagoAutomatico($id, 'toma')
+            );
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el pago por su id ' . $id
+            ], 500);
+        }
+    }
+
+    /**
+     * Consulta un cargo especifico por su id
+     */
+    public function showDetalle($id)
+    {
+        try {
+            return response(new PagoResource(
+                $this->pagoService->busquedaPorFolio($id)
+            ), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'No se pudo encontrar el pago por su id ' . $id
             ], 500);
         }
     }

@@ -22,7 +22,19 @@ class UpdateOrdenTrabajoCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre" => "required|string|unique:orden_trabajo_catalogos,nombre,".$this->id,
+            "orden_trabajo_catalogo.id_concepto_catalogo" => "sometimes|exists:concepto_catalogos,id",
+            "orden_trabajo_catalogo.id" => "sometimes|exists:orden_trabajo_catalogos,id",
+            "orden_trabajo_catalogo.nombre" => "sometimes|string",
+            "orden_trabajo_catalogo.descripcion" => "sometimes|string",
+            "orden_trabajo_catalogo.servicio" => "sometimes|in:CONSUMO DE AGUA POTABLE,SERV. ALCANTARILLADO,TRAT. Y SANEAMIENTO,OTRO",
+            "orden_trabajo_catalogo.vigencias" => "sometimes|integer",
+            "orden_trabajo_catalogo.momento_cargo" => "sometimes|in:generar,asignar,concluir,No genera",
+            "orden_trabajo_catalogo.genera_masiva" => "sometimes|boolean",
+            "orden_trabajo_catalogo.asigna_masiva" => "sometimes|boolean",
+            "orden_trabajo_catalogo.cancela_masiva" => "sometimes|boolean",
+            "orden_trabajo_catalogo.cierra_masiva" => "sometimes|boolean",
+            "orden_trabajo_catalogo.limite_ordenes" => "sometimes|integer",
+            "orden_trabajo_catalogo.publico_general" => "sometimes|integer",
         ];
     }
 }

@@ -14,7 +14,7 @@ class CotizacionDetalle extends Model
     protected $fillable=[
         'id_cotizacion',
         'id_sector',
-        'nombre_concepto',
+        'id_concepto',
         'monto',
     ];
     public function cotizacion(): BelongsTo
@@ -24,6 +24,9 @@ class CotizacionDetalle extends Model
     public function contratoDetalle(): HasOneThrough
     {
         return $this->HasOneThrough(Contrato::class, Cotizacion::class,'id','id','id_cotizacion','id_contrato');
+    }
+    public function concepto():BelongsTo{
+        return $this->belongsTo(ConceptoCatalogo::class, 'id_concepto');
     }
     #TODO
     /*

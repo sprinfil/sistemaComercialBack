@@ -13,6 +13,15 @@ class PeriodoSeeder extends Seeder
      */
     public function run(): void
     {
-        Periodo::factory()->count(30)->create();
+        //Periodo::factory()->count(30)->create();
+        $mesInicial = 1; // Enero
+        $anoInicial = 2024;
+
+        for ($i = 0; $i < 9; $i++) {
+            $mes = ($mesInicial + $i) % 12 ?: 12; // Asegura que el mes esté entre 1 y 12
+            $ano = $anoInicial + floor(($mesInicial + $i - 1) / 12); // Incrementa el ano cuando se pasa de diciembre
+
+            Periodo::factory()->conMesYAno($mes, $ano)->create();
+        }
     }
 }

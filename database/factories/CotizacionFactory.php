@@ -40,19 +40,24 @@ class CotizacionFactory extends Factory
 
             // calculo de costos
             $conceptos = [
-                "Rompimiento de banqueta (ml)",
-                "Rompimiento de pavimento asfalto (ml)",
-                "Tipo de suelo a (comun) ml adicional a 9m.",
-                "Registro a la red sanitaria"
+                98,
+                102,
+                103,
+                104,
+                105,
+                132,
+                133,
+                134,
+                135
             ];
             
 
             // registro detalles
             for ($i = 0; $i <= 3; $i++) {
-                $concepto = ConceptoCatalogo::buscarPorNombre($conceptos[$i]);
+                $concepto = ConceptoCatalogo::find($conceptos[$i]);
                 CotizacionDetalle::factory()->create([
                     'id_cotizacion'=>$cotizacion->id,
-                    'nombre_concepto'=>$conceptos[$i],
+                    'id_concepto'=>$conceptos[$i],
                     'monto'=>$concepto->tarifas()->first()->monto,
                 ]);
             }            

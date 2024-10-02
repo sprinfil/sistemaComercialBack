@@ -23,10 +23,13 @@ class UpdateMedidorRequest extends FormRequest
     {
         return [
             "id_toma"=>"required|integer",
-            "numero_serie"=>"required|string|max:55|alpha:ascii",
-            "marca" => "required|string|max:55|alpha:ascii",
-            "diametro" => "required|string|max:55|alpha:ascii",
-            "tipo" => "required|string|max:55|alpha:ascii",
+            "numero_serie"=>"required|string|max:55",
+            "marca" => "required|string|max:55",
+            "diametro" => "required|string|max:55",
+            "tipo" => "required|string|max:55",
+            "estatus" => "required|string|max:55",
+            //"fecha_instalacion" => "required|string|max:55",
+            "lectura_inicial" => "required|string|max:55"
         ]; 
     }
 }

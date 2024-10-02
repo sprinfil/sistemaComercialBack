@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\Abono;
 use App\Models\Cargo;
 use App\Models\Pago;
+use App\Models\Toma;
+use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,12 +24,13 @@ class CargoFactory extends Factory
     {
         return [
             'id_concepto' => 1,
-            'concepto' => 'ninguno',
+            'nombre' => 'ninguno',
             'id_origen' => $this->faker->numberBetween(1, 100),
             'modelo_origen' => $this->faker->word,
             'id_dueno' => $this->faker->numberBetween(1, 100),
             'modelo_dueno' => $this->faker->word,
             'monto' => $this->faker->randomFloat(2, 0, 9999),
+            'iva' => $this->faker->randomFloat(2, 0, 10),
             'estado' => $this->faker->randomElement(['pendiente', 'pagado', 'conveniado', 'cancelado']),
             'id_convenio' => null,
             'fecha_cargo' => now(),
@@ -51,6 +54,14 @@ class CargoFactory extends Factory
                 $id_origen = 0;
                 $origen_abono = $this->faker->randomElement(['pago']);
                 $total_abonado = 0;
+                $dueno = null;
+                if($cargo->modelo_dueno == 'toma'){
+                    $dueno = Toma::find($cargo->id_dueno);
+                }
+                if($cargo->modelo_dueno == 'usuario')
+                {
+                    $dueno = Usuario::find($cargo->id_dueno);
+                }
                 if($origen_abono == 'pago')
                 {
                     $total_abonado = $cargo->monto;
@@ -58,6 +69,7 @@ class CargoFactory extends Factory
                         'id_dueno' => $cargo->id_dueno,
                         'modelo_dueno' => $cargo->modelo_dueno,
                         'total_pagado'=>$total_abonado,
+                        'saldo_anterior'=>$dueno->saldoPendiente(),
                         //'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
                         //'fecha_pago'=>$this->faker->randomFloat(2, 0, 9999),
                         'estado'=> 'abonado',

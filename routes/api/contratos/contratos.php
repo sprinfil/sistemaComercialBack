@@ -8,15 +8,21 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(ContratoController::class)->group(function () {
         Route::get("/contratos", "index");
         Route::post("/contratos/create", "store");
-        Route::put("/contratos/update/{id}", "update");
+        Route::put("/contratos/update", "update");
+        Route::put("/contratos/cambio_nombre", "CambioNombreContrato");
         Route::put("/contratos/restore/{id}", "restaurarDato");
         Route::get("/contratos/consulta/{id}", "showPorToma");
         Route::get("/contratos/consultaFolio/{folio}/{ano?}", "showPorFolio");
+        // impresion
+        Route::get("/contratos/imprimirContrato/{id}", "generarContratoPdf");
         //log delete significa borrado logico
         Route::delete("/contratos/log_delete/{id}", "destroy");
-
+        Route::post("/contratos/filtros", "FiltrosContratos");
+        Route::put("/contratos/cerrar", "CerrarContrato");
+        Route::post("/contratos/precontrato", "PreContrato");
+        Route::post("/contratos/subirArchivos", "storeFile");
         //Cotizaciones
-        Route::prefix('contratos')->group(function (){
+        Route::prefix('contratos')->group(function () {
             Route::get("/cotizacion", "indexCotizacion");
             Route::get("/cotizacion/show", "showCotizacion");
             Route::post("/cotizacion/create", "crearCotizacion");
@@ -24,7 +30,7 @@ Route::middleware(['api', 'audit'])->group(function () {
             Route::delete("/cotizacion/log_delete/{id}", "destroyCot");
             Route::put("/cotizacion/restore/{id}", "restaurarCot");
 
-            Route::prefix('cotizacion')->group(function (){
+            Route::prefix('cotizacion')->group(function () {
                 Route::get("/detalle", "indexCot");
                 Route::get("/detalle/show", "showCotDetalle");
                 Route::post("/detalle/create", "crearCotDetalle");

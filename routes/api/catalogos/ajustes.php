@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AjusteCatalagoController;
+use App\Http\Controllers\Api\AjusteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'audit'])->group(function () {
@@ -13,5 +14,15 @@ Route::middleware(['api', 'audit'])->group(function () {
         // log delete significa borrado logico
         Route::delete("/AjustesCatalogo/log_delete/{id}", "destroy");
         Route::put("/AjustesCatalogo/restaurar/{id}", "restaurarDato");
+    });
+    Route::controller(AjusteController::class)->group(function () {
+        // ajustes a.u.
+        Route::get("/Ajuste", "index");
+        Route::get("/Ajuste/show/{id}", "show");
+        Route::get("/Ajuste/showPorDueno", "showPorToma");
+        Route::get("/Ajuste/comparar", "compare");
+        Route::post("/Ajuste/create", "store");
+        Route::put("/Ajuste/cancelar", "cancel");
+        Route::get("/Ajuste/reporte","reportes");
     });
 });

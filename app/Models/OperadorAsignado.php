@@ -14,11 +14,13 @@ class OperadorAsignado extends Model
 
     protected $fillable=[
         'id_operador',
-        'id_caja',
+        'id_caja_catalogo',
     ];
+    //Relacion de caja asignada con la tabla operadorAsignado
     public function caja() : BelongsTo {
-        return $this->belongsTo(Caja::class , "id_caja"); //ya
+        return $this->belongsTo(CajaCatalogo::class , "id_caja_catalogo");//ya
     }
+    //Relacion de operador con su caja asignada
     public function operador() : BelongsTo {
         return $this->belongsTo(Operador::class , "id_operador");//ya
     }

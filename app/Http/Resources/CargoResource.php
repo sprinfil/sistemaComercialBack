@@ -18,16 +18,22 @@ class CargoResource extends JsonResource
         return [
             "id" => $this->id,
             "id_concepto" => $this->id_concepto,
-            "concepto" => $this->concepto,
+            'concepto' => new ConceptoResource($this->whenLoaded('concepto')),
+            "nombre" => $this->nombre,
             "id_origen" => $this->id_origen,
             "modelo_origen" => $this->modelo_origen,
             "id_dueno" => $this->id_dueno,
             "modelo_dueno" => $this->modelo_dueno,
+            "concepto" => $this->concepto,
             "monto" => $this->monto,
+            "iva" => $this->iva,
             "estado" => $this->estado,
             "id_convenio" => $this->id_convenio,
             "fecha_cargo" => $this->fecha_cargo,
             "fecha_liquidacion" => $this->fecha_liquidacion,
+            "monto_pendiente" => $this->when(true, function () {
+                return $this->montoPendiente(); // Suponiendo que el método en el modelo se llama montoPendiente()
+            }),
         ];
     }
 }

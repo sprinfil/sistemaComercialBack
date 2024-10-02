@@ -1,11 +1,16 @@
 <?php
 namespace App\Services\Caja;
 
+use App\Http\Requests\StoreCargoDirectoRequest;
 use App\Http\Requests\StoreCargoRequest;
 use App\Http\Requests\UpdateCargoRequest;
+use App\Http\Resources\CargoResource;
 use App\Models\Cargo;
+use App\Models\CargoDirecto;
+use App\Models\ConceptoCatalogo;
 use App\Models\Toma;
 use App\Models\Usuario;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -140,24 +145,27 @@ class CargoService{
     }
 
     // metodo para buscar todos los pagos de un modelo especifico
-    public function cargosDeTomasDeUsuario($id){
+    public function cargosPorModeloPendientesFormateados(Request $request){
         try{
-            $id_usuario = $id;
+            $data = $request->all();
 
+            // tipo pago
+            $modelo = $data['modelo_dueno'];
+            $id_modelo = $data['id_dueno'];
+            // si el modelo contiene un valor, entonces se determina
+            // el tipo de modelo al que pertenece el pago
             $dueno = null;
-            if($id_usuario){
-                $dueno = Usuario::with([
-                    'tomas',
-                    'cargosVigentes',
-                    'tomas.cargosVigentes',
-                ])->findOrFail($id_usuario);
-                return $dueno;
-            } else{
-                throw new Exception('usuario no definido');
-            }
-                /*else if($modelo == 'toma'){
+            if($modelo == 'usuario'){
+                $dueno = Usuario::findOrFail($id_modelo);
+                $cargos = $dueno->cargosVigentes()->with('concepto')->get();
+                if($cargos){
+                    return $cargos;
+                } else{
+                    throw new Exception('el modelo no contiene cargos');
+                }
+            }else if($modelo == 'toma'){
                 $dueno = Toma::findOrFail($id_modelo);
-                $cargos = $dueno->cargos->where('estado', 'pendiente');
+                $cargos = $dueno->cargosVigentes()->with('concepto')->get();
                 if($cargos){
                     return $cargos;
                 } else{
@@ -165,9 +173,122 @@ class CargoService{
                 }
             }else{
                 throw new Exception('modelo no definido');
-            }*/
+            }
         } catch(Exception $ex){
             throw $ex;
         }
+    }
+
+    public function cargosDeTomasDeUsuario($id)
+    {
+        try {
+            $id_usuario = $id;
+
+            if ($id_usuario) {
+                $dueno = Usuario::with([
+                    'tomas',
+                    'cargosVigentes',
+                    'tomas.cargosVigentes',
+                ])->findOrFail($id_usuario);
+
+                // Añadir el monto pendiente manualmente
+                $dueno->cargosVigentes->each(function ($cargo) {
+                    $cargo->monto_pendiente = $cargo->montoPendiente();
+                });
+
+                $dueno->tomas->each(function ($toma) {
+                    $toma->cargosVigentes->each(function ($cargo) {
+                        $cargo->monto_pendiente = $cargo->montoPendiente();
+                    });
+                });
+
+                return $dueno;
+            } else {
+                throw new Exception('usuario no definido');
+            }
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
+
+
+    // metodo para cargar un cargo a un usuario/toma
+    public function generarCargoDirecto(StoreCargoDirectoRequest $request)
+    {
+        try {
+            $data = $request->validated();
+        
+            $id_dueno = $data['id_dueno'];
+            $modelo_dueno = $data['modelo_dueno'];
+            $id_origen = $data['id_origen'];
+            $modelo_origen = $data['modelo_origen'];
+        
+            $cargo_directo_data = [];
+            $cargo_directo_data['id_origen'] = $id_origen;
+            $cargo_directo_data['modelo_origen'] = $modelo_origen;
+        
+            // Crear la entrada en CargoDirecto
+            $cargo_directo = CargoDirecto::create($cargo_directo_data);
+        
+            // Obtener el ID del origen y modelo después de la creación
+            $id_origen = $cargo_directo->id;
+            $modelo_origen = 'cargo_directo';
+        
+            // Procesar cada cargo en la lista de "cargos"
+            foreach ($data['cargos'] as $cargo_item) {
+                $id_concepto_cargado = $cargo_item['id_concepto'];
+                $monto = $cargo_item['monto'];
+        
+                $concepto_cargado = ConceptoCatalogo::findOrFail($id_concepto_cargado);
+                $nombre_cargo = '' . $concepto_cargado->nombre;
+        
+                $iva = $monto ? $monto * 0.16 : 0;
+        
+                $cargo_directo_data = [
+                    'id_concepto' => $id_concepto_cargado,
+                    'nombre' => $nombre_cargo,
+                    'id_origen' => $id_origen,
+                    'modelo_origen' => $modelo_origen,
+                    'id_dueno' => $id_dueno,
+                    'modelo_dueno' => $modelo_dueno,
+                    'estado' => 'pendiente',
+                    'monto' => $monto,
+                    'iva' => $iva,
+                    'fecha_cargo' => now()
+                ];
+        
+                $cargo = Cargo::create($cargo_directo_data);
+        
+                if (!$cargo) {
+                    throw new Exception("Error al crear el cargo");
+                }
+            }
+        
+            return response()->json(['data' => new CargoResource($cargo)], 201);
+        
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
+    public function generarCargosToma($origen,$tipoOrigen, $dueno,$tipoDueno,$conceptos){ ////pendiente
+        $Zona_horaria = config('global.zona_horaria');
+        $cargos=new Collection();
+        foreach($conceptos as $concepto){
+            $tarifa=(new ConceptoService())->obtenerTarifaToma($dueno['id_tipo_toma'],$concepto['id']);
+            $iva=helperCalcularIVA($tarifa['monto']);
+            $cargos->push(Cargo::create([
+                'id_concepto' => $concepto['id'],
+                'nombre' => $concepto['nombre'],
+                'id_origen' =>  $origen['id'],
+                'modelo_origen' => $tipoOrigen,
+                'id_dueno' => $dueno['id'],
+                'modelo_dueno' => $tipoDueno,
+                'monto' => $tarifa['monto'],
+                'iva' => $iva,
+                'estado' => "pendiente",
+                'fecha_cargo' => Carbon::now()->setTimezone($Zona_horaria)->format('Y-m-d H:m:s'),
+            ]));
+        }
+        return $cargos;
     }
 }

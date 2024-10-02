@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fondo_cajas', function (Blueprint $table) {
+        Schema::create('solicitud_cancelacion_pagos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('id_caja');
-            $table->decimal('monto', total:8, places:2);
+            $table->unsignedBigInteger('id_solicitante');
+            $table->unsignedBigInteger('id_caja');
+            $table->string('folio');
+            $table->enum('estado',['pendiente','rechazado','aprobado']);
+            $table->unsignedBigInteger('id_revisor')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fondo_cajas');
+        Schema::dropIfExists('solicitud_cancelacion_pagos');
     }
 };

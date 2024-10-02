@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\ConceptoCatalogo;
 use App\Models\OrdenTrabajoCatalogo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,8 +21,8 @@ class OrdenesTrabajoCargoResource extends JsonResource
             "id" => $this->id,
             "id_orden_trabajo_catalogo" => $this->id_orden_trabajo_catalogo,
             "id_concepto_catalogo" => $this->id_concepto_catalogo,
-            "OT_catalogo" => new OrdenTrabajoCatalogo($this->whenLoaded('')),
-            "conceptos" => new OrdenTrabajoCatalogo($this->whenLoaded('')),
+            "OT_catalogo" => new OrdenTrabajoCatalogoResource($this->whenLoaded('OrdenTrabajoCatalogo')),
+            "conceptos" => new ConceptoResource($this->whenLoaded('OTConcepto')),
         ];
     }
 }

@@ -22,11 +22,16 @@ class UpdateDescuentoAsociadoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_usuario"=>"required|integer",
-            "id_toma"=>"required|integer",
-            "id_descuento"=>"required|integer",
-            "folio"=>"nullable|string",
-            "evidencia"=>"nullable|string",
+            /*
+            "id_descuento"=>"required|int",
+            "id_modelo"=>"required|int",
+            "modelo_dueno"=>"required|in:toma,usuario",
+            "id_evidencia"=>"nullable|string",
+            "id_registra"=>"nullable|int",
+            "estatus"=>"required|in:vigente,no_vigente",
+            */
+
+            "estatus"=>"required|in:vigente,no_vigente",
         ];
     }
 }

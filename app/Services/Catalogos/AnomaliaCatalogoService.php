@@ -16,7 +16,7 @@ class AnomaliaCatalogoService{
        try {
 
         return AnomaliaCatalogoResource::collection(
-            AnomaliaCatalogo::all()
+            AnomaliaCatalogo::orderby("id", "desc")->get()
         );
 
        } catch (Exception $ex) {

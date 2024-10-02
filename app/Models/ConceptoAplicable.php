@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -20,8 +21,13 @@ class ConceptoAplicable extends Model
         "rango_maximo",
     ];
 
-    public function conceptosAplicables(): MorphTo
+    public function origen(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo', 'id_modelo');
+    }
+
+    public function concepto() : BelongsTo
+    {
+        return $this->belongsTo(ConceptoCatalogo::class, 'id_concepto_catalogo');
     }
 }

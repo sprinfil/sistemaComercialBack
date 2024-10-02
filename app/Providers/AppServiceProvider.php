@@ -37,7 +37,15 @@ class AppServiceProvider extends ServiceProvider
             'asignacion_geografica' => 'App\Models\AsignacionGeografica',
             'factibilidad' => 'App\Models\Factibilidad',
             'pago' => 'App\Models\Pago',
-            'abono' => 'App\Models\Abono'
+            'abono' => 'App\Models\Abono',
+            'caja' => 'App\Models\Caja',
+            'orden_trabajo' => 'App\Models\OrdenTrabajo',
+            'cfdi' => 'App\Models\Cfdi',
+            'ajuste' => 'App\Models\Ajuste',
+            //'descuento' => 'App\Models\DescuentoAsociado',
+            'letra' => 'App\Models\Letra',
+            'carga_trabajos' => 'App\Models\CargaTrabajo',
+            'descuento_asociado' => 'App\Models\DescuentoAsociado'
         ]);
     }
 }

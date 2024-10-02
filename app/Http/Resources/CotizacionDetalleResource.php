@@ -18,7 +18,7 @@ class CotizacionDetalleResource extends JsonResource
             "id" => $this->id,
             "id_cotizacion" => $this->id_cotizacion,
             "id_sector" => $this->id_sector,
-            "nombre_concepto" => $this->nombre_concepto,
+            "id_concepto" => $this->id_concepto,
             "monto" => $this->monto,
         ];
     }

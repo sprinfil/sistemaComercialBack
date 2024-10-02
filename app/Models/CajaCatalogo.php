@@ -12,16 +12,20 @@ class CajaCatalogo extends Model
 {
     use HasFactory,SoftDeletes;
     protected $fillable=[
-        'id_caja',
-        'tipo_caja',
+        'id_cuenta_contable',
+        'nombre_caja',
         'hora_apertura',
         'hora_cierre',
     ];
 
-
-    public function caja () : BelongsTo
+    //Relacion del catalogo de caja con sus diferentes registros en caja
+    public function caja () : HasMany
     {
-        return $this->belongsTo(CajaCatalogo::class , 'id_caja'); //ya
+        return $this->hasMany(Caja::class , 'id_caja_catalogo');//ya
     }
-    
+    //Relacion del catalogo de cajas con operador arignado
+    public function operadorAsignado () : HasMany
+    {
+        return $this->hasMany(OperadorAsignado::class , 'id_caja_catalogo');
+    }
 }

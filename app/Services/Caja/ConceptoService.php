@@ -5,6 +5,7 @@ use App\Http\Requests\StoreConceptoCatalogoRequest;
 use App\Http\Requests\UpdateConceptoCatalogoRequest;
 use App\Http\Resources\ConceptoResource;
 use App\Models\ConceptoCatalogo;
+use App\Models\Tarifa;
 use App\Models\TarifaConceptoDetalle;
 use App\Models\TipoToma;
 use Exception;
@@ -26,7 +27,8 @@ class ConceptoService{
      // metodo para obtener todos los conceptos registrados
      public function obtenerConceptosCargables(): Collection
      {
-         try{
+         try
+         {
             return ConceptoCatalogo::where('cargo_directo', 1)->orderby("id", "desc")->with('tarifas')->get();
          } catch(Exception $ex){
              throw $ex;
@@ -36,7 +38,8 @@ class ConceptoService{
     // metodo para registrar un concepto
     public function registrarConcepto(StoreConceptoCatalogoRequest $request)
     {
-        try{
+        try
+        {
             //Valida el store
             $data = $request->validated();
             //Busca por nombre a los conceptos eliminados
@@ -155,5 +158,10 @@ class ConceptoService{
         } catch(Exception $ex){
             throw $ex;
         }
+    }
+    public function obtenerTarifaToma($id_tipo_toma,$id_concepto): ?TarifaConceptoDetalle{
+        $tarifaDetalle=TarifaConceptoDetalle::where('id_tipo_toma',$id_tipo_toma)->where('id_concepto',$id_concepto)->first();
+        return $tarifaDetalle;
+
     }
 }

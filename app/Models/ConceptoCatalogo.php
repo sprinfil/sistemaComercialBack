@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ConceptoCatalogo extends Model
@@ -17,8 +19,11 @@ class ConceptoCatalogo extends Model
         "descripcion",
         "estado",
         "prioridad_abono",
+        "prioridad_por_antiguedad",
         "genera_iva",
         "abonable",
+        "categoria",
+        "tipo_tarifa",
         "tarifa_fija",
         "cargo_directo",
         "genera_orden",
@@ -34,7 +39,6 @@ class ConceptoCatalogo extends Model
     {
         return $this->hasMany(TarifaConceptoDetalle::class, 'id_concepto');
     }
-
     public function ordenAsignada() : HasOne
     {
         return $this->hasOne(OrdenTrabajoCatalogo::class, 'id', 'genera_orden')
@@ -48,9 +52,12 @@ class ConceptoCatalogo extends Model
                     ->select(['id', 'nombre']);
     }
 
-    public function ordenTrabajoCatalogo() : HasMany
+    public function ordenTrabajoCargos():HasMany
     {
-        return $this->hasMany(ordenTrabajoCatalogo::class, 'id_concepto_catalogo');
+        return $this->hasMany(OrdenesTrabajoCargo::class,'id_concepto_catalogo','id');
+    }
+    public function CotizacionDetalle():HasMany{
+        return $this->hasMany(CotizacionDetalle::class,'id_concepto');
     }
 
     // Busqueda por nombre
@@ -58,4 +65,6 @@ class ConceptoCatalogo extends Model
         $data=ConceptoCatalogo::where('nombre',$nombre)->get()->first();
         return $data;
     }
+
+   
 }

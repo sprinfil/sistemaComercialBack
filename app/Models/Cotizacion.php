@@ -32,6 +32,24 @@ class Cotizacion extends Model
     {
         return $this->HasOneThrough(Toma::class, Contrato::class,'id','id','id_contrato','id_toma');
     }
+    
+    protected static function boot() //borrado en cascada
+    {
+        parent::boot();
 
+        static::deleting(function ($parent) {
+            // Soft delete related child models
+            $parent->cotizacionesDetalles()->each(function ($child) {
+                $child->delete();
+            });
+            $parent->contrato()->each(function ($child) {
+                $child->cargos()->delete();
+            });
+            
+        });
+        static::restoring(function ($parent) {
+            $parent->cotizacionesDetalles()->withTrashed()->restore();
+        });
+    }
    
 }

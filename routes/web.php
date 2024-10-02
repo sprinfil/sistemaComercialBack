@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ContratoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,4 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+//Route::get('/generar-contrato', [ContratoController::class, 'generarContratoPdf']);
+//Route::get('/generar-constancia/{id}', [ContratoController::class, 'generarConstanciaFactibilidadPdf']);

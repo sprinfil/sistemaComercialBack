@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateOperadorAsignado extends FormRequest
+class CerrarOTRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class UpdateOperadorAsignado extends FormRequest
     public function rules(): array
     {
         return [
-            "id_operador"=>"required|integer|gt:0",
-            "id_caja"=>"required|integer|gt:0",
+            //
         ];
     }
 }

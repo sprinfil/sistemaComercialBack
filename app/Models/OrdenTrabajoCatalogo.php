@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrdenTrabajoCatalogo extends Model
@@ -17,9 +19,16 @@ class OrdenTrabajoCatalogo extends Model
     protected $table='orden_trabajo_catalogos';
     protected $fillable=[
         "nombre",
+        "descripcion",
         "vigencias",
+        "servicio",
         "momento_cargo",
         "genera_masiva",
+        "asigna_masiva",
+        "cancela_masiva",
+        "cierra_masiva",
+        "publico_general",
+        "limite_ordenes",
 
     ];
     public function ordenTrabajoAccion():HasMany{ 
@@ -32,7 +41,7 @@ class OrdenTrabajoCatalogo extends Model
         return $this->hasMany(OrdenesTrabajoCargo::class,'id_orden_trabajo_catalogo');
     }
     public function ordenTrabajoEncadenado():HasMany{
-        return $this->hasMany(OrdenesTrabajoEncadenada::class,'id_orden_trabajo_catalogo');
+        return $this->hasMany(OrdenesTrabajoEncadenada::class,'id_OT_Catalogo_padre');
     }
     public static function BuscarCatalogo($nombre){
         $ordenTrabajo=OrdenTrabajoCatalogo::where('nombre','LIKE','%'.$nombre.'%')->get();
@@ -58,6 +67,8 @@ class OrdenTrabajoCatalogo extends Model
 
         static::restoring(function ($parent) {
             $parent->ordenTrabajoAccion()->withTrashed()->restore();
+            $parent->ordenTrabajoCargos()->withTrashed()->restore();
+            $parent->ordenTrabajoEncadenado()->withTrashed()->restore();
         });
     }
         

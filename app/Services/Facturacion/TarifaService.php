@@ -3,7 +3,7 @@ namespace App\Services\Facturacion;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTarifaConceptoDetalleRequest;
-use App\Models\tarifa;
+use App\Models\Tarifa;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoretarifaRequest;
 use App\Http\Requests\StoreTarifaServicioRequest;
