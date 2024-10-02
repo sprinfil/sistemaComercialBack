@@ -11,6 +11,7 @@ class ConstanciaCatalogo extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        "id_concepto_catalogo",
         "nombre",
         "descripcion",
         "estado",
