@@ -39,7 +39,7 @@ class DescuentoAsociadoService
                 ->where('estatus', 'vigente')
                 ->exists();
             $folio_igual = DescuentoAsociado::where('folio', $folio)->exists();
-            $curp_igual = DescuentoAsociado::where('curp', $curp)->exists();
+            //$curp_igual = DescuentoAsociado::where('curp', $curp)->exists();
             if ($dueno) {
                  throw new \Exception('ya tiene un Descuento activo.', 400);
                 //return response()->json(['message' => 'Ya tiene un Descuento activo'], 400);
@@ -47,9 +47,6 @@ class DescuentoAsociadoService
             if ($folio_igual) {
                  throw new \Exception('el folio no esta disponible.', 400);
                 //return response()->json(['message' => 'El folio no esta disponible'], 400);
-            }
-            if ($curp_igual) {
-                throw new \Exception('el curp ya esta registrado.', 400);
             }
             $descuento = DescuentoAsociado::create($data);
             $descuento->load('descuento_catalogo' , 'archivos');
