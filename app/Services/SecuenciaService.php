@@ -8,6 +8,8 @@ use ErrorException;
 use Exception;
 use Illuminate\Contracts\Database\Query\Builder;
 
+use function PHPUnit\Framework\isNull;
+
 class SecuenciaService{
     /*
     public function SecuenciaStore($secuencia){
@@ -130,10 +132,12 @@ class SecuenciaService{
 
     }
     public function secuencia($id_libro){
-        $secuencia=Secuencia::where('id_libro',$id_libro)->where('tipo_secuencia',"padre")->first();
+        if (isNull($id_libro)){
+            throw new ErrorException("No existe libro asociado",400);
+        }
+        $secuencia=Secuencia::where('id_libro',$id_libro->id)->where('tipo_secuencia',"padre")->first();
+        $secuencia->ordenesSecuencia;
+        $secuencia->ordenesSecuenciaCero;
         return $secuencia;
-        $secuencia_ordenes=Secuencia_orden::where('id_secuencia',$secuencia->id)->orderby("numero_secuencia",'asc')->get();
-        return $secuencia_ordenes;
-        
         }
 }

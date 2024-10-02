@@ -23,6 +23,9 @@ class Secuencia extends Model
     public function ordenesSecuenciaCero():HasMany{
         return $this->hasMany(Secuencia_orden::class,'id_secuencia')->where('numero_secuencia',0);
     }
+    public function secuenciasPersonalizadas():HasMany{
+        return $this->hasMany(Secuencia::class,'id_secuencia')->where('numero_secuencia',0);
+    }
     public function empleado():BelongsTo{
         return $this->belongsTo(Operador::class,'id_empleado');
     }

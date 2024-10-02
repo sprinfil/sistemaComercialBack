@@ -64,16 +64,18 @@ class SecuenciaController extends Controller
             $data=$request->all();
        
             $libro=Libro::find($data['id_libro']);
-
             $secuencias = (new SecuenciaService())->secuencia($libro);
-
             return response()->json(["secuencia"=>$secuencias]);
             DB::commit();
-        } catch (Exception $ex) {
+        } catch (Exception | ErrorException $ex ) {
             DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de petición: ".$ex->getMessage()],400);
+            }
             return response()->json([
-                'message' => 'No se encontraron secuencia del libro: '.$ex
-            ], 200);
+                'error' => 'No se encontraron secuencia del libro: '.$ex->getMessage()
+            ], 500);
         }
        
     }
@@ -85,7 +87,19 @@ class SecuenciaController extends Controller
 
        }
     }
-    public function Delete(Request $request){
+    public function Delete(Request $request , $id){
+        try{
+            $secuencia=Secuencia::findOrFail($id);
+            $secuencia->delete();
+            return response()->json([
+                'error' => 'Secuencia borrada con éxito'
+            ], 200);
+        }
+        catch(Exception $ex){
+            return response()->json([
+                'error' => 'Error al intentar borrar la secuencia '.$ex->getMessage()
+            ], 500);
+        }
 
     }
     
