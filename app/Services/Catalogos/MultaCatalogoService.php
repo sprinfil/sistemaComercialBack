@@ -16,8 +16,7 @@ class MultaCatalogoService{
 
     public function store ($data)
     {
-        return response()->json([
-        'message' => 'soy una tetera' , 418]);
+       //Store del catalogo de multas.
     }
 
     public function show ($id)

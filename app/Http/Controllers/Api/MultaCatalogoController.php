@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\Catalogos\MultaCatalogoService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MultaCatalogoController extends Controller
 {
@@ -12,7 +15,15 @@ class MultaCatalogoController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $multa = (new MultaCatalogoService())->index();
+            return $multa;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'No se encontraron multas. ' .$ex->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -20,15 +31,23 @@ class MultaCatalogoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        try {
+            $multa = (new MultaCatalogoService())->show($id);
+            return $multa;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'No se encontraron multas. ' .$ex->getMessage()
+            ], 500);
+        }
     }
 
     /**
