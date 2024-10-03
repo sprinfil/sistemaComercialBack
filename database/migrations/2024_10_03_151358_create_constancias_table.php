@@ -18,7 +18,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_operador');
             $table->unsignedBigInteger('id_dueno');
             $table->enum('modelo_dueno', ['toma', 'usuario']);
-            $table->unsignedBigInteger('id_archivo');
             $table->dateTime('vigencia')->nullable();
             $table->softDeletes();
             $table->timestamps();

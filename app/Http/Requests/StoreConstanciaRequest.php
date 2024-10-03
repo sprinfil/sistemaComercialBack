@@ -29,7 +29,6 @@ class StoreConstanciaRequest extends FormRequest
             "id_dueno" => "required|integer|gt:0",
             "modelo_dueno" => "required|string|
             in:toma,usuario",
-            "id_archivo" => "required|integer|gt:0",
         ];
     }
 }

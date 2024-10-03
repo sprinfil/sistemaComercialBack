@@ -19,7 +19,6 @@ class Constancia extends Model
         "id_operador",
         "id_dueno",
         "modelo_dueno",
-        "id_archivo",
         "vigencia",
     ];
 
