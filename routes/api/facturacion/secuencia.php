@@ -11,6 +11,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/secuencia/personalizada/show","secuenciasOperador");
         Route::post("/secuencia/crear","store");
         Route::post("/secuencia/filtros","filtros");
-        Route::delete("/secuencia/log_delete","delete");
+        Route::delete("/secuencia/log_delete/{id}","delete");
     });
 });

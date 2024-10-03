@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('secuencias', function (Blueprint $table) {
+        Schema::create('catalogo_multas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_empleado')->nullable();
-            $table->unsignedBigInteger('id_secuencia_padre')->nullable();
-            $table->unsignedBigInteger('id_libro');
-            $table->enum('tipo_secuencia',['padre','personalizada']);
-            $table->softDeletes();
+            $table->string('nombre');
+            $table->string('descripcion');
+            $table->decimal('monto_min', total:8 , places: 2);
+            $table->decimal('monto_max' , total:8, places:2);
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('secuencias');
+        Schema::dropIfExists('catalogo_multas');
     }
 };

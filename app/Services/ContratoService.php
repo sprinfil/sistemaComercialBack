@@ -148,8 +148,12 @@ class ContratoService{
                 $libro=Libro::find($toma['id_libro']);
                 $toma['codigo_toma']=(new TomaService())->generarCodigoToma($libro);
                 $toma=Toma::create($toma);
+
                
             }
+            /*
+         
+            */
 
         }
         return $toma;
@@ -240,18 +244,13 @@ class ContratoService{
                 unset($toma['nombre']);
                 $nuevaToma=Toma::create($toma);
                 $PreContrato->push($nuevaToma);
-
-                $secuencia=$libro->secuenciasPadre;
-              
-                $orden[]=[
-                    "id_secuencia"=>$secuencia->id,
-                    "id_toma"=>$nuevaToma->id,
-                    "numero_secuencia"=>0,
-                ];
-              
+                
+                $orden=(new SecuenciaService())->AgregarSecuencias($libro,$nuevaToma->id);
+               
             }
          
         }
+  
         $Secuencia_orden=Secuencia_orden::insert($orden);
         return $PreContrato;
     }
