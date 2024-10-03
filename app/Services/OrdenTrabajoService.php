@@ -287,17 +287,14 @@ class OrdenTrabajoService{
                         };
                         $dato=[$servicio=>$valor];
                         
-                        if ($valor=="c_agua"){
+                        if ($servicio=="c_agua"){
                             $libro=$OTModelo->libro;
-                            $secuencia=$libro->secuenciasPadre;
-                            $orden=[];
-                            $orden[]=[
-                                "id_secuencia"=>$secuencia->id,
-                                "id_toma"=>$OTModelo->id,
-                                "numero_secuencia"=>0,
-                            ];
+                            
+                            $orden=(new SecuenciaService())->AgregarSecuencias($libro,$OTModelo->id);
                             $Secuencia_orden=Secuencia_orden::insert($orden);
+                            
                         }
+
                         if ($OTModelo['estatus']=="pendiente de instalacion"){
                             $OTModelo['estatus']=="activa";
                         }

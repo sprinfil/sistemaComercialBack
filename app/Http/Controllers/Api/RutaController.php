@@ -43,7 +43,7 @@ class RutaController extends Controller
     {
         //pediente asignar permisos
         $secuencias=RutaSimplificado::collection(
-            Ruta::with(['Libros.tomas','Libros.secuencias.ordenesSecuencia.toma:id,codigo_toma,posicion','Libros.secuencias.ordenesSecuenciaCero.toma:id,codigo_toma,posicion'])->orderby("id")->get()
+            Ruta::with(['Libros.tomas','Libros.secuencias.ordenesSecuencia.toma:id,codigo_toma,posicion,clave_catastral','Libros.secuencias.ordenesSecuenciaCero.toma:id,codigo_toma,posicion,clave_catastral'])->orderby("id")->get()
         );
         return $secuencias;
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -14,6 +15,7 @@ class Secuencia extends Model
     protected $table = "secuencias";
     protected $fillable = [
         "id_empleado",
+        "id_secuencia_padre",
         "id_libro",
         "tipo_secuencia"
     ];
@@ -22,6 +24,12 @@ class Secuencia extends Model
     }
     public function ordenesSecuenciaCero():HasMany{
         return $this->hasMany(Secuencia_orden::class,'id_secuencia')->where('numero_secuencia',0);
+    }
+    public function secuenciasPersonalizadas():HasMany{
+        return $this->hasMany(Secuencia::class,'id_secuencia_padre');
+    }
+    public function secuenciaPadre():BelongsTo{
+        return $this->belongsTo(Secuencia::class,'id_secuencia_padre');
     }
     public function empleado():BelongsTo{
         return $this->belongsTo(Operador::class,'id_empleado');
@@ -37,6 +45,12 @@ class Secuencia extends Model
         static::deleting(function ($parent) {
             // Soft delete related child models
             $parent->ordenesSecuencia()->each(function ($child) {
+                $child->forceDelete();
+            });
+            $parent->ordenesSecuenciaCero()->each(function ($child) {
+                $child->forceDelete();
+            });
+            $parent->secuenciasPersonalizadas()->each(function ($child) {
                 $child->forceDelete();
             });
 

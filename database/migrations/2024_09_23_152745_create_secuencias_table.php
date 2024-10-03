@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('secuencias', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_empleado')->nullable();
+            $table->unsignedBigInteger('id_secuencia_padre')->nullable();
             $table->unsignedBigInteger('id_libro');
             $table->enum('tipo_secuencia',['padre','personalizada']);
             $table->softDeletes();
