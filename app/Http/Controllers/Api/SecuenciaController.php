@@ -79,14 +79,22 @@ class SecuenciaController extends Controller
         }
        
     }
-    public function CargarSecuencia(Request $request){
+    /*
+    public function CargarSecuencia(Request $request, $id){
        try{
-        
-       }
-       catch(Exception $ex){
+        $secuencia_padre=Secuencia::find($id);
+        $secuencia_padre->ordenesSecuencia;
+        $secuencia_padre->ordenesSecuenciaCero;
+        $operador=;
 
        }
+       catch(Exception $ex){
+        return response()->json([
+            'error' => 'No se encontró la secuencia padre: '.$ex->getMessage()
+        ], 500);
+       }
     }
+       */
     public function Delete(Request $request , $id){
         try{
             $secuencia=Secuencia::findOrFail($id);

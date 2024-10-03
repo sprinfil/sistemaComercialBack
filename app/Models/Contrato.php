@@ -104,6 +104,8 @@ class Contrato extends Model
     {
         return $this->belongsTo(Colonia::class, "colonia");
     }
+ 
+    
     public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
     {
 

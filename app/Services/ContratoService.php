@@ -85,7 +85,9 @@ class ContratoService{
             if ($solicitud==true){
                 $factibilidad->push(Factibilidad::create([
                     "id_toma"=>$toma['id'],
+                    "id_contrato"=> $cont['id'],
                     "id_solicitante"=>$id_empleado_asigno,
+                    "servicio"=>$cont->servicio_contratado,
                     "estado"=>"sin revisar"
                 ]));
             }
