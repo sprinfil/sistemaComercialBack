@@ -20,6 +20,7 @@ class Factibilidad extends Model
     protected $fillable =
     [
         'id_toma',
+        'id_contrato',
         'id_solicitante',
         'id_revisor',
         'estado',
@@ -39,7 +40,9 @@ class Factibilidad extends Model
             return null;
         }
     }
-
+    public function contrato():?BelongsTo{
+        return $this->belongsTo(contrato::class, 'id_contrato');
+    }
     public function solicitante(): HasOne
     {
         return $this->hasOne(Operador::class, 'id', 'id_solicitante');

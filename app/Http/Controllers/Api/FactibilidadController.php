@@ -122,7 +122,15 @@ class FactibilidadController extends Controller
 
             $factibilidad->update($data);
             $factibilidad->save();
-
+            $contrato=$factibilidad->contrato;
+            if ($factibilidad->estado_servicio=="factible"){
+                $contrato->estatus="inspeccionado";
+            }
+            else if ($factibilidad->estado_servicio=="no factible"){
+                $contrato->estatus="contrato no factible";
+            }
+            $contrato->save();
+         
             $factibilidad_cargada = Factibilidad::findOrFail($factibilidad->id);
             if ($factibilidad_cargada->servicio=="agua"){
                 $concepto = ConceptoCatalogo::findOrFail(43);

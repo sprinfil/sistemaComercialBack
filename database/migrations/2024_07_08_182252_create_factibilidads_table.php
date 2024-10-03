@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('factibilidad', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_toma');
+            $table->unsignedBigInteger('id_contrato');
             $table->unsignedBigInteger('id_solicitante');
             $table->unsignedBigInteger('id_revisor')->nullable();
             $table->enum('estado', ['sin revisar', 'rechazada', 'pendiente de pago', 'pagada'])->default('sin revisar');

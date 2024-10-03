@@ -20,6 +20,7 @@ class FactibilidadFactory extends Factory
     {
         return [
             'id_toma' => 1,
+            'id_contrato' => 1,
             'id_solicitante' => 1,
             'id_revisor' => null,
             //'estado'=>'concluida',

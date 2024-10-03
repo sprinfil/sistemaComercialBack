@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use Barryvdh\DomPDF\Facade as PDF;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use ErrorException;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -353,15 +354,27 @@ class ContratoController extends Controller
     {
 
         try {
-      
+            
             $contrato=Contrato::find($request->all()['id_contrato']);
-        
-            $concepto=$contrato->tarifaContrato();
-            $concepto->concepto;
-            return response()->json(["Tarifa"=> $concepto]) ;
+            if ( $contrato->estatus=="contrato no factible"){
+                throw new ErrorException('No se puede cotizar un contrato no factible', 500);
+            }
+            else{
+                $concepto=$contrato->tarifaContrato();
+                $concepto->concepto;
+                return response()->json(["Tarifa"=> $concepto]) ;
+            }
+   
           
-        } catch (Exception $ex) {
-            return response()->json(['error' => 'No se pudo crear la cotización, introduzca datos correctos'], 200);
+        } catch (Exception | ErrorException $ex) {
+
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(['error' => 'Error: '.$ex->getMessage()], 500);
+            }
+            else{
+                return response()->json(['error' => 'No se pudo crear la cotización, introduzca datos correctos'], 500);
+            }
         }
     }
     public function terminarCotizacion(Cotizacion $cotizacion, UpdateCotizacionRequest $request)
