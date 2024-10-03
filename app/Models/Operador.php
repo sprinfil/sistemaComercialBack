@@ -56,6 +56,11 @@ class Operador extends Model
     public function secuencias():HasMany{
         return $this->hasMany(Secuencia::class, "id_empleado");
     }
+
+    public function constancia() : HasMany 
+    {
+        return $this->hasMany(Constancia::class , 'id'); 
+    }
     
 
     

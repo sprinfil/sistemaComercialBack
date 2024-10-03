@@ -273,4 +273,9 @@ class Toma extends Model
             ->paginate(1);
         return  $data;
     }
+
+    public function constancias(): MorphMany
+    {
+        return $this->morphMany(Constancia::class, 'origen', 'modelo_dueno', 'id_dueno');
+    }
 }
