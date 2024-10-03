@@ -186,6 +186,11 @@ class Toma extends Model
     }
 
 
+    public function dueno_multa() : MorphMany {
+        return $this->morphMany(Multa::class, 'origen' , 'modelo_multado' , 'id_multado');
+    }
+
+
     //Consumos asociados a la toma
     public function factura(): HasMany
     {
