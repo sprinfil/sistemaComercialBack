@@ -16,6 +16,7 @@ class ConvenioCatalogo extends Model
         "nombre",
         "descripcion",
         "estado",
+        "pago_inicial",
     ];
 
     public function conceptosAplicables() : MorphMany

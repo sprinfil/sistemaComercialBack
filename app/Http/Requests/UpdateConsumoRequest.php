@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateConvenioCatalogoRequest extends FormRequest
+class UpdateConsumoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,13 @@ class UpdateConvenioCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nombre"=>"required|string|max:55|unique:convenio_catalogos,nombre,".$this->id,
-            "descripcion"=>"nullable|string",
-            "estado"=>"nullable|string|max:10|
-            in:activo,inactivo",
-            "pago_inicial"=>"nullable|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0|max:100",
+            "id_toma"=>"required|integer",
+            "id_periodo"=>"required|integer",
+            "id_lectura_anterior"=>"nullable|integer",
+            "id_lectura_actual"=>"nullable|integer",
+            "tipo"=>"required|string",
+            "estado"=>"required|string",
+            "consumo"=>"required|string",
         ];
     }
 }

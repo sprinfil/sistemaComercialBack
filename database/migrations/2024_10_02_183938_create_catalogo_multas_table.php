@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('convenio_catalogos', function (Blueprint $table) {
+        Schema::create('catalogo_multas', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre")->nullable();
-            $table->text("descripcion")->nullable();
-            $table->enum('estado', ['activo', 'inactivo'])->nullable();
-            $table->decimal('pago_inicial')->nullable();
-            $table->softDeletes();
+            $table->string('nombre');
+            $table->string('descripcion');
+            $table->decimal('monto_min', total:8 , places: 2);
+            $table->decimal('monto_max' , total:8, places:2);
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('convenio_catalogos');
+        Schema::dropIfExists('catalogo_multas');
     }
 };
