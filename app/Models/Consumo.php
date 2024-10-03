@@ -31,13 +31,13 @@ class Consumo extends Model
     // Consumo que se registra en la lectura
     public function lecturaAnterior() : HasOne
     {
-        return $this->hasOne(Lectura::class, 'id_lectura_anterior');
+        return $this->hasOne(Lectura::class, 'id','id_lectura_anterior');
     }
 
     // Consumo que se registra en la lectura
     public function lecturaActual() : HasOne
     {
-        return $this->hasOne(Lectura::class, 'id_lectura_actual');
+        return $this->hasOne(Lectura::class, 'id','id_lectura_actual');
     }
 
     public function periodo() : BelongsTo

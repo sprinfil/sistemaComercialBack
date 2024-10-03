@@ -36,7 +36,7 @@ class ConsumoController extends Controller
             ), 200);
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'No fue posible consultar la lectura: '.$e->getMessage()
+                'error' => 'No fue posible consultar los consumos: '.$e->getMessage()
             ], 500);
         }
     }
