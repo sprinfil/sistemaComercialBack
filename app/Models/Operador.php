@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -56,7 +57,12 @@ class Operador extends Model
     public function secuencias():HasMany{
         return $this->hasMany(Secuencia::class, "id_empleado");
     }
-    
+    public function operador_multa() : HasMany {
+        return $this->hasMany(Multa::class , 'id_operador' , 'id');
+    }
+    public function operador_revisor() : HasOne {
+        return $this->hasOne(Multa::class, 'id_revisor' , 'id');
+    }
 
     
 }
