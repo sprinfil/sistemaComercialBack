@@ -549,6 +549,16 @@ class ConceptoCatalogoSeeder extends Seeder
                 "tarifa_fija" => 1,
             ],
             [
+                "nombre" => "CONSTANCIA DE FACTIBILIDAD DE ALCANTARILLADO Y SANEAMIENTO",
+                "descripcion" => "Constancia de factibilidad de alcantarillado y saneamiento.",
+                "estado" => "activo",
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ],
+            [
                 "nombre" => "PAGO POR DESCARGA DE AGUAS RESIDUALES",
                 "descripcion" => "Pago por descarga de aguas residuales.",
                 "estado" => "activo",

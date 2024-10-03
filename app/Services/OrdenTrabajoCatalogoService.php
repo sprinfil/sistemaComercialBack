@@ -57,6 +57,7 @@ class OrdenTrabajoCatalogoService{
     }
     public function storeCargos(array $ordenCatalogo){
         $requestCargos=$ordenCatalogo['orden_trabajo_cargos'];
+        $id_catalogo=$ordenCatalogo['id_orden_trabajo_catalogo'] ?? null;
         $OrdenCargos=[];
         $ordenesCargos_id=[];
         //$id=$idcatalogo ?? $requestCargos[0]['id'];
@@ -67,7 +68,7 @@ class OrdenTrabajoCatalogoService{
             $OrdenCargos[]=$ordenCargo;
             $ordenesCargos_id[]=$ordenCargo['id'];
         }
-        OrdenesTrabajoCargo::where('id_orden_trabajo_catalogo', $OrdenCargos[0]['id_orden_trabajo_catalogo'])
+        OrdenesTrabajoCargo::where('id_orden_trabajo_catalogo', $id_catalogo)
         ->whereNotIn('id', $ordenesCargos_id)
         ->delete();
         return OrdenesTrabajoCargoResource::collection($OrdenCargos);
@@ -75,6 +76,7 @@ class OrdenTrabajoCatalogoService{
     }
     public function storeOTEncadenadas(array $ordenCatalogo){
         $requestEncadenadas=$ordenCatalogo['orden_trabajo_encadenadas'];
+        $id_catalogo=$ordenCatalogo['id_orden_trabajo_catalogo'] ?? null;
         $OrdenEncadenadas=[];
         $OrdenEncadenadas_id=[];
         foreach ($requestEncadenadas as $OT){
@@ -84,7 +86,7 @@ class OrdenTrabajoCatalogoService{
             $OrdenEncadenadas[]=$ordenEncadenada;
             $OrdenEncadenadas_id[]=$ordenEncadenada['id'];
         }
-        OrdenesTrabajoEncadenada::where('id_OT_Catalogo_padre', $OrdenEncadenadas[0]['id_OT_Catalogo_padre'])
+        OrdenesTrabajoEncadenada::where('id_OT_Catalogo_padre', $id_catalogo)
         ->whereNotIn('id', $OrdenEncadenadas_id)
         ->delete();
         $OrdenEncadenadas=OrdenesTrabajoEncadenada::with('OrdenCatalogoEncadenadas')->whereIn('id', $OrdenEncadenadas_id)->get();
