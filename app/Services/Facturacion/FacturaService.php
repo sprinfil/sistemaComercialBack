@@ -3,6 +3,7 @@ namespace App\Services\Facturacion;
 
 use App\Http\Resources\FacturaResource;
 use App\Models\Factura;
+use App\Models\Periodo;
 use COM;
 use Exception;
 use Illuminate\Http\Client\Request;
@@ -93,6 +94,10 @@ class FacturaService{
                 'error' => 'No se encontraron facturas activas'
             ], 500);
         }
+    }
+    public function storePeriodo($per){
+        $periodo=Periodo::create($per);
+        return $periodo;
     }
 
 }
