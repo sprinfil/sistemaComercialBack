@@ -54,6 +54,7 @@ class Toma extends Model
         'c_agua',
         'c_alc',
         'c_san',
+        'fecha_instalacion',
         'posicion'
     ];
 

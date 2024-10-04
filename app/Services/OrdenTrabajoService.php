@@ -297,6 +297,8 @@ class OrdenTrabajoService{
 
                         if ($OTModelo['estatus']=="pendiente de instalacion"){
                             $OTModelo['estatus']=="activa";
+                            $OTModelo['fecha_instalacion']==helperFechaAhora();
+                            
                         }
                      
                     }
