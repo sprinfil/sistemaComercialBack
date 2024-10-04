@@ -54,6 +54,7 @@ class Toma extends Model
         'c_agua',
         'c_alc',
         'c_san',
+        'fecha_instalacion',
         'posicion'
     ];
 
@@ -183,6 +184,11 @@ class Toma extends Model
     {
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
             ->with(['abonosConCargos']);
+    }
+
+
+    public function dueno_multa() : MorphMany {
+        return $this->morphMany(Multa::class, 'origen' , 'modelo_multado' , 'id_multado');
     }
 
 
