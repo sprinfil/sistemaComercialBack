@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('carga_trabajos', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('id_libro');
-            $table->unsignedInteger('id_lectura'); //MER
             $table->unsignedInteger('id_operador_encargado');
-            $table->unsignedInteger('id_periodo');
+            $table->unsignedInteger('id_periodo'); ///tiene las lecturas
             $table->unsignedInteger('id_operador_asigno');
             $table->enum('estado', ['no asignada', 'en proceso', 'concluida', 'cancelada']);
             $table->date('fecha_concluida');

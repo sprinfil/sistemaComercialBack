@@ -16,13 +16,14 @@ return new class extends Migration
             $table->unsignedInteger('id_ruta');
             $table->unsignedInteger('id_tarifa');
             $table->string('nombre');
-            $table->date('periodo');
-            $table->date('facturacion_fecha_inicio');
+            $table->date('periodo'); //Solo importa mes y año
+            $table->date('facturacion_fecha_inicio'); ///un mes
             $table->date('facturacion_fecha_final');
-            $table->date('lectura_inicio');
+            $table->date('lectura_inicio');///menos del mes
             $table->date('lectura_final');
             $table->softDeletes();
             $table->timestamps();
+            //Si el mes se acaba automaticamente proceso para facturar tomas del mes pasado que no se hayan facturado.
         });
     }
 
