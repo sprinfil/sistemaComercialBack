@@ -190,17 +190,20 @@ class RutaController extends Controller
                         "tipo_secuencia"=>"padre",
                         "id_libro"=>$libro->id,
                     ];
-                    $secuencia=(new SecuenciaService())->store($secuencia_input);
+                    $secuencia=(new SecuenciaService())->store($secuencia_input, null);
                     $orden=[];
                     $i=1;
                     $tomasDentroDelPoligono = Toma::whereWithin('posicion', $libro->polygon)->get();
                     foreach ($tomasDentroDelPoligono as $toma) {
                         $toma->id_libro = $libro->id;
                         $toma->save();
-                        $orden[]=[
-                            "id_toma"=>$toma->id,
-                            "numero_secuencia"=>$i++,
-                        ];
+                        if ($toma->estatus=="activa" && $toma->c_agua!=null && $toma->c_agua!=0){
+                            $orden[]=[
+                                "id_toma"=>$toma->id,
+                                "numero_secuencia"=>$i++,
+                            ];
+                        }
+                       
                     }
                     $Secuencia_orden=(new SecuenciaService())->SecuenciaOrdenStore($secuencia, $orden);
                 }
