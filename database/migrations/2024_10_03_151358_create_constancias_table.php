@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('constancias', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_catalogo_constancia');
-            $table->enum('estado', ['pendiente', 'pagado','cancelado']);
+            $table->enum('estado', ['pendiente', 'pagado','cancelado','entregado']);
             $table->unsignedBigInteger('id_operador');
             $table->unsignedBigInteger('id_dueno');
             $table->enum('modelo_dueno', ['toma', 'usuario']);
-            $table->dateTime('vigencia')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

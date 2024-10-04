@@ -32,6 +32,12 @@ class ConstanciaSeeder extends Seeder
                 'descripcion' => 'Constancia que valida la existancia de un contrato',
                 'estado' => 'activo',
             ],
+            [
+                'id_concepto_catalogo' => '4',
+                'nombre' => 'Constancia de no servicio',
+                'descripcion' => 'Constancia que valida la ausencia de servicio del usuario',
+                'estado' => 'activo',
+            ],
         ]);
     }
 }
