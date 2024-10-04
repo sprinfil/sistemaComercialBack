@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('descripcion');
-            $table->decimal('monto_min', total:8 , places: 2);
-            $table->decimal('monto_max' , total:8, places:2);
+            $table->integer('UMAS_min');
+            $table->integer('UMAS_max');
             $table->timestamps();
         });
     }
