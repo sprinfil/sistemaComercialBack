@@ -297,6 +297,8 @@ class OrdenTrabajoService{
 
                         if ($OTModelo['estatus']=="pendiente de instalacion"){
                             $OTModelo['estatus']=="activa";
+                            $OTModelo['fecha_instalacion']==helperFechaAhora();
+                            
                         }
                      
                     }
@@ -371,6 +373,7 @@ class OrdenTrabajoService{
                     $MedidorExiste->update(["estatus"=>"inactivo"]);
                 }
                 $dato['id_toma']=$ordenTrabajo['id_toma'];
+                $dato['fecha_instalacion']=helperFechaAhora();
                 $OTModelo=Medidor::create($dato);
                 break;
                 /*
