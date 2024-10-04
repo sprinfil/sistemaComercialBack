@@ -21,7 +21,6 @@ class CargaTrabajoFactory extends Factory
     {
         return [
             'id_libro'=> Libro::all()->random()->id,
-            'id_lectura'=> $this->faker->numberBetween(1,20), //lectura no tiene seeder
             'id_operador_encargado'=> Operador::all()->random()->id,
             'id_periodo'=> Periodo::all()->random()->id,
             'id_operador_asigno'=> Operador::all()->random()->id,

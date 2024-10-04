@@ -11,6 +11,7 @@ use App\Services\Facturacion\FacturaService;
 use App\Services\Facturacion\indexFacturaServiceService;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\DB;
 
 class FacturaController extends Controller
@@ -103,5 +104,20 @@ class FacturaController extends Controller
                 'error' => 'No se encontraron facturas activas'
             ], 500);
         }
+    }
+    public function storePeriodo(Request $request){
+        try{
+            $data=$request->all();
+            $periodo=(new FacturaService())->storePeriodo($data);
+            return response()->json(["periodo"=>$periodo],200);
+        }
+        catch(Exception $ex){
+            DB::rollBack();
+            return response()->json([
+                'error' => 'No se pudo crear un nuevo periodo '.$ex->getMessage()
+            ], 500);
+        }
+
+
     }
 }
