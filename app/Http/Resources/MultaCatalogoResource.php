@@ -19,8 +19,8 @@ class MultaCatalogoResource extends JsonResource
             'id'=>$this->id,
             'nombre'=>$this->nombre,
             'descripcion'=>$this->descripcion,
-            'monto_min'=>$this->monto_min,
-            'monto_max'=>$this->monto_max,
+            'UMAS_min'=>$this->UMAS_min,
+            'UMAS_max'=>$this->UMAS_max,
 
         ];
     }

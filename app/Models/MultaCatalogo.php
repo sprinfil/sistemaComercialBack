@@ -13,8 +13,8 @@ class MultaCatalogo extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
-        'monto_min',
-        'monto_max'
+        'UMAS_min',
+        'UMAS_max'
     ];
 
     public function catalogo_multa() : HasMany {
