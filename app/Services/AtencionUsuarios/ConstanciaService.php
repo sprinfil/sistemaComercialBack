@@ -30,12 +30,13 @@ class ConstanciaService
 
                 $usuario = auth()->user();
                 $idOperador = $usuario->operador->id;
-                
+
+                $modelo = Toma::where('id',$data['id_dueno'])
+                            ->first();
                 if ($tipoConstancia) {
                     switch ($tipoConstancia->nombre) {
                         case "Constancia no adeudo":
-                            $modelo = Toma::where('id',$data['id_dueno'])
-                            ->first();
+                            
                             $saldo = $modelo->saldoPendiente;
                             if($saldo == 0)
                             {
@@ -48,7 +49,7 @@ class ConstanciaService
                                 ];
                                 $constancia = Constancia::create($conNoAdeudo);
 
-                                $concepto = ConceptoCatalogo::find(148);
+                                $concepto = ConceptoCatalogo::find(148);//to do pendiente asignar un concepto default para constancia
                                 
                                 $monto = TarifaConceptoDetalle::select('monto')
                                 ->where('id_concepto',$concepto->id)
@@ -63,7 +64,22 @@ class ConstanciaService
                     
                         // Puedes tener tantos casos como desees
                         case "Constancia de antigüedad":
-                            // Código a ejecutar si la expresión es igual a valor2
+
+                            $conAntigu = [
+                                "id_catalogo_constancia" => $data['id_catalogo_constancia'],
+                                "estado" => "pendiente",
+                                "id_operador" => $idOperador,
+                                "id_dueno" => $data['id_dueno'],
+                                "modelo_dueno" => $data['modelo_dueno'],
+                            ];
+                            $constancia = Constancia::create($conAntigu);
+
+                            $concepto = ConceptoCatalogo::find(148);//to do pendiente asignar un concepto default para constancia
+                            
+                            $monto = TarifaConceptoDetalle::select('monto')
+                            ->where('id_concepto',$concepto->id)
+                            ->where('id_tipo_toma',$modelo->id_tipo_toma)
+                            ->first();
                             break;
 
                          case "Constancia de no servicio"://nel
