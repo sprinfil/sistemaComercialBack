@@ -37,11 +37,12 @@ class StoreOrdenTrabajoRequest extends FormRequest
             "ordenes_trabajo.*.genera_OT_encadenadas" => "sometimes|boolean",
 
             "modelos"=> "sometimes|array",
-            "modelos.medidores"=> "sometimes|array:numero_serie,marca,diametro,tipo",
+            "modelos.medidores"=> "sometimes",
             "medidores.numero_serie" => "sometimes|string",
             "medidores.marca" => "sometimes|string",
             "medidores.diametro" => "sometimes|string",
             "medidores.tipo" => "sometimes|string",
+            "medidores.lectura_inicial" => "sometimes|integer",
    
             /*
             "modelos"=> "required|array:toma,medidores,contratos,usuarios",
