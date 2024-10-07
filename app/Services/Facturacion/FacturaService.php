@@ -3,8 +3,12 @@ namespace App\Services\Facturacion;
 
 use App\Http\Resources\FacturaResource;
 use App\Models\Factura;
+use App\Models\Libro;
 use App\Models\Periodo;
+use App\Models\Ruta;
 use COM;
+use Database\Seeders\LibroSeeder;
+use ErrorException;
 use Exception;
 use Illuminate\Http\Client\Request;
 
@@ -95,9 +99,6 @@ class FacturaService{
             ], 500);
         }
     }
-    public function storePeriodo($per){
-        $periodo=Periodo::create($per);
-        return $periodo;
-    }
+
 
 }

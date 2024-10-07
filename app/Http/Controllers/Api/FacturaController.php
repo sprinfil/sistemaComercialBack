@@ -105,19 +105,5 @@ class FacturaController extends Controller
             ], 500);
         }
     }
-    public function storePeriodo(Request $request){
-        try{
-            $data=$request->all();
-            $periodo=(new FacturaService())->storePeriodo($data);
-            return response()->json(["periodo"=>$periodo],200);
-        }
-        catch(Exception $ex){
-            DB::rollBack();
-            return response()->json([
-                'error' => 'No se pudo crear un nuevo periodo '.$ex->getMessage()
-            ], 500);
-        }
 
-
-    }
 }
