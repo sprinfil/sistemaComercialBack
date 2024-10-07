@@ -33,7 +33,7 @@ class MultaCatalogoService{
             return response(new MultaCatalogoResource($multa), 200);
         } catch (Exception $ex) {
             return response()->json([
-                'error' => 'No se pudo encontrar el descuento' .$ex->getMessage()
+                'error' => 'No se pudo encontrar la multa' .$ex->getMessage()
             ], 500);
         }
     }
