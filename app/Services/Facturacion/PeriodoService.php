@@ -41,7 +41,16 @@ class PeriodoService{
             $periodo=Periodo::whereIn('id_ruta',array_column($per,"id_ruta"))->where('estatus','activo')->get();
             
             $ruta=Ruta::with('Libros:id,id_ruta,nombre')->whereIn('id',array_column($per,"id_ruta"))->get();
-            return $ruta;
+           $carga_trabajo=[];
+            foreach ($ruta as $r){
+               $libros=$r->libros;
+               foreach ($libros as $l){
+                $carga['id_libro']=$l['id'];
+                $carga_trabajo[]=$carga;
+            }
+              
+            }
+            return $carga_trabajo;
             
             //foreach 
             Periodo::insert($insercion);
