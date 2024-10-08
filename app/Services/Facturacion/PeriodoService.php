@@ -99,6 +99,10 @@ class PeriodoService{
         $cargados=CargaTrabajo::whereIn('id_periodo',$periodo->pluck('id'))->where('estado','no asignada')->get(); //valido que el libro tiene una carga activa?
         return $cargados;
     }
+    public function show($id){
+        $periodo=Periodo::find($id);
+        return $periodo;
+    }
     public function updatePeriodo($per,$id){
         $periodo=Periodo::find($id);
         $periodo->update($per);
