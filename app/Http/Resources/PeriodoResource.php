@@ -27,6 +27,8 @@ class PeriodoResource extends JsonResource
             'facturacion_fecha_final' => $this->facturacion_fecha_final,
             'lectura_inicio' => $this->lectura_inicio,
             'lectura_final' => $this->lectura_final,
+            "validacion_inicio" => $this->validacion_inicio,
+            "validacion_final" => $this->validacion_final,
             "recibo_inicio" => $this->recibo_inicio,
             "recibo_final" => $this->recibo_final,
             "estatus" => $this->estatus,
