@@ -19,7 +19,7 @@ class PeriodoController extends Controller
      */
     public function index()
     {
-        $periodos = Periodo::orderBy('created_at', 'desc')->get();
+        $periodos = Periodo::orderBy('created_at', 'desc')->take(50)->get();
         return response()->json(PeriodoResource::collection($periodos));
     }
 
@@ -58,7 +58,21 @@ class PeriodoController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try{
+            $periodo=(new PeriodoService())->show($id);
+            return response()->json(["periodos"=>$periodo],200);
+        }
+        catch(Exception | ErrorException $ex){
+   
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+        
     }
 
     /**
