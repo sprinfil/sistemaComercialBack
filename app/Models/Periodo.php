@@ -19,6 +19,8 @@ class Periodo extends Model
         "periodo",
         "facturacion_fecha_inicio",
         "facturacion_fecha_final",
+        "validacion_inicio",
+        "validacion_final",
         "lectura_inicio",
         "lectura_final",
         "recibo_inicio",

@@ -21,6 +21,8 @@ return new class extends Migration
             $table->date('facturacion_fecha_final');
             $table->date('lectura_inicio');///menos del mes
             $table->date('lectura_final');
+            $table->date('validacion_inicio');///menos del mes
+            $table->date('validacion_final');
             $table->date('recibo_inicio')->nullable();///menos del mes
             $table->date('recibo_final')->nullable();
             $table->enum('estatus',['activo','cerrado']);
