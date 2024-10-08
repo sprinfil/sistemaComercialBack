@@ -23,9 +23,6 @@ class StoreConstanciaRequest extends FormRequest
     {
         return [
             "id_catalogo_constancia" => "required|integer|gt:0",
-           // "estado" => "required|string|
-           // in:pendiente,pagado,cancelado,entregado",
-            //"id_operador" => "required|integer|gt:0",
             "id_dueno" => "required|integer|gt:0",
             "modelo_dueno" => "required|string|
             in:toma",//,usuario",

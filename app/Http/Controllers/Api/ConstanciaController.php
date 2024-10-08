@@ -26,4 +26,20 @@ class ConstanciaController extends Controller
             ], 500);
         }
     }
+
+    public function pagoConstancia(Request $request)
+    {
+        try {
+            $data = $request->toArray();
+            DB::beginTransaction();
+            $constancia = (new ConstanciaService())->pagoConstanciaService($data);
+            DB::commit();
+            return $constancia;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al generar la constancia'. $ex
+            ], 500);
+        }
+    }
 }
