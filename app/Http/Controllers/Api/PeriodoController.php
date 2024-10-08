@@ -34,8 +34,8 @@ class PeriodoController extends Controller
             
             $data=$request->all()['periodos'];
             $periodo=(new PeriodoService())->storePeriodo($data);
-            $carga_trabajo=(new PeriodoService())->storeCargaTrabajo($periodo);
-            DB::rollBack();
+            $carga_trabajo=(new PeriodoService())->storeCargaTrabajo($periodo,$data);
+            DB::commit();
             return response()->json(["periodos"=>$periodo,"cargas_trabajo"=>$carga_trabajo],200);
         }
         catch(Exception | ErrorException $ex){
