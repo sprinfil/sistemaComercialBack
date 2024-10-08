@@ -50,7 +50,7 @@ class PeriodoService{
 
       
     }
-    public function storeCargaTrabajo($periodo,$data){
+    public function storeCargaTrabajo($periodo){
         $ruta=Ruta::whereIn('id',$periodo->pluck('id_ruta'))->get();
         $librosID=$ruta->pluck('Libros');
         $arreglo=$librosID->flatten()->all();
@@ -84,22 +84,12 @@ class PeriodoService{
            $libros=$r['libros'];
            foreach ($libros as $l){
                 $perLibro=$periodo->firstWhere('id_ruta',$l['id_ruta']); //Consulta más rápida en collección pre cargada
-                foreach ($data as $tipo)
-                {
-               
-                    if ($tipo['id_ruta']==$l['id_ruta']){
-                        $tipo_carga=$tipo['tipo_periodo'];
-                        break;
-                    }
-                }
        
                 $carga['id_libro']=$l['id'];
                 $carga['id_periodo']=$perLibro['id'];
                 $carga['estado']="no asignada";
                 $carga['created_at'] =   $fecha; 
                 $carga['updated_at'] =   $fecha; 
-
-                $carga['tipo_carga']=$tipo_carga; ///preguntar
                 //$carga['id_operador']=helperOperadorActual();
                 $carga_trabajo[]=$carga;
             }
