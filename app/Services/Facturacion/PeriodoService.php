@@ -39,6 +39,7 @@ class PeriodoService{
                 $item['id_tarifa'] = $tarifa; 
                 $item['created_at'] =   $fecha; 
                 $item['updated_at'] =   $fecha; 
+                unset($item['tipo_periodo']); 
                 return $item;
             }, $per);
             Periodo::insert($insercion);
@@ -49,21 +50,23 @@ class PeriodoService{
 
       
     }
-    public function storeCargaTrabajo($periodo){
-            
-        $ruta=Ruta::with('Libros:id,id_ruta,nombre')->whereIn('id',$periodo->pluck('id_ruta'))->get();
-        //return $periodo;
+    public function storeCargaTrabajo($periodo,$data){
+        $ruta=Ruta::whereIn('id',$periodo->pluck('id_ruta'))->get();
+        $librosID=$ruta->pluck('Libros');
+        $arreglo=$librosID->flatten()->all();
+        //return $arreglo;
+        $id=array_column($arreglo,"id");
+        //return $id;
         $fecha=Carbon::now();
-        $carga_Existente=CargaTrabajo::whereIn('id_libro',$ruta->pluck('id_libro'))->where('estado','en proceso')->orWhere('estado','no asignada')->get();
-        //return $carga_Existente;
-        if ($carga_Existente){
+        $carga_Existente=CargaTrabajo::whereIn('id_libro',$id)->whereNot('estado','concluida')->whereNot('estado','cancelada')->get();
+        if (count($carga_Existente)!=0){
             $librosExistentes=Libro::with('tieneRuta:id,nombre')->whereIn('id',$carga_Existente->pluck('id_libro'))->get();
             $mensaje=null;
             foreach ($librosExistentes as $existe){
                 $rutaLibro=$existe->tieneRuta->nombre ?? null;
                 if ($rutaLibro){
                     if (!$mensaje){
-                        $mensaje=$mensaje.$rutaLibro." ".$existe->nombre;
+                        $mensaje=$rutaLibro." ".$existe->nombre;
                     }
                     else{
                         $mensaje=$mensaje.", ".$rutaLibro." ".$existe->nombre;
@@ -79,13 +82,22 @@ class PeriodoService{
            $libros=$r['libros'];
            foreach ($libros as $l){
                 $perLibro=$periodo->firstWhere('id_ruta',$l['id_ruta']); //Consulta más rápida en collección pre cargada
+                foreach ($data as $tipo)
+                {
+               
+                    if ($tipo['id_ruta']==$l['id_ruta']){
+                        $tipo_carga=$tipo['tipo_periodo'];
+                        break;
+                    }
+                }
+       
                 $carga['id_libro']=$l['id'];
                 $carga['id_periodo']=$perLibro['id'];
                 $carga['estado']="no asignada";
                 $carga['created_at'] =   $fecha; 
                 $carga['updated_at'] =   $fecha; 
 
-                //$carga['tipo_carga']="facturacion en sitio"; ///preguntar
+                $carga['tipo_carga']=$tipo_carga; ///preguntar
                 //$carga['id_operador']=helperOperadorActual();
                 $carga_trabajo[]=$carga;
             }
