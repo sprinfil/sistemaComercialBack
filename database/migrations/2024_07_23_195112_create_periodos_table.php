@@ -21,6 +21,9 @@ return new class extends Migration
             $table->date('facturacion_fecha_final');
             $table->date('lectura_inicio');///menos del mes
             $table->date('lectura_final');
+            $table->date('recibo_inicio')->nullable();///menos del mes
+            $table->date('recibo_final')->nullable();
+            $table->enum('estatus',['activo','cerrado']);
             $table->softDeletes();
             $table->timestamps();
             //Si el mes se acaba automaticamente proceso para facturar tomas del mes pasado que no se hayan facturado.

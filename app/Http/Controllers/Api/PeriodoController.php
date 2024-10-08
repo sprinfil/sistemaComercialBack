@@ -5,7 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PeriodoResource;
 use App\Models\Periodo;
+use App\Services\Facturacion\FacturaService;
+use App\Services\Facturacion\PeriodoService;
+use ErrorException;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PeriodoController extends Controller
 {
@@ -22,18 +27,31 @@ class PeriodoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function store(Request $request) //crear un request
     {
-        //
+        try{
+            DB::beginTransaction();
+            
+            $data=$request->all()['periodos'];
+            $periodo=(new PeriodoService())->storePeriodo($data);
+            $carga_trabajo=(new PeriodoService())->storeCargaTrabajo($periodo);
+            DB::rollBack();
+            return response()->json(["periodos"=>$periodo,"cargas_trabajo"=>$carga_trabajo],200);
+        }
+        catch(Exception | ErrorException $ex){
+            DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error al crear periodos. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+
 
     /**
      * Display the specified resource.

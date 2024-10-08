@@ -8,5 +8,7 @@ Route::middleware(['api', 'audit'])->group(function () {
     // tarifa
     Route::controller(PeriodoController::class)->group(function () {
         Route::get("/periodos", "index");
+        Route::post("/periodos/create", "store");
+        Route::put("/periodos/update", "update");
     });
 });
