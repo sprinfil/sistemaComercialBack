@@ -35,14 +35,14 @@ class PeriodoController extends Controller
             $data=$request->all()['periodos'];
             $periodo=(new PeriodoService())->storePeriodo($data);
             $carga_trabajo=(new PeriodoService())->storeCargaTrabajo($periodo,$data);
-            DB::rollBack();
+            DB::commit();
             return response()->json(["periodos"=>$periodo,"cargas_trabajo"=>$carga_trabajo],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();
             $clase= get_class($ex);
             if ($clase=="ErrorException"){
-                return response()->json(["error"=>"Error al crear periodos. ".$ex],400);
+                return response()->json(["error"=>"Error al crear periodos. ".$ex->getMessage()],400);
             }
             else{
                 return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);

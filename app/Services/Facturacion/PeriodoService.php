@@ -59,6 +59,8 @@ class PeriodoService{
         //return $id;
         $fecha=Carbon::now();
         $carga_Existente=CargaTrabajo::whereIn('id_libro',$id)->whereNot('estado','concluida')->whereNot('estado','cancelada')->get();
+        //return $carga_Existente;
+
         if (count($carga_Existente)!=0){
             $librosExistentes=Libro::with('tieneRuta:id,nombre')->whereIn('id',$carga_Existente->pluck('id_libro'))->get();
             $mensaje=null;
