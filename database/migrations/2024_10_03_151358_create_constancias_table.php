@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_operador');
             $table->unsignedBigInteger('id_dueno');
             $table->enum('modelo_dueno', ['toma', 'usuario']);
+            $table->string('folio_solicitud')->unique();//aqui
             $table->softDeletes();
             $table->timestamps();
         });

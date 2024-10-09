@@ -104,24 +104,19 @@
 
         <p class="s2" style="text-align: right;">FOLIO N°<b>{{ $folio }}</b> / {{ $año }}.</p>
 
-        <p class="s3">ASUNTO: CONSTANCIA DE NO ADEUDO</p>
+        <p class="s3">ASUNTO: CONSTANCIA DE ANTIGÜEDAD</p>
 
         <br />
 
         <h2 style="text-align: left">A QUIEN CORRESPONDA:</h2>
 
         <p style="text-align: justify;">
-            Por medio del presente se hace constar, que no existe adeudo por consumo de agua Potable y Alcantarillado,
-            sobre el uso que se le da a esta toma según nuestro registro que tiene clave de usuario N°
-            <b>{{ $codigo_usuario }}</b> a nombre
-            de <b>{{ $nombre }}</b> , con domicilio <b>{{ $domicilio }}</b>, hasta la
-            facturación de <b>{{ $facturacion_previa }}</b>, pagado con fecha <b>{{ $fecha }}</b></p>
-
-        <p style="text-align: justify;">
-            La expedición de esta constancia no exenta al usuario de cobro de multa u otros cargos que se hayan
-            suscitado
-            posteriores y que estén en proceso de facturación.
+            Por medio del presente se hace constar, que el C. <b>{{ $nombre }}</b>, con domicilio en <b>{{ $domicilio }}</b>,
+            con clave de usuario <b>{{ $codigo_usuario }}</b> realizo su contrato de agua potable de uso <b>{{ $tipo_toma }}</b>
+            con fecha de instalación <b>{{ $fecha_instalacion }}</b>, con clave catastral <b>{{ $clave_catastral }}</b> el cual
+            se encuentra al corriente con sus pagos.
         </p>
+
 
         <p style="text-align: justify;">
             A petición del interesado y para que los usos legales convenientes, se extiende la presente en la Ciudad de

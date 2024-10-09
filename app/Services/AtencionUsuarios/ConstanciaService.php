@@ -2,6 +2,7 @@
 
 namespace App\Services\AtencionUsuarios;
 
+use App\Models\Archivo;
 use App\Models\Cargo;
 use App\Models\ConceptoCatalogo;
 use App\Models\Constancia;
@@ -12,6 +13,7 @@ use App\Models\Usuario;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class ConstanciaService
 {
@@ -35,6 +37,8 @@ class ConstanciaService
 
                 $modelo = Toma::where('id',$data['id_dueno'])
                             ->first();
+
+                 $folio  = Constancia::darFolio();
                 if ($tipoConstancia) {
                     switch ($tipoConstancia->nombre) {
 
@@ -73,6 +77,7 @@ class ConstanciaService
                     "id_operador" => $idOperador,
                     "id_dueno" => $data['id_dueno'],
                     "modelo_dueno" => $data['modelo_dueno'],
+                    "folio_solicitud" => $folio,
                 ];
 
                 
@@ -126,13 +131,14 @@ class ConstanciaService
         }
     }
 
-    public function pagoConstanciaService(array $data)
+    public function pagoConstanciaService(int $id_constancia)
     {
         try {
             $fecha = helperFechaAhora();
             $fechaFormato = Carbon::parse($fecha)->format('d/m/Y');
+            $año = Carbon::parse($fecha)->format('Y');
 
-            $constancia = Constancia::where('id',$data['id_constancia'])
+            $constancia = Constancia::where('id',$id_constancia)
             ->first();
             $constancia->update(['estado' => 'pagado']);
 
@@ -146,49 +152,136 @@ class ConstanciaService
             $usuario = Usuario::where('id',$toma->id_usuario)
             ->first();
             //Aqui va la parte de generar las constancias
-
+            
            $texto = Carbon::parse($fecha)->translatedFormat('l, j \d\e F \d\e Y');
+           $fechaInstalacion =  Carbon::parse($toma->fecha_instalacion)->format('d/m/Y');
 
-            $data = [
-                'codigo_usuario' => $usuario->codigo_usuario,
-                'nombre' => $usuario->getNombreCompletoAttribute(),
-                'domicilio' => $toma->getDireccionCompleta(),
-                'facturacion_previa' => "pendiente",//una cosa a la vez ´pa
-                'fecha_texto' => $texto,
-                'fecha'=>$fechaFormato,
-                'nombre_sistema'=> "Sistema municipal de agua potable",
-            ];
+           switch ($conCatalogo->nombre) {
 
-            $pdf = FacadePDF::loadView('constanciaNoAdeudo', $data)
-            ->setPaper('A4', 'portrait') // Tamaño de papel y orientación
-            ->setOption('margin-top', 0)
-            ->setOption('margin-right', 0)
-            ->setOption('margin-bottom', 0)
-            ->setOption('margin-left', 0);
+            case "Constancia no adeudo":
+                
+                $data = [
+                    'folio' => $constancia->folio_solicitud,
+                    'codigo_usuario' => $usuario->codigo_usuario,
+                    'nombre' => $usuario->getNombreCompletoAttribute(),
+                    'domicilio' => $toma->getDireccionCompleta(),
+                    'facturacion_previa' => "pendiente",//una cosa a la vez ´pa
+                    'fecha_texto' => $texto,
+                    'fecha'=>$fechaFormato,
+                    'nombre_sistema'=> "Sistema municipal de agua potable",
+                    'año' => $año,
+                ];
 
-            // Define la ruta donde se guardará el PDF en el almacenamiento público
-            $path = storage_path('app/public/documentos/constancias');
+                $pdf = FacadePDF::loadView('constanciaNoAdeudo', $data)
+                ->setPaper('A4', 'portrait') // Tamaño de papel y orientación
+                ->setOption('margin-top', 0)
+                ->setOption('margin-right', 0)
+                ->setOption('margin-bottom', 0)
+                ->setOption('margin-left', 0);
 
-            // Asegúrate de que el directorio existe
-            if (!file_exists($path)) {
-                mkdir($path, 0755, true);
-            }
+                // Define la ruta donde se guardará el PDF en el almacenamiento público
+                $path = storage_path('app/public/documentos/constancias');
+
+                // Asegúrate de que el directorio existe
+                if (!file_exists($path)) {
+                    mkdir($path, 0755, true);
+                }
              
-             $filename = 'constancia_no_adeudo_' . strtolower(str_replace(' ', '_', $usuario->getNombreCompletoAttribute())) . '_' . now()->format('Ymd') . '.pdf';
-             $pdf->save($path . '/' . $filename);
+                $filename = 'constancia_no_adeudo_' . strtolower(str_replace(' ', '_', $usuario->getNombreCompletoAttribute())) . '_' . now()->format('Ymd') . '.pdf';
+                $pdf->save($path . '/' . $filename);
 
-             $archivo = [
-                'modelo' => $constancia->id_dueno,
-                'id_modelo' => $constancia->modelo_dueno,
-                'url' => $filename,  // Guardar solo el nombre del archivo
-                'tipo' => 'PDF',
-            ];
-            return $pdf->download('constanciaNoAdeudo.pdf');
+                break;
+           
+            case "Constancia de antigüedad": //tipo toma domestico?, clave catastral
 
+                $data = [
+                    'folio' => $constancia->folio_solicitud, //
+                    'codigo_usuario' => $usuario->codigo_usuario, //
+                    'nombre' => $usuario->getNombreCompletoAttribute(), //
+                    'domicilio' => $toma->getDireccionCompleta(), //
+                    'fecha_texto' => $texto, //
+                    'fecha_instalacion'=>$fechaInstalacion, //
+                    'tipo_toma' => $toma->tipoToma->nombre,
+                    'clave_catastral' => $toma->clave_catastral,
+                    'nombre_sistema'=> "Sistema municipal de agua potable",
+                    'año' => $año,
+                ];
+
+                $pdf = FacadePDF::loadView('constanciaAntiguedad', $data)
+                ->setPaper('A4', 'portrait') // Tamaño de papel y orientación
+                ->setOption('margin-top', 0)
+                ->setOption('margin-right', 0)
+                ->setOption('margin-bottom', 0)
+                ->setOption('margin-left', 0);
+
+                // Define la ruta donde se guardará el PDF en el almacenamiento público
+                $path = storage_path('app/public/documentos/constancias');
+
+                // Asegúrate de que el directorio existe
+                if (!file_exists($path)) {
+                    mkdir($path, 0755, true);
+                }
+             
+                $filename = 'constancia_antiguedad_' . strtolower(str_replace(' ', '_', $usuario->getNombreCompletoAttribute())) . '_' . now()->format('Ymd') . '.pdf';
+                $pdf->save($path . '/' . $filename);
+               
+                break;
+        
+            default:
+            return response()->json([
+                'error' => 'El tipo de constancia seleccionado esta desactivado o no existe.'
+            ], 500);
+                break;
+        }
+           
+           $repeArchivo = Archivo::select('url')->where('url',$filename)->first();
+            if ($repeArchivo == null) {
+                $archivo = [
+                    'id_modelo' => $id_constancia,
+                    'modelo' => "constancia",
+                    'url' => $filename,  // Guardar solo el nombre del archivo
+                    'tipo' => 'PDF',
+                ];
+                $archivo = Archivo::create($archivo);
+                return $pdf->download('constanciaNoAdeudo.pdf');
+            }
+            else {
+                return $this->buscarConstanciaService($repeArchivo->url);
+            }
+
+             
         } catch (Exception $ex) {
              return response()->json([
                 'error' => 'Ocurrio un error al procesar el pago de la constancia.'. $ex
             ], 500);
+        }
+    }
+
+    public function buscarConstanciaService( $filename)
+    {
+        try {
+             // Ruta relativa dentro del disco 'public'
+        $filePath = 'documentos/constancias/' . $filename;
+
+        // Verificar si el archivo existe en el disco 'public'
+        if (Storage::disk('public')->exists($filePath)) {
+            // Obtener el contenido del archivo
+            $fileContent = Storage::disk('public')->get($filePath);
+            $fileName = basename($filePath);
+
+            // Obtener el tipo MIME del archivo
+            $mimeType = Storage::disk('public')->mimeType($filePath);
+
+            // Devolver el archivo como respuesta para descarga
+            return response($fileContent)
+                ->header('Content-Type', $mimeType)
+                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+        } else {
+            // Archivo no encontrado
+            return response()->json(['error' => 'Archivo no encontrado'], 404);
+        }
+        } catch (Exception $ex) {
+            
         }
     }
 }

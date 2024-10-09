@@ -27,12 +27,13 @@ class ConstanciaController extends Controller
         }
     }
 
+    //Este metodo solo se utiliza para probar el metodo de pago de constancia
     public function pagoConstancia(Request $request)
     {
         try {
             $data = $request->toArray();
             DB::beginTransaction();
-            $constancia = (new ConstanciaService())->pagoConstanciaService($data);
+            $constancia = (new ConstanciaService())->pagoConstanciaService(14);
             DB::commit();
             return $constancia;
         } catch (Exception $ex) {
