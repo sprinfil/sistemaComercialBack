@@ -107,4 +107,12 @@ class PeriodoService
         $periodo->save();
         return $periodo;
     }
+    
+    public function updateCarga($car, $id)
+    {
+        $carga = CargaTrabajo::find($id);
+        $carga->update($car);
+        $carga->save();
+        return $carga;
+    }
 }
