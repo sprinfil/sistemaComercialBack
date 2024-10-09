@@ -89,12 +89,14 @@ class PeriodoController extends Controller
     public function update(Request $request, string $id)
     {
         try{
-            $data=$request->all();
+            DB::beginTransaction();
+            $data=$request->all()['periodos'];
             $periodo=(new PeriodoService())->updatePeriodo($data,$id);
+            DB::commit();
             return response()->json(["periodos"=>$periodo],200);
         }
         catch(Exception | ErrorException $ex){
-   
+            DB::rollBack();
             $clase= get_class($ex);
             if ($clase=="ErrorException"){
                 return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
@@ -104,20 +106,22 @@ class PeriodoController extends Controller
             }
         }
     }
-    public function updateCarga(Request $request, $id){
+    public function updateCarga(Request $request){
         try{
-            $data=$request->all();
-            $periodo=(new PeriodoService())->updateCarga($data,$id);
-            return response()->json(["periodos"=>$periodo],200);
+            DB::beginTransaction();
+            $data=$request->all()['cargas_trabajo'];
+            $periodo=(new PeriodoService())->updateCarga($data);
+            DB::rollBack();
+            return response()->json(["cargas_trabajo"=>$periodo],200);
         }
         catch(Exception | ErrorException $ex){
-   
+            DB::rollBack();
             $clase= get_class($ex);
             if ($clase=="ErrorException"){
-                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+                return response()->json(["error"=>"Error de peticion. ".$ex /*->getMessage()*/],400);
             }
             else{
-                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+                return response()->json(["error"=>"Error de servidor: ".$ex/*->getMessage()*/],500);
             }
         }
     }

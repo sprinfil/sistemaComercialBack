@@ -12,6 +12,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/periodos/update/{id}", "update");
         Route::get("/periodos/show/{id}", "show");
         ///Carga de trabajo
-        Route::put("/cargaTrabajo/update/{id}", "updateCarga");
+        Route::put("/cargaTrabajo/update", "updateCarga");
     });
 });

@@ -11,7 +11,7 @@ use COM;
 use Database\Seeders\LibroSeeder;
 use ErrorException;
 use Exception;
-
+use Illuminate\Support\Facades\DB;
 
 class PeriodoService{
 
@@ -105,14 +105,57 @@ class PeriodoService{
     }
     public function updatePeriodo($per,$id){
         $periodo=Periodo::find($id);
-        $periodo->update($per);
-        $periodo->save();
+        $estado=$per['estatus'] ?? null;
+        if ($estado=="cerrado"){
+            $cargas=$periodo->cargaTrabajoVigente;
+            $libros=Libro::whereIn('id',$cargas->pluck('id_libro'))->get();
+            $mensaje=null;
+            foreach($libros as $libro){
+                if (!$mensaje){
+                    
+                    $mensaje=$libro->nombre;
+                }
+                else{
+                    $mensaje=$mensaje.", ".$libro->nombre;
+                }
+            }
+            if (count($cargas)!=0){
+                throw new ErrorException("No se puede cerrar un periodo con cargas de trabajo vigentes: ".$mensaje,400);
+            }
+            else{
+                $periodo->update($per);
+                $periodo->save();
+            }
+        }
+        else{
+            $periodo->update($per);
+            $periodo->save();
+        }
+        
         return $periodo;
     }
-    public function updateCarga($car,$id){
-        $carga=CargaTrabajo::find($id);
-        $carga->update($car);
-        $carga->save();
+    public function updateCarga($car){
+        
+       // $carga=CargaTrabajo::find($id);
+
+        $fecha=helperFechaAhora();
+        $insercion=[];
+        foreach ($car as $dato){
+            $dato['fecha_asignacion']=null;
+            $dato['fecha_concluida']=null;
+            if ($dato['estado']=="en proceso"){
+                $dato['fecha_asignacion']=$fecha;
+            }
+            elseif($dato['estado']=="concluida"){
+                $dato['fecha_concluida']=$fecha;
+            }
+            $insercion[]=$dato;
+        
+        }
+       CargaTrabajo::upsert($insercion,uniqueBy: ['id']);
+       $carga=CargaTrabajo::whereIn('id',array_column($insercion,"id"))->get();
+    // $carga_trabajo=CargaTrabajo::whereIn('id_periodo',array_column($per,"id"));
+    // $periodos_cargados=Periodo::upsert([$per],uniqueBy: ['id', 'id_ruta']);
         return $carga;
     }
 
