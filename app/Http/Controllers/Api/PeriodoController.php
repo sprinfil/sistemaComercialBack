@@ -90,7 +90,9 @@ class PeriodoController extends Controller
     {
         //
     }
-
+    public function updateCarga(Request $request, $id){
+        
+    }
     /**
      * Remove the specified resource from storage.
      */
