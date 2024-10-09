@@ -10,6 +10,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/periodos", "index");
         Route::post("/periodos/create", "store");
         Route::put("/periodos/update", "update");
-        Route::get("/periodos/show", "show");
+        Route::get("/periodos/show/{id}", "show");
     });
 });
