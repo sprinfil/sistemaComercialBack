@@ -22,7 +22,15 @@ class StoreMultaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            //'id_multado' => 'required|integer',
+            'id_catalogo_multa' => 'required|integer',
+            'id_operador' => 'required|integer',
+            'id_revisor' => 'required|integer',
+            'modelo_multado' => 'required|string',
+            'motivo' => 'nullable|string',
+            'fecha_solicitud' => 'required|date',
+            'fecha_revision' => 'required|date',
+            'estado' => 'required|in:activo,rechazado,pendiente,cancelado'
         ];
     }
 }
