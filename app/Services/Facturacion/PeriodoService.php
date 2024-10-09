@@ -100,7 +100,7 @@ class PeriodoService{
         return $cargados;
     }
     public function show($id){
-        $periodo=Periodo::find($id);
+        $periodo=Periodo::where('id_ruta',$id)->get();
         return $periodo;
     }
     public function updatePeriodo($per,$id){
@@ -108,6 +108,12 @@ class PeriodoService{
         $periodo->update($per);
         $periodo->save();
         return $periodo;
+    }
+    public function updateCarga($car,$id){
+        $carga=CargaTrabajo::find($id);
+        $carga->update($car);
+        $carga->save();
+        return $carga;
     }
 
 }

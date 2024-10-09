@@ -88,9 +88,39 @@ class PeriodoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try{
+            $data=$request->all();
+            $periodo=(new PeriodoService())->updatePeriodo($data,$id);
+            return response()->json(["periodos"=>$periodo],200);
+        }
+        catch(Exception | ErrorException $ex){
+   
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
     }
-
+    public function updateCarga(Request $request, $id){
+        try{
+            $data=$request->all();
+            $periodo=(new PeriodoService())->updateCarga($data,$id);
+            return response()->json(["periodos"=>$periodo],200);
+        }
+        catch(Exception | ErrorException $ex){
+   
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+    }
     /**
      * Remove the specified resource from storage.
      */
