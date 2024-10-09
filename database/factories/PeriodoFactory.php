@@ -42,6 +42,10 @@ class PeriodoFactory extends Factory
             'facturacion_fecha_final' => $periodo->endOfMonth(),  // Fin de mes del periodo
             'lectura_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
             'lectura_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
+            'validacion_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
+            'validacion_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
+            'recibo_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
+            'recibo_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
         ];
     }
 
@@ -58,6 +62,10 @@ class PeriodoFactory extends Factory
                 'facturacion_fecha_final' => $periodo->endOfMonth(),
                 'lectura_inicio' => $periodo->startOfMonth(),
                 'lectura_final' => $periodo->endOfMonth(),
+                'validacion_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
+                'validacion_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
+                'recibo_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
+                'recibo_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
             ];
         });
     }
