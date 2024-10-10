@@ -335,4 +335,49 @@ class ConstanciaService
             ], 500);
         }
     }
+
+    public function buscarTodasConstanciasService(array $data)
+    {
+        try {
+            $constanciasPenEntregar = Constancia::where('modelo_dueno',$data['modelo_dueno'])
+            ->where('id_dueno',$data['id_dueno'])
+            ->orderby("id", "desc")
+            ->get();
+            if ($constanciasPenEntregar) {
+               return json_encode($constanciasPenEntregar);
+            }
+            else {
+                return response()->json([
+                    'error' => 'No se encontraron constancias asociadas a esta toma.'
+                ], 500);
+            }
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar las constancias'. $ex
+            ], 500);
+        }
+    }
+
+    public function cancelarConstanciaService(array $data)
+    {
+        //->update(['estado' => 'cancelado'])
+        try {
+            $constancia = Constancia::where('id',$data['id_constancia'])
+            ->first();
+            if ($constancia->estado == "pendiente") {
+                $constancia->update(['estado' => 'cancelado']);
+               return json_encode($constancia);
+            }
+            else {
+                return response()->json([
+                    'error' => 'No se pueden cancelar constancias pagadas o entregadas'
+                ], 500);
+            }
+           
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al cancelar la constancia'. $ex
+            ], 500);
+        }
+    }
 }

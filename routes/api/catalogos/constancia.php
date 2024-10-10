@@ -21,5 +21,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/Constancia/pagoConstancia","pagoConstancia");// solo para pruebas
         Route::get("/Constancia/buscarRegistroConstancia","buscarRegistroConstancia");
         Route::get("/Constancia/EntregarConstancia","EntregarConstancia");
+        Route::put("/Constancia/cancelarConstancia","cancelarConstancia");
+        Route::get("/Constancia/buscarTodasConstancias","buscarTodasConstancias");
     });
 });
