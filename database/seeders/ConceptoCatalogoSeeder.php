@@ -1687,6 +1687,18 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 0,
                 "tarifa_fija" => 0,
             ],
+            [
+                "nombre" => "Constancia",
+                "descripcion" => "Pago de constancia",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 1,
+                "prioridad_por_antiguedad" => 1,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
+            ],
             // Agrega más elementos aquí según sea necesario
         ];
 

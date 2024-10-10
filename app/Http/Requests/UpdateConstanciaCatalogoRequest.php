@@ -22,6 +22,7 @@ class UpdateConstanciaCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "id_concepto_catalogo" => "required|integer|gt:0",
             "nombre"=>"required|string|max:55|unique:constancia_catalogos,nombre,".$this->id,
             "descripcion"=>"nullable|string",
             "estado"=>"nullable|string|max:10|
