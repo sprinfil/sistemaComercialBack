@@ -23,6 +23,7 @@ class MultaResource extends JsonResource
             'modelo_multado'=>$this->modelo_multado,
             'motivo'=>$this->motivo,
             'fecha_solicitud'=>$this->fecha_solicitud,
+            'fecha_revision'=>$this->fecha_revision,
             'estado'=>$this->estado
         ];
     }

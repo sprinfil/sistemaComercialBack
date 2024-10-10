@@ -23,6 +23,7 @@ class Multa extends Model
         'modelo_multado',
         'motivo',
         'fecha_solicitud',
+        'fecha_revision',
         'estado'
     ];
 
