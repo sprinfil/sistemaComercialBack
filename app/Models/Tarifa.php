@@ -26,4 +26,7 @@ class Tarifa extends Model
     {
         return TarifaConceptoDetalle::all();
     }
+    public function servicioToma($id_tarifa, $tipo_toma,$rango){
+        return TarifaServiciosDetalle::where('id_tarifa',$id_tarifa)->where('id_tipo_toma',$tipo_toma)->where('id_tipo_toma',$tipo_toma)->first();
+    }
 }

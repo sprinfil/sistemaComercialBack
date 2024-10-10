@@ -12,7 +12,7 @@ use App\Services\Facturacion\indexFacturaServiceService;
 use ErrorException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Client\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class FacturaController extends Controller
@@ -41,13 +41,15 @@ class FacturaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreFacturaRequest $request)
+    public function store(Request $request) //StoreFacturaRequest
     {
         //$this->authorize('create', GiroComercialCatalogo::class); pendiente de permisos        
         try{
             DB::beginTransaction();
             $data=$request->all()['periodos'];
             $facturas = (new FacturaService())->storeFacturaService($data);
+            ///TO DO Recargos
+            ///TO DO Cargar Letras
             DB::rollBack();
             return response()->json(["facturas"=>$facturas],200);
         }
@@ -75,6 +77,26 @@ class FacturaController extends Controller
         ], 500);
        }  
         */            
+    }
+    public function storeToma($id_toma){
+        try{
+            DB::beginTransaction();
+            $facturas = (new FacturaService())->facturaracionPorToma($id_toma);
+            ///TO DO Recargos
+            ///TO DO Cargar Letras
+            DB::rollBack();
+            return response()->json(["facturas"=>$facturas],200);
+        }
+        catch(Exception | ErrorException $ex){
+            DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
     }
 
     /**

@@ -50,6 +50,7 @@ class Libro extends Model
     public function tomas() : HasMany {
         return $this->hasMany(Toma::class , "id_libro");
     }
+  
     public function secuencias() : HasMany {
         return $this->hasMany(Secuencia::class , "id_libro");
     }

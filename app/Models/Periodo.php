@@ -27,7 +27,7 @@ class Periodo extends Model
         "recibo_final",
         "estatus"
     ];
-  
+
     public function factura():HasMany{
         return $this->HasMany(Factura::class, 'id');
     }
@@ -36,8 +36,8 @@ class Periodo extends Model
         return $this->belongsTo(Ruta::class , 'id_ruta');
     }
 
-    public function tarifa() : HasOne {
-        return $this->hasOne(Tarifa::class , 'id_tarifa');
+    public function tarifa() : BelongsTo {
+        return $this->belongsTo(Tarifa::class , 'id_tarifa');
     }
 
     public function cargaTrabajo() : HasMany {
