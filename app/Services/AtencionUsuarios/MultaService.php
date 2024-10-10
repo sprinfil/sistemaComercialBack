@@ -14,7 +14,7 @@ class MultaService{
 public function index ()
 {
     return response(MultaResource::collection(
-        Multa::orderby('id', 'asc')->get()
+        Multa::orderby('id', 'desc')->get()
     ), 200);
 }
 
@@ -70,7 +70,7 @@ public function show ($id)
     }
 }
 
-public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario)
+public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario, $codigo_toma)
 {
     try {
         $filtro = Multa::with('origen')
@@ -85,11 +85,29 @@ public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_mult
         })
         ->orderBy('id', 'desc')
         ->get();
+        $data = [];
+        foreach ($filtro as $filt) {
+            $id_toma = $filt->origen->id;
+            if (!isset($data[$id_toma])) {
+                $data[$id_toma] = [
+                    'toma' => $filt->origen,
+                    'multas' => []
+                ];
+            }
+            $data [$id_toma]['multas'][] = [
+                'id' => $filt->id,
+                'id_multado' => $filt->id_multado,
+                'id_catalogo_multa' => $filt->id_catalogo_multa,
+                'modelo_multado' => $filt->modelo_multado,
 
-    if ($filtro->isEmpty()) {
+            ];
+            
+        }
+    $resultado = array_values($data);
+    if (!$resultado) {
         return response()->json(['message' => 'No se encontraron resultados'], 404);
     } else {
-        return $filtro;
+        return $resultado;
     }
     } catch (ModelNotFoundException $ex) {
         return response()->json(['error' => 'Ocurrio un error al consultar la multa del usuario / toma' . $ex] , 500);
