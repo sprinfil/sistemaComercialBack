@@ -100,7 +100,6 @@ class PeriodoController extends Controller
             $periodo=(new PeriodoService())->ShowCargaEncargado($id_encargado);
             $libros= $periodo->pluck('libro');    
             $secuencias=(new SecuenciaService())->secuenciaOperador( $libros,$id_encargado);
-            return $secuencias;
             return response()->json(["cargas_trabajo"=>$periodo,"secuencias"=>$secuencias],200);
         }
         catch(Exception | ErrorException $ex){
