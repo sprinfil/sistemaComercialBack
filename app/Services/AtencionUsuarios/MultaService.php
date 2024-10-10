@@ -73,7 +73,7 @@ public function show ($id)
 public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario, $codigo_toma)
 {
     try {
-        $filtro = Multa::with('origen')
+        $filtro = Multa::with('origen' , 'catalogo_multa')
         ->when($id_multado, function ($query, $id_multado) {
             return $query->where('id_multado', $id_multado);
         })
@@ -95,7 +95,8 @@ public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_mult
                 ];
             }
             $data [$id_toma]['multas'][] = [
-                'id' => $filt->id,
+                'nombre_multa_catalogo' => $filt->catalogo_multa->nombre,
+                'descripcion_multa_catalogo' => $filt->catalogo_multa->descripcion,
                 'id_multado' => $filt->id_multado,
                 'id_catalogo_multa' => $filt->id_catalogo_multa,
                 'modelo_multado' => $filt->modelo_multado,
