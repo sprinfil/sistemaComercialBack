@@ -14,10 +14,11 @@ class MultaCatalogo extends Model
         'nombre',
         'descripcion',
         'UMAS_min',
-        'UMAS_max'
+        'UMAS_max',
+        'estatus'
     ];
 
-    public function catalogo_multa() : HasMany {
+    public function multas() : HasMany {
         return $this->hasMany(Multa::class, 'id_catalogo_multa' , 'id');
     }
 }

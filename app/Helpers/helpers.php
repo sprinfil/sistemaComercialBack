@@ -36,7 +36,15 @@ if (!function_exists('helperCalcularIVA')) {
 if (!function_exists('helperFechaAhora')) {
     function helperFechaAhora()
     {
+        Carbon::setLocale('es');
         $Zona_horaria = config('global.zona_horaria');
         return Carbon::now()->setTimezone($Zona_horaria)->format('Y-m-d H:m:s');
+    }
+}
+if (!function_exists('helperOperadorActual')) {
+    function helperOperadorActual()
+    {
+        $id_empleado_asigno=auth()->user()->operador->id;
+        return $id_empleado_asigno;
     }
 }

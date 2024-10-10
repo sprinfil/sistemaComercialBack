@@ -19,8 +19,13 @@ class Periodo extends Model
         "periodo",
         "facturacion_fecha_inicio",
         "facturacion_fecha_final",
+        "validacion_inicio",
+        "validacion_final",
         "lectura_inicio",
-        "lectura_final"
+        "lectura_final",
+        "recibo_inicio",
+        "recibo_final",
+        "estatus"
     ];
   
     public function factura():HasMany{
