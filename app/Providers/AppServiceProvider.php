@@ -46,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
             'letra' => 'App\Models\Letra',
             'carga_trabajos' => 'App\Models\CargaTrabajo',
             'descuento_asociado' => 'App\Models\DescuentoAsociado',
+            'constancia' => 'App\Models\Constancia',
             'multa' => 'App\Models\Multa'
         ]);
     }

@@ -8,11 +8,12 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(MultaController::class)->group(function () {
         Route::get("/multa", "index");
         Route::post("/multa/store", "store");
+        Route::get("/multa/consultarmultas" , "consultar");
         Route::get("/multa/{id}", "show");
-        Route::get("/multa/usuariotoma" , "multaporusuariotoma");
         Route::put("/multa/update/{id}", "update");
         Route::delete("/multa/delete/{id}", "destroy");
         Route::put("/multa/restaurar/{id}", "restaurar");
+        Route::get("/multa/imprimeMulta/{id}", "generarFormatoMulta");
     });
-
+    
 });

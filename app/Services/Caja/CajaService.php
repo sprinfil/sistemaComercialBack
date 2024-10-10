@@ -44,7 +44,7 @@ class CajaService
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
       $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
-      $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
+      $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s'); //to do cambiar al helper 
 
       //formateo de la hora de apertura a horas-minutos-segundos
       $horaApertura = Carbon::parse($fechaHoraLocalFormateada);
@@ -129,7 +129,7 @@ class CajaService
 
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
-      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana'); //to do cambiar al helper
       $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
 
       //formateo de la fecha años-meses-dias
@@ -580,7 +580,7 @@ class CajaService
       // return $data->fecha_apertura; new CajaResource($cajaSesion);
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
-      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana'); //to do cambiar al helper
       $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
 
       //formateo de la fecha años-meses-dias
@@ -617,7 +617,7 @@ class CajaService
 
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
-      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana'); //to do cambiar al helper de fecha
       $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
 
       //formateo de la fecha años-meses-dias

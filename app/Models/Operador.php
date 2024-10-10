@@ -57,6 +57,12 @@ class Operador extends Model
     public function secuencias():HasMany{
         return $this->hasMany(Secuencia::class, "id_empleado");
     }
+
+    public function constancia() : HasMany 
+    {
+        return $this->hasMany(Constancia::class , 'id'); 
+    }
+    
     public function operador_multa() : HasMany {
         return $this->hasMany(Multa::class , 'id_operador' , 'id');
     }

@@ -9,7 +9,9 @@ class MultaCatalogoService{
     public function index ()
     {
         return response(MultaCatalogoResource::collection(
-            MultaCatalogo::orderby('id', 'asc')->get()
+            MultaCatalogo::orderby('id', 'asc')
+            //->where('estatus' , 'activo')
+            ->get()
         ), 200);
     }
 

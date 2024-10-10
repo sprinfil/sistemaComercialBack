@@ -66,5 +66,9 @@ class ConceptoCatalogo extends Model
         return $data;
     }
 
+    public function constancia():HasOne
+    {
+        return $this->hasOne(ConstanciaCatalogo::class,'id_concepto_catalogo','id');
+    }
    
 }
