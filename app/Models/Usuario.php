@@ -225,4 +225,9 @@ class Usuario extends Model
     {
         return $this->nombre . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
     }
+
+    public function constancias(): MorphMany
+    {
+        return $this->morphMany(Constancia::class, 'origen', 'modelo_dueno', 'id_dueno');
+    }
 }

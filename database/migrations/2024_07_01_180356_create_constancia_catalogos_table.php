@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('constancia_catalogos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger("id_concepto_catalogo");
             $table->string("nombre");
             $table->string("descripcion");
             $table->enum('estado', ['activo', 'inactivo'])->nullable();

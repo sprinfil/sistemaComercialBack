@@ -17,6 +17,7 @@ class ConstanciaCatalogoResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "id_concepto_catalogo" => $this->id_concepto_catalogo,
             "nombre" => $this->nombre,
             "descripcion" => $this->descripcion,
             "estado" => $this->estado,
