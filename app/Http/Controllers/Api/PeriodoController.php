@@ -7,6 +7,7 @@ use App\Http\Resources\PeriodoResource;
 use App\Models\Periodo;
 use App\Services\Facturacion\FacturaService;
 use App\Services\Facturacion\PeriodoService;
+use App\Services\SecuenciaService;
 use ErrorException;
 use Exception;
 use Illuminate\Http\Request;
@@ -96,8 +97,11 @@ class PeriodoController extends Controller
     {
         try{
             $id_encargado=helperOperadorActual();
-            $periodo=(new PeriodoService())->ShowCarga($id_encargado);
-            return response()->json(["cargas_trabajo"=>$periodo],200);
+            $periodo=(new PeriodoService())->ShowCargaEncargado($id_encargado);
+            $libros= $periodo->pluck('libro');    
+            $secuencias=(new SecuenciaService())->secuenciaOperador( $libros,$id_encargado);
+            return $secuencias;
+            return response()->json(["cargas_trabajo"=>$periodo,"secuencias"=>$secuencias],200);
         }
         catch(Exception | ErrorException $ex){
    
@@ -148,7 +152,7 @@ class PeriodoController extends Controller
             DB::beginTransaction();
             $data=$request->all()['cargas_trabajo'];
             $periodo=(new PeriodoService())->updateCarga($data);
-            DB::rollBack();
+            DB::commit();
             return response()->json(["cargas_trabajo"=>$periodo],200);
         }
         catch(Exception | ErrorException $ex){
