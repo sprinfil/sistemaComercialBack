@@ -18,6 +18,8 @@ Route::middleware(['api', 'audit'])->group(function () {
 
     Route::controller(ConstanciaController::class)->group(function (){
         Route::post("/Constancia/store","store");
-        Route::put("/Constancia/pagoConstancia","pagoConstancia");
+        Route::put("/Constancia/pagoConstancia","pagoConstancia");// solo para pruebas
+        Route::get("/Constancia/buscarRegistroConstancia","buscarRegistroConstancia");
+        Route::get("/Constancia/EntregarConstancia","EntregarConstancia");
     });
 });

@@ -33,13 +33,45 @@ class ConstanciaController extends Controller
         try {
             $data = $request->toArray();
             DB::beginTransaction();
-            $constancia = (new ConstanciaService())->pagoConstanciaService(14);
+            $constancia = (new ConstanciaService())->pagoConstanciaService(17);
             DB::commit();
             return $constancia;
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
                 'error' => 'Ocurrio un error al generar la constancia'. $ex
+            ], 500);
+        }
+    }
+
+    public function buscarRegistroConstancia(Request $request)
+    {
+        try {
+            $data = $request->toArray();
+            DB::beginTransaction();
+            $constancia = (new ConstanciaService())->buscarRegistroConstanciaService($data);
+            DB::commit();
+            return $constancia;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar las constancias'. $ex
+            ], 500);
+        }
+    }
+
+    public function EntregarConstancia(Request $request)
+    {
+        try {
+            $data = $request->input('id');
+            DB::beginTransaction();
+            $constancia = (new ConstanciaService())->EntregarConstanciaService($data);
+            DB::commit();
+            return $constancia;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar las constancias'. $ex
             ], 500);
         }
     }

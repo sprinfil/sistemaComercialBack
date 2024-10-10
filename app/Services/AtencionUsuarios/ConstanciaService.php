@@ -39,20 +39,21 @@ class ConstanciaService
                             ->first();
 
                  $folio  = Constancia::darFolio();
+
+                 $saldo = $modelo->saldoPendiente();
+                 if($saldo != 0)
+                 {
+                     return response()->json([
+                         'error' => 'La toma tiene saldo pendiente.'.$saldo
+                     ], 500);
+                 }
+
                 if ($tipoConstancia) {
                     switch ($tipoConstancia->nombre) {
 
                         case "Constancia no adeudo":
                             
-                            $saldo = $modelo->saldoPendiente();
-                            if($saldo != 0)
-                            {
-                                return response()->json([
-                                    'error' => 'La toma tiene saldo pendiente.'.$saldo
-                                ], 500);
-                            }
                             break;
-                       
                         case "Constancia de antigüedad":
 
                             if ($modelo->fecha_instalacion == null) {
@@ -243,10 +244,10 @@ class ConstanciaService
                     'tipo' => 'PDF',
                 ];
                 $archivo = Archivo::create($archivo);
-                return $pdf->download('constanciaNoAdeudo.pdf');
+                //return $pdf->download('constanciaNoAdeudo.pdf'); esto es para pruebas
             }
             else {
-                return $this->buscarConstanciaService($repeArchivo->url);
+                //return $this->buscarConstanciaService($repeArchivo->url); esto es para pruebas
             }
 
              
@@ -281,7 +282,57 @@ class ConstanciaService
             return response()->json(['error' => 'Archivo no encontrado'], 404);
         }
         } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar la constancia.'. $ex
+            ], 500);
+        }
+    }
+
+    public function buscarRegistroConstanciaService(array $data)
+    {
+        try {
+            $constanciasPenEntregar = Constancia::where('modelo_dueno',$data['modelo_dueno'])
+            ->where('id_dueno',$data['id_dueno'])
+            ->where('estado', ['pagado'])
+            ->with('archivo')
+            ->get();
+            if ($constanciasPenEntregar) {
+                return $constanciasPenEntregar;
+            }
+            else {
+                return response()->json([
+                    'error' => 'Ocurrio un error al buscar la constancia.'
+                ], 500);
+            }
             
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar la constancia.'. $ex
+            ], 500);
+        }
+    }
+
+    public function EntregarConstanciaService(int $data)
+    {
+        try {
+            //$data = 15;
+            //return $data;
+            if ($data) {
+                Constancia::where('id', $data)->update(['estado' => 'entregado']);
+                $archivo = Archivo::select('url')->where('id_modelo',$data)->first();
+                return $this->buscarConstanciaService($archivo->url);
+                
+            }
+            else {
+                return response()->json([
+                    'error' => 'Debe enviar un id valido para realizar la enttrega de la constancia.'
+                ], 500);
+            }
+           
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al entregar la constancia.'. $ex
+            ], 500);
         }
     }
 }
