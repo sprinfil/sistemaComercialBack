@@ -25,7 +25,8 @@ class UpdateMultaCatalogoRequest extends FormRequest
             'nombre' => 'required|string',
             'descripcion' => 'required|string',
             'UMAS_min' => 'required|integer|min:0',
-            'UMAS_max' => 'required|integer'
+            'UMAS_max' => 'required|integer',
+            'estatus' => 'required|in:activo,inactivo'
         ];
     }
 }

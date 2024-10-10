@@ -14,7 +14,8 @@ class MultaCatalogo extends Model
         'nombre',
         'descripcion',
         'UMAS_min',
-        'UMAS_max'
+        'UMAS_max',
+        'estatus'
     ];
 
     public function multas() : HasMany {

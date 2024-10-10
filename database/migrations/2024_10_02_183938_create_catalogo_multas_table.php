@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('descripcion');
             $table->integer('UMAS_min');
             $table->integer('UMAS_max');
+            $table->enum('estatus' , ['activo' , 'inactivo']);
             $table->timestamps();
         });
     }

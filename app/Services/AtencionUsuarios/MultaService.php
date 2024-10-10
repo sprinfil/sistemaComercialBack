@@ -25,12 +25,13 @@ public function store ($data,$codigo_toma)
         //$codigo_toma = $data['codigo_toma'];
         $cod_toma = Toma::where('codigo_toma' , $codigo_toma)->first();
         $catalogo_multa = MultaCatalogo::where('id', $data['id_catalogo_multa'])
+        ->where('estatus' , 'activo')
         ->first();
         //Cuenta cuantas multas tiene registrada la toma. 
         //$total_multas = Multa::where('id_multado', $cod_toma->id)->count();
         if (!$catalogo_multa) {
             return response()->json([
-                'message' => 'No se encontro la multa en el catalogo.'
+                'message' => 'No se encontro la multa en el catalogo o la multa esta inactiva.'
             ], 404);
         }
         if ($cod_toma) {
