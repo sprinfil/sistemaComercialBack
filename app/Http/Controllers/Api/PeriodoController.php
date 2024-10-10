@@ -92,6 +92,25 @@ class PeriodoController extends Controller
         }
         
     }
+    public function showCargaTrabajoEncargado()
+    {
+        try{
+            $id_encargado=helperOperadorActual();
+            $periodo=(new PeriodoService())->ShowCarga($id_encargado);
+            return response()->json(["cargas_trabajo"=>$periodo],200);
+        }
+        catch(Exception | ErrorException $ex){
+   
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+        
+    }
 
     /**
      * Show the form for editing the specified resource.

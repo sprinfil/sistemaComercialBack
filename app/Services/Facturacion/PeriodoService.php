@@ -157,4 +157,8 @@ class PeriodoService{
         $cargas_trabajo=CargaTrabajo::with('tieneEncargado','fueAsignada','libro:id,nombre')->where('id_periodo',$id_periodo)->get();
         return $cargas_trabajo;
     }
+    public function ShowCargaEncargado($id_encargado){
+        $cargas_trabajo=CargaTrabajo::with('tieneEncargado','fueAsignada','libro:id,nombre')->where('id_operador_encargado',$id_encargado)->get();
+        return $cargas_trabajo;
+    }
 }
