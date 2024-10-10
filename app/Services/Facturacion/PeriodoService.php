@@ -149,8 +149,12 @@ class PeriodoService{
         }
        CargaTrabajo::upsert($insercion,uniqueBy: ['id']);
        $carga=CargaTrabajo::whereIn('id',array_column($insercion,"id"))->get();
-    // $carga_trabajo=CargaTrabajo::whereIn('id_periodo',array_column($per,"id"));
-    // $periodos_cargados=Periodo::upsert([$per],uniqueBy: ['id', 'id_ruta']);
+        // $carga_trabajo=CargaTrabajo::whereIn('id_periodo',array_column($per,"id"));
+        // $periodos_cargados=Periodo::upsert([$per],uniqueBy: ['id', 'id_ruta']);
         return $carga;
+    }
+    public function ShowCarga($id_periodo){
+        $cargas_trabajo=CargaTrabajo::with('tieneEncargado','fueAsignada','libro:id,nombre')->where('id_periodo',$id_periodo)->get();
+        return $cargas_trabajo;
     }
 }
