@@ -34,6 +34,12 @@ public function store ($data,$codigo_toma)
                 'message' => 'No se encontro la multa en el catalogo o la multa esta inactiva.'
             ], 404);
         }
+        $monto = $data['monto'];
+        if ($monto < $catalogo_multa->UMAS_min || $monto > $catalogo_multa->UMAS_max) {
+            return response()->json([
+                'message' => 'El monto ingresado está fuera del rango (' . $catalogo_multa->UMAS_min . ' - ' . $catalogo_multa->UMAS_max . ').'
+         ], 422);
+        }
         if ($cod_toma) {
             $data['id_multado'] = $cod_toma->id;
             $multa = Multa::create($data);
@@ -79,21 +85,10 @@ public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_mult
         })
         ->orderBy('id', 'desc')
         ->get();
-        $usuario = Usuario::with(['toma.dueno_multa' => function ($query) use ($id_catalogo_multa){
-            if ($id_catalogo_multa) {
-                $query->where('id_catalogo_multa' , $id_catalogo_multa);
-            }
-        }])
-        ->when($codigo_usuario , function ($query , $codigo_usuario){
-            return $query->where('codigo_usuario' , $codigo_usuario);
-        })
-        ->get();
+
     if ($filtro->isEmpty()) {
         return response()->json(['message' => 'No se encontraron resultados'], 404);
     } else {
-        if ($filtro['origen' == 'toma']) {
-            return $usuario;
-         }
         return $filtro;
     }
     } catch (ModelNotFoundException $ex) {
