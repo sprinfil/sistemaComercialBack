@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateFacturaRequest;
 use App\Http\Resources\FacturaResource;
 use App\Services\Facturacion\FacturaService;
 use App\Services\Facturacion\indexFacturaServiceService;
+use ErrorException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Client\Request;
@@ -43,6 +44,24 @@ class FacturaController extends Controller
     public function store(StoreFacturaRequest $request)
     {
         //$this->authorize('create', GiroComercialCatalogo::class); pendiente de permisos        
+        try{
+            DB::beginTransaction();
+            $data=$request->all()['periodos'];
+            $facturas = (new FacturaService())->storeFacturaService($data);
+            DB::rollBack();
+            return response()->json(["facturas"=>$facturas],200);
+        }
+        catch(Exception | ErrorException $ex){
+            DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+        /*
        try {
         $data = $request->validated();
         DB::beginTransaction();
@@ -54,7 +73,8 @@ class FacturaController extends Controller
         return response()->json([
             'error' => 'Ocurrio un error al registrar la factura.'
         ], 500);
-       }              
+       }  
+        */            
     }
 
     /**

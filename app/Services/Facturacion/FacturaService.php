@@ -47,18 +47,13 @@ class FacturaService{
 
     }
 
-    public function storeFacturaService(array $data)
+    public function storeFacturaService(array $periodos)
     {
-        try {       
-            if ($data) {
-                $factura = Factura::create($data);
-                return response(new FacturaResource($factura), 201);
-            }
-        } catch (Exception $ex) {
-             return response()->json([
-                 'message' => 'Ocurrio un error al registrar la factura.'
-             ], 200);
-        }              
+        $periodosTomas=[];
+        $periodosFactura=[];
+
+  
+        return $periodosFactura;             
     }
 
     
