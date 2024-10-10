@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('motivo');
             $table->dateTime('fecha_solicitud');
             $table->dateTime('fecha_revision');
+            $table->integer('monto');
             $table->enum('estado', ['activo' , 'rechazado' , 'pendiente' , 'cancelado'])->nullable();
             $table->softDeletes();
             $table->timestamps();

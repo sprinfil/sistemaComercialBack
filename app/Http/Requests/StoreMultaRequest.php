@@ -30,6 +30,7 @@ class StoreMultaRequest extends FormRequest
             'motivo' => 'nullable|string',
             'fecha_solicitud' => 'required|date',
             'fecha_revision' => 'required|date',
+            'monto' => 'required|integer',
             'estado' => 'required|in:activo,rechazado,pendiente,cancelado'
         ];
     }
