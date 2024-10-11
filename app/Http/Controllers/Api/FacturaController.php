@@ -50,7 +50,7 @@ class FacturaController extends Controller
             $facturas = (new FacturaService())->storeFacturaService($data);
             ///TO DO Recargos
             ///TO DO Cargar Letras
-            DB::rollBack();
+            DB::commit();
             return response()->json(["facturas"=>$facturas],200);
         }
         catch(Exception | ErrorException $ex){
