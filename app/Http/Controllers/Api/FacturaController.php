@@ -83,9 +83,11 @@ class FacturaController extends Controller
             DB::beginTransaction();
             $facturas = (new FacturaService())->facturaracionPorToma($id_toma);
             ///TO DO Recargos
+
             ///TO DO Cargar Letras
-            DB::rollBack();
-            return response()->json(["facturas"=>$facturas],200);
+
+            DB::commit();
+            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1]],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();

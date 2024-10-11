@@ -46,4 +46,7 @@ class Periodo extends Model
     public function cargaTrabajoVigente() : HasMany {
         return $this->hasMany(CargaTrabajo::class , "id_periodo")->whereNot('estado','concluida')->whereNot('estado','cancelada');
     }
+    public function consumos():HasMany{
+        return $this->hasMany(Consumo::class , "id_periodo");
+    }
 }
