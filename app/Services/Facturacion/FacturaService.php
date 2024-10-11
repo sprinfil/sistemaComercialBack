@@ -72,8 +72,11 @@ class FacturaService{
         return $periodosTomas;             
     }
 
-    public function facturarIndividual($id_toma){
-      
+    public function facturarIndividual($toma,$tarifaToma,$periodo,$consumo){
+      if ($toma['c_agua']){
+        return $toma;
+      }
+
     }
 
     public function facturaracionPorToma($id_toma){
@@ -84,9 +87,9 @@ class FacturaService{
         $tarifa=$periodo->tarifa;
         $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->first();
         //dispatch(new FacturacionTomaJob($toma));
-        $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,56);
-       
-        return $consumo;
+        $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
+        $facturaToma=($this->facturarIndividual($toma,$tarifaToma,$periodo,$consumo));
+        return $facturaToma;
     }
     public function updateFacturaService(array $data, string $id)
     {
