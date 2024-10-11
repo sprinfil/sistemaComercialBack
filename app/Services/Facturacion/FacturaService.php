@@ -2,10 +2,14 @@
 namespace App\Services\Facturacion;
 
 use App\Http\Resources\FacturaResource;
+use App\Jobs\FacturacionTomaJob;
+use App\Models\Consumo;
 use App\Models\Factura;
 use App\Models\Libro;
 use App\Models\Periodo;
 use App\Models\Ruta;
+use App\Models\Tarifa;
+use App\Models\TarifaServiciosDetalle;
 use App\Models\Toma;
 use COM;
 use Database\Seeders\LibroSeeder;
@@ -78,8 +82,11 @@ class FacturaService{
         $ruta=$libro->tieneRuta;
         $periodo=$ruta->PeriodoActivo;
         $tarifa=$periodo->tarifa;
+        $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->first();
+        //dispatch(new FacturacionTomaJob($toma));
+        $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,56);
        
-        return $toma;
+        return $consumo;
     }
     public function updateFacturaService(array $data, string $id)
     {
