@@ -24,6 +24,7 @@ class Multa extends Model
         'motivo',
         'fecha_solicitud',
         'fecha_revision',
+        'monto',
         'estado'
     ];
 

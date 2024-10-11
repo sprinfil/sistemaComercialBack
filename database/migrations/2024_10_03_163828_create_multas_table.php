@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_multado');
             $table->unsignedBigInteger('id_catalogo_multa');
-            $table->unsignedBigInteger('id_operador');
-            $table->unsignedBigInteger('id_revisor');
+            $table->unsignedBigInteger('id_operador')->nullable();
+            $table->unsignedBigInteger('id_revisor')->nullable();
             $table->enum('modelo_multado', ['toma' , 'usuario'])->nullable();
             $table->string('motivo');
-            $table->dateTime('fecha_solicitud');
-            $table->dateTime('fecha_revision');
-            $table->integer('monto');
+            $table->date('fecha_solicitud')->nullable();
+            $table->date('fecha_revision')->nullable();
+            $table->integer('monto')->nullable();
             $table->enum('estado', ['activo' , 'rechazado' , 'pendiente' , 'cancelado'])->nullable();
             $table->softDeletes();
             $table->timestamps();

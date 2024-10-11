@@ -41,6 +41,34 @@ class MultaController extends Controller
             ], 500);
         }
     }
+    
+    public function monitordemultas ()
+    {
+        try {
+            $monitor = (new MultaService())->monitordemultas();
+            return $monitor;
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar las multas. '
+            ], 500);
+        }
+    }
+
+    public function modificarmulta (UpdateMultaRequest $request , $id)
+    {
+        try {
+            $data = $request->validated();
+            DB::beginTransaction();
+            $multa = $this->multa->modificarmulta($data , $id);
+            DB::commit();
+            return $multa;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al editar la multa' .$ex->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Store a newly created resource in storage.
