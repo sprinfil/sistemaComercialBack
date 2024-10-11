@@ -139,7 +139,7 @@ class PeriodoService{
         foreach ($car as $dato){
             $dato['fecha_asignacion']=null;
             $dato['fecha_concluida']=null;
-            $dato['operador_asigno']=$operador;
+            $dato['id_operador_asigno']=$operador;
             if ($dato['estado']=="en proceso"){
                 $dato['fecha_asignacion']=$fecha;
             }
