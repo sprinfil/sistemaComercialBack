@@ -123,7 +123,8 @@ class MultaController extends Controller
             $id_multado = $request->input('id_multado');
             $id_catalogo_multa = $request->input('id_catalogo_multa');
             $codigo_usuario = $request->input('codigo_usuario');
-            $multadueno = (new MultaService())->consultarmulta($modelo_multado, $id_multado, $id_catalogo_multa , $codigo_usuario);
+            $codigo_toma = $request->input('codigo_toma');
+            $multadueno = (new MultaService())->consultarmulta($modelo_multado, $id_multado, $id_catalogo_multa , $codigo_usuario , $codigo_toma);
             return $multadueno;
         } catch (Exception $ex) {
            return response()->json([

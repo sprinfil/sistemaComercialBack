@@ -75,4 +75,36 @@ class ConstanciaController extends Controller
             ], 500);
         }
     }
+
+    public function buscarTodasConstancias(Request $request)
+    {
+        try {
+            $data = $request->toArray();
+            DB::beginTransaction();
+            $constancia = (new ConstanciaService())->buscarTodasConstanciasService($data);
+            DB::commit();
+            return $constancia;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar las constancias'. $ex
+            ], 500);
+        }
+    }
+
+    public function cancelarConstancia(Request $request)
+    {
+        try {
+            $data = $request->toArray();
+            DB::beginTransaction();
+            $constancia = (new ConstanciaService())->cancelarConstanciaService($data);
+            DB::commit();
+            return $constancia;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al cancelar la constancia'. $ex
+            ], 500);
+        }
+    }
 }
