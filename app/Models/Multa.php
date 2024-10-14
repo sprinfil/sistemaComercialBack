@@ -24,6 +24,7 @@ class Multa extends Model
         'motivo',
         'fecha_solicitud',
         'fecha_revision',
+        'monto',
         'estado'
     ];
 
@@ -42,5 +43,8 @@ class Multa extends Model
     public function origen(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo_multado', 'id_multado');
+    }
+    public function cargos() : MorphMany {
+        return $this->morphMany(Cargo::class, 'origen' , 'modelo_origen' , 'id_origen');
     }
 }
