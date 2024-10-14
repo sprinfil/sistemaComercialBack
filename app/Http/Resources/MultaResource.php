@@ -43,6 +43,8 @@ class MultaResource extends JsonResource
             'tipo_contrato'=>$this->origen->tipo_contratacion,
             'nombre_multado' => $this->origen->usuario->getNombreCompletoAttribute(),
             'nombre_multa'=>$this->catalogo_multa->nombre ?? null,
+            'UMAS_min'=>$this->catalogo_multa->UMAS_min ?? null,
+            'UMAS_max'=>$this->catalogo_multa->UMAS_max ?? null,
             'operador_levanto_multa'=>$this->operador->getNombreCompletoAttribute(),
             'nombre_operador_revisor'=>$this->operador_revisor->getNombreCompletoAttribute(),
 
