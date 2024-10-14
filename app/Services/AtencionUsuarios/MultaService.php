@@ -131,7 +131,8 @@ class MultaService{
     {
         try {
             return response(MultaResource::collection(
-                Multa::orderby('id', 'desc')->get()
+                Multa::with('origen' , 'catalogo_multa' , 'operador_revisor')
+                ->orderby('id', 'desc')->get()
             ), 200);
         } catch (Exception $ex) {
             return response()->json([

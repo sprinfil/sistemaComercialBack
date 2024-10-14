@@ -31,6 +31,10 @@ class Multa extends Model
     public function operador_multa() : BelongsTo {
         return $this->belongsTo(Operador::class , 'id_operador' , 'id');
     }
+    public function operador()
+    {
+        return $this->belongsTo(Operador::class, 'id_operador', 'id');
+    }
 
     public function operador_revisor() : BelongsTo {
         return $this->belongsTo(Operador::class , 'id_revisor' , 'id');

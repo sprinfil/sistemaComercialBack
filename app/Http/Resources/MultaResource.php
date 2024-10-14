@@ -25,7 +25,16 @@ class MultaResource extends JsonResource
             'fecha_solicitud'=>$this->fecha_solicitud,
             'fecha_revision'=>$this->fecha_revision,
             'monto' =>$this->monto,
-            'estado'=>$this->estado
-        ];
+            'estado'=>$this->estado,
+            'codigo_toma'=>$this->origen->codigo_toma ?? null,
+            'nombre_multado' => $this->origen->usuario->getNombreCompletoAttribute(),
+            'nombre_multa'=>$this->catalogo_multa->nombre ?? null,
+            'operador_levanto_multa'=>$this->operador->getNombreCompletoAttribute(),
+            'nombre_operador_revisor'=>$this->operador_revisor->getNombreCompletoAttribute(),
+
+
+
+
+        ];     
     }
 }
