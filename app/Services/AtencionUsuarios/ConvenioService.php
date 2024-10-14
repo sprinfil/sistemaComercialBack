@@ -254,7 +254,7 @@ class ConvenioService
 
       //Aqui van los cargos to do pendiente el concepto que se le asigna al convenio debe estar definido en una configuracion 
 
-      $concepto = ConceptoCatalogo::find(148);
+      $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
       $fecha = helperFechaAhora();
       $fecha = Carbon::parse($fecha)->format('Y-m-d');
 
@@ -375,7 +375,7 @@ class ConvenioService
         $arregloPagosIds = $pagosIds->toArray();
 
         //Cargos asociados a las letras del convenio, actualiza su estado
-        $cargosLetrados = Cargo::where('id_origen', $arregloLetra)
+        $cargosLetrados = Cargo::whereIn('id_origen', $arregloLetra)
           ->where('modelo_origen', 'letra')
           ->update(['estado' => 'cancelado']);
 
@@ -458,6 +458,147 @@ class ConvenioService
     } catch (Exception $ex) {
       return response()->json([
         'error' => 'Ocurrio un error durante la busqueda de los convenios aplicables al tipo de toma.' . $ex
+      ], 400);
+    }
+  }
+
+  public function crearCargoLetraService(int $id_toma)
+  {
+    try {
+      $toma = Toma::where('id', $id_toma)->first();
+      $convenio = $toma->convenios->where('estado','activo')->first();
+      $tipo_cancelacion = ConvenioCatalogo::select('tipo_cancelacion')->where('id',$convenio->id_convenio_catalogo)->first();
+      
+      if ($convenio) {
+        
+        if ($tipo_cancelacion->tipo_cancelacion == "automatica") {
+         
+          
+           $cargosFacturacion = Cargo::where('modelo_dueno','toma')->where('id_dueno',$id_toma)->where('modelo_origen','facturacion')
+          ->where('estado','pendiente')->get();
+
+         $pagoInicial = Letra::where('id_convenio',$convenio->id)->where('tipo_letra','pago_inicial')->where('estado','pendiente')
+          ->first();
+
+          
+          if ($cargosFacturacion->count() > 3 || $pagoInicial->estado == 'pendiente') {
+            
+            $this->cancelacionAutomatica($convenio->id);
+
+          }
+        }
+       
+        if($pagoInicial->estado == 'pagado')
+        { return "micrpdmaslk";
+         
+           $letras = $convenio->Letra->where('tipo_letra','letra');//->toArray();
+
+          foreach ($letras as $letra) {
+            
+
+            $cargoAsociado = $letra->cargosVigentes;
+
+            if (count($cargoAsociado) == 0) {
+              //return "F";
+              $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
+              $fecha = helperFechaAhora();
+              $fecha = Carbon::parse($fecha)->format('Y-m-d');
+        
+              $RegistroCargo = [
+                "id_concepto" => $concepto->id,
+                "nombre" => $concepto->nombre,
+        
+                "id_origen" => $letra->id,
+                "modelo_origen" => 'letra',
+        
+                "id_dueno" => $id_toma,
+                "modelo_dueno" => 'toma',
+        
+                "monto" => $letra->monto,
+                "iva" => 0,
+                "estado" => 'pendiente',
+                "id_convenio" => null,
+        
+                "fecha_cargo" => $fecha,
+                "fecha_liquidacion" => null,
+              ];
+              $cargo = Cargo::create($RegistroCargo);
+              break;
+            }
+          }
+        }
+        //return $convenio;
+      }
+      
+    } catch (Exception $ex) {
+      
+    }
+  }
+
+  public function cancelacionAutomatica($id_convenio)
+  {
+    try {
+      $motivoCancelacion = "Incumplimiento de los acuerdos del convenio";
+      $convenio = Convenio::findOrFail($id_convenio);
+      DB::beginTransaction();
+      if ($convenio->estado == "activo") {
+
+        //Cargos originales asociados al convenio
+        $cargos = Cargo::select('id')
+          ->where('id_convenio', $convenio->id)
+          ->get();
+        //Letras del convenio
+        $letras = Letra::select('id')
+          ->where('id_convenio', $convenio->id)
+          ->get();
+
+        $arregloCargo = $cargos->toArray();
+        $arregloLetra = $letras->toArray();
+
+        //Aqui
+        $cargosLetrasIds = Cargo::select('id')
+          ->where('id_origen', $arregloLetra)
+          ->where('modelo_origen', 'letra')
+          ->get();
+
+        $arregloCargosLetrasIds =  $cargosLetrasIds->toArray();
+
+        $pagosIds = Abono::select('id_origen')
+          ->where('modelo_origen', "pago")
+          ->where('id_cargo', $arregloCargosLetrasIds)
+          ->get();
+
+        $arregloPagosIds = $pagosIds->toArray();
+
+        //Cargos asociados a las letras del convenio, actualiza su estado
+        $cargosLetrados = Cargo::whereIn('id_origen', $arregloLetra)
+          ->where('modelo_origen', 'letra')
+          ->update(['estado' => 'cancelado']);
+
+        $convenioUpdt = [
+          "estado" => "incumplido",
+          "motivo_cancelacion" => $motivoCancelacion
+        ];
+
+        //Actualiza el estado del convenio, cargos originales y las letras del convenio
+        $convenio->update($convenioUpdt);
+        Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
+        Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
+
+        Pago::whereIn('id', $arregloPagosIds)->update(['estado' => 'pendiente']);
+        //to do falta arreglar el metodo de pagos 
+        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
+        DB::commit();
+      } else {
+        DB::rollBack();
+        return response()->json([
+          'error' => 'No se encontro convenio seleccionado.'
+        ], 400);
+      }
+    } catch (Exception $ex) {
+      DB::rollBack();
+      return response()->json([
+        'Ocurio un error durante la cancelación del convenio: ' . $ex
       ], 400);
     }
   }

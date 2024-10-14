@@ -27,6 +27,8 @@ class UpdateConvenioCatalogoRequest extends FormRequest
             "estado"=>"nullable|string|max:10|
             in:activo,inactivo",
             "pago_inicial"=>"nullable|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0|max:100",
+            "tipo_cancelacion"=>"nullable|string|
+            in:manual,automatica",
         ];
     }
 }

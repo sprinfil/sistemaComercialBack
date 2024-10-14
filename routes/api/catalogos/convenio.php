@@ -21,5 +21,8 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::get("/Convenio/ConsultarListaConvenio", "ConsultarListaConvenio");
         Route::get("/Convenio/ConsultarLetras", "ConsultarLetras");
         Route::get("/Convenio/buscarConveniosAplicablesTipoToma", "buscarConveniosAplicablesTipoToma");
+
+        //Este metodo solo lo uso para probar se debe eliminar al final
+        Route::get("/Convenio/crearCargoLetra", "crearCargoLetra");
     });
 });
