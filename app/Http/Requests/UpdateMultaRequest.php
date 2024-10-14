@@ -29,7 +29,7 @@ class UpdateMultaRequest extends FormRequest
             //'modelo_multado' => 'required|string',
             //'motivo' => 'nullable|string',
             //'fecha_solicitud' => 'required|date',
-            'fecha_revision' => 'required|date',
+            //'fecha_revision' => 'required|date',
             'monto' => 'required|integer|min:0',
             'estado' => 'required|in:activo,rechazado,pendiente,cancelado'
         ];

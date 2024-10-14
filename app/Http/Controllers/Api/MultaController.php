@@ -69,6 +69,21 @@ class MultaController extends Controller
             ], 500);
         }
     }
+    public function cancelarmulta ($id)
+    {
+        try {
+            //$data = $request->validate();
+            DB::beginTransaction();
+            $cancelar = $this->multa->cancelarmulta($id);
+            DB::commit();
+            return $cancelar;
+        } catch (Exception $ex) {
+           DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al cancelar la multa. ' .$ex->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Store a newly created resource in storage.

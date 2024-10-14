@@ -2,6 +2,7 @@
 namespace App\Services\AtencionUsuarios;
 
 use App\Http\Resources\MultaResource;
+use App\Models\Cargo;
 use App\Models\Multa;
 use App\Models\MultaCatalogo;
 use App\Models\Toma;
@@ -108,6 +109,8 @@ class MultaService{
                     'id_multado' => $filt->id_multado,
                     'id_catalogo_multa' => $filt->id_catalogo_multa,
                     'modelo_multado' => $filt->modelo_multado,
+                    'estado' => $filt->estado,
+                    'monto' => $filt->monto
 
                 ];
             
@@ -146,19 +149,86 @@ class MultaService{
             if (!$multas) {
                return response()->json([
                 'message' => 'No se encontro la multa. '
-               ], 404);
+               ], 400);
             }
-            $multas->update($data);
-            $multas->save();
-            return response(new MultaResource($multas), 200);
+            if ($multas->estado == 'activo') {
+                return response()->json([
+                    'message' => 'La multa ya esta activada, no se puede cambiar el estado.'
+                ], 400);
+            }
+            if ($multas->estado == 'cancelado') {
+                return response()->json([
+                    'message' => 'La multa esta cancelada, no se puede cambiar el estado.'
+                ], 400);
+            }
+            $catalogo_multa = MultaCatalogo::where('id' , $multas->id_catalogo_multa)
+            ->where('estatus' , 'activo')->first();
+            if (!$catalogo_multa) {
+                return response()->json([
+                    'message' => 'La multa seleccionada del catalogo de multas esta inactiva. '
+                ], 404);
+            }
+            $umas = $data['monto'];
+            if ($umas < $catalogo_multa->UMAS_min || $umas > $catalogo_multa->UMAS_max) {
+                return response()->json([
+                    'message' => 'La cantidad de UMAS debe estar entre ' . $catalogo_multa->UMAS_min . ' y ' . $catalogo_multa->UMAS_max
+                ], 422);
+            }
+            $multas->estado = 'activo';
+            //Generar el cargo
+            $multas->fecha_revision = Carbon::now()->format('Y-m-d');
+            $multas->monto = $umas;
+            //$multas->update($data);
 
-            
+            //Al activar la multa, va a generar un cargo.
+            $cargoiva = 0; //No generan iva las multas.
+            $cargomulta = Cargo::create([
+                'id_concepto' => 14,
+                'nombre' => 'Cargo por multa',
+                'id_origen' => $multas->id,
+                'modelo_origen' => 'Multa',
+                'id_dueno' => $multas->id_multado,
+                'modelo_dueno' => $multas->modelo_multado,
+                'monto' => $multas->monto,
+                'iva' => $cargoiva,
+                'estado' => 'pendiente',
+                'fecha_cargo' => now(),
+                'fecha_liquidacion' => null,
+
+            ]);
+            $multas->save();
+            return response()->json([
+                'message' => 'La multa ha sido activada. ',
+                'cargo' => $cargomulta,
+                'multa' => new MultaResource($multas),
+            ] , 200);
+            //return response(new MultaResource($multas), 200);
 
         } catch (Exception $ex) {
             return response()->json([
                 'error' => 'Ocurrio un error al modificar la multa. ' .$ex->getMessage()
             ], 500);
         }
+    }
+    public function cancelarmulta ($id)
+    {
+        $multas = Multa::find($id);
+        if (!$multas) {
+           return response()->json([
+            'message' => 'No se encontro la multa. '
+           ], 400);
+        }
+        if ($multas->estado != 'pendiente') {
+            return response()->json([
+                'message' => 'No se puede cancelar la multa una vez activa. '
+            ], 403);
+        }
+        $multas->estado = 'cancelado';
+        $multas->save();
+        return response()->json([
+            'message' => 'La multa ha sido cancelada. ',
+            'multa' => new MultaResource($multas)
+        ], 200);
     }
 
 }

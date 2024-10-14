@@ -19,6 +19,7 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(MultaController::class)->group(function (){
         Route::get("/multas/monitormultas" , "monitordemultas");
         Route::put("/multas/monitor/modificarmulta/{id}" , "modificarmulta");
+        Route::put("/multas/monitor/cancelarmulta/{id}" , "cancelarmulta");
     });
     
 });
