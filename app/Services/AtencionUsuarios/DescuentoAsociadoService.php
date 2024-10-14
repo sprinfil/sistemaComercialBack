@@ -48,9 +48,6 @@ class DescuentoAsociadoService
                  throw new \Exception('el folio no esta disponible.', 400);
                 //return response()->json(['message' => 'El folio no esta disponible'], 400);
             }
-            if ($curp_igual) {
-                throw new \Exception('el curp ya esta registrado.', 400);
-            }
             $descuento = DescuentoAsociado::create($data);
             $descuento->load('descuento_catalogo' , 'archivos');
             return $descuento;
