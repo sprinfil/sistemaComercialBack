@@ -24,5 +24,7 @@ Route::middleware(['api', 'audit'])->group(function () {
 
         //Este metodo solo lo uso para probar se debe eliminar al final
         Route::get("/Convenio/crearCargoLetra", "crearCargoLetra");
+        Route::put("/Convenio/pagoLetra", "pagoLetra");
+
     });
 });

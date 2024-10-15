@@ -465,45 +465,59 @@ class ConvenioService
   public function crearCargoLetraService(int $id_toma)
   {
     try {
+      //Busca el registro de la toma con el id recibido
       $toma = Toma::where('id', $id_toma)->first();
+      //Obtiene el registro de convenio activo de asociado a la toma
       $convenio = $toma->convenios->where('estado','activo')->first();
+      //Registra si la toma es de cancelacion automatica o manual
       $tipo_cancelacion = ConvenioCatalogo::select('tipo_cancelacion')->where('id',$convenio->id_convenio_catalogo)->first();
-      
+      //Obtiene el registro del pago inicial
+      $pagoInicial = Letra::where('id_convenio',$convenio->id)->where('tipo_letra','pago_inicial')->where('estado','pendiente')
+        ->first();
+        //Verifica si el registro de pago inicial existe
+      $pagoIniResp=$pagoInicial->estado ?? null ;
+
+      // si la toma tiene un convenio
       if ($convenio) {
-        
+        //Si el convenio es del tipo de cancelacion automatica
         if ($tipo_cancelacion->tipo_cancelacion == "automatica") {
          
-          
+          //Obtiene los cargos de facturacion pendientes asociados a esta toma
            $cargosFacturacion = Cargo::where('modelo_dueno','toma')->where('id_dueno',$id_toma)->where('modelo_origen','facturacion')
           ->where('estado','pendiente')->get();
 
-         $pagoInicial = Letra::where('id_convenio',$convenio->id)->where('tipo_letra','pago_inicial')->where('estado','pendiente')
-          ->first();
-
-          
-          if ($cargosFacturacion->count() > 3 || $pagoInicial->estado == 'pendiente') {
+          //Si se deben 3 cargos de facturacion o si el pago inicial esta pendiente
+          if ($cargosFacturacion->count() > 2 || $pagoIniResp == 'pendiente') {
             
+            //Llama al metodo de cancelacion automatica
             $this->cancelacionAutomatica($convenio->id);
-
+            //Termina el proceso
+            return;
           }
         }
        
-        if($pagoInicial->estado == 'pagado')
-        { return "micrpdmaslk";
-         
-           $letras = $convenio->Letra->where('tipo_letra','letra');//->toArray();
+        //Si el pago inicial esta saldado o si este no necesita pago inicial
+        if($pagoIniResp == 'saldado' || $pagoIniResp == null )
+        {
+           //Obtiene las letras asociadas al convenio que sean de tipo letra
+           $letras = $convenio->Letra->where('tipo_letra','letra');
 
+           //Recorre todos los registros de letras asociadas al convenio
           foreach ($letras as $letra) {
             
-
+            //Obtiene el cargo vigente en caso de que el registro de letra cuente con uno
             $cargoAsociado = $letra->cargosVigentes;
 
+            //Si la letra no cuenta con un cargo asociado
             if (count($cargoAsociado) == 0) {
-              //return "F";
+              //Obtiene el concepto de letra
               $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
+              //Obtiene la fecha del servidor
               $fecha = helperFechaAhora();
+              //Le da a la fecha el formato de year/month/day
               $fecha = Carbon::parse($fecha)->format('Y-m-d');
-        
+              
+              //Genera el registro del cargo
               $RegistroCargo = [
                 "id_concepto" => $concepto->id,
                 "nombre" => $concepto->nombre,
@@ -522,16 +536,20 @@ class ConvenioService
                 "fecha_cargo" => $fecha,
                 "fecha_liquidacion" => null,
               ];
+              //Registra el cargo asociado a la letra
               $cargo = Cargo::create($RegistroCargo);
+              //Termina el proceso
               break;
             }
           }
         }
-        //return $convenio;
+        
       }
       
     } catch (Exception $ex) {
-      
+      return response()->json([
+        'Ocurio un error durante la aplicacion del convenio' . $ex
+      ], 400);
     }
   }
 
@@ -555,19 +573,22 @@ class ConvenioService
         $arregloCargo = $cargos->toArray();
         $arregloLetra = $letras->toArray();
 
-        //Aqui
+        //Obtiene los cargos asociados a las letras
         $cargosLetrasIds = Cargo::select('id')
           ->where('id_origen', $arregloLetra)
           ->where('modelo_origen', 'letra')
           ->get();
 
+          //Crea un arreglo con los ids de los cargos de las letras
         $arregloCargosLetrasIds =  $cargosLetrasIds->toArray();
 
+        //Obtiene los ids de los pagos asociados a los cargos
         $pagosIds = Abono::select('id_origen')
           ->where('modelo_origen', "pago")
           ->where('id_cargo', $arregloCargosLetrasIds)
           ->get();
 
+          //Crea un arreglo con los ids de los pagos
         $arregloPagosIds = $pagosIds->toArray();
 
         //Cargos asociados a las letras del convenio, actualiza su estado
@@ -602,4 +623,29 @@ class ConvenioService
       ], 400);
     }
   }
+
+  public function pagoLetraService(int $id_Cargo)
+  {
+    try {
+      $cargo = Cargo::where('id',$id_Cargo)->where('modelo_origen','letra')->where('estado','pagado')->first();
+      if ($cargo) 
+      {
+        $letraPagada = Letra::where('id',$cargo->id_origen)->first();
+        $letraPagada->update(['estado' => 'saldado']);
+        $letrasPendientes = Letra::where('id_convenio',$letraPagada->id_convenio)->where('estado','pendiente')->get();
+
+        if (count($letrasPendientes) == 0) {
+          Convenio::where('id', $letraPagada->convenio)->update((['estado'=>'concluido']));
+        }
+        
+      }
+    } catch (Exception $ex) {
+
+      return response()->json([
+
+        'Ocurio un error durante el pago de la letra' . $ex
+      ], 400);
+    }
+  }
+
 }

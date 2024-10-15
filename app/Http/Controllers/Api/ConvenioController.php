@@ -261,4 +261,20 @@ class ConvenioController extends Controller
     ]); 
     }
   }
+
+  public function pagoLetra(Request $request)
+  {
+    try {
+        $data = $request->input('id_cargo');
+        DB::beginTransaction();
+        $convenio = (new ConvenioService())->pagoLetraService($data);
+        DB::commit();
+        return $convenio;
+    } catch (Exception $ex) {
+        DB::rollBack();
+      return response()->json([
+        'message' => 'Ocurrio un error al cargar las letras.'
+    ]); 
+    }
+  }
 }
