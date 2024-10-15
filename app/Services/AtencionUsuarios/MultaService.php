@@ -79,72 +79,54 @@ class MultaService{
         }
     }
 
-    public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario, $codigo_toma , $fecha_solicitud, $tipo_toma, $tipo_multa)
+    public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario, $codigo_toma , $fecha_solicitud, $tipo_toma, $tipo_multa, $fecha_revision)
     {
         try {
-            $filtro = Multa::with('origen' , 'catalogo_multa' , 'origen.usuario' , 'origen.tipoToma')
-            ->when($id_multado, function ($query, $id_multado) {
-                return $query->where('id_multado', $id_multado);
-            })
-            ->when($modelo_multado, function ($query, $modelo_multado) {
-                return $query->where('modelo_multado', $modelo_multado);
-            })
-            ->when($id_catalogo_multa, function ($query, $id_catalogo_multa){
-                return $query->where('id_catalogo_multa' , $id_catalogo_multa);
-            })
-            ->when($fecha_solicitud, function ($query, $fecha_solicitud){
-                return $query->where('fecha_solicitud' , $fecha_solicitud);
-            })
-            ->when($codigo_toma, function ($query) use ($codigo_toma){
-                return $query->whereHas('origen' , function($query) use ($codigo_toma){
-                    $query->where('codigo_toma' , $codigo_toma);
-                });
-            })
-            ->when($codigo_usuario, function ($query) use ($codigo_usuario){
-                return $query->whereHas('origen.usuario' , function($query) use ($codigo_usuario){
-                    $query->where('codigo_usuario' , $codigo_usuario);
-                });
-            })
-            ->when($tipo_toma, function ($query) use ($tipo_toma){
-                return $query->whereHas('origen.tipoToma' , function($query) use ($tipo_toma){
-                    $query->where('nombre' , $tipo_toma);
-                });
-            })
-            ->when($tipo_multa, function ($query) use ($tipo_multa){
-                return $query->whereHas('catalogo_multa' , function($query) use ($tipo_multa){
-                    $query->where('nombre' , $tipo_multa);
-                });
-            })
-            ->orderBy('id', 'desc')
-            ->get();
-            $data = [];
-            foreach ($filtro as $filt) {
-                $id_toma = $filt->origen->id;
-                if (!isset($data[$id_toma])) {
-                    $data[$id_toma] = [
-                        'toma' => $filt->origen,
-                        'multas' => []
-                    ];
-                }
-                $data [$id_toma]['multas'][] = [
-                    'id_multa' => $filt->id,
-                    'nombre_multa_catalogo' => $filt->catalogo_multa->nombre,
-                    'descripcion_multa_catalogo' => $filt->catalogo_multa->descripcion,
-                    'id_multado' => $filt->id_multado,
-                    'id_catalogo_multa' => $filt->id_catalogo_multa,
-                    'modelo_multado' => $filt->modelo_multado,
-                    'estado' => $filt->estado,
-                    'monto' => $filt->monto
+            $filtro = Multa::with(['origen' , 'catalogo_multa' , 'origen.usuario' , 'origen.tipoToma'])
+                ->when($id_multado, function ($query, $id_multado) {
+                    return $query->where('id_multado', $id_multado);
+                })
+                ->when($modelo_multado, function ($query, $modelo_multado) {
+                    return $query->where('modelo_multado', $modelo_multado);
+                })
+                ->when($id_catalogo_multa, function ($query, $id_catalogo_multa){
+                    return $query->where('id_catalogo_multa' , $id_catalogo_multa);
+                })
+                ->when($fecha_solicitud, function ($query, $fecha_solicitud){
+                    return $query->where('fecha_solicitud' , $fecha_solicitud);
+                })
+                ->when($fecha_revision, function ($query, $fecha_revision){
+                    return $query->where('fecha_revision' , $fecha_revision);
+                })
+                ->when($codigo_toma, function ($query) use ($codigo_toma){
+                    return $query->whereHas('origen' , function($query) use ($codigo_toma){
+                        $query->where('codigo_toma' , $codigo_toma);
+                    });
+                })
+                ->when($codigo_usuario, function ($query) use ($codigo_usuario){
+                    return $query->whereHas('origen.usuario' , function($query) use ($codigo_usuario){
+                        $query->where('codigo_usuario' , $codigo_usuario);
+                    });
+                })
+                ->when($tipo_toma, function ($query) use ($tipo_toma){
+                    return $query->whereHas('origen.tipoToma' , function($query) use ($tipo_toma){
+                        $query->where('nombre' , $tipo_toma);
+                    });
+                })
+                ->when($tipo_multa, function ($query) use ($tipo_multa){
+                    return $query->whereHas('catalogo_multa' , function($query) use ($tipo_multa){
+                        $query->where('nombre' , $tipo_multa);
+                    });
+                })
+                ->orderBy('id' , 'desc')
+                ->get();
+           if ($filtro->isEmpty()) {
+                return response()->json([
+                    'message' => 'No se encontraron resultados. '
+            ], 404);
+           }
+        return response(MultaResource::collection($filtro), 200);
 
-                ];
-            
-        }
-            $resultado = array_values($data);
-            if (!$resultado) {
-                return response()->json(['message' => 'No se encontraron resultados'], 404);
-            } else {
-                return $resultado;
-            }
         } catch (ModelNotFoundException $ex) {
             return response()->json(['error' => 'Ocurrio un error al consultar la multa del usuario / toma' . $ex] , 500);
         }
