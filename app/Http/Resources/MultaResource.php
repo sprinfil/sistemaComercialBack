@@ -23,7 +23,7 @@ class MultaResource extends JsonResource
             'modelo_multado'=>$this->modelo_multado,
             'motivo'=>$this->motivo,
             'fecha_solicitud'=>$this->fecha_solicitud,
-            'fecha_revision'=>$this->fecha_revision,
+            'fecha_revision'=>$this->fecha_revision ?? null,
             'monto' =>$this->monto,
             'estado'=>$this->estado,
             'codigo_toma'=>$this->origen->codigo_toma ?? null,
@@ -42,11 +42,14 @@ class MultaResource extends JsonResource
             'tipo_servicio'=>$this->origen->tipo_servicio,
             'tipo_contrato'=>$this->origen->tipo_contratacion,
             'nombre_multado' => $this->origen->usuario->getNombreCompletoAttribute(),
+            'codigo_usuario' => $this->origen->usuario->codigo_usuario,
             'nombre_multa'=>$this->catalogo_multa->nombre ?? null,
             'UMAS_min'=>$this->catalogo_multa->UMAS_min ?? null,
             'UMAS_max'=>$this->catalogo_multa->UMAS_max ?? null,
             'operador_levanto_multa'=>$this->operador->getNombreCompletoAttribute(),
             'nombre_operador_revisor'=>$this->operador_revisor->getNombreCompletoAttribute(),
+            //'toma' => new TomaResource($this->whenLoaded('origen')),
+            
 
 
 
