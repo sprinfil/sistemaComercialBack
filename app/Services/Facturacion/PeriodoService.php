@@ -132,7 +132,7 @@ class PeriodoService{
     public function updateCarga($car){
         
        // $carga=CargaTrabajo::find($id);
-
+        
         $fecha=helperFechaAhora();
         $operador=helperOperadorActual();
         $insercion=[];

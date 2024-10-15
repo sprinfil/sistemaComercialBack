@@ -56,10 +56,11 @@ class FacturaService{
 
     }
 
-    public function storeFacturaService(array $periodos) //facturacion del periodo
+    public function storeFacturaPeriodo(array $periodos) //facturacion del periodo
     {
         //cHECAR SI LAS TOMAS YA TIENEN UNA FACTURA VIGENTE
-        $id_periodos=array_column($periodos,"id_periodo");
+        $id_periodos=array_column($periodos,"id");
+        /*
         $periodosTomas=Periodo::with(['tieneRutas'=>function($q){ ///consultas relacionadas procesadas
             $q->with(['Libros'=>function($q2){
                 $q2->with(['tomas'=>function ($q3){
@@ -67,13 +68,36 @@ class FacturaService{
                 }]);
             }]);
         }])->whereIn('id',$id_periodos)->where('estatus','activo')->get();
+        */
+        $periodosFactura=new Collection();
+        $periodosTomas=Periodo::with('tieneRutas.Libros.tomasFacturables:id,id_usuario,id_giro_comercial,id_libro,codigo_toma,id_tipo_toma,estatus,c_agua,c_alc,c_san','tieneRutas:id,nombre','tarifa')->whereIn('id',$id_periodos)->where('estatus','activo')->get();
         foreach ($periodosTomas as $periodo){
-
+            $libros=$periodo['tieneRutas']['Libros'];
+            $tarifa=$periodo['tarifa'];
+            foreach ($libros as $libro){
+                $tomas=$libro['tomasFacturables'];
+            
+                foreach ($tomas as $toma){
+                    $ExisteFactura=Factura::where('id_periodo',$periodo['id'])->where('id_toma',$toma['id'])->first();
+                    if ($ExisteFactura){
+                        $ExistenCargos=Cargo::where('id_origen',$ExisteFactura['id'])->get();
+                        if (count($ExistenCargos)!=0){
+                            throw new ErrorException("No se puede facturar una toma con una facturación vigente dentro del mismo periodo");
+                        }
+                    }
+                    $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
+                    //dispatch(new FacturacionTomaJob($toma));
+                    if ($consumo){
+                        $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
+                  
+                        $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+                        $periodosFactura->push($facturaToma);
+                    }
+                   
+                }
+            }
         }
-        $periodosFactura=[];
-
-  
-        return $periodosTomas;             
+        return $periodosFactura;             
     }
 
     public function facturar($toma,$tarifaToma,$periodo,$consumo){
@@ -177,6 +201,8 @@ class FacturaService{
         $ruta=$libro->tieneRuta;
         $periodo=$ruta->PeriodoActivo;
         $tarifa=$periodo->tarifa;
+        ///facturacion_arreglo
+        ///cargos_facturacion_arreglo
         $ExisteFactura=Factura::where('id_periodo',$periodo['id'])->where('id_toma',$toma['id'])->first();
         if ($ExisteFactura){
             $ExistenCargos=Cargo::where('id_origen',$ExisteFactura['id'])->get();

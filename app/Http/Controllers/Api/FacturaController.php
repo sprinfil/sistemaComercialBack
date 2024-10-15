@@ -41,13 +41,13 @@ class FacturaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) //StoreFacturaRequest
+    public function store(Request $request) //StoreFacturaRequest ///No se usa
     {
         //$this->authorize('create', GiroComercialCatalogo::class); pendiente de permisos        
         try{
             DB::beginTransaction();
             $data=$request->all()['periodos'];
-            $facturas = (new FacturaService())->storeFacturaService($data);
+            $facturas = (new FacturaService())->storeFacturaPeriodo($data);
             ///TO DO Recargos
             ///TO DO Cargar Letras
             DB::commit();
@@ -88,6 +88,29 @@ class FacturaController extends Controller
 
             DB::commit();
             return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1]],200);
+        }
+        catch(Exception | ErrorException $ex){
+            DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+    }
+    public function facturaPorPeriodo(Request $request){
+        try{
+            DB::beginTransaction();
+            $data=$request['periodos'];
+            $facturas = (new FacturaService())->storeFacturaPeriodo($data);
+            ///TO DO Recargos
+
+            ///TO DO Cargar Letras
+
+            DB::rollBack();
+            return response()->json(["facturas"=>$facturas],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();
