@@ -79,10 +79,10 @@ class MultaService{
         }
     }
 
-    public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario, $codigo_toma)
+    public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario, $codigo_toma , $fecha_solicitud, $tipo_toma, $tipo_multa)
     {
         try {
-            $filtro = Multa::with('origen' , 'catalogo_multa' , 'origen.usuario')
+            $filtro = Multa::with('origen' , 'catalogo_multa' , 'origen.usuario' , 'origen.tipoToma')
             ->when($id_multado, function ($query, $id_multado) {
                 return $query->where('id_multado', $id_multado);
             })
@@ -92,6 +92,9 @@ class MultaService{
             ->when($id_catalogo_multa, function ($query, $id_catalogo_multa){
                 return $query->where('id_catalogo_multa' , $id_catalogo_multa);
             })
+            ->when($fecha_solicitud, function ($query, $fecha_solicitud){
+                return $query->where('fecha_solicitud' , $fecha_solicitud);
+            })
             ->when($codigo_toma, function ($query) use ($codigo_toma){
                 return $query->whereHas('origen' , function($query) use ($codigo_toma){
                     $query->where('codigo_toma' , $codigo_toma);
@@ -100,6 +103,16 @@ class MultaService{
             ->when($codigo_usuario, function ($query) use ($codigo_usuario){
                 return $query->whereHas('origen.usuario' , function($query) use ($codigo_usuario){
                     $query->where('codigo_usuario' , $codigo_usuario);
+                });
+            })
+            ->when($tipo_toma, function ($query) use ($tipo_toma){
+                return $query->whereHas('origen.tipoToma' , function($query) use ($tipo_toma){
+                    $query->where('nombre' , $tipo_toma);
+                });
+            })
+            ->when($tipo_multa, function ($query) use ($tipo_multa){
+                return $query->whereHas('catalogo_multa' , function($query) use ($tipo_multa){
+                    $query->where('nombre' , $tipo_multa);
                 });
             })
             ->orderBy('id', 'desc')
