@@ -230,9 +230,14 @@ class MultaService{
             'message' => 'No se encontro la multa. '
            ], 400);
         }
+        if ($multas->estado == 'cancelado') {
+            return response()->json([
+                'message' => 'La multa ya ha sido cancelada anteriormente.'
+            ], 403);
+        }
         if ($multas->estado != 'pendiente') {
             return response()->json([
-                'message' => 'No se puede cancelar la multa una vez activa. '
+                'message' => 'No se puede cancelar la multa una vez activa o cancelada.'
             ], 403);
         }
         $multas->estado = 'cancelado';
