@@ -82,7 +82,7 @@ class MultaService{
     public function consultarmulta ($modelo_multado , $id_multado, $id_catalogo_multa, $codigo_usuario, $codigo_toma)
     {
         try {
-            $filtro = Multa::with('origen' , 'catalogo_multa')
+            $filtro = Multa::with('origen' , 'catalogo_multa' , 'origen.usuario')
             ->when($id_multado, function ($query, $id_multado) {
                 return $query->where('id_multado', $id_multado);
             })
@@ -91,6 +91,16 @@ class MultaService{
             })
             ->when($id_catalogo_multa, function ($query, $id_catalogo_multa){
                 return $query->where('id_catalogo_multa' , $id_catalogo_multa);
+            })
+            ->when($codigo_toma, function ($query) use ($codigo_toma){
+                return $query->whereHas('origen' , function($query) use ($codigo_toma){
+                    $query->where('codigo_toma' , $codigo_toma);
+                });
+            })
+            ->when($codigo_usuario, function ($query) use ($codigo_usuario){
+                return $query->whereHas('origen.usuario' , function($query) use ($codigo_usuario){
+                    $query->where('codigo_usuario' , $codigo_usuario);
+                });
             })
             ->orderBy('id', 'desc')
             ->get();
@@ -104,6 +114,7 @@ class MultaService{
                     ];
                 }
                 $data [$id_toma]['multas'][] = [
+                    'id_multa' => $filt->id,
                     'nombre_multa_catalogo' => $filt->catalogo_multa->nombre,
                     'descripcion_multa_catalogo' => $filt->catalogo_multa->descripcion,
                     'id_multado' => $filt->id_multado,
