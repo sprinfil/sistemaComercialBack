@@ -70,12 +70,15 @@ class FacturaService{
         }])->whereIn('id',$id_periodos)->where('estatus','activo')->get();
         */
         $periodosFactura=new Collection();
-        $periodosTomas=Periodo::with('tieneRutas.Libros.tomasFacturables:id,id_usuario,id_giro_comercial,id_libro,codigo_toma,id_tipo_toma,estatus,c_agua,c_alc,c_san','tieneRutas:id,nombre','tarifa')->whereIn('id',$id_periodos)->where('estatus','activo')->get();
+        $facturaCargos=new Collection();
+        $periodosTomas=Periodo::with('tieneRutas.Libros.tomas:id,id_usuario,id_giro_comercial,id_libro,codigo_toma,id_tipo_toma,estatus,c_agua,c_alc,c_san','tieneRutas:id,nombre','tarifa')->whereIn('id',$id_periodos)->where('estatus','activo')->get();
         foreach ($periodosTomas as $periodo){
+
             $libros=$periodo['tieneRutas']['Libros'];
             $tarifa=$periodo['tarifa'];
+     return $periodo;
             foreach ($libros as $libro){
-                $tomas=$libro['tomasFacturables'];
+                $tomas=$libro['tomas'];
             
                 foreach ($tomas as $toma){
                     $ExisteFactura=Factura::where('id_periodo',$periodo['id'])->where('id_toma',$toma['id'])->first();
@@ -91,13 +94,15 @@ class FacturaService{
                         $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
                   
                         $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
-                        $periodosFactura->push($facturaToma);
+                        $periodosFactura->push($facturaToma[0]);
+                        $facturaCargos->push($facturaToma[1]);
+                        
                     }
                    
                 }
             }
         }
-        return $periodosFactura;             
+        return [$periodosFactura, $facturaCargos];             
     }
 
     public function facturar($toma,$tarifaToma,$periodo,$consumo){

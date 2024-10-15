@@ -25,6 +25,7 @@ return new class extends Migration
             $table->date('validacion_final');
             $table->date('recibo_inicio')->nullable();///menos del mes
             $table->date('recibo_final')->nullable();
+            $table->date('vigencia_recibo');
             $table->enum('estatus',['activo','cerrado']);
             $table->softDeletes();
             $table->timestamps();

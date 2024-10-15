@@ -105,18 +105,20 @@ class FacturaController extends Controller
             DB::beginTransaction();
             $data=$request['periodos'];
             $facturas = (new FacturaService())->storeFacturaPeriodo($data);
+            return $facturas;
+            //return $facturas;
             ///TO DO Recargos
 
             ///TO DO Cargar Letras
 
             DB::rollBack();
-            return response()->json(["facturas"=>$facturas],200);
+            return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1]],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();
             $clase= get_class($ex);
             if ($clase=="ErrorException"){
-                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+                return response()->json(["error"=>"Error de peticion. ".$ex],400);
             }
             else{
                 return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);

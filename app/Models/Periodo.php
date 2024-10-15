@@ -25,6 +25,7 @@ class Periodo extends Model
         "lectura_final",
         "recibo_inicio",
         "recibo_final",
+        "vigencia_recibo",
         "estatus"
     ];
 
