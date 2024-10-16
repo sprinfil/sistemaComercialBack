@@ -100,7 +100,7 @@ class FacturaController extends Controller
             }
         }
     }
-    public function facturaPorPeriodo(Request $request){
+    public function storePeriodo(Request $request){
         try{
             DB::beginTransaction();
             $data=$request['periodos'];

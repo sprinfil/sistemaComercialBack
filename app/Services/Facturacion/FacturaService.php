@@ -76,7 +76,6 @@ class FacturaService{
 
             $libros=$periodo['tieneRutas']['Libros'];
             $tarifa=$periodo['tarifa'];
-     return $periodo;
             foreach ($libros as $libro){
                 $tomas=$libro['tomas'];
             
@@ -89,11 +88,14 @@ class FacturaService{
                         }
                     }
                     $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
+
                     //dispatch(new FacturacionTomaJob($toma));
                     if ($consumo){
                         $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
+                       
                   
                         $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+                       
                         $periodosFactura->push($facturaToma[0]);
                         $facturaCargos->push($facturaToma[1]);
                         

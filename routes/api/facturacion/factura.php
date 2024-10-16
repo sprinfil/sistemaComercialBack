@@ -10,6 +10,6 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::post("/factura/create/toma/{id}","storeToma");
         Route::get("/factura/show/{id}","show");
         Route::post("/factura/toma/{id}","facturaPorToma");
-        Route::post("/factura/periodo","facturaPorPeriodo");
+        Route::post("/factura/create/periodo","storePeriodo");
     });
 });
