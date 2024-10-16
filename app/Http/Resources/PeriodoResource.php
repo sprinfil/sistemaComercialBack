@@ -34,6 +34,7 @@ class PeriodoResource extends JsonResource
             "vigencia_recibo"=> $this->vigencia_recibo,
             "estatus" => $this->estatus,
             'facturas' => FacturaResource::collection($this->whenLoaded('factura')),
+            //'consumos' => ConsumoResource::collection($this->whenLoaded('consumos')),
             //'carga_trabajo' => CargaTrabajoResource::collection($this->whenLoaded('cargaTrabajo')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
