@@ -25,9 +25,10 @@ class Periodo extends Model
         "lectura_final",
         "recibo_inicio",
         "recibo_final",
+        "vigencia_recibo",
         "estatus"
     ];
-  
+
     public function factura():HasMany{
         return $this->HasMany(Factura::class, 'id');
     }
@@ -36,11 +37,17 @@ class Periodo extends Model
         return $this->belongsTo(Ruta::class , 'id_ruta');
     }
 
-    public function tarifa() : HasOne {
-        return $this->hasOne(Tarifa::class , 'id_tarifa');
+    public function tarifa() : BelongsTo {
+        return $this->belongsTo(Tarifa::class , 'id_tarifa');
     }
 
     public function cargaTrabajo() : HasMany {
         return $this->hasMany(CargaTrabajo::class , "id_periodo");
+    }
+    public function cargaTrabajoVigente() : HasMany {
+        return $this->hasMany(CargaTrabajo::class , "id_periodo")->whereNot('estado','concluida')->whereNot('estado','cancelada');
+    }
+    public function consumos():HasMany{
+        return $this->hasMany(Consumo::class , "id_periodo");
     }
 }

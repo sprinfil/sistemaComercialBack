@@ -167,4 +167,9 @@ class SecuenciaService{
         $secuencia->secuenciasPersonalizadas;
         return $secuencia;
         }
+        public function secuenciaOperador($libros, $id_operador){
+            $id_libros=$libros->pluck('id');
+            $secuencia=Secuencia::with('ordenesSecuenciaTotales.toma.libro:id,nombre,id_ruta')->whereIn('id_libro',$id_libros)->where('tipo_secuencia',"personalizada")->where('id_empleado',$id_operador)->get();
+            return $secuencia;
+        }
 }

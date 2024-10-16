@@ -4,11 +4,13 @@ namespace Database\Factories;
 
 use App\Models\Consumo;
 use App\Models\Factura;
+use App\Models\Lectura;
 use App\Models\Libro;
 use App\Models\Periodo;
 use App\Models\Tarifa;
 use App\Models\TarifaServiciosDetalle;
 use App\Models\Toma;
+use App\Services\Facturacion\FacturaService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -66,6 +68,7 @@ class PeriodoFactory extends Factory
                 'validacion_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
                 'recibo_inicio' => $periodo->startOfMonth(),  // Inicio de mes del periodo
                 'recibo_final' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
+                'vigencia_recibo' => $periodo->endOfMonth()->addDays(30),  // Fin de mes + 30 días del periodo
             ];
         });
     }
@@ -79,7 +82,7 @@ class PeriodoFactory extends Factory
     {
         return $this->afterCreating(function (Periodo $periodo) {
             $tomas = Toma::whereNotNull('c_agua')->get();
-
+            /* Cambiado por consumo
             foreach ($tomas as $toma) {
                 Factura::factory()->create([
                     'id_periodo' => $periodo->id,
@@ -90,6 +93,36 @@ class PeriodoFactory extends Factory
                     'fecha' => $periodo->periodo,
                 ]);
             }
+                */
+                foreach ($tomas as $toma) {
+                    if ($toma->estatus=="limitado" || $toma->estatus=="activa"  )
+                    if ($toma->tipo_servicio=="lectura"){
+                        $lectura=Lectura::create([
+                            "id_operador"=>1,
+                            "id_toma"=>$toma->id,
+                            "id_periodo"=>$periodo->id,
+                            "lectura"=>$this->faker->randomNumber(2),
+                            ]);
+                           Consumo::create([
+                            "id_toma"=>$toma->id,
+                            "id_periodo"=>$periodo->id,
+                            "id_lectura_actual"=>$lectura->id,
+                            "tipo"=>"lectura",
+                            "estado"=>"activo",
+                            "consumo"=>$lectura->lectura
+                           ]);
+                    }
+                    else{
+                        Consumo::create([
+                            "id_toma"=>$toma->id,
+                            "id_periodo"=>$periodo->id,
+                            "tipo"=>"promedio",
+                            "estado"=>"activo",
+                            "consumo"=>$this->faker->randomNumber(2)
+                           ]);
+                    }
+                 
+                } 
         });
     }
 }

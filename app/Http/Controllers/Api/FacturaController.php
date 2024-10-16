@@ -9,9 +9,10 @@ use App\Http\Requests\UpdateFacturaRequest;
 use App\Http\Resources\FacturaResource;
 use App\Services\Facturacion\FacturaService;
 use App\Services\Facturacion\indexFacturaServiceService;
+use ErrorException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Client\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class FacturaController extends Controller
@@ -40,9 +41,29 @@ class FacturaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreFacturaRequest $request)
+    public function store(Request $request) //StoreFacturaRequest ///No se usa
     {
         //$this->authorize('create', GiroComercialCatalogo::class); pendiente de permisos        
+        try{
+            DB::beginTransaction();
+            $data=$request->all()['periodos'];
+            $facturas = (new FacturaService())->storeFacturaPeriodo($data);
+            ///TO DO Recargos
+            ///TO DO Cargar Letras
+            DB::commit();
+            return response()->json(["facturas"=>$facturas],200);
+        }
+        catch(Exception | ErrorException $ex){
+            DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+        /*
        try {
         $data = $request->validated();
         DB::beginTransaction();
@@ -54,7 +75,54 @@ class FacturaController extends Controller
         return response()->json([
             'error' => 'Ocurrio un error al registrar la factura.'
         ], 500);
-       }              
+       }  
+        */            
+    }
+    public function storeToma($id_toma){
+        try{
+            DB::beginTransaction();
+            $facturas = (new FacturaService())->facturaracionPorToma($id_toma);
+            ///TO DO Recargos
+
+            ///TO DO Cargar Letras
+
+            DB::commit();
+            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1]],200);
+        }
+        catch(Exception | ErrorException $ex){
+            DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
+    }
+    public function storePeriodo(Request $request){
+        try{
+            DB::beginTransaction();
+            $data=$request['periodos'];
+            $facturas = (new FacturaService())->storeFacturaPeriodo($data);
+            //return $facturas;
+            ///TO DO Recargos
+
+            ///TO DO Cargar Letras
+
+            DB::commit();
+            return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1]],200);
+        }
+        catch(Exception | ErrorException $ex){
+            DB::rollBack();
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(["error"=>"Error de peticion. ".$ex],400);
+            }
+            else{
+                return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+            }
+        }
     }
 
     /**
@@ -96,8 +164,9 @@ class FacturaController extends Controller
         try {
            DB::beginTransaction();
            $factura = (new FacturaService())->facturaPorTomaService($idToma);   
-           DB::commit();      
            return $factura;
+           DB::commit();      
+           return response(new FacturaResource($factura), 200);
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
