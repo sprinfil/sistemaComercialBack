@@ -164,8 +164,9 @@ class FacturaController extends Controller
         try {
            DB::beginTransaction();
            $factura = (new FacturaService())->facturaPorTomaService($idToma);   
-           DB::commit();      
            return $factura;
+           DB::commit();      
+           return response(new FacturaResource($factura), 200);
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
