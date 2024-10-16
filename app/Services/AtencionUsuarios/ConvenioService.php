@@ -209,6 +209,7 @@ class ConvenioService
       $letrasCargo = [];
 
       if ($convenio->pago_inicial > 0) {
+
         $letrasArray = [
           "id_convenio" => $convenio->id, //crear el numero de la letra
           "estado" => "pendiente",
@@ -219,8 +220,32 @@ class ConvenioService
         ];
         $letra = Letra::create($letrasArray);
         $letrasCargo =  $letra;
-      }
 
+        $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
+        $fecha = helperFechaAhora();
+        $fecha = Carbon::parse($fecha)->format('Y-m-d');
+
+        $RegistroCargo = [
+          "id_concepto" => $concepto->id,
+          "nombre" => $concepto->nombre,
+
+          "id_origen" => $letrasCargo['id'],
+          "modelo_origen" => 'letra',
+
+          "id_dueno" => $data['id_modelo'],
+          "modelo_dueno" => $data['modelo_origen'],
+
+          "monto" => $letrasCargo['monto'],
+          "iva" => 0,
+          "estado" => 'pendiente',
+          "id_convenio" => null,
+
+          "fecha_cargo" => $fecha,
+          "fecha_liquidacion" => null,
+
+       ];
+      $cargo = Cargo::create($RegistroCargo);
+      }
 
       for ($i = 0; $i < $data['cantidad_letras']; $i++) {
 
@@ -251,34 +276,6 @@ class ConvenioService
 
         $fechaCobro->add($mensualidad);
       }
-
-      //Aqui van los cargos to do pendiente el concepto que se le asigna al convenio debe estar definido en una configuracion 
-
-      $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
-      $fecha = helperFechaAhora();
-      $fecha = Carbon::parse($fecha)->format('Y-m-d');
-
-      $RegistroCargo = [
-        "id_concepto" => $concepto->id,
-        "nombre" => $concepto->nombre,
-
-        "id_origen" => $letrasCargo['id'],
-        "modelo_origen" => 'letra',
-
-        "id_dueno" => $data['id_modelo'],
-        "modelo_dueno" => $data['modelo_origen'],
-
-        "monto" => $letrasCargo['monto'],
-        "iva" => 0,
-        "estado" => 'pendiente',
-        "id_convenio" => null,
-
-        "fecha_cargo" => $fecha,
-        "fecha_liquidacion" => null,
-
-      ];
-      $cargo = Cargo::create($RegistroCargo);
-
 
       return json_encode($ArregloLetras);
     } catch (Exception $ex) {
@@ -487,7 +484,7 @@ class ConvenioService
           ->where('estado','pendiente')->get();
 
           //Si se deben 3 cargos de facturacion o si el pago inicial esta pendiente
-          if ($cargosFacturacion->count() > 2 || $pagoIniResp == 'pendiente') {
+          if ($cargosFacturacion->count() > 3 || $pagoIniResp == 'pendiente') {
             
             //Llama al metodo de cancelacion automatica
             $this->cancelacionAutomatica($convenio->id);
