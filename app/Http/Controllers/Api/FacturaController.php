@@ -105,13 +105,12 @@ class FacturaController extends Controller
             DB::beginTransaction();
             $data=$request['periodos'];
             $facturas = (new FacturaService())->storeFacturaPeriodo($data);
-            return $facturas;
             //return $facturas;
             ///TO DO Recargos
 
             ///TO DO Cargar Letras
 
-            DB::rollBack();
+            DB::commit();
             return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1]],200);
         }
         catch(Exception | ErrorException $ex){
