@@ -25,6 +25,9 @@ class Secuencia extends Model
     public function ordenesSecuenciaCero():HasMany{
         return $this->hasMany(Secuencia_orden::class,'id_secuencia')->where('numero_secuencia',0);
     }
+    public function ordenesSecuenciaTotales():HasMany{
+        return $this->hasMany(Secuencia_orden::class,'id_secuencia')->orderBy('numero_secuencia', 'asc');
+    }
     public function secuenciasPersonalizadas():HasMany{
         return $this->hasMany(Secuencia::class,'id_secuencia_padre');
     }

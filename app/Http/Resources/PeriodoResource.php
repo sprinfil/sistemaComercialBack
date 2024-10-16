@@ -31,6 +31,7 @@ class PeriodoResource extends JsonResource
             "validacion_final" => $this->validacion_final,
             "recibo_inicio" => $this->recibo_inicio,
             "recibo_final" => $this->recibo_final,
+            "vigencia_recibo"=> $this->vigencia_recibo,
             "estatus" => $this->estatus,
             'facturas' => FacturaResource::collection($this->whenLoaded('factura')),
             //'carga_trabajo' => CargaTrabajoResource::collection($this->whenLoaded('cargaTrabajo')),
