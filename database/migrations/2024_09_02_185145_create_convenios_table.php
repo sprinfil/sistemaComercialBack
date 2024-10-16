@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('monto_total')->nullable();
             $table->enum('periodicidad', ['mensual', 'quincenal']);
             $table->integer('cantidad_letras');
-            $table->enum('estado', ['activo', 'cancelado', 'incumplido']);
+            $table->enum('estado', ['activo', 'cancelado', 'incumplido','cargado','concluido']);
             $table->string('comentario')->nullable();
             $table->string('motivo_cancelacion')->nullable();
             $table->decimal('pago_inicial')->nullable();
