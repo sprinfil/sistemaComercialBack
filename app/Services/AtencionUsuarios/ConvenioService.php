@@ -500,7 +500,7 @@ class ConvenioService
         if($pagoIniResp == 'saldado' || $pagoIniResp == null )
         {
            //Obtiene las letras asociadas al convenio que sean de tipo letra
-           $letras = $convenio->Letra->where('tipo_letra','letra');
+           $letras = $convenio->Letra->where('tipo_letra','letra')->where('estado','pendiente');
 
            //Recorre todos los registros de letras asociadas al convenio
           foreach ($letras as $letra) {
@@ -635,7 +635,7 @@ class ConvenioService
         $letrasPendientes = Letra::where('id_convenio',$letraPagada->id_convenio)->where('estado','pendiente')->get();
 
         if (count($letrasPendientes) == 0) {
-          Convenio::where('id', $letraPagada->convenio)->update((['estado'=>'concluido']));
+          Convenio::where('id', $letraPagada->convenio->id)->update((['estado'=>'concluido']));
         }
         
       }
