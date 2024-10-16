@@ -24,11 +24,16 @@ class Multa extends Model
         'motivo',
         'fecha_solicitud',
         'fecha_revision',
+        'monto',
         'estado'
     ];
 
     public function operador_multa() : BelongsTo {
         return $this->belongsTo(Operador::class , 'id_operador' , 'id');
+    }
+    public function operador()
+    {
+        return $this->belongsTo(Operador::class, 'id_operador', 'id');
     }
 
     public function operador_revisor() : BelongsTo {
@@ -42,5 +47,8 @@ class Multa extends Model
     public function origen(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo_multado', 'id_multado');
+    }
+    public function cargos() : MorphMany {
+        return $this->morphMany(Cargo::class, 'origen' , 'modelo_origen' , 'id_origen');
     }
 }

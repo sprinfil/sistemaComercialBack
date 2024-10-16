@@ -197,7 +197,7 @@ class RutaController extends Controller
                     foreach ($tomasDentroDelPoligono as $toma) {
                         $toma->id_libro = $libro->id;
                         $toma->save();
-                        if ($toma->estatus=="activa" && $toma->c_agua!=null && $toma->c_agua!=0){
+                        if ($toma->estatus!="baja definitiva" && $toma->c_agua!=null && $toma->c_agua!=0){
                             $orden[]=[
                                 "id_toma"=>$toma->id,
                                 "numero_secuencia"=>$i++,

@@ -41,6 +41,49 @@ class MultaController extends Controller
             ], 500);
         }
     }
+    
+    public function monitordemultas ()
+    {
+        try {
+            $monitor = (new MultaService())->monitordemultas();
+            return $monitor;
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrio un error al buscar las multas. '
+            ], 500);
+        }
+    }
+
+    public function modificarmulta (UpdateMultaRequest $request , $id)
+    {
+        try {
+            $data = $request->validated();
+            DB::beginTransaction();
+            $multa = $this->multa->modificarmulta($data , $id);
+            DB::commit();
+            return $multa;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al editar la multa' .$ex->getMessage()
+            ], 500);
+        }
+    }
+    public function cancelarmulta ($id)
+    {
+        try {
+            //$data = $request->validate();
+            DB::beginTransaction();
+            $cancelar = $this->multa->cancelarmulta($id);
+            DB::commit();
+            return $cancelar;
+        } catch (Exception $ex) {
+           DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error al cancelar la multa. ' .$ex->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -124,7 +167,15 @@ class MultaController extends Controller
             $id_catalogo_multa = $request->input('id_catalogo_multa');
             $codigo_usuario = $request->input('codigo_usuario');
             $codigo_toma = $request->input('codigo_toma');
-            $multadueno = (new MultaService())->consultarmulta($modelo_multado, $id_multado, $id_catalogo_multa , $codigo_usuario , $codigo_toma);
+            $fecha_solicitud = $request->input('fecha_solicitud');
+            $fecha_revision = $request->input('fecha_revision');
+            $tipo_toma = $request->input('tipo_toma');
+            $tipo_multa = $request->input('tipo_multa');
+            $multadueno = (new MultaService())
+            ->consultarmulta($modelo_multado, $id_multado, 
+            $id_catalogo_multa , $codigo_usuario ,
+            $codigo_toma ,$fecha_solicitud , 
+            $tipo_toma, $tipo_multa , $fecha_revision);
             return $multadueno;
         } catch (Exception $ex) {
            return response()->json([

@@ -22,7 +22,16 @@ class UpdateMultaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+            //'id_multado' => 'required|integer',
+            //'id_catalogo_multa' => 'required|integer',
+            //'id_operador' => 'integer',
+            //'id_revisor' => 'required|integer',
+            //'modelo_multado' => 'required|string',
+            //'motivo' => 'nullable|string',
+            //'fecha_solicitud' => 'required|date',
+            //'fecha_revision' => 'required|date',
+            'monto' => 'required|integer|min:0',
+            'estado' => 'required|in:activo,rechazado,pendiente,cancelado'
         ];
     }
 }

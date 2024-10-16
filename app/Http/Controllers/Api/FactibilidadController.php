@@ -19,6 +19,7 @@ use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use ErrorException;
 
 class FactibilidadController extends Controller
 {
@@ -41,8 +42,10 @@ class FactibilidadController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Factibilidad $factibilidad, StoreFactibilidadRequest $request)
+    public function store(Factibilidad $factibilidad, StoreFactibilidadRequest $request) //
     {
+        
+        
         try {
             $data = $request->validated();
             $data['estado'] = 'sin revisar';
@@ -56,6 +59,7 @@ class FactibilidadController extends Controller
                 'error' => 'No se pudo guardar la factibilidad' . $e
             ], 500);
         }
+            
     }
 
     /**
