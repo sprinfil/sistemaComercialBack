@@ -111,8 +111,12 @@ class FacturaService{
         $costo_Agua=0;  
         $costo_alc=0;  
         $costo_san=0;  
+        $consumo_agua=$consumo['consumo'];
+        if  ($consumo_agua<17){
+            $consumo_agua=17;
+        }
       if ($toma['c_agua']!==null){
-        $costo_Agua=$tarifaToma['agua']*$consumo['consumo'];
+        $costo_Agua=$tarifaToma['agua']*$consumo_agua;
     
       }
       if ($toma['c_alc']!==null){
