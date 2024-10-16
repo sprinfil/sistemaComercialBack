@@ -33,6 +33,7 @@ class MultaResource extends JsonResource
             'tipo_toma'=>$this->origen->tipoToma->nombre ?? null,
             'clave_catastral'=>$this->origen->clave_catastral ?? null,
             'calle'=>$this->origen->calle ?? null,
+            'direccion'=>$this->origen->getDireccionCompleta(),
             'entre_calle_1'=>$this->origen->entre_calle_1 ?? null,
             'entre_calle_2'=>$this->origen->entre_calle_2 ?? null,
             'colonia'=>$this->origen->colonia ?? null,
