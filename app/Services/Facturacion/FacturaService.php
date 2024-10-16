@@ -254,8 +254,11 @@ class FacturaService{
 
     public function facturaPorTomaService(string $idToma)
     {      //obtiene la factura mas reciente de la toma
-        $factura = Factura::where('id_toma',$idToma)->latest()->first();         
+        $factura = Factura::where('id_toma',$idToma)->latest()->get();         
         return response(new FacturaResource($factura), 200);
+    }
+    public function facturasShow($id_toma){
+
     }
 
 
