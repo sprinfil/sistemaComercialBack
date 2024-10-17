@@ -24,9 +24,7 @@ class ValidacionController extends Controller
     {
         try {
             //$data = $request->validate();
-            DB::beginTransaction();
             $anomalias = $this->validacion->anomaliasperiodo($id);
-            DB::commit();
             return $anomalias;
         } catch (Exception $ex) {
            DB::rollBack();
