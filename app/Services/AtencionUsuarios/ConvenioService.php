@@ -221,7 +221,7 @@ class ConvenioService
         $letra = Letra::create($letrasArray);
         $letrasCargo =  $letra;
 
-        $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
+        $concepto = ConceptoCatalogo::find(149); //to do arreglar consulta
         $fecha = helperFechaAhora();
         $fecha = Carbon::parse($fecha)->format('Y-m-d');
 
@@ -459,6 +459,7 @@ class ConvenioService
     }
   }
 
+  //Alan
   public function crearCargoLetraService(int $id_toma)
   {
     try {
@@ -477,14 +478,14 @@ class ConvenioService
       // si la toma tiene un convenio
       if ($convenio) {
         //Si el convenio es del tipo de cancelacion automatica
-        if ($tipo_cancelacion->tipo_cancelacion == "automatica") {
+        if ($tipo_cancelacion->tipo_cancelacion == "automatica") { 
          
           //Obtiene los cargos de facturacion pendientes asociados a esta toma
            $cargosFacturacion = Cargo::where('modelo_dueno','toma')->where('id_dueno',$id_toma)->where('modelo_origen','facturacion')
           ->where('estado','pendiente')->get();
 
           //Si se deben 3 cargos de facturacion o si el pago inicial esta pendiente
-          if ($cargosFacturacion->count() > 3 || $pagoIniResp == 'pendiente') {
+          if ($cargosFacturacion->count() > 3 || $pagoIniResp == 'pendiente') { //Alan si entra a este if se cancela el convenio
             
             //Llama al metodo de cancelacion automatica
             $this->cancelacionAutomatica($convenio->id);
@@ -508,7 +509,7 @@ class ConvenioService
             //Si la letra no cuenta con un cargo asociado
             if (count($cargoAsociado) == 0) {
               //Obtiene el concepto de letra
-              $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
+              $concepto = ConceptoCatalogo::find(149); //to do arreglar consulta
               //Obtiene la fecha del servidor
               $fecha = helperFechaAhora();
               //Le da a la fecha el formato de year/month/day
@@ -605,7 +606,7 @@ class ConvenioService
 
         Pago::whereIn('id', $arregloPagosIds)->update(['estado' => 'pendiente']);
         //to do falta arreglar el metodo de pagos 
-        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
+        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen); //Alan mira esta linea, se tiene que mover si es cancelacion automatica
         DB::commit();
       } else {
         DB::rollBack();
@@ -621,6 +622,7 @@ class ConvenioService
     }
   }
 
+  //Mike
   public function pagoLetraService(int $id_Cargo)
   {
     try {
