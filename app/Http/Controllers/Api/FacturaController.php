@@ -89,7 +89,7 @@ class FacturaController extends Controller
             ///TO DO Recargos
             $recargos=(new FacturaService())->Recargos($toma);
             ///TO DO Cargar Letras
-            DB::rollBack(); ///probar
+            DB::commit(); ///probar
             return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1],"Recargos"=>$recargos],200);
         }
         catch(Exception | ErrorException $ex){
