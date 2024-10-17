@@ -108,38 +108,57 @@ class FacturaService{
     }
 
     public function facturar($toma,$tarifaToma,$periodo,$consumo){
-        $costo_Agua=0;  
-        $costo_alc=0;  
-        $costo_san=0;  
-        $consumo_agua=$consumo['consumo'];
-        if  ($consumo_agua<17){
-            $consumo_agua=17;
-        }
-      if ($toma['c_agua']!==null){
-        $costo_Agua=$tarifaToma['agua']*$consumo_agua;
+      
+        if ($toma['estatus']=="activa" || $toma['estatus']=="limitado"){
+            $costo_Agua=0;  
+            $costo_alc=0;  
+            $costo_san=0;  
+            $consumo_agua=$consumo['consumo'];
+            if  ($consumo_agua<17){
+                $consumo_agua=17;
+            }
+          if ($toma['c_agua']!==null){
+            $costo_Agua=$tarifaToma['agua']*$consumo_agua;
+        
+          }
+          if ($toma['c_alc']!==null){
+            $costo_alc=$tarifaToma['alcantarillado']*$consumo['consumo'];
+      
+          }
+          if ($toma['c_san']!==null){
+            $costo_san=$tarifaToma['saneamiento']*$consumo['consumo'];
     
-      }
-      if ($toma['c_alc']!==null){
-        $costo_alc=$tarifaToma['alcantarillado']*$consumo['consumo'];
-  
-      }
-      if ($toma['c_san']!==null){
-        $costo_san=$tarifaToma['saneamiento']*$consumo['consumo'];
+          }
+          $total_facturacion=$costo_Agua+$costo_alc+$costo_san;
+          //guardar excepciones en una tabla de proceso
+          $facturaInser=[
+            "id_periodo"=>$periodo['id'],
+            "id_toma"=>$toma['id'],
+            "id_consumo"=>$consumo['id'],
+            "id_tarifa_servicio"=>$tarifaToma['id'],
+            "monto"=>$total_facturacion,
+            "fecha"=>Carbon::parse(helperFechaAhora(),'GMT-7')->format('Y-m-d'),
+          ];
+          $factura=Factura::create($facturaInser);
+          ///Cambiar create  por insert
+          $cargoFactura=$this->CargoFactura($factura,$toma,$costo_Agua,$costo_alc, $costo_san,$periodo);
+        }
+        else{
+            $total_facturacion=0;
+            $facturaInser=[
+                "id_periodo"=>$periodo['id'],
+                "id_toma"=>$toma['id'],
+                "id_consumo"=>$consumo['id'],
+                "id_tarifa_servicio"=>$tarifaToma['id'],
+                "monto"=>$total_facturacion,
+                "fecha"=>Carbon::parse(helperFechaAhora(),'GMT-7')->format('Y-m-d'),
+              ];
+              $factura=Factura::create($facturaInser);
+              ///Cambiar create  por insert
+              $cargoFactura=null;
+        }
+       
 
-      }
-      $total_facturacion=$costo_Agua+$costo_alc+$costo_san;
-      //guardar excepciones en una tabla de proceso
-      $facturaInser=[
-        "id_periodo"=>$periodo['id'],
-        "id_toma"=>$toma['id'],
-        "id_consumo"=>$consumo['id'],
-        "id_tarifa_servicio"=>$tarifaToma['id'],
-        "monto"=>$total_facturacion,
-        "fecha"=>Carbon::parse(helperFechaAhora(),'GMT-7')->format('Y-m-d'),
-      ];
-      $factura=Factura::create($facturaInser);
-        ///Cambiar create  por insert
-        $cargoFactura=$this->CargoFactura($factura,$toma,$costo_Agua,$costo_alc, $costo_san,$periodo);
       return [$factura,$cargoFactura];
     }
     public function CargoFactura($factura,$toma,$costo_agua,$costo_alc,$costo_san,$periodo){
@@ -207,7 +226,7 @@ class FacturaService{
     }
 
     public function facturaracionPorToma($id_toma){//facturacion toma individual
-        $toma=Toma::find($id_toma);
+        $toma=$id_toma;
         $libro= $toma->libro;
         $ruta=$libro->tieneRuta;
         $periodo=$ruta->PeriodoActivo;
@@ -226,6 +245,7 @@ class FacturaService{
         //dispatch(new FacturacionTomaJob($toma));
         $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
         $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+
        
             //metodo para aplicar descuentos
 
@@ -233,7 +253,7 @@ class FacturaService{
 
         return $facturaToma;
     }
-    public function Refacturacion($idToma){
+    public function Refacturacion($idToma){ /// pendiente
         $toma=Toma::find($idToma);
         $libro= $toma->libro;
         $ruta=$libro->tieneRuta;
@@ -267,8 +287,49 @@ class FacturaService{
         }        
               
     }
-    public function Recargos($id_toma,$id_periodoActual,$id_FacturaActual){
+    public function Recargos($toma){
 
+        ///Checar facturaciones pasadas a presente
+        ///importe recargos id=10
+        $facturas=$toma->CargosFacturasVigentes->groupBy('id_origen');
+        $meses_adeudo=count($facturas)-1;
+        $totales=[];
+        $concepto_recargos=ConceptoCatalogo::getRecargos();
+        foreach ($facturas as $factura){
+            $total = 0;
+            foreach ($factura as $monto){
+                //$total+=$monto['monto'];
+                $total+=$monto->montoPendiente(false);
+            }
+        
+            $recargos=Cargo::where('id_origen',$factura[0]->id_origen)->where('modelo_origen', $factura[0]->modelo_origen)->where('id_concepto',$concepto_recargos->id)->where('estado','!=','cancelado')->where('estado','!=','conveniado')->get();
+            $meses_recargos=$meses_adeudo-count($recargos); ///meses de adeudo menos meses ya recargados
+            for ($i=0;$i<$meses_adeudo;$i++){
+                $recargo_monto=$total*0.03;
+                $cargoInsert=[
+                    "id_concepto"=>$concepto_recargos->id,
+                    "nombre"=>"Recargo", //agregar facturacion y mes
+                    "id_origen"=>$factura[0]->id_origen,
+                    "modelo_origen"=>"facturacion",
+                    "id_dueno"=>$toma->id,
+                    "modelo_dueno"=>"toma",
+                    "monto"=>$recargo_monto,
+                    "iva"=>0,
+                    "estado"=>"pendiente",
+                    "fecha_cargo"=>Carbon::parse(helperFechaAhora(),"GMT-7")->format('Y-m-d'),
+                ];
+                $cargo=Cargo::create($cargoInsert);
+                return $cargo;
+            }
+     
+   
+            //$totales[]=$total;
+           
+        }
+        ///Recorrer facturaciones vigentes
+
+        //Generar el recargo en base a meses adeudados
+        return $facturas;
     }
 
     public function showFacturaService(string $id)

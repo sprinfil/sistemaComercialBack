@@ -197,6 +197,10 @@ class Toma extends Model
     {
         return $this->hasMany(Factura::class, 'id_toma');
     }
+    
+    public function CargosFacturasVigentes():MorphMany{
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente')->where('modelo_origen','facturacion')->where('id_concepto','!=',10); //->where('id_concepto','!=','10')
+    }
     public function TarifaContrato()
     {
         return $this->id;
