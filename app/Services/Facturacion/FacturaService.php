@@ -291,20 +291,21 @@ class FacturaService{
 
         ///Checar facturaciones pasadas a presente
         ///importe recargos id=10
-        $facturas=$toma->CargosFacturasVigentes->groupBy('id_origen');
-        $meses_adeudo=count($facturas)-1;
-        $totales=[];
+        $facturas=$toma->CargosFacturasVigentes->groupBy('id_origen')->skip(1);
+        $cargos=[];
         $concepto_recargos=ConceptoCatalogo::getRecargos();
+        $meses_adeudo=1;
         foreach ($facturas as $factura){
+
             $total = 0;
             foreach ($factura as $monto){
                 //$total+=$monto['monto'];
                 $total+=$monto->montoPendiente(false);
             }
-        
-            $recargos=Cargo::where('id_origen',$factura[0]->id_origen)->where('modelo_origen', $factura[0]->modelo_origen)->where('id_concepto',$concepto_recargos->id)->where('estado','!=','cancelado')->where('estado','!=','conveniado')->get();
+            $recargos=Cargo::where('id_origen',$factura[0]->id_origen)->where('modelo_origen', $factura[0]->modelo_origen)->where('id_concepto',$concepto_recargos->id)->where('estado','!=','cancelado')->get();
             $meses_recargos=$meses_adeudo-count($recargos); ///meses de adeudo menos meses ya recargados
-            for ($i=0;$i<$meses_adeudo;$i++){
+            //return $meses_recargos;
+            for ($i=0;$i<$meses_recargos;$i++){
                 $recargo_monto=$total*0.03;
                 $cargoInsert=[
                     "id_concepto"=>$concepto_recargos->id,
@@ -319,17 +320,15 @@ class FacturaService{
                     "fecha_cargo"=>Carbon::parse(helperFechaAhora(),"GMT-7")->format('Y-m-d'),
                 ];
                 $cargo=Cargo::create($cargoInsert);
-                return $cargo;
+                $cargos[]=$cargo;
+          
             }
-     
-   
-            //$totales[]=$total;
-           
+            $meses_adeudo++;
         }
         ///Recorrer facturaciones vigentes
 
         //Generar el recargo en base a meses adeudados
-        return $facturas;
+        return $cargos;
     }
 
     public function showFacturaService(string $id)

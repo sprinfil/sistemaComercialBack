@@ -199,7 +199,7 @@ class Toma extends Model
     }
     
     public function CargosFacturasVigentes():MorphMany{
-        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente')->where('modelo_origen','facturacion')->where('id_concepto','!=',10); //->where('id_concepto','!=','10')
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente')->where('modelo_origen','facturacion')->where('id_concepto','!=',10)->orderBy('created_at', 'desc'); //->where('id_concepto','!=','10')
     }
     public function TarifaContrato()
     {
