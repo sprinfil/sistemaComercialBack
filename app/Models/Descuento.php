@@ -16,6 +16,7 @@ class Descuento extends Model
         "id_descuento_aplicado",
         "id_descuento_asociado",
         "monto_total",
+        "estado",
     ];
 
     // Tipo asociado al descuento

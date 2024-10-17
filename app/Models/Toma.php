@@ -284,4 +284,10 @@ class Toma extends Model
     {
         return $this->morphMany(Constancia::class, 'origen', 'modelo_dueno', 'id_dueno');
     }
+
+    public function descuentoAsociado(): HasOne
+    {
+        return $this->hasOne(DescuentoAsociado::class, 'id_modelo','id');
+    }
+
 }
