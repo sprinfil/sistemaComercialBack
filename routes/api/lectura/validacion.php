@@ -8,5 +8,6 @@ Route::middleware(['api', 'audit'])->group(function () {
     Route::controller(ValidacionController::class)->group(function(){
       Route::get("/validacion/periodo/{id}" , "consumosperiodo");
       Route::post("/validacion/consumo/registrarconsumo" , "registrarconsumo");
+      Route::post("/valiacion/consumo/promediar" , "promediar");
     });
 });
