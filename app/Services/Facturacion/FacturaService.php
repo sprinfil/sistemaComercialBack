@@ -267,6 +267,9 @@ class FacturaService{
         }        
               
     }
+    public function Recargos($id_toma,$id_periodoActual,$id_FacturaActual){
+
+    }
 
     public function showFacturaService(string $id)
     {
