@@ -29,7 +29,7 @@ class ValidacionService{
                         }
                     }
                 }
-            } 
+            }
             //se devuelve las tomas con sus consumos
             return $tomasConConsumos->isNotEmpty() ? $tomasConConsumos : response()->json([
                 'message' => 'No se encontraron tomas con consumos para este periodo'
