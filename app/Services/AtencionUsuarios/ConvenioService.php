@@ -221,7 +221,7 @@ class ConvenioService
         $letra = Letra::create($letrasArray);
         $letrasCargo =  $letra;
 
-        $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
+        $concepto = ConceptoCatalogo::find(149); //to do arreglar consulta
         $fecha = helperFechaAhora();
         $fecha = Carbon::parse($fecha)->format('Y-m-d');
 
@@ -459,6 +459,7 @@ class ConvenioService
     }
   }
 
+  //Alan
   public function crearCargoLetraService(int $id_toma)
   {
     try {
@@ -508,7 +509,7 @@ class ConvenioService
             //Si la letra no cuenta con un cargo asociado
             if (count($cargoAsociado) == 0) {
               //Obtiene el concepto de letra
-              $concepto = ConceptoCatalogo::find(148); //to do arreglar consulta
+              $concepto = ConceptoCatalogo::find(149); //to do arreglar consulta
               //Obtiene la fecha del servidor
               $fecha = helperFechaAhora();
               //Le da a la fecha el formato de year/month/day
@@ -621,6 +622,7 @@ class ConvenioService
     }
   }
 
+  //Mike
   public function pagoLetraService(int $id_Cargo)
   {
     try {

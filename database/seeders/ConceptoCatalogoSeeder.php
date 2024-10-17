@@ -1699,6 +1699,18 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 0,
                 "tarifa_fija" => 0,
             ],
+            [
+                "nombre" => "Descuento Pensionados 50%",
+                "descripcion" => "Descuento de pensionados",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 1,
+                "prioridad_por_antiguedad" => 1,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
+            ],
             // Agrega más elementos aquí según sea necesario
         ];
 

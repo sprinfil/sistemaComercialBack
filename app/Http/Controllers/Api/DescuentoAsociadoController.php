@@ -152,4 +152,43 @@ class DescuentoAsociadoController extends Controller
         }
     }
 
+
+    //Metodos de descuentos asociados a la facturacion
+    //Este metodo va comentado to do pendiente
+    public function facturarDescuentoPruebas(Request $request)
+    {
+        try {
+            $id_toma = $request->input('id_toma');
+            $id_facturacion = $request->input('id_facturacion');
+            DB::beginTransaction();
+            $descuento = (new DescuentoAsociadoService())->facturarCndescuento($id_toma, $id_facturacion);
+            DB::commit();
+            return $descuento;
+        } catch (Exception $ex) {
+            DB::rollBack();
+          return response()->json([
+            'message' => 'Ocurrio un error al facturar los descuentos .'
+        ]); 
+        }
+    }
+
+     //Este metodo va comentado to do pendiente
+     public function cancelarDescuentoPruebas(Request $request)
+     {
+         try {
+             
+             $id_toma = $request->input('id_toma');
+             $id_facturacion = $request->input('id_facturacion');
+             DB::beginTransaction();
+             $descuento = (new DescuentoAsociadoService())->cancelarDecuento($id_toma, $id_facturacion);
+             DB::commit();
+             return $descuento;
+         } catch (Exception $ex) {
+             DB::rollBack();
+           return response()->json([
+             'message' => 'Ocurrio un error al cancelar los descuentos .'
+         ]); 
+         }
+     }
+
 }
