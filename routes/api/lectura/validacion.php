@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['api', 'audit'])->group(function () {
     // solicitud de correcciones
     Route::controller(ValidacionController::class)->group(function(){
-      Route::get("/validacion/periodo/{id}" , "anomaliasperiodo");
+      Route::get("/validacion/periodo/{id}" , "consumosperiodo");
+      Route::post("/validacion/consumo/registrarconsumo" , "registrarconsumo");
     });
 });
