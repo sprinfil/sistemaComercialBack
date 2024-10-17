@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ConceptoCatalogoSeeder::class);
         //
         $this->call(RutaSeeder::class);
+        $this->call(LibroSeeder::class);
         //
         $this->call(DescuentosSeeder::class);
         // 
