@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreConsumoRequest;
 use App\Services\Lectura\ValidacionService;
 use Exception;
 use Illuminate\Http\Request;
@@ -20,16 +21,37 @@ class ValidacionController extends Controller
         $this->validacion = $_validacion;
     }
 
-    public function anomaliasperiodo ($id)
+    public function consumosperiodo ($id)
     {
         try {
             //$data = $request->validate();
-            $anomalias = $this->validacion->anomaliasperiodo($id);
+            $anomalias = $this->validacion->consumosperiodo($id);
             return $anomalias;
         } catch (Exception $ex) {
            DB::rollBack();
             return response()->json([
-                'error' => 'Ocurrio un error al mostrar las anomalias. ' .$ex->getMessage()
+                'error' => 'Ocurrio un error al mostrar las tomas. ' .$ex->getMessage()
+            ], 500);
+        }
+    }
+
+    public function registrarconsumo (Request $request)
+    {
+        try {
+            $consumo = $request->input('consumo');
+            $id_toma = $request->input('id_toma');
+            $id_periodo = $request->input('id_periodo');
+            $data = [
+                'consumo' => $consumo,
+            ];
+            DB::beginTransaction();
+            $registrarconsumo = $this->validacion->registrarconsumo($data , $id_toma , $id_periodo);
+            DB::commit();
+            return $registrarconsumo;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error registrar el consumo ' .$ex->getMessage()
             ], 500);
         }
     }
