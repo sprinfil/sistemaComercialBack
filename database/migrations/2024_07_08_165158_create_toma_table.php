@@ -35,7 +35,7 @@ return new class extends Migration
             $table->unsignedBigInteger('c_san')->nullable();
             $table->enum('tipo_contratacion', ['normal', 'condicionado', 'pre-contrato']);
             $table->date('fecha_instalacion')->nullable();
-            $table->point('posicion')->nullable();
+            $table->point('posicion')->nullable(); 
             $table->softDeletes();
             $table->timestamps();
         });
