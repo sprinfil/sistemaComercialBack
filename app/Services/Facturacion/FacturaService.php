@@ -229,6 +229,28 @@ class FacturaService{
 
         return $facturaToma;
     }
+    public function Refacturacion($idToma){
+        $toma=Toma::find($idToma);
+        $libro= $toma->libro;
+        $ruta=$libro->tieneRuta;
+        $periodo=$ruta->PeriodoActivo;
+        $tarifa=$periodo->tarifa;
+        ///facturacion_arreglo
+        ///cargos_facturacion_arreglo
+        $ExisteFactura=Factura::where('id_periodo',$periodo['id'])->where('id_toma',$toma['id'])->first();
+        if ($ExisteFactura){
+            $ExistenCargos=Cargo::where('id_origen',$ExisteFactura['id'])->get();
+            if (count($ExistenCargos)!=0){
+                throw new ErrorException("No se puede facturar una toma con una facturación vigente dentro del mismo periodo");
+            }
+        }
+               
+        $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
+        //dispatch(new FacturacionTomaJob($toma));
+        $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
+        $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+        
+    }
     public function updateFacturaService(array $data, string $id)
     {
                //pendiente metodo de refacturacion
