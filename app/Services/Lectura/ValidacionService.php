@@ -80,45 +80,47 @@ class ValidacionService{
     public function promediar ($id_toma , $id_periodo)
     {
         try {
-            $periodo = Periodo::findOrFail($id_periodo);
-            $toma = Toma::find($id_toma);
-            if (!$toma) {
-               return response()->json([
-                'message' => 'No se encontró la toma. '
-               ] , 404);
-            }
-            $consumosanteriores = Consumo::where('id_toma' , $id_toma)
-            ->whereHas('periodo' , function($query) use ($periodo){
-                $query->where('validacion_inicio' , '<' , $periodo->validacion_final);
-            })
-            ->get();
-            //Si no tiene consumos, tambien se promedia con 17 metros. 
-            $valorminimo = 17;
-            
-            if ($consumosanteriores->isEmpty()) {
-                return response()->json([
-                    'message' => 'Se promedio con el consumo minimo',
-                    'consumo' => $valorminimo
-                   ] , 200);
-            }
-            $totalconsumo = 0;
-            $count = 0;
-            foreach ($consumosanteriores as $promedio) {
-                if ($promedio->id_lectura_anterior !== null && $promedio->id_lectura_actual !== null) {
-                    $lecturaAnterior = $promedio->id_lectura_anterior;
-                    $lecturaActual = $promedio->id_lectura_actual;
-                    //calcula el consumo de este periodo.
-                    $consumopromedio = $lecturaActual - $lecturaAnterior;
-                    //Se suma el total de los consumos.
-                    $totalconsumo += $consumopromedio;
-                    $count++;
-                }
-            }
-            $promedioconsumo = $totalconsumo / $count;
-            return response()->json([
-                'message' => 'Promedio calculado',
-                'promedio' => $promedioconsumo,
-            ],200);
+       // Buscar el periodo y la toma
+       $periodoActual = Periodo::findOrFail($id_periodo);
+       $toma = Toma::find($id_toma);
+
+       if (!$toma) {
+           return response()->json(['message' => 'No se encontró la toma.'], 404);
+       } 
+       /* 
+       $consumoExistente = Consumo::where('id_toma', $id_toma)
+       ->where('id_periodo', $id_periodo)
+       ->first();
+       if ($consumoExistente) {
+        return response()->json([
+            'message' => 'Ya existe un consumo registrado para esta toma en este periodo.'
+        ], 400);
+       } 
+        */
+       //Obtener consumos anteriores de la toma en periodos anteriores al actual
+       $consumosAnteriores = Consumo::where('id_toma', $id_toma)
+           ->whereHas('periodo', function($query) use ($periodoActual) {
+               $query->where('validacion_inicio', '<', $periodoActual->validacion_final);
+           })
+           ->pluck('consumo');  // Obtener sólo los valores de consumo
+
+       $valorMinimo = 17;
+
+       $promedioConsumo = $consumosAnteriores->isEmpty() 
+           ? $valorMinimo  //Si no tiene consumos, se usa el valor minimo
+           : $consumosAnteriores->avg(); //calcula el promedio
+
+       $nuevoConsumo = Consumo::create([
+           'id_toma' => $id_toma,
+           'id_periodo' => $id_periodo,
+           'consumo' => $promedioConsumo
+       ]);
+
+       return response()->json([
+           'message' => 'Consumo registrado exitosamente.',
+           'promedio' => $promedioConsumo,
+           'consumo_registrado' => $nuevoConsumo
+       ], 200);
         } catch (Exception $ex) {
             return response()->json([
                 'error' => 'Ocurrio un error al registrar el promedio. ' .$ex->getMessage()
