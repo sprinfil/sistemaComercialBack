@@ -9,18 +9,64 @@ use App\Models\Toma;
 use App\Services\Caja\PagoService;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AjusteService
 {
-    public function consultarAjustes()
+    public function consultarAjustes(Request $request)
     {
         try {
-            return Ajuste::all();
+            // Inicia la consulta base
+            $query = Ajuste::query();
+
+            // Filtra por el catálogo de ajustes
+            if ($request->has('id_ajuste_catalogo')) {
+                $query->where('id_ajuste_catalogo', $request->input('id_ajuste_catalogo'));
+            }
+
+            // Filtra por el dueño del ajuste (usuario o toma)
+            if ($request->has('id_modelo_dueno') && $request->has('modelo_dueno')) {
+                $query->where('id_modelo_dueno', $request->input('id_modelo_dueno'))
+                    ->where('modelo_dueno', $request->input('modelo_dueno'));
+            }
+
+            // Filtra por operador
+            if ($request->has('id_operador')) {
+                $query->where('id_operador', $request->input('id_operador'));
+            }
+
+            // Filtra por monto ajustado
+            if ($request->has('monto_ajustado')) {
+                $query->where('monto_ajustado', $request->input('monto_ajustado'));
+            }
+
+            // Filtra por estado
+            if ($request->has('estado')) {
+                $query->where('estado', $request->input('estado'));
+            }
+
+            // Filtra por comentario
+            if ($request->has('comentario')) {
+                $query->where('comentario', 'like', '%' . $request->input('comentario') . '%');
+            }
+
+            // Filtra por motivo de cancelación
+            if ($request->has('motivo_cancelacion')) {
+                $query->where('motivo_cancelacion', 'like', '%' . $request->input('motivo_cancelacion') . '%');
+            }
+
+            // Ejecuta la consulta y obtiene los resultados
+            $ajustes = $query->get();
+
+            return $ajustes;
         } catch (Exception $e) {
-            return $e;
+            return response()->json([
+                'error' => 'Ocurrió un error al consultar los ajustes: ' . $e->getMessage()
+            ], 500);
         }
     }
+
     public function consultarAjuste($id)
     {
         try {
@@ -33,9 +79,8 @@ class AjusteService
     {
         try {
             return Ajuste::where("id_modelo_dueno", $data['id'])
-             ->where("modelo", $data['modelo'])
-             ->get();
-
+                ->where("modelo", $data['modelo'])
+                ->get();
         } catch (Exception $e) {
             return $e->getMessage(); // Retornar el mensaje del error en lugar del objeto Exception
         }
@@ -161,11 +206,12 @@ class AjusteService
             return $e;
         }
     }
-    public function generarReportes($filtros){
+    public function generarReportes($filtros)
+    {
         //$ReporteAjustes=Ajuste::get()->toArray();
-        $ReporteAjustes=Ajuste::with('ajusteCatalogo','dueno','operador')->get()->map(function ($ajuste) {
+        $ReporteAjustes = Ajuste::with('ajusteCatalogo', 'dueno', 'operador')->get()->map(function ($ajuste) {
             // Process the 'name' attribute and add it as a new field
-            $ajuste->created_at=Carbon::parse($ajuste->created_at,"GMT-7")->format("Y-m-d");
+            $ajuste->created_at = Carbon::parse($ajuste->created_at, "GMT-7")->format("Y-m-d");
             return $ajuste;
         });
         return $ReporteAjustes;
