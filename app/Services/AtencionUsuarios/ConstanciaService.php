@@ -52,7 +52,7 @@ class ConstanciaService
                     switch ($tipoConstancia->nombre) {
 
                         case "Constancia no adeudo":
-                            
+
                             break;
                         case "Constancia de antigüedad":
 
@@ -62,7 +62,7 @@ class ConstanciaService
                                 ], 500);
                             }
                             break;
-                    
+
                         default:
                         return response()->json([
                             'error' => 'El tipo de constancia seleccionado esta desactivado o no existe.'
@@ -81,41 +81,41 @@ class ConstanciaService
                     "folio_solicitud" => $folio,
                 ];
 
-                
+
                 $constancia = Constancia::create($conNoAdeudo);
 
                 $concepto = ConceptoCatalogo::find(150);//to do pendiente asignar un concepto default para constancia
-                
+
                 $monto = TarifaConceptoDetalle::select('monto')
                 ->where('id_concepto',$concepto->id)
                 ->where('id_tipo_toma',$modelo->id_tipo_toma)
                 ->first();
 
                 //cargo
-             
+
                 $fecha = helperFechaAhora();
                 $fecha = Carbon::parse($fecha)->format('Y-m-d');
 
                 $iva = round(($monto->monto * 16)/100,2);
-         
+
                 $RegistroCargo = [
                   "id_concepto" => $concepto->id,
                   "nombre" => $concepto->nombre,
-          
+
                   "id_origen" => $constancia->id,
                   "modelo_origen" => 'constancia',
-          
+
                   "id_dueno" => $data['id_dueno'],
                   "modelo_dueno" => $data['modelo_dueno'],
-          
+
                   "monto" => $monto->monto,
                   "iva" => $iva,
                   "estado" => 'pendiente',
                   "id_convenio" => null,
-          
+
                   "fecha_cargo" => $fecha,
                   "fecha_liquidacion" => null,
-          
+
                 ];
                 $cargo = Cargo::create($RegistroCargo);
             }
@@ -153,14 +153,14 @@ class ConstanciaService
             $usuario = Usuario::where('id',$toma->id_usuario)
             ->first();
             //Aqui va la parte de generar las constancias
-            
+
            $texto = Carbon::parse($fecha)->translatedFormat('l, j \d\e F \d\e Y');
            $fechaInstalacion =  Carbon::parse($toma->fecha_instalacion)->format('d/m/Y');
 
            switch ($conCatalogo->nombre) {
 
             case "Constancia no adeudo":
-                
+
                 $data = [
                     'folio' => $constancia->folio_solicitud,
                     'codigo_usuario' => $usuario->codigo_usuario,
@@ -187,12 +187,12 @@ class ConstanciaService
                 if (!file_exists($path)) {
                     mkdir($path, 0755, true);
                 }
-             
+
                 $filename = 'constancia_no_adeudo_' . strtolower(str_replace(' ', '_', $usuario->getNombreCompletoAttribute())) . '_' . now()->format('Ymd') . '.pdf';
                 $pdf->save($path . '/' . $filename);
 
                 break;
-           
+
             case "Constancia de antigüedad": //tipo toma domestico?, clave catastral
 
                 $data = [
@@ -222,19 +222,19 @@ class ConstanciaService
                 if (!file_exists($path)) {
                     mkdir($path, 0755, true);
                 }
-             
+
                 $filename = 'constancia_antiguedad_' . strtolower(str_replace(' ', '_', $usuario->getNombreCompletoAttribute())) . '_' . now()->format('Ymd') . '.pdf';
                 $pdf->save($path . '/' . $filename);
-               
+
                 break;
-        
+
             default:
             return response()->json([
                 'error' => 'El tipo de constancia seleccionado esta desactivado o no existe.'
             ], 500);
                 break;
         }
-           
+
            $repeArchivo = Archivo::select('url')->where('url',$filename)->first();
             if ($repeArchivo == null) {
                 $archivo = [
@@ -250,7 +250,7 @@ class ConstanciaService
                 //return $this->buscarConstanciaService($repeArchivo->url); esto es para pruebas
             }
 
-             
+
         } catch (Exception $ex) {
              return response()->json([
                 'error' => 'Ocurrio un error al procesar el pago de la constancia.'. $ex
@@ -293,7 +293,7 @@ class ConstanciaService
         try {
             $constanciasPenEntregar = Constancia::where('modelo_dueno',$data['modelo_dueno'])
             ->where('id_dueno',$data['id_dueno'])
-            ->where('estado', ['pagado'])
+            ->whereIn('estado', ['pagado', 'entregado'])
             ->with('archivo')
             ->get();
             if ($constanciasPenEntregar) {
@@ -304,7 +304,7 @@ class ConstanciaService
                     'error' => 'Ocurrio un error al buscar la constancia.'
                 ], 500);
             }
-            
+
         } catch (Exception $ex) {
             return response()->json([
                 'error' => 'Ocurrio un error al buscar la constancia.'. $ex
@@ -321,14 +321,14 @@ class ConstanciaService
                 Constancia::where('id', $data)->update(['estado' => 'entregado']);
                 $archivo = Archivo::select('url')->where('id_modelo',$data)->first();
                 return $this->buscarConstanciaService($archivo->url);
-                
+
             }
             else {
                 return response()->json([
                     'error' => 'Debe enviar un id valido para realizar la enttrega de la constancia.'
                 ], 500);
             }
-           
+
         } catch (Exception $ex) {
             return response()->json([
                 'error' => 'Ocurrio un error al entregar la constancia.'. $ex
@@ -373,7 +373,7 @@ class ConstanciaService
                     'error' => 'No se pueden cancelar constancias pagadas o entregadas'
                 ], 500);
             }
-           
+
         } catch (Exception $ex) {
             return response()->json([
                 'error' => 'Ocurrio un error al cancelar la constancia'. $ex

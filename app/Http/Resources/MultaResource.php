@@ -23,9 +23,38 @@ class MultaResource extends JsonResource
             'modelo_multado'=>$this->modelo_multado,
             'motivo'=>$this->motivo,
             'fecha_solicitud'=>$this->fecha_solicitud,
-            'fecha_revision'=>$this->fecha_revision,
+            'fecha_revision'=>$this->fecha_revision ?? null,
             'monto' =>$this->monto,
-            'estado'=>$this->estado
-        ];
+            'estado'=>$this->estado,
+            'codigo_toma'=>$this->origen->codigo_toma ?? null,
+            'giro_comercial'=>$this->origen->giroComercial->nombre ?? null,
+            'ruta'=>$this->origen->ruta->nombre ?? null,
+            'libro'=>$this->origen->libro->nombre ?? null,
+            'tipo_toma'=>$this->origen->tipoToma->nombre ?? null,
+            'clave_catastral'=>$this->origen->clave_catastral ?? null,
+            'calle'=>$this->origen->calle ?? null,
+            'direccion'=>$this->origen->getDireccionCompleta(),
+            'entre_calle_1'=>$this->origen->entre_calle_1 ?? null,
+            'entre_calle_2'=>$this->origen->entre_calle_2 ?? null,
+            'colonia'=>$this->origen->colonia ?? null,
+            'codigo_postal'=>$this->origen->codigo_postal ?? null,
+            'numero_casa'=>$this->origen->numero_casa ?? null,
+            'localidad'=>$this->origen->localidad ?? null,
+            'tipo_servicio'=>$this->origen->tipo_servicio,
+            'tipo_contrato'=>$this->origen->tipo_contratacion,
+            'nombre_multado' => $this->origen->usuario->getNombreCompletoAttribute(),
+            'codigo_usuario' => $this->origen->usuario->codigo_usuario,
+            'nombre_multa'=>$this->catalogo_multa->nombre ?? null,
+            'UMAS_min'=>$this->catalogo_multa->UMAS_min ?? null,
+            'UMAS_max'=>$this->catalogo_multa->UMAS_max ?? null,
+            'operador_levanto_multa'=>$this->operador->getNombreCompletoAttribute(),
+            'nombre_operador_revisor'=>$this->operador_revisor->getNombreCompletoAttribute(),
+            //'toma' => new TomaResource($this->whenLoaded('origen')),
+            
+
+
+
+
+        ];     
     }
 }

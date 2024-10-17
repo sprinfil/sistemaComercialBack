@@ -23,10 +23,11 @@ class StoreMultaCatalogoRequest extends FormRequest
     {
         return [
             'nombre' => 'required|string',
-            'descripcion' => 'required|string',
+            'descripcion' => 'required|string|unique:catalogo_multas,nombre',
             'UMAS_min' => 'required|integer|min:0',
-            'UMAS_max' => 'required|integer',
+            'UMAS_max' => 'required|integer|min:1|gte:UMAS_min',
             'estatus' => 'required|in:activo,inactivo'
+            //|gte:UMAS_min
         ];
     }
 }

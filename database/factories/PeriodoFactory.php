@@ -7,6 +7,7 @@ use App\Models\Factura;
 use App\Models\Lectura;
 use App\Models\Libro;
 use App\Models\Periodo;
+use App\Models\Ruta;
 use App\Models\Tarifa;
 use App\Models\TarifaServiciosDetalle;
 use App\Models\Toma;
@@ -36,7 +37,7 @@ class PeriodoFactory extends Factory
         $periodo = Carbon::createFromDate($ano, $mes, 1);
 
         return [
-            'id_ruta' => Libro::all()->random()->id,
+            'id_ruta' => Ruta::all()->random()->id,
             'id_tarifa' => Tarifa::all()->random()->id,
             'nombre' => $periodo->translatedFormat('F Y'),  // Nombre en formato "Mes Ano"
             'periodo' => $periodo->format('m-Y'),  // Periodo en formato "MM-YYYY"
@@ -94,35 +95,33 @@ class PeriodoFactory extends Factory
                 ]);
             }
                 */
-                foreach ($tomas as $toma) {
-                    if ($toma->estatus=="limitado" || $toma->estatus=="activa"  )
-                    if ($toma->tipo_servicio=="lectura"){
-                        $lectura=Lectura::create([
-                            "id_operador"=>1,
-                            "id_toma"=>$toma->id,
-                            "id_periodo"=>$periodo->id,
-                            "lectura"=>$this->faker->randomNumber(2),
-                            ]);
-                           Consumo::create([
-                            "id_toma"=>$toma->id,
-                            "id_periodo"=>$periodo->id,
-                            "id_lectura_actual"=>$lectura->id,
-                            "tipo"=>"lectura",
-                            "estado"=>"activo",
-                            "consumo"=>$lectura->lectura
-                           ]);
-                    }
-                    else{
+            foreach ($tomas as $toma) {
+                if ($toma->estatus == "limitado" || $toma->estatus == "activa")
+                    if ($toma->tipo_servicio == "lectura") {
+                        $lectura = Lectura::create([
+                            "id_operador" => 1,
+                            "id_toma" => $toma->id,
+                            "id_periodo" => $periodo->id,
+                            "lectura" => $this->faker->randomNumber(2),
+                        ]);
                         Consumo::create([
-                            "id_toma"=>$toma->id,
-                            "id_periodo"=>$periodo->id,
-                            "tipo"=>"promedio",
-                            "estado"=>"activo",
-                            "consumo"=>$this->faker->randomNumber(2)
-                           ]);
+                            "id_toma" => $toma->id,
+                            "id_periodo" => $periodo->id,
+                            "id_lectura_actual" => $lectura->id,
+                            "tipo" => "lectura",
+                            "estado" => "activo",
+                            "consumo" => $lectura->lectura
+                        ]);
+                    } else {
+                        Consumo::create([
+                            "id_toma" => $toma->id,
+                            "id_periodo" => $periodo->id,
+                            "tipo" => "promedio",
+                            "estado" => "activo",
+                            "consumo" => $this->faker->randomNumber(2)
+                        ]);
                     }
-                 
-                } 
+            }
         });
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('catalogo_multas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
+            $table->string('nombre')->unique();
             $table->string('descripcion');
             $table->integer('UMAS_min');
             $table->integer('UMAS_max');

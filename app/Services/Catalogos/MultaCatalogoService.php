@@ -19,6 +19,12 @@ class MultaCatalogoService{
     {
        //Store del catalogo de multas.
        try {
+        $nombremultarepetido = MultaCatalogo::where('nombre' , $data['nombre'])->first();
+        if ($nombremultarepetido) {
+            return response()->json([
+                'message' => 'El nombre de la multa ya existe. '
+            ] , 409);
+        }
         $multa = MultaCatalogo::create($data);
         return response(new MultaCatalogoResource($multa), 201);
        } catch (Exception $ex) {

@@ -23,5 +23,13 @@ Route::middleware(['api', 'audit'])->group(function () {
         Route::put("/cancelar-descuentos-asociado/{id}", "CancelarDescuento");
         Route::put("/descuentos-asociado/{id}", "update");
         Route::delete("/descuentos-asociado/{id}", "destroy");
+
+       
+    });
+
+    Route::controller(DescuentoAsociadoController::class)->group(function () { 
+         //to do pendiente remover las rutas de pruebas
+         Route::post("/descuentosasociado/facturarDescuentoPruebas", "facturarDescuentoPruebas");
+         Route::put("/descuentosasociado/cancelarDescuentoPruebas", "cancelarDescuentoPruebas");
     });
 });
