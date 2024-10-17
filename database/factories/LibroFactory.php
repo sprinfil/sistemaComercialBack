@@ -38,7 +38,7 @@ class LibroFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Libro $libro) {
-            Usuario::factory()->count(30)->create()->each(function ($usuario) use ($libro) {
+            Usuario::factory()->count(3)->create()->each(function ($usuario) use ($libro) {
                 for ($i = 0; $i < rand(1, 3); $i++) {
                     // Generar latitud y longitud
                     $latitud = '-110.3' . (string)$this->faker->numberBetween(0, 3) . $this->faker->numerify('##');
