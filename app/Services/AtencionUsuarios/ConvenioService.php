@@ -606,7 +606,7 @@ class ConvenioService
 
         Pago::whereIn('id', $arregloPagosIds)->update(['estado' => 'pendiente']);
         //to do falta arreglar el metodo de pagos 
-        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen); //Alan mira esta linea, se tiene que mover si es cancelacion automatica
+        //$estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen); //Alan mira esta linea, se tiene que mover si es cancelacion automatica
         DB::commit();
       } else {
         DB::rollBack();
