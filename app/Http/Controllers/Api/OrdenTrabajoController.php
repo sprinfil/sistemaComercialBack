@@ -270,6 +270,8 @@ class OrdenTrabajoController extends Controller
     }
     public function cerrarOrden(StoreOrdenTrabajoRequest $request)
     {
+      
+       try{
         DB::beginTransaction();
         $data=$request->validated();
         $OT=$data['ordenes_trabajo'][0];
@@ -283,8 +285,6 @@ class OrdenTrabajoController extends Controller
             DB::commit();
             return $Acciones;
         }
-       try{
-        
        
        }
        catch(Exception $ex){

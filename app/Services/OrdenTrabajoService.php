@@ -281,9 +281,9 @@ class OrdenTrabajoService{
                     $estado=$Accion['valor'];
                     if ($estado=="activa"){
                         $valor=match($servicio){
-                            'c_agua'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','agua')->first()->id,
-                            'c_alc'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
-                            'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
+                            'c_agua'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','agua')->where('estatus','contratado')->first()->id,
+                            'c_alc'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->where('estatus','contratado')->first()->id,
+                            'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->where('estatus','contratado')->first()->id,
                         };
                         $dato=[$servicio=>$valor];
                         
@@ -294,11 +294,11 @@ class OrdenTrabajoService{
                             $Secuencia_orden=Secuencia_orden::insert($orden);
                             
                         }
-
+           
                         if ($OTModelo['estatus']=="pendiente de instalacion"){
-                            $OTModelo['estatus']=="activa";
+                            $a="activa";
+                            $OTModelo->update(["estatus"=>$a]);
                             $OTModelo['fecha_instalacion']==helperFechaAhora();
-                            
                         }
                      
                     }
@@ -309,7 +309,7 @@ class OrdenTrabajoService{
 
                 }
                 else{
-                    $dato=[$Accion['campo']=>$servicio];
+                    $dato=$modelos['toma'];
                 }
                 $OTModelo->update($dato);
                 $OTModelo->save();
@@ -318,8 +318,9 @@ class OrdenTrabajoService{
             case "medidores":
                 $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['medidor'];
-                $OTModelo->update($dato);
                 $OTModelo->save();
+                $OTModelo->update($dato);
+       
                 break;
             case "contratos":
                 $OTModelo=Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first();
