@@ -71,6 +71,7 @@ class FacturaService{
         */
         $periodosFactura=new Collection();
         $facturaCargos=new Collection();
+        $RecargosCollection=new Collection();
         $periodosTomas=Periodo::with('tieneRutas.Libros.tomas:id,id_usuario,id_giro_comercial,id_libro,codigo_toma,id_tipo_toma,estatus,c_agua,c_alc,c_san','tieneRutas:id,nombre','tarifa')->whereIn('id',$id_periodos)->where('estatus','activo')->get();
         foreach ($periodosTomas as $periodo){
 
@@ -95,16 +96,19 @@ class FacturaService{
                        
                   
                         $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
-                       
+                        $recargos=(new FacturaService())->Recargos($toma);
+
                         $periodosFactura->push($facturaToma[0]);
                         $facturaCargos->push($facturaToma[1]);
+                        $RecargosCollection->push($recargos);
+                 
                         
                     }
                    
                 }
             }
         }
-        return [$periodosFactura, $facturaCargos];             
+        return [$periodosFactura, $facturaCargos,$RecargosCollection ];             
     }
 
     public function facturar($toma,$tarifaToma,$periodo,$consumo){

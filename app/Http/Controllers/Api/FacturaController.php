@@ -114,7 +114,7 @@ class FacturaController extends Controller
             ///TO DO Cargar Letras
 
             DB::commit();
-            return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1]],200);
+            return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1],"Recargos"=>$facturas[2]],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();
