@@ -7,6 +7,7 @@ use App\Models\Factura;
 use App\Http\Requests\StoreFacturaRequest;
 use App\Http\Requests\UpdateFacturaRequest;
 use App\Http\Resources\FacturaResource;
+use App\Models\Toma;
 use App\Services\Facturacion\FacturaService;
 use App\Services\Facturacion\indexFacturaServiceService;
 use ErrorException;
@@ -81,13 +82,15 @@ class FacturaController extends Controller
     public function storeToma($id_toma){
         try{
             DB::beginTransaction();
-            $facturas = (new FacturaService())->facturaracionPorToma($id_toma);
+            $toma=Toma::find($id_toma);
+            $facturas = (new FacturaService())->facturaracionPorToma($toma);
+            ///TO DO DESC Y CONVENIOS
+
             ///TO DO Recargos
-
+            $recargos=(new FacturaService())->Recargos($toma);
             ///TO DO Cargar Letras
-
-            DB::commit();
-            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1]],200);
+            DB::commit(); ///probar
+            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1],"Recargos"=>$recargos],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();

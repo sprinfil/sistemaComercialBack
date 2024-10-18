@@ -335,8 +335,8 @@ class ConvenioService
       ], 400);
     }
   }
-
-  public function CancelarConvenioService(Request $data)
+  
+  public function CancelarConvenioService(Request $data) //agregar recargos
   {
     try {
       $motivoCancelacion = $data['motivo_cancelacion'];
