@@ -163,4 +163,18 @@ class PeriodoService{
         $cargas_trabajo=CargaTrabajo::with('tieneEncargado','fueAsignada','libro:id,nombre,id_ruta','libro.tieneRuta:id,nombre')->where('id_operador_encargado',$id_encargado)->where('estado','en proceso')->orderBy('fecha_asignacion','asc')->get();
         return $cargas_trabajo;
     }
+    public function FiltrosPeriodo(array $filtros){
+        $id_toma=$filtros['id_toma'] ?? null;
+
+/*
+        $query=Toma::with('periodo')
+        ->when($tipo_tomas, function (Builder $q) use($tipo_tomas)  {
+            $q->whereIn('id_tipo_toma',$tipo_tomas);///aplicar esto en OT
+
+       })->orderBy('created_at','desc')
+        ->get();
+        */
+
+       //return $query;
+    }
 }

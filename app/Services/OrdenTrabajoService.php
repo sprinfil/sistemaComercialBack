@@ -281,9 +281,9 @@ class OrdenTrabajoService{
                     $estado=$Accion['valor'];
                     if ($estado=="activa"){
                         $valor=match($servicio){
-                            'c_agua'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','agua')->first()->id,
-                            'c_alc'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
-                            'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->first()->id,
+                            'c_agua'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','agua')->where('estatus','contratado')->first()->id,
+                            'c_alc'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->where('estatus','contratado')->first()->id,
+                            'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->where('estatus','contratado')->first()->id,
                         };
                         $dato=[$servicio=>$valor];
                         
