@@ -141,6 +141,8 @@ class DescuentoAsociadoService
                 $cargos = Cargo::where('modelo_origen','facturacion')
                 ->where('id_origen',$id_facturacion)
                 ->where('estado','pendiente')
+                ->where('modelo_dueno','toma')
+                ->where('id_dueno',$id_toma)
                 ->get();
 
                 foreach ($cargos as $cargo) {
