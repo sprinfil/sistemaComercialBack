@@ -160,7 +160,7 @@ class DescuentoAsociadoService
                         $abono = [
                             "id_cargo" => $cargo->id,
                             "id_origen" => $descuentoReg->id,
-                            "modelo_origen" => "Descuento",
+                            "modelo_origen" => "descuento",
                             "total_abonado" => $descuentoReg->monto_total,
                         ];
 
