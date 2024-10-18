@@ -294,11 +294,11 @@ class OrdenTrabajoService{
                             $Secuencia_orden=Secuencia_orden::insert($orden);
                             
                         }
-
+           
                         if ($OTModelo['estatus']=="pendiente de instalacion"){
-                            $OTModelo['estatus']=="activa";
+                            $a="activa";
+                            $OTModelo->update(["estatus"=>$a]);
                             $OTModelo['fecha_instalacion']==helperFechaAhora();
-                            
                         }
                      
                     }
@@ -309,7 +309,7 @@ class OrdenTrabajoService{
 
                 }
                 else{
-                    $dato=[$Accion['campo']=>$servicio];
+                    $dato=$modelos['toma'];
                 }
                 $OTModelo->update($dato);
                 $OTModelo->save();
@@ -318,8 +318,9 @@ class OrdenTrabajoService{
             case "medidores":
                 $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['medidor'];
-                $OTModelo->update($dato);
                 $OTModelo->save();
+                $OTModelo->update($dato);
+       
                 break;
             case "contratos":
                 $OTModelo=Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first();
