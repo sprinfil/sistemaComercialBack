@@ -31,7 +31,6 @@ class ConvenioService
   public function BuscarConceptosConveniablesService(Request $data)
   {
     try {
-
       if ($data->tipo == "toma") {
         $conveniado = Toma::find($data->id);
         $conveniado = $conveniado->conveniosActivos;
@@ -56,7 +55,7 @@ class ConvenioService
       $temp = [];
       foreach ($cargos as $cargo) //pendiente eliminar consultas en ciclos
       {
-        $temp = ConceptoAplicable::where('id_concepto_catalogo', $cargo['id_concepto'])
+         $temp = ConceptoAplicable::where('id_concepto_catalogo', $cargo['id_concepto'])
           ->where('modelo', 'convenio_catalogo')
           ->where('id_modelo', $data['id_convenio_catalogo'])
           ->get();
@@ -75,7 +74,6 @@ class ConvenioService
         }
         $nxt++;
       }
-
       return json_encode($cargosAplicables);
     } catch (Exception $ex) {
       return response()->json([
