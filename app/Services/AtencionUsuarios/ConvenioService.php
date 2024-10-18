@@ -60,7 +60,7 @@ class ConvenioService
           ->where('id_modelo', $data['id_convenio_catalogo'])
           ->get();
 
-        $cargo_selecionado = Cargo::findOrFail($cargo['id_concepto']);
+        $cargo_selecionado = Cargo::findOrFail($cargo['id']);
 
         if (count($temp) != 0) {
           $cargosAplicables[$nxt] = $cargo;
