@@ -70,5 +70,10 @@ class ConceptoCatalogo extends Model
     {
         return $this->hasOne(ConstanciaCatalogo::class,'id_concepto_catalogo','id');
     }
+    public static function getRecargos(){
+       return ConceptoCatalogo::find(10);
+       //$id=10;
+       //return 10;
+    }
    
 }
