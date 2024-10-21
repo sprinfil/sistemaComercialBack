@@ -257,26 +257,26 @@ class FacturaService{
 
         return $facturaToma;
     }
-    public function Refacturacion($idToma){ /// pendiente
-        $toma=Toma::find($idToma);
-        $libro= $toma->libro;
-        $ruta=$libro->tieneRuta;
-        $periodo=$ruta->PeriodoActivo;
-        $tarifa=$periodo->tarifa;
-        ///facturacion_arreglo
-        ///cargos_facturacion_arreglo
-        $ExisteFactura=Factura::where('id_periodo',$periodo['id'])->where('id_toma',$toma['id'])->first();
-        if ($ExisteFactura){
-            $ExistenCargos=Cargo::where('id_origen',$ExisteFactura['id'])->get();
-            if (count($ExistenCargos)!=0){
-                throw new ErrorException("No se puede facturar una toma con una facturación vigente dentro del mismo periodo");
-            }
+    public function Refacturacion($tomas){ /// pendiente
+        //$tomas=Toma::with('libro.tieneRuta.PeriodoActivo.tarifa:id,nombre,estado','libro:id,id_ruta,nombre','libro.tieneRuta:id,nombre')->whereIn('id',$tomas_id)->get();
+        $id_toma=$tomas['id'];
+        $id_facturacion=$tomas['id_facturacion']; 
+        $toma=Toma::find($id_toma);
+        $facturaExistente=Factura::find($id_facturacion);
+        return $toma;
+        /*
+        $facturacion_arreglo=[];
+        $cargos_facturacion_arreglo=[];
+        foreach ($tomas as $toma){
+            
+                   
+            $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
+            //dispatch(new FacturacionTomaJob($toma));
+            $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
+            $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
         }
-               
-        $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
-        //dispatch(new FacturacionTomaJob($toma));
-        $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
-        $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+        */
+        
         
     }
     public function updateFacturaService(array $data, string $id)
