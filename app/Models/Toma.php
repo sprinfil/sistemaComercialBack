@@ -54,6 +54,7 @@ class Toma extends Model
         'c_agua',
         'c_alc',
         'c_san',
+        'fecha_instalacion',
         'posicion'
     ];
 
@@ -80,7 +81,7 @@ class Toma extends Model
     }
     public function colonia1(): BelongsTo
     {
-        return $this->belongsTo(colonia::class, "colonia");
+        return $this->belongsTo(Colonia::class, "colonia");
     }
     // Giro comercial asociado a la toma
     public function giroComercial(): BelongsTo
@@ -142,7 +143,7 @@ class Toma extends Model
 
     public function factibilidades(): HasMany
     {
-        return $this->hasMany(Factibilidad::class);
+        return $this->hasMany(Factibilidad::class, 'id_toma')->orderBy('created_at', 'desc');
     }
 
     public function ordenesTrabajo(): HasMany
@@ -186,10 +187,19 @@ class Toma extends Model
     }
 
 
+    public function dueno_multa() : MorphMany {
+        return $this->morphMany(Multa::class, 'origen' , 'modelo_multado' , 'id_multado');
+    }
+
+
     //Consumos asociados a la toma
     public function factura(): HasMany
     {
         return $this->hasMany(Factura::class, 'id_toma');
+    }
+    
+    public function CargosFacturasVigentes():MorphMany{
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente')->where('modelo_origen','facturacion')->where('id_concepto','!=',10)->orderBy('created_at', 'desc'); //->where('id_concepto','!=','10')
     }
     public function TarifaContrato()
     {
@@ -203,7 +213,27 @@ class Toma extends Model
 
     public function getDireccionCompleta()
     {
-        return "{$this->calle}, entre {$this->entre_calle_1} y {$this->entre_calle_2}, {$this->colonia}, {$this->codigo_postal}, {$this->localidad}";
+        $calle1 = $this->calle1->nombre ?? '';
+        $calle2 = $this->entre_calle1->nombre ?? '';
+        $calle3 = $this->entre_calle2->nombre ?? '';
+        $calle4 = $this->colonia1->nombre ?? '';
+        $calle5 = $this->$this->codigo_postal ?? '';
+        $calle6 = $this->localidad ?? '';
+        $direccion = "{$calle1}, entre {$calle2} y {$calle3}, {$calle4}, {$calle5}, {$calle6}";
+        return $direccion;
+    }
+
+    public function convenios(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
+
+    public function conveniosActivos(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
+    }
+    public function secuenciaOrdenes():HasMany{
+        return $this->hasMany(Secuencia_orden::class, 'id_toma');
     }
 
     public function saldoToma()
@@ -253,4 +283,15 @@ class Toma extends Model
             ->paginate(1);
         return  $data;
     }
+
+    public function constancias(): MorphMany
+    {
+        return $this->morphMany(Constancia::class, 'origen', 'modelo_dueno', 'id_dueno');
+    }
+
+    public function descuentoAsociado(): HasOne
+    {
+        return $this->hasOne(DescuentoAsociado::class, 'id_modelo','id');
+    }
+
 }

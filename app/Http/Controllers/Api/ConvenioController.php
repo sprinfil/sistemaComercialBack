@@ -164,4 +164,117 @@ class ConvenioController extends Controller
             ]); 
         }
     }
+
+    public function ConsultarConvenio(Request $request)
+    {
+       
+        try {
+            DB::beginTransaction();
+            $convenio = (new ConvenioService())->ConsultarConvenioService($request);
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al registrar el convenio.'
+            ]); 
+        }
+    }
+
+    public function ConsultarLetras(Request $request)
+    {
+       
+        try {
+            DB::beginTransaction();
+            $convenio = (new ConvenioService())->ConsultarLetrasPendientes($request);
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al registrar el convenio.'
+            ]); 
+        }
+    }
+
+    public function CancelarConvenio(Request $request)
+    {
+       
+        try {
+            DB::beginTransaction();
+            $convenio = (new ConvenioService())->CancelarConvenioService($request);
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al cancelar el convenio.'
+            ]); 
+        }
+    }
+
+    public function ConsultarListaConvenio()
+    {
+        try {
+            DB::beginTransaction();
+            $convenio = (new ConvenioService())->ConsultarListaConvenioService();
+            DB::commit();
+            return $convenio;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Ocurrio un error al registrar el convenio.'
+            ]); 
+        }
+    }
+
+    public function buscarConveniosAplicablesTipoToma(Request $request)
+  {
+    try {
+     $data = $request->input('id_toma');
+      DB::beginTransaction();
+      $convenio = (new ConvenioService())->buscarConveniosAplicablesTipoTomaService($data);
+      DB::commit();
+      return $convenio;
+    } catch (Exception $ex) {
+      DB::rollBack();
+      return response()->json([
+        'message' => 'Ocurrio un error al buscar los convenios.'
+    ]); 
+    }
+  }
+
+  public function crearCargoLetra(Request $request)
+  {
+    try {
+        $data = $request->input('id_toma');
+        DB::beginTransaction();
+        $convenio = (new ConvenioService())->crearCargoLetraService($data);
+        DB::commit();
+        return $convenio;
+    } catch (Exception $ex) {
+        DB::rollBack();
+      return response()->json([
+        'message' => 'Ocurrio un error al cargar las letras.'
+    ]); 
+    }
+  }
+
+  public function pagoLetra(Request $request)
+  {
+    try {
+        $data = $request->input('id_cargo');
+        DB::beginTransaction();
+        $convenio = (new ConvenioService())->pagoLetraService($data);
+        DB::commit();
+        return $convenio;
+    } catch (Exception $ex) {
+        DB::rollBack();
+      return response()->json([
+        'message' => 'Ocurrio un error al cargar las letras.'
+    ]); 
+    }
+  }
 }

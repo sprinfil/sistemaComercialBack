@@ -14,14 +14,13 @@ return new class extends Migration
         Schema::create('carga_trabajos', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('id_libro');
-            $table->unsignedInteger('id_lectura'); //MER
-            $table->unsignedInteger('id_operador_encargado');
-            $table->unsignedInteger('id_periodo');
-            $table->unsignedInteger('id_operador_asigno');
+            $table->unsignedInteger('id_operador_encargado')->nullable();
+            $table->unsignedInteger('id_periodo'); ///tiene las lecturas
+            $table->unsignedInteger('id_operador_asigno')->nullable();
             $table->enum('estado', ['no asignada', 'en proceso', 'concluida', 'cancelada']);
-            $table->date('fecha_concluida');
-            $table->date('fecha_asignacion');
-            $table->enum('tipo_carga' , ['lectura' , 'facturacion' , 'facturacion en sitio']);
+            $table->date('fecha_concluida')->nullable();
+            $table->date('fecha_asignacion')->nullable();
+            $table->enum('tipo_carga' , ['lectura' , 'facturacion' , 'facturacion en sitio'])->nullable();///duda
             $table->softDeletes();
             $table->timestamps();
         });

@@ -23,6 +23,9 @@ class FacturaResource extends JsonResource
             "id_tarifa_servicio" => $this->id_tarifa_servicio,
             "monto" => $this->monto,
             "fecha" => $this->fecha,
+            "consumo" =>new ConsumoResource($this->whenLoaded('consumo')),
+            "periodo" => new PeriodoResource($this->whenLoaded('periodo')),
+            "tarifa" => new TarifaResource($this->whenLoaded('tarifa'))
         ];
     }
 }

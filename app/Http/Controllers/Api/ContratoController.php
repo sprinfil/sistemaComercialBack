@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use Barryvdh\DomPDF\Facade as PDF;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use ErrorException;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -67,43 +68,57 @@ class ContratoController extends Controller
      */
     public function store(Contrato $contrato, StoreContratoRequest $request)
     {
-        ////Cambiar estatus y poner id de contrato en servicios de toma
-       
+           
         try {
-            DB::beginTransaction();
-            $datos = $request->validated();
-            $data = $datos['contrato'];
-            $solicitud = $datos['solicitud_factibilidad'] ?? false;
-            $nuevaToma = $request->validated()['toma'] ?? null;
-            $id_usuario = $request['contrato']['id_usuario'];
-            $id_toma = $request['contrato']['id_toma'] ?? null;
-            $servicio = $request['contrato']['servicio_contratados'];
-            $OT = $request['ordenes_trabajo'][0] ?? null;
-            $contratos = Contrato::contratoRepetido($id_usuario, $servicio, $id_toma)->get();
-            // TO DO
-            if (count($contratos) != 0) {
-    
-                return response()->json([
-                    'message' => 'La toma ya tiene un contrato',
-                    'restore' => false
-                ], 500);
-    
-                //return $contratos;
-            } else {
-    
-                $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
-                $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
-                $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
-                
-                $toma->giroComercial;
-                DB::commit();
-                return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma], 201);
+             ////Cambiar estatus y poner id de contrato en servicios de toma
+       DB::beginTransaction();
+       $datos = $request->validated();
+       $data = $datos['contrato'];
+       $solicitud = $datos['solicitud_factibilidad'] ?? false;
+       $nuevaToma = $request->validated()['toma'] ?? null;
+       $id_usuario = $request['contrato']['id_usuario'];
+       $id_toma = $request['contrato']['id_toma'] ?? null;
+       $servicio = $request['contrato']['servicio_contratados'];
+       $OT = $request['ordenes_trabajo'][0] ?? null;
+       $contratos = Contrato::contratoRepetido($id_usuario, $servicio, $id_toma)->get();
+       // TO DO
+       if (count($contratos) != 0) {
 
-            }
+           return response()->json([
+               'message' => 'La toma ya tiene un contrato',
+               'restore' => false
+           ], 500);
+
+           //return $contratos;
+       } else {
+
+           $EsPreContrato = Toma::find($id_toma)['tipo_contratacion'] ?? null;
+           $toma = (new ContratoService())->SolicitudToma($nuevaToma, $id_usuario, $data);
+           if (isset($toma['message'])){
+               return response()->json([
+                   'message' => $toma['message']
+               ], 500);
+           }
+
+           $c = (new ContratoService())->Solicitud($servicio, $data, $toma, $solicitud, $EsPreContrato);
+           $cargos=null;
+        
+           ///opcional
+           $CargoPreContrato=false;
+           if ($toma['tipo_contratacion']=="pre-contrato" && $CargoPreContrato){
+               $concepto=ConceptoCatalogo::where('id',32)->get(); ///cambio de propietario
+               $cargos=(new OrdenTrabajoService())->generarCargo($toma,'toma',$toma,'toma',$concepto);
+           }
+           $toma->giroComercial;
+           $toma=$toma->fresh();
+           DB::commit();
+           return response()->json(["contrato" => $c,/*"Orden_trabajo"=>$ordenTrabajo,*/ "toma" => $toma, "cargo"=>$cargos], 201);
+
+       }   
         } 
         catch (Exception $ex) {
             DB::rollBack();
-            return response()->json(["Error" => "No se pudo crear solicitud de contrato"], 500);
+            return response()->json(["Error" => "No se pudo crear solicitud de contrato: ".$ex], 500);
         }
     }
     public function storeFile(StoreArchivoRequest $request)
@@ -178,37 +193,74 @@ class ContratoController extends Controller
     public function CerrarContrato(UpdateContratoRequest $request, Contrato $contrato) //TODO
     {
 
-     
+       
 
         try {
             DB::beginTransaction();
             $data = $request->validated()['contrato'];
             $contrato = Contrato::find($data['id']);
-    
-            if ($contrato['estatus'] != "pendiente de pago") {
-                return response()->json(['message' => 'No se pudo cerrar el contrato, estado del contrato invalido'], 500);
+            
+        
+            if ($contrato['estatus'] != "pendiente de pago" || $contrato['estatus'] == "pagado" ) { //quitar pendiente de pago cuando se haga el cambio de estatus en caja
+                if ($contrato['estatus']=="contratado"){
+                    $error="No se puede cerrar un contrato que ya se encuentra concluido";
+                }
+                else{
+                    $error="No se pudo cerrar el contrato, estado del contrato invalido: ".$contrato['estatus'];
+                }
+                return response()->json(['message' =>$error], 500);
             } else {
                 $cargos = $contrato->cargosVigentes;
-                if (!isEmpty($cargos)) {
-                    return response()->json(['message' => 'No se pudo cerrar el contrato, tiene cargos pendientes'], 500);
-                } else {
+                //$cargoToma=Toma::find($contrato['id_toma'])->cargosVigentesConConcepto; TO DO
+             
+                if (count($cargos)!=0) {
+                    return response()->json(['message' => 'No se pudo cerrar el contrato, tiene cargos pendientes: '. $cargos[0]->nombre ], 500);
+                }
+                /*
+                else if(count($cargoToma)!=0){
+                    //return $cargoToma[0]->nombre;
+                    /// funciona distinto por los loles nomas
+                    $error="No se pudo cerrar el contrato,la toma asociada tiene cargos pendientes: ";
+                    $message=null;
+                    foreach ($cargoToma as $cargos){
+                        if (!$message){
+                            $message=$message.$cargos->nombre;
+                        }
+                        else{
+                            $message=$message.", ".$cargos->nombre;
+                        }
+                     
+                    }
+                    return response()->json(['message' =>  $error.$message ], 500);
+                }
+                    */ 
+                else {
                     $toma = Toma::find($contrato['id_toma']); 
+                    if ($toma['tipo_contratacion']=="pre-contrato"){
+                        $toma->update(["tipo_contratacion"=>"normal"]);
+                    }
                     if ($toma['c_agua']==null &&  $toma['c_alc']==null){
                         $toma['estatus'] = "pendiente de instalación";
                     }
                     //
                     if ($contrato['servicio_contratado'] == "agua") {
-                        $toma['c_agua'] == $contrato['id'];
+                        //$toma['c_agua'] == $contrato['id'];
+                        $toma->update(["c_agua"=>$contrato['id']]);
                     } elseif ($contrato['servicio_contratado'] == "alcantarillado y saneamiento") {
-                        $toma['c_alc'] == $contrato['id'];
-                        $toma['c_san'] == $contrato['id'];
+                        $toma->update(["c_alc"=>$contrato['id'],
+                        "c_san"=>$contrato['id']
+                    ]);
+                    }
+                    if ($toma->estatus=="pendiente de inspeccion"){
+                        $toma->estatus=="pendiente de instalacion";
                     }
                     $toma->save();
-                    $contrato = Contrato::find($data['id']);
+                    //$contrato = Contrato::find($data['id']);
                     $contrato['estatus']="contratado";
                     $contrato->save();
+                  
                     DB::commit();
-                    return response()->json(["contrato" => new ContratoResource($contrato)], 200);
+                    return response()->json(["contrato" => new ContratoResource($contrato),"toma"=>new TomaResource($toma)], 200);
              
                 }
             }
@@ -243,9 +295,10 @@ class ContratoController extends Controller
     {
         try {
             $contrato = Contrato::findOrFail($request["id"]);
-            $contrato->delete();
-            return response()->json(['message' => 'Eliminado correctamente'], 200);
-        } catch (\Exception $e) {
+            $contrato->update(['estatus'=>"cancelado"]);
+            $contrato->save();
+            return response()->json(['message' => 'Contrato cancelado correctamente'], 200);
+        } catch (Exception $e) {
 
             return response()->json(['message' => 'error'], 500);
         }
@@ -283,30 +336,46 @@ class ContratoController extends Controller
         try {
             $id_contratos = $request->all()['contrato'];
             $cotizacion = Contrato::find($id_contratos['id'])->cotizacionesVigentes;
-            $cotizacion->cotizacionesDetalles;
-
-            return response()->json(["cotizacion" => $cotizacion]);
+           $detalles=$cotizacion->cotizacionesDetalles;
+            $contrato=$cotizacion->contrato->tarifaContrato();
+            $contrato->concepto;
+            $newCollection = $detalles->map(function ($det) {
+                $nuevo=$det;
+                $nuevo['concepto']=$det->concepto;
+                return $det;
+            })->toArray();
+            $newCollection[]=($contrato);
+            //$cot=;
+            return response()->json(["cotizacion" => $newCollection,"id_cotizacion"=> $cotizacion['id']]);
         } catch (Exception $ex) {
             return response()->json(['error' => 'No se encontraron cotizaciones asociadas a este contrato'], 200);
         }
     }
-    public function crearCotizacion(Cotizacion $cotizacion, StoreCotizacionRequest $request)
+    public function crearCotizacion(Cotizacion $cotizacion, Request $request)
     {
 
         try {
-            $data = $request->validated();
-            $data['vigencia'] = Carbon::now()->addMonths(1)->format('Y-m-d');
-            $data['fecha_inicio'] = Carbon::now()->format('Y-m-d');
-            $id_contrato = $request['id_contrato'];
-            $cotizacion = Contrato::find($id_contrato)->cotizacionesVigentes;
-            if ($cotizacion) {
-                return response()->json(['message' => 'El contrato ya tiene una cotización vigente'], 200);
-            } else {
-
-                return new CotizacionResource(Cotizacion::create($data));
+            
+            $contrato=Contrato::find($request->all()['id_contrato']);
+            if ( $contrato->estatus=="contrato no factible"){
+                throw new ErrorException('No se puede cotizar un contrato no factible', 500);
             }
-        } catch (Exception $ex) {
-            return response()->json(['error' => 'No se pudo crear la cotización, introduzca datos correctos'], 200);
+            else{
+                $concepto=$contrato->tarifaContrato();
+                $concepto->concepto;
+                return response()->json(["Tarifa"=> $concepto]) ;
+            }
+   
+          
+        } catch (Exception | ErrorException $ex) {
+
+            $clase= get_class($ex);
+            if ($clase=="ErrorException"){
+                return response()->json(['error' => 'Error: '.$ex->getMessage()], 500);
+            }
+            else{
+                return response()->json(['error' => 'No se pudo crear la cotización, introduzca datos correctos'], 500);
+            }
         }
     }
     public function terminarCotizacion(Cotizacion $cotizacion, UpdateCotizacionRequest $request)
@@ -330,11 +399,15 @@ class ContratoController extends Controller
     }
     public function destroyCot(Cotizacion $cotizacion, Request $request)
     {
-        $cotizacion = Cotizacion::findOrFail($request["id"]);
-        $cotizacion->delete();
-        return response()->json(['message' => 'Eliminado correctamente'], 200);
+  
+        
         try {
-        } catch (\Exception $e) {
+            DB::beginTransaction();
+            $cotizacion = Cotizacion::findOrFail($request["id"]);
+            $cotizacion->delete();
+            DB::commit();
+            return response()->json(['message' => 'Eliminado correctamente'], 200);
+        } catch (Exception $e) {
 
             return response()->json(['message' => 'error'], 500);
         }
@@ -367,6 +440,7 @@ class ContratoController extends Controller
     }
     public function crearCotDetalle(StoreCotizacionDetalleRequest $request)
     {
+        
         try{
             DB::beginTransaction();
             $validado=$request->validated();
@@ -390,7 +464,7 @@ class ContratoController extends Controller
             $tarifas = (new CotizacionService())->TarifaPorContrato($data,$cotizacion);
     
             $existe = Cargo::where('id_origen', $tarifas['id_contrato'])->where('modelo_origen', 'contrato')->first();
-    
+            $DetCollec=null;
             if ($existe) {
                 DB::rollBack();
                 return response()->json(['message' => 'No se puede generar un cargo para las cotizaciones porque ya existe un cargo de cotización asociado'], 500);
@@ -402,7 +476,7 @@ class ContratoController extends Controller
                                         ->whereIn('id_concepto', $conceptoIds)
                                         ->get()
                                         ->keyBy('id_concepto');
-
+    
             foreach ($data as $detalle) {
                 $id_concepto=$detalle['id_concepto'] ?? null;
                 $monto = 0;
@@ -441,10 +515,16 @@ class ContratoController extends Controller
             $tarifas['montoDetalle'] += $tarifas['monto'];
             $cargos = (new CotizacionService())->CargoContratos($tarifas);
     
-          
+    
+          if ( $DetCollec){
             $detalle = CotizacionDetalleResource::collection(
                 $DetCollec
             );
+          }
+          else{
+            $detalle=$tarifas;
+          }
+         
             DB::commit();
             return response()->json([
                 "contrato" => $cargos,
@@ -464,7 +544,7 @@ class ContratoController extends Controller
             $Cotizacion = CotizacionDetalle::findOrFail($request["id"]);
             $Cotizacion->delete();
             return response()->json(['message' => 'Eliminado correctamente'], 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return response()->json(['message' => 'error'], 500);
         }
@@ -577,7 +657,7 @@ class ContratoController extends Controller
             DB::commit();
             return response()->json(['tomas' => TomaResource::collection($precontratos)], 200);
         } catch (Exception $ex) {
-            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas'], 500);
+            return response()->json(['error' => 'No se pudo crear el precontrato para las tomas: '.$ex], 500);
         }
     }
 }

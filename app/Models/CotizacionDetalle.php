@@ -25,6 +25,9 @@ class CotizacionDetalle extends Model
     {
         return $this->HasOneThrough(Contrato::class, Cotizacion::class,'id','id','id_cotizacion','id_contrato');
     }
+    public function concepto():BelongsTo{
+        return $this->belongsTo(ConceptoCatalogo::class, 'id_concepto');
+    }
     #TODO
     /*
     public function sector(): BelongsTo

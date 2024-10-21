@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Catalogos;
 
+use App\Http\Resources\ConvenioCatalogoResource;
 use App\Http\Resources\ConvenioResource;
 use App\Models\ConvenioCatalogo;
 use COM;
@@ -14,8 +15,8 @@ class ConvenioCatalogoService{
     {
        
        try {
-        return ConvenioResource::collection(
-            ConvenioCatalogo::orderby("id", "desc")->get()
+        return ConvenioCatalogoResource::collection(
+            ConvenioCatalogo::where('estado','activo')->orderby("id", "desc")->get()
         );
        } catch (Exception $ex) {
 
@@ -49,12 +50,12 @@ class ConvenioCatalogoService{
         //Si no existe el convenio, lo crea
         if (!$convenio) {
             $convenio = ConvenioCatalogo::create($data);
-            return response(new ConvenioResource($convenio), 201);
+            return response(new ConvenioCatalogoResource($convenio), 201);
         }
        
          } catch (Exception $ex) {
              return response()->json([
-                 'message' => 'Ocurrio un error al registrar el convenio.'
+                 'message' => 'Ocurrio un error al registrar el convenio.' .$ex
              ], 200);
          }
               
@@ -72,7 +73,7 @@ class ConvenioCatalogoService{
                     $convenioCatalogo = ConvenioCatalogo::find($id);
                     $convenioCatalogo->update($data);
                     $convenioCatalogo->save();
-                    return new ConvenioResource($convenioCatalogo);
+                    return new ConvenioCatalogoResource($convenioCatalogo);
                 }
                 else{
                     return response()->json([

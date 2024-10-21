@@ -10,6 +10,8 @@ use App\Http\Requests\StoreFactibilidadRequest;
 use App\Http\Requests\UpdateFactibilidadRequest;
 use App\Http\Resources\FactibilidadResource;
 use App\Models\Archivo;
+use App\Models\Cargo;
+use App\Models\ConceptoCatalogo;
 use App\Models\Contrato;
 use App\Services\ArchivoService;
 use Exception;
@@ -17,6 +19,7 @@ use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use ErrorException;
 
 class FactibilidadController extends Controller
 {
@@ -39,13 +42,15 @@ class FactibilidadController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Factibilidad $factibilidad, StoreFactibilidadRequest $request)
+    public function store(Factibilidad $factibilidad, StoreFactibilidadRequest $request) //
     {
+        
+        
         try {
             $data = $request->validated();
             $data['estado'] = 'sin revisar';
-            $data['agua_estado_factible'] = 'pendiente';
-            $data['alc_estado_factible'] = 'pendiente';
+            $data['servicio'] = 'agua';
+            $data['estado_servicio'] = 'pendiente';
             //$data['san_estado_factible'] = 'pendiente';
             $factibilidad = Factibilidad::create($data);
             return response(new FactibilidadResource($factibilidad), 201);
@@ -54,6 +59,7 @@ class FactibilidadController extends Controller
                 'error' => 'No se pudo guardar la factibilidad' . $e
             ], 500);
         }
+            
     }
 
     /**
@@ -89,7 +95,8 @@ class FactibilidadController extends Controller
             //     // Agregar la ruta del archivo al campo correspondiente
             //     $data['documento'] = $path;
             // }
-
+            
+            // Agregar id de contrato
             $archivos = [];
 
             if ($request->hasFile('documentos')) {
@@ -119,6 +126,46 @@ class FactibilidadController extends Controller
 
             $factibilidad->update($data);
             $factibilidad->save();
+            $contrato=$factibilidad->contrato;
+            if ($factibilidad->estado_servicio=="factible"){
+                $contrato->estatus="inspeccionado";
+            }
+            else if ($factibilidad->estado_servicio=="no factible"){
+                $contrato->estatus="contrato no factible";
+            }
+            $contrato->save();
+         
+            $factibilidad_cargada = Factibilidad::findOrFail($factibilidad->id);
+            if ($factibilidad_cargada->servicio=="agua"){
+                $concepto = ConceptoCatalogo::findOrFail(43);
+            }
+            else{
+                $concepto = ConceptoCatalogo::findOrFail(44);
+            }
+          
+            $RegistroCargo = [
+                "id_concepto" => $concepto->id,
+                "nombre" => $concepto->nombre,
+      
+                "id_origen" => $factibilidad->id,
+                "modelo_origen" => 'factibilidad',
+      
+                "id_dueno" => $factibilidad->id_toma,
+                "modelo_dueno" => 'toma',
+      
+                "monto" => $factibilidad->derechos_conexion ?? 0,
+                "iva" => $factibilidad->derechos_conexion*0.12,
+                "estado" => 'pendiente',
+                "id_convenio" => null,
+      
+                "fecha_cargo" => now(),
+                "fecha_liquidacion" => null,
+      
+            ];
+            $cargo = Cargo::create($RegistroCargo);
+
+            $factibilidad->load('archivos', 'toma');
+
             return response(new FactibilidadResource($factibilidad), 200);
         } catch (Exception $e) {
             return response()->json([
@@ -186,17 +233,21 @@ class FactibilidadController extends Controller
     {
         try {
             $factibilidad = Factibilidad::findOrFail($id);
+            $calle1 = $factibilidad->toma->calle1->nombre ?? '';
+            $calle2 = $factibilidad->toma->entre_calle1->nombre ?? '';
+            $calle3 = $factibilidad->toma->entre_calle2->nombre ?? '';
+            $calle4 = $factibilidad->toma->getDireccionCompleta() ?? '';
             $data = [
                 'factibilidad' => $factibilidad->id,
-                'calle' =>  $factibilidad->toma->calle,
+                'calle' =>  $calle1 ?? '',
                 'numero_casa' => $factibilidad->toma->numero_casa,
-                'estado_agua' => strtoupper($factibilidad->agua_estado_factible),
-                'estado_alcantarillado' => strtoupper($factibilidad->alc_estado_factible),
-                'calle_entre' => $factibilidad->toma->entre_calle_1,
-                'calle_y' => $factibilidad->toma->entre_calle_2,
+                'servicio' => strtoupper($factibilidad->servicio),
+                'estado_servicio' => strtoupper($factibilidad->estado_servicio),
+                'calle_entre' => $calle2 ?? '',
+                'calle_y' => $calle3 ?? '',
                 'costo_factibilidad' => $factibilidad->derechos_conexion,
                 'toma' => $factibilidad->toma->codigo_toma,
-                'notificacion_calle' => $factibilidad->toma->direccion_notificacion,
+                'notificacion_calle' => $calle4 ?? '',
                 'nombre_solicitante' => $factibilidad->toma->usuario->getNombreCompletoAttribute(),
                 'nombre_sistema' => 'Sistema Municipal',
             ];

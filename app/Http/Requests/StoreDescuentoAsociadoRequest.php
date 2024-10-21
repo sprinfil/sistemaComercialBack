@@ -22,11 +22,17 @@ class StoreDescuentoAsociadoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id_usuario"=>"required|integer",
-            "id_toma"=>"required|integer",
-            "id_descuento"=>"required|integer",
+            "id_descuento"=>"required|int",
+            "id_modelo"=>"required|int",
+            "modelo_dueno"=>"required|in:toma,usuario",
+            //"id_evidencia"=>" nullable|int", //Segun se ocupa guardar el file y al guardar el id_evidencia
+            "evidencia" => "nullable|array",
+            "evidencia.*" => "file",
+            "curp" => "required|string|size:18",
+            "id_registra"=>"required|int",
+            "vigencia"=>"nullable|date",
+            "estatus"=>"required|in:vigente,no_vigente",
             "folio"=>"nullable|string",
-            "evidencia"=>"nullable|string",
         ];
     }
 }

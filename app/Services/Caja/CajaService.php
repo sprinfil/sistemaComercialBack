@@ -13,7 +13,11 @@ use App\Http\Resources\RetiroCajaResource;
 use App\Http\Resources\SolicitudCancelacionPagoResource;
 use App\Models\Caja;
 use App\Models\CajaCatalogo;
+use App\Models\Cargo;
+use App\Models\ConceptoCatalogo;
+use App\Models\ConvenioCatalogo;
 use App\Models\CorteCaja;
+use App\Models\Letra;
 use App\Models\OperadorAsignado;
 use App\Models\Pago;
 use App\Models\RetiroCaja;
@@ -27,7 +31,7 @@ use PhpParser\Node\Stmt\Return_;
 
 class CajaService
 {
-
+  //pendiente to do modificar un corte cancelado o proceso equivalente
   public function iniciarCaja(array $data)
   {
     try {
@@ -40,7 +44,7 @@ class CajaService
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
       $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
-      $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
+      $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s'); //to do cambiar al helper 
 
       //formateo de la hora de apertura a horas-minutos-segundos
       $horaApertura = Carbon::parse($fechaHoraLocalFormateada);
@@ -86,7 +90,8 @@ class CajaService
           //condicion en caso de que la caja ya cuente con un registro abierto el dia actual
           else {
             return response()->json([
-              'error' => 'La caja ya se encuentra abierta.',$cajaPreviaReg
+              'error' => 'La caja ya se encuentra abierta.',
+              $cajaPreviaReg
             ]);
           }
         }
@@ -124,7 +129,7 @@ class CajaService
 
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
-      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana'); //to do cambiar al helper
       $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
 
       //formateo de la fecha años-meses-dias
@@ -135,9 +140,9 @@ class CajaService
       $cajaHisto = Caja::where('id_operador', $idOperador)
         ->where('id_caja_catalogo', $data['caja_data'][0]['id_caja_catalogo'])
         ->whereDate('fecha_apertura', $fechaApertura)
-        ->where('estado','activo')
+        ->where('estado', 'activo')
         ->first();
-
+      
 
 
 
@@ -316,7 +321,7 @@ class CajaService
     }
   }
 
-  public function actualizarSolicitudCancelacion(Request $request)//noMike
+  public function actualizarSolicitudCancelacion(Request $request) //noMike
   {
     try {
       DB::beginTransaction();
@@ -343,7 +348,7 @@ class CajaService
           $solicitud->save();
           $pago->save();
 
-          $consolidacion = (new PagoService())->cancelarPagoYConsolidarCargos($pago->id);
+          $consolidacion = (new PagoService())->cancelarPagoYConsolidarCargos($pago->id, 'pago');
           DB::commit();
           return $consolidacion;
         }
@@ -575,7 +580,7 @@ class CajaService
       // return $data->fecha_apertura; new CajaResource($cajaSesion);
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
-      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana'); //to do cambiar al helper
       $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
 
       //formateo de la fecha años-meses-dias
@@ -585,7 +590,7 @@ class CajaService
       $cajaSesion = Caja::where('id_operador', $idOperador)
         ->where('id_caja_catalogo', $data->id_caja_catalogo)
         ->where(DB::raw('DATE(fecha_apertura)'), $fechaApertura)
-        ->where('estado','activo')
+        ->where('estado', 'activo')
         ->first();
 
       if ($cajaSesion) {
@@ -612,7 +617,7 @@ class CajaService
 
       //Fecha hora base
       $fechaHoraBase = Carbon::now();
-      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana');
+      $fechaHoraLocal = $fechaHoraBase->setTimezone('America/Tijuana'); //to do cambiar al helper de fecha
       $fechaHoraLocalFormateada = $fechaHoraLocal->format('Y-m-d H:i:s');
 
       //formateo de la fecha años-meses-dias
@@ -626,7 +631,7 @@ class CajaService
         $cajaSesion = Caja::where('id_operador', $idOperador)
           ->where('id_caja_catalogo', $data['id_caja_catalogo'])
           ->where(DB::raw('DATE(fecha_apertura)'), $fechaApertura)
-          ->where('estado','activo')
+          ->where('estado', 'activo')
           ->first();
 
         //return $cajaSesion;
@@ -676,81 +681,74 @@ class CajaService
   {
     try {
       //recibir id sesion de caja
-        $usuario = auth()->user();
-        $montoTotal = 0;
-        $dataArreglo = $data->toArray();
-        if ($usuario->operador) {
+      $usuario = auth()->user();
+      $montoTotal = 0;
+      $dataArreglo = $data->toArray();
+      if ($usuario->operador) {
 
-          if($dataArreglo['id_sesion_caja'] != null)
-          {
-            $sesionCaja = Caja::where('id',$dataArreglo['id_sesion_caja'])->first();
-           
-            if($usuario->operador->id != $sesionCaja->id_operador)
-            {
-              return response()->json([
-                'error'=>'El operador no tiene acceso a las sesiones de otros operadores'
-              ]);
-            }
-          
-          }else{
-            $sesionCaja = Caja::where('id_operador',$usuario->operador->id)
-           ->where('estado','activo')
-           ->first();
+        if ($dataArreglo['id_sesion_caja'] != null) {
+          $sesionCaja = Caja::where('id', $dataArreglo['id_sesion_caja'])->first();
+
+          if ($usuario->operador->id != $sesionCaja->id_operador) {
+            return response()->json([
+              'error' => 'El operador no tiene acceso a las sesiones de otros operadores'
+            ]);
           }
-          
-          if ($sesionCaja) {
-            
-            //Consulta del nombre de la caja
-            $cataCajaNombre = CajaCatalogo::select('nombre_caja') 
-            ->where('id',$sesionCaja->id_caja_catalogo)
+        } else {
+          $sesionCaja = Caja::where('id_operador', $usuario->operador->id)
+            ->where('estado', 'activo')
+            ->first();
+        }
+
+        if ($sesionCaja) {
+
+          //Consulta del nombre de la caja
+          $cataCajaNombre = CajaCatalogo::select('nombre_caja')
+            ->where('id', $sesionCaja->id_caja_catalogo)
             ->first();
 
-            //Consulta de los montos de los retiros
-            $retiro = RetiroCaja::select('monto_total')
-            ->where('id_sesion_caja',$sesionCaja->id)
+          //Consulta de los montos de los retiros
+          $retiro = RetiroCaja::select('monto_total')
+            ->where('id_sesion_caja', $sesionCaja->id)
             ->get();
 
-            //Nombre del operador
-            $NombreOperador = $usuario->operador->nombre . " "  
-            . $usuario->operador->apellido_paterno . " " 
+          //Nombre del operador
+          $NombreOperador = $usuario->operador->nombre . " "
+            . $usuario->operador->apellido_paterno . " "
             . $usuario->operador->apellido_materno;
 
-            $fondoInicial = $sesionCaja->fondo_inicial;           
-            //Proceso para sumar los totales de todos los retiros asociados a la sesion de cobro
-            if ($retiro) {
-              $retirosMonto = $retiro->toArray();
-              foreach ($retirosMonto as $monto)
-              {
-                $montoTotal += $monto['monto_total'];
-              }
-            }else{
-              $montoTotal = 0;
+          $fondoInicial = $sesionCaja->fondo_inicial;
+          //Proceso para sumar los totales de todos los retiros asociados a la sesion de cobro
+          if ($retiro) {
+            $retirosMonto = $retiro->toArray();
+            foreach ($retirosMonto as $monto) {
+              $montoTotal += $monto['monto_total'];
             }
-                    
-            //Datos a retornar
-            $estadoSesion = [
-              "caja_nombre" => $cataCajaNombre->nombre_caja, 
-              "nombre_operador" => $NombreOperador,
-              "id_operador" => $usuario->operador->id,
-              "fondo_inicial" => $fondoInicial,
-              "Total_retirado" => $montoTotal,
-              "id" =>  $sesionCaja->id
-            ];
-
-            return $estadoSesion;
-
+          } else {
+            $montoTotal = 0;
           }
-          
-        }else{
-          return response()->json([
-            'error'=>'Este usuario no es un operador '
-          ]);
+
+          //Datos a retornar
+          $estadoSesion = [
+            "caja_nombre" => $cataCajaNombre->nombre_caja,
+            "nombre_operador" => $NombreOperador,
+            "id_operador" => $usuario->operador->id,
+            "fondo_inicial" => $fondoInicial,
+            "Total_retirado" => $montoTotal,
+            "id" =>  $sesionCaja->id
+          ];
+
+          return $estadoSesion;
         }
-            
+      } else {
+        return response()->json([
+          'error' => 'Este usuario no es un operador '
+        ]);
+      }
     } catch (Exception $ex) {
       return response()->json([
-        'error' => 'Ocurrio un error durante la busqueda.'.$ex
-    ], 500);
+        'error' => 'Ocurrio un error durante la busqueda.' . $ex
+      ], 500);
     }
   }
 
@@ -762,7 +760,7 @@ class CajaService
       $idOperador = $usuario->operador->id;
 
       $sesionesAbiertas = Caja::where('id_operador', $idOperador)
-        ->where('estado','activo')
+        ->where('estado', 'activo')
         ->get();
 
       if ($sesionesAbiertas) {
@@ -797,4 +795,69 @@ class CajaService
       ], 500);
     }
   }
+
+  public function cargarLetra($id){
+    try{
+      $letra = Letra::findOrFail($id);
+      $convenio = $letra->Convenio;
+      $concepto = ConceptoCatalogo::findOrFail(148);
+      $data = [];
+      $data['id_concepto'] = $concepto->id;
+      $data['nombre'] = $concepto->nombre;
+      $data['id_origen'] = $convenio->id;
+      $data['modelo_origen'] = 'convenio';
+      $data['id_dueno'] = $convenio->id_modelo;
+      $data['modelo_dueno'] = $convenio->modelo_origen;
+      $data['monto'] = $letra->monto;
+      $data['iva'] = 0;
+      $data['estado'] = 'pendiente';
+      $data['fecha_cargo'] = now();
+      return Cargo::create($data);
+    }catch(Exception $ex){
+      throw $ex;
+    }
+  }
+
+  public function cargarLetras(array $ids)
+{
+    try {
+        // Se utilizará para almacenar los cargos creados
+        $cargos = [];
+        
+        // Iteramos sobre cada ID de letra proporcionado
+        foreach ($ids as $id) {
+            $letra = Letra::findOrFail($id);
+            $convenio = $letra->Convenio;
+            $concepto = ConceptoCatalogo::findOrFail(148);
+            $tipo = ConvenioCatalogo::findOrFail($convenio->id_convenio_catalogo);
+            
+            $data = [];
+            $data['id_concepto'] = $concepto->id;
+            $data['nombre'] = $concepto->nombre.' '.$letra->id.' de '.$tipo->nombre;
+            $data['id_origen'] = $letra->id;
+            $data['modelo_origen'] = 'convenio';
+            $data['id_dueno'] = $convenio->id_modelo;
+            $data['modelo_dueno'] = $convenio->modelo_origen;
+            $data['monto'] = $letra->monto;
+            $data['iva'] = 0;
+            $data['estado'] = 'pendiente';
+            $data['fecha_cargo'] = now();
+            
+            // Crear el cargo
+            $cargo = Cargo::create($data);
+            
+            // Cargar la relación concepto
+            $cargo->load('concepto');
+            
+            // Agregarlo a la lista
+            $cargos[] = $cargo;
+        }
+        
+        // Retornamos la lista de cargos creados
+        return $cargos;
+    } catch (Exception $ex) {
+        throw $ex;
+    }
+}
+
 }

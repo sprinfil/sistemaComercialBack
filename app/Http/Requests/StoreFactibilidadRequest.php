@@ -23,6 +23,7 @@ class StoreFactibilidadRequest extends FormRequest
     {
         return [
             'id_toma' => 'required|int',
+            'id_contrato' => 'required|int',
             'id_solicitante' => 'required|int'
         ];
     }

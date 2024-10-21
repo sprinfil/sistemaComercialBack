@@ -75,12 +75,21 @@ class Cargo extends Model
         return ($this->monto + $this->iva);
     }
 
-    public function montoPendiente()
+    public function montoPendiente($generaIVA=true) //siempre genera iva al menos que se especifique false en parametro
     {
-        $monto_pendiente = ($this->monto + $this->iva) - $this->abonosTotal();
-        if ($monto_pendiente < 1) {
-            $monto_pendiente = 0;
+        if ($generaIVA){
+            $monto_pendiente = ($this->monto + $this->iva) - $this->abonosTotal();
+            if ($monto_pendiente < 1) {
+                $monto_pendiente = 0;
+            }
         }
+        else{
+            $monto_pendiente = ($this->monto) - $this->abonosTotal();
+            if ($monto_pendiente < 1) {
+                $monto_pendiente = 0;
+            }
+        }
+       
         return $monto_pendiente;
     }
 

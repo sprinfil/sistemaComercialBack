@@ -13,6 +13,7 @@ use App\Models\OrdenTrabajo;
 use App\Models\OrdenTrabajoAccion;
 use App\Models\OrdenTrabajoCatalogo;
 use App\Models\OrdenTrabajoConfiguracion;
+use App\Models\Secuencia_orden;
 use App\Models\Toma;
 use App\Models\Usuario;
 use App\Services\Caja\ConceptoService;
@@ -266,7 +267,50 @@ class OrdenTrabajoService{
         switch($tipo_modelo){
             case "toma":
                 $OTModelo=Toma::find($ordenTrabajo['id_toma']);
-                $dato=[$Accion['campo']=>$Accion['valor']];
+                $servicio=match($Accion['campo']){
+                    'contrato_agua'=>"c_agua",
+                    'contrato_alcantarillado'=>"c_alc",
+                    'contrato_saneamiento'=>"c_san",
+                    default=>null
+                };
+                //Checa caso especifico de instalación o dada de baja de servicios
+                if ($Accion['campo']=="contrato_agua" || $Accion['campo']=="contrato_alcantarillado" || $Accion['campo']=="contrato_saneamiento" ){
+                    //$servicio=$Accion['campo'];
+
+                  
+                    $estado=$Accion['valor'];
+                    if ($estado=="activa"){
+                        $valor=match($servicio){
+                            'c_agua'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','agua')->where('estatus','contratado')->first()->id,
+                            'c_alc'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->where('estatus','contratado')->first()->id,
+                            'c_san'=>Contrato::where('id_toma',$OTModelo['id'])->where('servicio_contratado','alcantarillado y saneamiento')->where('estatus','contratado')->first()->id,
+                        };
+                        $dato=[$servicio=>$valor];
+                        
+                        if ($servicio=="c_agua"){
+                            $libro=$OTModelo->libro;
+                            
+                            $orden=(new SecuenciaService())->AgregarSecuencias($libro,$OTModelo->id);
+                            $Secuencia_orden=Secuencia_orden::insert($orden);
+                            
+                        }
+           
+                        if ($OTModelo['estatus']=="pendiente de instalacion"){
+                            $a="activa";
+                            $OTModelo->update(["estatus"=>$a]);
+                            $OTModelo['fecha_instalacion']==helperFechaAhora();
+                        }
+                     
+                    }
+                    else if ($estado=="de baja"){
+                        $dato=[$servicio=>null];
+                    }
+                    
+
+                }
+                else{
+                    $dato=$modelos['toma'];
+                }
                 $OTModelo->update($dato);
                 $OTModelo->save();
                 
@@ -274,8 +318,9 @@ class OrdenTrabajoService{
             case "medidores":
                 $OTModelo=Medidor::where('id_toma',$ordenTrabajo['id_toma'])->first();
                 $dato=$modelos['medidor'];
-                $OTModelo->update($dato);
                 $OTModelo->save();
+                $OTModelo->update($dato);
+       
                 break;
             case "contratos":
                 $OTModelo=Contrato::where('id_toma',$ordenTrabajo['id_toma'])->first();
@@ -324,7 +369,12 @@ class OrdenTrabajoService{
             case "medidores":
                 $dato=$modelos['medidores'];
                 $dato['estatus']="activo";
+                $MedidorExiste=Toma::find($dato['id_toma'])->medidorActivo;
+                if ($MedidorExiste){
+                    $MedidorExiste->update(["estatus"=>"inactivo"]);
+                }
                 $dato['id_toma']=$ordenTrabajo['id_toma'];
+                $dato['fecha_instalacion']=helperFechaAhora();
                 $OTModelo=Medidor::create($dato);
                 break;
                 /*
@@ -416,7 +466,7 @@ class OrdenTrabajoService{
                 'monto' => $tarifa['monto'],
                 'iva' => $iva,
                 'estado' => "pendiente",
-                'fecha_cargo' => Carbon::today()->format('Y-m-d'),
+                'fecha_cargo' => helperFechaAhora(),
             ]));
         }
         return $cargos;

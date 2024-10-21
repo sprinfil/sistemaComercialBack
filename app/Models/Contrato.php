@@ -102,17 +102,19 @@ class Contrato extends Model
     }
     public function colonia1(): BelongsTo
     {
-        return $this->belongsTo(colonia::class, "colonia");
+        return $this->belongsTo(Colonia::class, "colonia");
     }
+ 
+    
     public function conceptoContrato() //Obtiene el concepto dependiendo del nombre del servicio
     {
 
         switch ($this->servicio_contratado) {
             case 'agua':
-                $servicio = 1; //id del concepto del contrato
+                $servicio = 152; //id del concepto del contrato
                 break;
             case 'alcantarillado y saneamiento':
-                $servicio = 2; //id del concepto del contrato
+                $servicio = 153; //id del concepto del contrato
                 break;
         }
         $conceptoContrato = ConceptoCatalogo::find($servicio);

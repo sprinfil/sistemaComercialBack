@@ -21,7 +21,7 @@ class ConceptoAplicable extends Model
         "rango_maximo",
     ];
 
-    public function conceptosAplicables(): MorphTo
+    public function origen(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo', 'id_modelo');
     }

@@ -182,10 +182,12 @@ class TomaService{
     
                     $numero_libro = isset($coincidencias_libro[0]) ? (int)$coincidencias_libro[0] : null;
                     $numero_ruta = isset($coincidencias_ruta[0]) ? (int)$coincidencias_ruta[0] : null;
-    
+                    $numero_toma = $libro->countTomas()+1;
+                    $tomas = $libro->tomas;
+                    
                     // Generar el folio
                     $folio = strtoupper(
-                        ''.str_pad($numero_ruta, 2, '0', STR_PAD_LEFT).''.str_pad($numero_libro, 2, '0', STR_PAD_LEFT).''.str_pad($libro->countTomas()+1, 3, '0', STR_PAD_LEFT)
+                        ''.str_pad($numero_ruta, 2, '0', STR_PAD_LEFT).''.str_pad($numero_libro, 2, '0', STR_PAD_LEFT).''.str_pad($numero_toma, 3, '0', STR_PAD_LEFT)
                     );
                     return $folio;
     }

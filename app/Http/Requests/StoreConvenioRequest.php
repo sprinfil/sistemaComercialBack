@@ -22,14 +22,18 @@ class StoreConvenioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "porcentaje_conveniado"=>"required|integer|gt:0",
-  
+          
             "id_convenio_catalogo" => "required|integer|gt:0",
+            "id_modelo" => "required|integer|gt:0",
+            "modelo_origen" => "required|string|
+            in:toma,usuario",
             "cantidad_letras" => "required|integer|min:1",
             "comentario" => "nullable|string|max:50",
+            "pago_inicial" => "required|numeric|regex:/^\d+(\.\d{1,2})?$/|min:0|max:100",
           
             "cargos_conveniados"=>"required|array",
-            "cargos_conveniados.*.id"=>"required|integer|gt:0"
+            "cargos_conveniados.*.id"=>"required|integer|gt:0",
+            "cargos_conveniados.*.porcentaje_conveniado"=>"required|numeric|gt:0"
         ];
     }
 }

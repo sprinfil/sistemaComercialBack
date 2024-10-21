@@ -18,6 +18,7 @@ use App\Models\ConceptoCatalogo;
 use App\Models\TarifaConceptoDetalle;
 use App\Models\TarifaServiciosDetalle;
 use App\Models\TipoToma;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request as HttpRequest;
@@ -428,5 +429,10 @@ class TarifaService{
         
     }
 
-
+    public function TarifaVigente(){
+        $fecha=Carbon::parse(helperFechaAhora())->format('Y-m-d');
+        
+        $tarifa=Tarifa::whereDate('fecha','<=',$fecha)->where('estado','activo')->orderBy('fecha', 'desc')->first();
+        return $tarifa;
+    }
 }

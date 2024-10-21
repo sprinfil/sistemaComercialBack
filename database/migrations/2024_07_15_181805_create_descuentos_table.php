@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('descuentos', function (Blueprint $table) {
             $table->id();
-            $table->string('id_descuento_aplicado');
+            $table->unsignedBigInteger('id_descuento_aplicado');
             $table->unsignedBigInteger('id_descuento_asociado');
             $table->decimal('monto_total');
+            $table->enum("estado",['abonado','pendiente','cancelado'])->default('pendiente');
             $table->softDeletes();
             $table->timestamps();
         });

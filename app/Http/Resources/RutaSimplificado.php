@@ -19,7 +19,7 @@ class RutaSimplificado extends JsonResource
             "id" => $this->id,
             "nombre" => $this->nombre,
             "color" => $this->color,
-            //"libros" => LibroSimplificado::collection($this->whenLoaded('Libros'))
+            "libros" => LibroSimplificado::collection($this->whenLoaded('Libros'))
         ];
     }
 }

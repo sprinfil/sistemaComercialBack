@@ -52,7 +52,7 @@ class Usuario extends Model
     }
     public function descuento_asociado() : HasOne
     {
-        return $this->hasOne(DescuentoAsociado::class, 'id_usuario');
+        return $this->hasOne(DescuentoAsociado::class, 'id_modelo');
     }
     
 
@@ -137,6 +137,16 @@ class Usuario extends Model
         return $this->morphMany(Pago::class, 'dueno', 'modelo_dueno', 'id_dueno')
                     ->with(['abonosConCargos']);
     }
+
+    public function convenios(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo');
+    }
+
+    public function conveniosActivos(): MorphMany
+    {
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
+    }
     
   
     public static function ConsultarPorNombresCodigo(string $usuario){
@@ -175,7 +185,9 @@ class Usuario extends Model
 
     public static function ConsultarPorCodigo(string $usuario){
         $data = Usuario::with('tomas.calle1','tomas.entre_calle1','tomas.entre_calle2','tomas.colonia1','tomas.ordenesTrabajo')//,
-        ->where("codigo_usuario",$usuario)->paginate(10);
+        ->where("codigo_usuario",$usuario)->orWhereHas('tomas',function($q) use ($usuario){
+            $q->where('codigo_toma',$usuario);
+        })->paginate(10);
           return $data;
     }
 
@@ -212,5 +224,10 @@ class Usuario extends Model
     public function getNombreCompletoAttribute()
     {
         return $this->nombre . ' ' . $this->apellido_paterno . ' ' . $this->apellido_materno;
+    }
+
+    public function constancias(): MorphMany
+    {
+        return $this->morphMany(Constancia::class, 'origen', 'modelo_dueno', 'id_dueno');
     }
 }

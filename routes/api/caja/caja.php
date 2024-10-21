@@ -38,6 +38,7 @@ Route::middleware(['api', 'audit'])->group(function () {
         //
         Route::get("/cajas/sesionPrevia", "sesionPrevia"); //no estan cerradas
         Route::get("/cajas/cortesRechazados", "cortesRechazados"); //cortes rechazados
-
+        Route::post("/cajas/cargarLetra/{id}", "cargarLetra"); // convenio
+        Route::post("/cajas/cargarLetras", "cargarLetras"); // convenio
     });
 });

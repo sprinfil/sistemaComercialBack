@@ -50,7 +50,17 @@ class Libro extends Model
     public function tomas() : HasMany {
         return $this->hasMany(Toma::class , "id_libro");
     }
-
+    /*
+    public function tomasFacturables() : HasMany {
+        return $this->hasMany(Toma::class , "id_libro")->where('estatus','activa')->orWhere('estatus','limitado');
+    }
+        */
+    public function secuencias() : HasMany {
+        return $this->hasMany(Secuencia::class , "id_libro");
+    }
+    public function secuenciasPadre() : HasOne {
+        return $this->hasOne(Secuencia::class , "id_libro")->where('tipo_secuencia',"padre");
+    }
     public function countTomas(): int
     {
         return $this->tomas()->count();

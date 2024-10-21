@@ -54,8 +54,8 @@ class PagoService
             $id_modelo = $data['id_dueno'];
             $dueno = helperGetOwner($modelo, $id_modelo);
             // se obtiene la caja y se registra el pago
-            $caja = Caja::find($data['id_caja']);
-            $numeroPagos = $caja->pagos()->count() + 1;
+            $caja = Caja::findOrFail($data['id_caja']);
+            $numeroPagos = $caja->pagos()->count() ?? 0 + 1;
             $folio = strtoupper('C' . str_pad($caja->id, 2, '0', STR_PAD_LEFT) . 'P' . str_pad($numeroPagos, 4, '0', STR_PAD_LEFT));
             $data['folio'] = $folio;
             $data['fecha_pago'] = date('Y-m-d');
@@ -113,6 +113,22 @@ class PagoService
             $pago_final->saldo_a_favor = number_format($dueno->saldoSinAplicar(), 2, '.', '');
             $pago_final->total_abonado = number_format($pago_final->total_abonado(), 2, '.', '');
             $pago_final->save();
+
+            $datos_fiscales = null;
+            try{
+                $datos_fiscales = $dueno->datos_fiscales;
+            }catch(Exception $ex){
+                
+            }
+            
+            if ($datos_fiscales != null) {
+                $cfdi_data = [];
+                $cfdi_data['folio'] = $pago_final->folio;
+                $cfdi_data['id_timbro'] = $caja->id_operador;
+                $cfdi_data['metodo'] = 'directo';
+
+                $estado_timbrado = (new CfdiService())->timbrarPago($cfdi_data); // TODO que deberia pasar si un timbrado falla?
+            }
 
             DB::commit();
 
@@ -322,7 +338,7 @@ class PagoService
                     // cada pago puede tener abonos
                     $total_abonado = 0;
                     $total_pagado = $pago->total_pagado;
-                    $abonos_aplicados = $pago->abonos;
+                    $abonos_aplicados = $pago->abonosVigentes;
 
                     // se recorren los abonos realizados para saber
                     // si queda saldo por aplicar de los pagos
@@ -409,11 +425,11 @@ class PagoService
         }
     }
 
-    public function cancelarPagoYConsolidarCargos($id_pago)
+    public function cancelarPagoYConsolidarCargos($origen, $id_origen)
     {
         try {
-            $abonos = Abono::where('modelo_origen', 'pago')
-                ->where('id_origen', $id_pago)
+            $abonos = Abono::where('modelo_origen', $origen)
+                ->where('id_origen', $id_origen)
                 ->get();
 
             if ($abonos->isEmpty()) {
@@ -457,7 +473,7 @@ class PagoService
 
             return 'Pago cancelado y cargos consolidados correctamente.';
         } catch (Exception $ex) {
-            return response()->json(['error' => $ex->getMessage()], 500);
+            throw $ex;
         }
     }
 

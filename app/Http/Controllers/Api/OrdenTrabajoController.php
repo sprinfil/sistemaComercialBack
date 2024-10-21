@@ -38,7 +38,7 @@ class OrdenTrabajoController extends Controller
     public function indexCatalogo()
     {
         return OrdenTrabajoCatalogoResource::collection(
-            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos.OTConcepto','ordenTrabajoEncadenado')->orderby('created_at','desc')->get()
+            OrdenTrabajoCatalogo::with('ordenTrabajoAccion','ordenTrabajoCargos.OTConcepto','ordenTrabajoEncadenado.OrdenCatalogoEncadenadas')->orderby('created_at','desc')->get()
         );
 
        
@@ -106,9 +106,12 @@ class OrdenTrabajoController extends Controller
     public function storeAcciones(StoreOrdenTrabajoCatalogoRequest $request){
         try{
             DB::beginTransaction();
-            $data=$request->validated();
+            $data=$request->validated() ?? null;
             $acciones=(new OrdenTrabajoAccionService())->store($data);
             DB::commit();
+            if (isNull($acciones)){
+                return response(["message"=>"Acciones borradas con éxito"],200);
+            }
             return response(["Orden_Trabajo_Acciones"=>$acciones],200);
         }
         catch(Exception $ex){
@@ -131,7 +134,7 @@ class OrdenTrabajoController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Los cargos de la OT no se pudieron registar/actualizar.'
-            ], 200);
+            ], 500);
         }
  
     }
@@ -267,6 +270,8 @@ class OrdenTrabajoController extends Controller
     }
     public function cerrarOrden(StoreOrdenTrabajoRequest $request)
     {
+      
+       try{
         DB::beginTransaction();
         $data=$request->validated();
         $OT=$data['ordenes_trabajo'][0];
@@ -280,8 +285,6 @@ class OrdenTrabajoController extends Controller
             DB::commit();
             return $Acciones;
         }
-       try{
-        
        
        }
        catch(Exception $ex){

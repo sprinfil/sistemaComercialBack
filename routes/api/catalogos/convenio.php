@@ -16,5 +16,15 @@ Route::middleware(['api', 'audit'])->group(function () {
         // Registro de convenio
         Route::post("/Convenio/BuscarConceptosConveniables","BuscarConceptosConveniables");
         Route::post("/Convenio/RegistrarConvenio","RegistrarConvenio");
+        Route::put("/Convenio/CancelarConvenio", "CancelarConvenio");
+        Route::get("/Convenio/ConsultarConvenio", "ConsultarConvenio");
+        Route::get("/Convenio/ConsultarListaConvenio", "ConsultarListaConvenio");
+        Route::get("/Convenio/ConsultarLetras", "ConsultarLetras");
+        Route::get("/Convenio/buscarConveniosAplicablesTipoToma", "buscarConveniosAplicablesTipoToma");
+
+        //Este metodo solo lo uso para probar se debe eliminar al final
+        Route::get("/Convenio/crearCargoLetra", "crearCargoLetra");
+        Route::put("/Convenio/pagoLetra", "pagoLetra");
+
     });
 });

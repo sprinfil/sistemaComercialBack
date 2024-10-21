@@ -148,6 +148,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 1,
                 "tarifa_fija" => 1,
             ],
+          
             [
                 "nombre" => "REZ. SERVICIO DE AGUA POTABLE",
                 "descripcion" => "Rezago en el servicio de agua potable.",
@@ -541,6 +542,16 @@ class ConceptoCatalogoSeeder extends Seeder
             [
                 "nombre" => "CONSTANCIA DE FACTIBILIDAD DE AGUA",
                 "descripcion" => "Constancia de factibilidad de agua.",
+                "estado" => "activo",
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ],
+            [
+                "nombre" => "CONSTANCIA DE FACTIBILIDAD DE ALCANTARILLADO Y SANEAMIENTO",
+                "descripcion" => "Constancia de factibilidad de alcantarillado y saneamiento.",
                 "estado" => "activo",
                 "prioridad_abono" => 2,
                 "cargo_directo" => 1,
@@ -1665,6 +1676,66 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 0,
                 "tarifa_fija" => 0,
             ],
+            [
+                "nombre" => "Letra de convenio",
+                "descripcion" => "Pago de letra por convenio",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 1,
+                "prioridad_por_antiguedad" => 1,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
+            ],
+            [
+                "nombre" => "Constancia",
+                "descripcion" => "Pago de constancia",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 1,
+                "prioridad_por_antiguedad" => 1,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
+            ],
+            [
+                "nombre" => "Descuento Pensionados 50%",
+                "descripcion" => "Descuento de pensionados",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 1,
+                "prioridad_por_antiguedad" => 1,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 0,
+                "tarifa_fija" => 0,
+            ],///Concepto contratos
+            [
+                "nombre" => "CONTRATO DE AGUA POTABLE",
+                "descripcion" => "Servicio de suministro de agua potable.",
+                "estado" => "activo",
+                "categoria" => 'todas',
+
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ],
+            [
+                "nombre" => "CONTRATO SERV. ALCANTARILLADO y SANEAMIENTO",
+                "descripcion" => "Servicio de alcantarillado y saneamiento.",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ]
+            ////////
             // Agrega más elementos aquí según sea necesario
         ];
 
@@ -1677,6 +1748,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "categoria" => $concepto["categoria"] ?? null,
                 "tipo_tarifa" => $concepto["tipo_tarifa"] ?? null,
                 'prioridad_abono' => $concepto["prioridad_abono"],
+                'prioridad_por_antiguedad' => $concepto["prioridad_por_antiguedad"] ?? 0,
                 'cargo_directo' => $concepto["cargo_directo"],
                 'genera_iva' => $concepto["genera_iva"],
                 'abonable' => $concepto["abonable"],

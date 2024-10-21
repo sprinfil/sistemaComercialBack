@@ -22,6 +22,7 @@ class StoreConstanciaCatalogoRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "id_concepto_catalogo" => "required|integer|gt:0",
             "nombre"=>"required|string|max:55",
             "descripcion"=>"nullable|string",
             "estado"=>"nullable|string|max:10|

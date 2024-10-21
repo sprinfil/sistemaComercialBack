@@ -38,18 +38,20 @@ class Pago extends Model
     ];
 
     // Pagos con caja
-    public function caja(): BelongsTo {
-        return $this->belongsTo(Caja::class , 'id_caja'); 
+    public function caja(): BelongsTo
+    {
+        return $this->belongsTo(Caja::class, 'id_caja');
     }
 
-    public function cfdi(): HasOne {
+    public function cfdi(): HasOne
+    {
         return $this->hasOne(Cfdi::class, 'folio', 'folio');
-    }    
+    }
 
     // Pagos con corte de caja
     public function corteCaja(): HasMany
     {
-        return $this->hasMany(CorteCaja::class, 'id_pago'); 
+        return $this->hasMany(CorteCaja::class, 'id_pago');
     }
 
     public function dueno(): MorphTo
@@ -72,6 +74,14 @@ class Pago extends Model
         return $this->morphMany(Abono::class, 'origen', 'modelo_origen', 'id_origen');
     }
 
+    public function abonosVigentes(): MorphMany
+    {
+        return $this->morphMany(Abono::class, 'origen', 'modelo_origen', 'id_origen')
+            ->whereHas('cargo', function ($query) {
+                $query->where('estado', '!=', 'cancelado');
+            });
+    }
+
     public function cargos()
     {
         return $this->abonos()->with('cargo')->get();
@@ -84,9 +94,9 @@ class Pago extends Model
 
     public function pendiente()
     {
-        $abonos = $this->abonos;
+        $abonos = $this->abonosVigentes;
         $total_aplicado = 0;
-        foreach($abonos as $abono){
+        foreach ($abonos as $abono) {
             $total_aplicado += $abono->total_abonado;
         }
         return $this->total_pagado - $total_aplicado;
@@ -96,7 +106,7 @@ class Pago extends Model
     {
         $abonos = $this->abonos;
         $total_aplicado = 0;
-        foreach($abonos as $abono){
+        foreach ($abonos as $abono) {
             $total_aplicado += $abono->total_abonado;
         }
         return $total_aplicado;

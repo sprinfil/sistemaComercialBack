@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('lecturas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_empleado_lecturista');
+            $table->unsignedBigInteger('id_operador');
             $table->unsignedBigInteger('id_toma');
-            $table->unsignedBigInteger('id_carga_trabajo');
-            $table->integer('lectura');
+            $table->unsignedBigInteger('id_periodo');
+            $table->unsignedBigInteger('id_origen')->nullable();
+            $table->string('modelo_origen')->nullable();
+            $table->unsignedBigInteger('id_anomalia')->nullable();
+            $table->integer('lectura')->nullable();
+            $table->string('comentario')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

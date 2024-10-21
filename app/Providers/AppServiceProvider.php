@@ -40,7 +40,14 @@ class AppServiceProvider extends ServiceProvider
             'abono' => 'App\Models\Abono',
             'caja' => 'App\Models\Caja',
             'orden_trabajo' => 'App\Models\OrdenTrabajo',
-            'cfdi' => 'App\Models\Cfdi'
+            'cfdi' => 'App\Models\Cfdi',
+            'ajuste' => 'App\Models\Ajuste',
+            'descuento' => 'App\Models\Descuento',
+            'letra' => 'App\Models\Letra',
+            'carga_trabajos' => 'App\Models\CargaTrabajo',
+            'descuento_asociado' => 'App\Models\DescuentoAsociado',
+            'constancia' => 'App\Models\Constancia',
+            'multa' => 'App\Models\Multa'
         ]);
     }
 }
