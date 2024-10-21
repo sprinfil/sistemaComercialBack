@@ -18,9 +18,12 @@ class PeriodoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $periodos = Periodo::orderBy('created_at', 'desc')->take(50)->get();
+        $parametros=$request->all();
+        ///
+        
+        $periodos = Periodo::orderBy('created_at', 'desc')->get();
         return response()->json(PeriodoResource::collection($periodos));
     }
 

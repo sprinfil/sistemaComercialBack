@@ -148,6 +148,18 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 1,
                 "tarifa_fija" => 1,
             ],
+            
+            [
+                "nombre" => "CONTRATO TRAT. Y SANEAMIENTO",
+                "descripcion" => "Servicio de tratamiento y saneamiento.",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ],
             [
                 "nombre" => "REZ. SERVICIO DE AGUA POTABLE",
                 "descripcion" => "Rezago en el servicio de agua potable.",
@@ -1710,7 +1722,31 @@ class ConceptoCatalogoSeeder extends Seeder
                 "genera_iva" => 0,
                 "abonable" => 0,
                 "tarifa_fija" => 0,
+            ],///Concepto contratos
+            [
+                "nombre" => "CONTRATO DE AGUA POTABLE",
+                "descripcion" => "Servicio de suministro de agua potable.",
+                "estado" => "activo",
+                "categoria" => 'todas',
+
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
             ],
+            [
+                "nombre" => "CONTRATO SERV. ALCANTARILLADO",
+                "descripcion" => "Servicio de alcantarillado.",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 1,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ],
+            ////////
             // Agrega más elementos aquí según sea necesario
         ];
 
