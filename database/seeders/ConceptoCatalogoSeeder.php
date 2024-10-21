@@ -1725,20 +1725,8 @@ class ConceptoCatalogoSeeder extends Seeder
                 "tarifa_fija" => 1,
             ],
             [
-                "nombre" => "CONTRATO SERV. ALCANTARILLADO",
-                "descripcion" => "Servicio de alcantarillado.",
-                "estado" => "activo",
-                "categoria" => 'todas',
-                "prioridad_abono" => 2,
-                "cargo_directo" => 1,
-                "genera_iva" => 1,
-                "abonable" => 1,
-                "tarifa_fija" => 1,
-            ],
-              
-            [
-                "nombre" => "CONTRATO TRAT. Y SANEAMIENTO",
-                "descripcion" => "Servicio de tratamiento y saneamiento.",
+                "nombre" => "CONTRATO SERV. ALCANTARILLADO y SANEAMIENTO",
+                "descripcion" => "Servicio de alcantarillado y saneamiento.",
                 "estado" => "activo",
                 "categoria" => 'todas',
                 "prioridad_abono" => 2,

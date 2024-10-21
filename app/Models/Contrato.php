@@ -111,10 +111,10 @@ class Contrato extends Model
 
         switch ($this->servicio_contratado) {
             case 'agua':
-                $servicio = 1; //id del concepto del contrato
+                $servicio = 152; //id del concepto del contrato
                 break;
             case 'alcantarillado y saneamiento':
-                $servicio = 2; //id del concepto del contrato
+                $servicio = 153; //id del concepto del contrato
                 break;
         }
         $conceptoContrato = ConceptoCatalogo::find($servicio);
