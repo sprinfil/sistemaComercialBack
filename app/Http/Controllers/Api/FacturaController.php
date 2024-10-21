@@ -8,6 +8,9 @@ use App\Http\Requests\StoreFacturaRequest;
 use App\Http\Requests\UpdateFacturaRequest;
 use App\Http\Resources\FacturaResource;
 use App\Models\Toma;
+use App\Services\AtencionUsuarios\ConvenioService;
+use App\Services\AtencionUsuarios\DescuentoAsociadoService;
+use App\Services\Caja\PagoService;
 use App\Services\Facturacion\FacturaService;
 use App\Services\Facturacion\indexFacturaServiceService;
 use ErrorException;
@@ -84,13 +87,18 @@ class FacturaController extends Controller
             DB::beginTransaction();
             $toma=Toma::find($id_toma);
             $facturas = (new FacturaService())->facturaracionPorToma($toma);
-            ///TO DO DESC Y CONVENIOS
+            
+            $convenio=(new ConvenioService())->crearCargoLetraService($toma['id']);
+
+            $descuento=(new DescuentoAsociadoService())->facturarCndescuento($toma['id'], $facturas[0]['id']);
+
+            $estatus = (new PagoService())->pagoAutomatico($toma['id'], "toma");
 
             ///TO DO Recargos
             $recargos=(new FacturaService())->Recargos($toma);
-            ///TO DO Cargar Letras
-            DB::commit(); ///probar
-            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1],"Recargos"=>$recargos],200);
+
+            DB::rollBack(); ///probar
+            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1],"Recargos"=>$recargos,"Convenios"=>$convenio,"Descuentos"=>$descuento,"Pagos"=>$estatus],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();
@@ -177,7 +185,7 @@ class FacturaController extends Controller
             ], 500);
         }
     }
-    public function refacturarToma(Request $request){
+    public function refacturarToma(Request $request){ ///
         try {
             DB::beginTransaction();
             $tomas=$request->all()['tomas'];
