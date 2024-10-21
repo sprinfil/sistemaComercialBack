@@ -65,10 +65,12 @@ class DatabaseSeeder extends Seeder
         $this->call(LibroSeeder::class);
         //
         $libros = Libro::all();
-        foreach ($libros as $libro) {
 
-            Usuario::factory()->count(3)->create()->each(function ($usuario) use ($libro) {
+        foreach ($libros as $libro) {
+            $tomas = 0;
+            Usuario::factory()->count(3)->create()->each(function ($usuario) use ($libro, &$tomas) {
                 for ($i = 0; $i < rand(1, 3); $i++) {
+                    $tomas++;
                     // Generar latitud y longitud
                     $latitud = '-110.3' . (string)rand(0, 3) . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
                     $longitud = '24.1' . (string)rand(237, 455);
@@ -87,7 +89,7 @@ class DatabaseSeeder extends Seeder
 
                     // Generar el folio
                     $folio = strtoupper(
-                        '' . str_pad($numero_ruta, 2, '0', STR_PAD_LEFT) . '' . str_pad($numero_libro, 2, '0', STR_PAD_LEFT) . '' . str_pad($libro->countTomas() + 1, 3, '0', STR_PAD_LEFT)
+                        '' . str_pad($tomas, 4, '0', STR_PAD_LEFT)  . '' . str_pad($libro->id, 3, '0', STR_PAD_LEFT) //. '' . str_pad($libro->countTomas() + 1, 3, '0', STR_PAD_LEFT)
                     );
 
                     // Crear la toma con los datos adicionales
