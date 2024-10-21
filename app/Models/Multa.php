@@ -51,4 +51,7 @@ class Multa extends Model
     public function cargos() : MorphMany {
         return $this->morphMany(Cargo::class, 'origen' , 'modelo_origen' , 'id_origen');
     }
+    public function saldar() : MorphTo {
+        return $this->morphTo(__FUNCTION__ , 'modelo_multado' , 'id_multado');
+    }
 }

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('fecha_solicitud')->nullable();
             $table->date('fecha_revision')->nullable();
             $table->integer('monto')->nullable();
-            $table->enum('estado', ['activo' , 'rechazado' , 'pendiente' , 'cancelado'])->nullable();
+            $table->enum('estado', ['activo' , 'pagada' , 'pendiente' , 'cancelado'])->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

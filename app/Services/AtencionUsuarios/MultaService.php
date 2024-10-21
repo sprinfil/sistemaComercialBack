@@ -235,6 +235,11 @@ class MultaService{
                 'message' => 'No se puede cancelar la multa una vez activa o cancelada.'
             ], 403);
         }
+        if ($multas->estado == 'pagado') {
+            return response()->json([
+                'message' => 'La multa esta pagada, no se puede cambiar el estado.'
+            ], 403);
+        }
         $multas->estado = 'cancelado';
         $multas->save();
         return response()->json([
