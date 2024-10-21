@@ -26,6 +26,7 @@ class ValidacionService{
                             //Agregamos la toma con sus consumos a la colección
                             $tomasConConsumos->push([
                                 'toma' => $toma,
+                                'nombre_ruta' => $ruta['nombre'],
                                 'consumos' => $consumos
                             ]);
                         }
