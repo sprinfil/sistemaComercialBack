@@ -130,31 +130,43 @@ class ConvenioService
         ], 400);
       }
       $pagoInicial = $data['pago_inicial'];
+
       //La lista de cargos que se desean conveniar
-      $cargoTemp = "";
       $cargos = $data['cargos_conveniados'];
-      $cargosConveniados = [];
+      
+      //Optimizacion
+      $cargosIds = array_column($cargos, 'id');
 
-      foreach ($cargos as $cargo) //pendiente eliminar consultas en ciclos
-      {
-        $cargoTemp = Cargo::find($cargo['id']);
+      // Obtener todos los cargos de una sola vez
+      $cargosTemp = Cargo::whereIn('id', $cargosIds)->get()->keyBy('id');
 
-        $temp = ConceptoAplicable::where('id_concepto_catalogo', $cargoTemp->id_concepto)
-          ->where('modelo', 'convenio_catalogo')
-          ->where('id_modelo', $data['id_convenio_catalogo'])
-          ->get();
+      // Obtener todos los conceptos aplicables de una vez
+      $conceptos = ConceptoAplicable::whereIn('id_concepto_catalogo', $cargosTemp->pluck('id_concepto'))
+      ->where('modelo', 'convenio_catalogo')
+      ->where('id_modelo', $data['id_convenio_catalogo'])
+      ->get();
 
-        if (count($temp) == 0) {
-          return response()->json([
-            'error' => 'El convenio seleccionado no es compatible con los cargos seleccionados.'
-          ], 400);
+      // Crear un array para verificar la compatibilidad
+      $conceptosCompatibles = $conceptos->pluck('id_concepto_catalogo')->toArray();
+
+      // Verificar las condiciones en memoria
+        foreach ($cargos as $cargo) {
+        $cargoTemp = $cargosTemp[$cargo['id']];
+
+        // Verifica si el concepto es compatible
+        if (!in_array($cargoTemp->id_concepto, $conceptosCompatibles)) {
+           return response()->json([
+               'error' => 'El convenio seleccionado no es compatible con los cargos seleccionados.'
+           ], 400);
         }
-        if ($cargoTemp->estado == "conveniado") {
-          return response()->json([
-            'error' => 'Un cargo no puede pertenecer a varios convenios.'
-          ], 400);
+
+        // Verifica si el estado del cargo es "conveniado"
+        if ($cargoTemp->estado === "conveniado") {
+           return response()->json([
+               'error' => 'Un cargo no puede pertenecer a varios convenios.'
+           ], 400);
         }
-      }
+      }    
 
       $convenio = Convenio::create($convenio); //Crea el registro de convenio
 
@@ -167,29 +179,36 @@ class ConvenioService
         "id_convenio" => $convenio->id //Este elemento es calculado posteriormente
       ];
 
+      $cargosConveniados = []; // Para acumular los registros a insertar en CargosConveniado
+
       foreach ($cargos as $cargo) {
-        $cargoTemp = Cargo::find($cargo['id']); //obtengo los datos del cargo
-        $montoOriginalPendiente = $cargoTemp->montoPendiente(); //este es el monto original pendiente
-        $montoConveniado = ($cargo['porcentaje_conveniado'] * $montoOriginalPendiente) / 100; //monto del convenio aplicando el porcentaje conveniado
-        $montoFinalPendiente = $montoOriginalPendiente - $montoConveniado; // Es el monto original restandole el convenio aplicado
-        //Actualiza los cargos
+        $cargoTemp = $cargosTemp[$cargo['id']]; // Obtener el cargo desde el array existente
+        $montoOriginalPendiente = $cargoTemp->montoPendiente(); // Monto original pendiente
+        $montoConveniado = ($cargo['porcentaje_conveniado'] * $montoOriginalPendiente) / 100; // Monto del convenio
+        $montoFinalPendiente = $montoOriginalPendiente - $montoConveniado; // Monto final pendiente
+
+        // Actualiza el estado del cargo
         $cargoTemp->update($cargoUpdt);
 
-        //Registro de cargos conveniados
-        $cargosConveniados = [
-          "id_cargo" => $cargo['id'],
-          "id_convenio" => $convenio->id,
-          "monto_original_pendiente" =>  round($montoOriginalPendiente, 2),
-          "monto_final_pendiente" =>  round($montoFinalPendiente, 2),
-          "porcentaje_conveniado" => $cargo['porcentaje_conveniado'],
-          "monto_conveniado" => round($montoConveniado, 2),
-        ];
-
-        CargosConveniado::create($cargosConveniados);
+        // Registro de cargos conveniados
+        $cargosConveniados[] = [
+            "id_cargo" => $cargo['id'],
+            "id_convenio" => $convenio->id,
+            "monto_original_pendiente" => round($montoOriginalPendiente, 2),
+            "monto_final_pendiente" => round($montoFinalPendiente, 2),
+            "porcentaje_conveniado" => $cargo['porcentaje_conveniado'],
+            "monto_conveniado" => round($montoConveniado, 2),
+            "created_at" => now(), 
+            "updated_at" => now(),
+         ];
 
         $montoConveniadoTotal += round($montoConveniado, 2);
         $montoFinalPendienteTotal += round($montoFinalPendiente, 2);
-      }
+       }
+
+     // Inserta todos los registros de cargos conveniados de una vez
+     CargosConveniado::insert($cargosConveniados);
+
       //Actualizar el registro de convenio con los montos
       $pagoInicial = round(($montoFinalPendienteTotal * $pagoInicial)/100,2);
       $convenioMontos = [
@@ -244,6 +263,8 @@ class ConvenioService
        ];
       $cargo = Cargo::create($RegistroCargo);
       }
+
+      
 
       for ($i = 0; $i < $data['cantidad_letras']; $i++) {
 
