@@ -19,7 +19,7 @@ class CfdiService
       $estados = ['pendiente', 'fallido', 'realizado', 'cancelado'];
 
       // Seleccionar un estado aleatoriamente
-      $data['estado'] = $estados[array_rand($estados)];
+      $data['estado'] = 'realizado'; //$estados[array_rand($estados)];
 
       $pago = Pago::where('folio', $data['folio'])->first();
       $datos_fiscales = $pago->dueno->datos_fiscales;
