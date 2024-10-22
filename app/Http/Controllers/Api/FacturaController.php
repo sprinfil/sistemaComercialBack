@@ -177,5 +177,20 @@ class FacturaController extends Controller
             ], 500);
         }
     }
+    public function refacturarToma(Request $request){
+        try {
+            DB::beginTransaction();
+            $tomas=$request->all()['tomas'];
+            $factura = (new FacturaService())->Refacturacion($tomas[0]);   
+            return $factura;
+            DB::rollBack();      
+            return response(new FacturaResource($factura), 200);
+         } catch (Exception $ex) {
+             DB::rollBack();
+             return response()->json([
+                 'error' => 'No se encontraron facturas activas'
+             ], 500);
+         }
+    }
 
 }

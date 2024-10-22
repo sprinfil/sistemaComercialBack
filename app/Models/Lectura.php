@@ -22,27 +22,26 @@ class Lectura extends Model
         "id_anomalia",
         "lectura",
         "comentario"
-        
     ];
 
-    public function toma() : BelongsTo
+    public function toma(): BelongsTo
     {
         return $this->belongsTo(Toma::class, 'id_toma');
     }
 
-    public function operador() : HasOne
+    public function operador(): HasOne
     {
         return $this->hasOne(Operador::class, 'id', 'id_operador');
     }
 
-    public function periodo() : BelongsTo
+    public function periodo(): BelongsTo
     {
         return $this->belongsTo(Periodo::class, 'id_periodo');
     }
 
-    public function anomalia() : HasOne
+    public function anomalia(): HasOne
     {
-        return $this->hasOne(AnomaliaCatalogo::class, 'id','id_anomalia');
+        return $this->hasOne(AnomaliaCatalogo::class, 'id', 'id_anomalia');
     }
 
     public function origen(): MorphOne
