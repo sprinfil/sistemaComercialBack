@@ -21,13 +21,22 @@ class ValidacionService{
                     //si el libro tiene tomas
                     if ($libro->tomas && $libro->tomas->isNotEmpty()) {
                         foreach ($libro->tomas as $toma) {
+
+                            $toma->nombre_ruta = $ruta->nombre;
                             //Obtenemos los consumos asociados a la toma
                             $consumos = $periodo->consumos()->where('id_toma', $toma->id)->get();
+                            $anomalias = [];
+                            foreach ($consumos as $consumo) {
+                                $lectura = $consumo->lecturaActual;
+                                if ($lectura && $lectura->anomalia) {
+                                    $anomalias[] = $lectura->anomalia->nombre;
+                                }
+                            }
                             //Agregamos la toma con sus consumos a la colección
                             $tomasConConsumos->push([
                                 'toma' => $toma,
-                                'nombre_ruta' => $ruta['nombre'],
-                                'consumos' => $consumos
+                                'consumos' => $consumos,
+                                'anomalias' => $anomalias
                             ]);
                         }
                     }
