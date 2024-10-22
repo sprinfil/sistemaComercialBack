@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\SaldableInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,9 +12,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Multa extends Model
+class Multa extends Model implements SaldableInterface
 {
-    use HasFactory , SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'id_multado',
@@ -28,27 +29,38 @@ class Multa extends Model
         'estado'
     ];
 
-    public function operador_multa() : BelongsTo {
-        return $this->belongsTo(Operador::class , 'id_operador' , 'id');
+    public function operador_multa(): BelongsTo
+    {
+        return $this->belongsTo(Operador::class, 'id_operador', 'id');
     }
     public function operador()
     {
         return $this->belongsTo(Operador::class, 'id_operador', 'id');
     }
 
-    public function operador_revisor() : BelongsTo {
-        return $this->belongsTo(Operador::class , 'id_revisor' , 'id');
+    public function operador_revisor(): BelongsTo
+    {
+        return $this->belongsTo(Operador::class, 'id_revisor', 'id');
     }
 
-    public function catalogo_multa() : BelongsTo {
-        return $this->belongsTo(MultaCatalogo::class, 'id_catalogo_multa' , 'id');
+    public function catalogo_multa(): BelongsTo
+    {
+        return $this->belongsTo(MultaCatalogo::class, 'id_catalogo_multa', 'id');
     }
 
     public function origen(): MorphTo
     {
         return $this->morphTo(__FUNCTION__, 'modelo_multado', 'id_multado');
     }
-    public function cargos() : MorphMany {
-        return $this->morphMany(Cargo::class, 'origen' , 'modelo_origen' , 'id_origen');
+    public function cargos(): MorphMany
+    {
+        return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen');
+    }
+
+    public function saldar()
+    {
+        // Implementa la lógica de saldado para este modelo específico.
+        $this->estado = 'saldado';
+        $this->save();
     }
 }

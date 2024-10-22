@@ -44,35 +44,35 @@ class ConvenioService
           'El usuario o la toma seleccionada ya cuenta con un convenio.'
         ], 400);
       }
-      $cargos = Cargo::where('modelo_dueno', $data->tipo)
+      $cargos = Cargo::select('id','id_concepto','nombre','id_origen','modelo_origen','id_dueno','modelo_dueno','monto','iva','estado','id_convenio','fecha_cargo','fecha_liquidacion')
+        ->where('modelo_dueno', $data->tipo)
         ->where('id_dueno', $data->id)
         ->where('estado', 'pendiente')
         ->get();
 
-      $cargos = $cargos->toArray();
       $cargosAplicables = [];
+      
+      $conceptosAplicables = ConceptoAplicable::where('modelo', 'convenio_catalogo')
+      ->where('id_modelo', $data['id_convenio_catalogo'])
+      ->whereIn('id_concepto_catalogo', $cargos->pluck('id_concepto')) 
+      ->get()
+      ->keyBy('id_concepto_catalogo'); // Agrupar por id_concepto_catalogo
+    
       $nxt = 0;
-      $temp = [];
-      foreach ($cargos as $cargo) //pendiente eliminar consultas en ciclos
-      {
-         $temp = ConceptoAplicable::where('id_concepto_catalogo', $cargo['id_concepto'])
-          ->where('modelo', 'convenio_catalogo')
-          ->where('id_modelo', $data['id_convenio_catalogo'])
-          ->get();
-
-        $cargo_selecionado = Cargo::findOrFail($cargo['id_concepto']);
-
-        if (count($temp) != 0) {
-          $cargosAplicables[$nxt] = $cargo;
-          $cargosAplicables[$nxt]['aplicable'] = "si";
-          $cargosAplicables[$nxt]['rango_minimo'] = $temp[0]['rango_minimo'];
-          $cargosAplicables[$nxt]['rango_maximo'] = $temp[0]['rango_maximo'];
-          $cargosAplicables[$nxt]['monto_pendiente'] = $cargo_selecionado->montoPendiente();
-        } else {
-          $cargosAplicables[$nxt] = $cargo;
-          $cargosAplicables[$nxt]['aplicable'] = "No";
-        }
-        $nxt++;
+      foreach ($cargos as $cargo) {
+          $concepto = $conceptosAplicables->get($cargo['id_concepto']);
+    
+          if ($concepto) {
+              $cargosAplicables[$nxt] = $cargo;
+              $cargosAplicables[$nxt]['aplicable'] = "si";
+              $cargosAplicables[$nxt]['rango_minimo'] = $concepto->rango_minimo;
+              $cargosAplicables[$nxt]['rango_maximo'] = $concepto->rango_maximo;
+              $cargosAplicables[$nxt]['monto_pendiente'] = $cargo->montoPendiente();
+          } else {
+              $cargosAplicables[$nxt] = $cargo;
+              $cargosAplicables[$nxt]['aplicable'] = "No";
+          }
+          $nxt++;
       }
       return json_encode($cargosAplicables);
     } catch (Exception $ex) {
@@ -428,11 +428,10 @@ class ConvenioService
   {
     try {
       $toma = Toma::where('id', $data)->first();
-      //return $toma->id_tipo_toma;
       if ($toma) {
-        $conveniosAplicables = TipoTomaAplicable::where('id_tipo_toma', $toma->id_tipo_toma)
+        $conveniosAplicables = TipoTomaAplicable::select('id','id_modelo','modelo_origen','id_tipo_toma')->where('id_tipo_toma', $toma->id_tipo_toma)
         ->where('modelo_origen','convenio_catalogo')
-        ->with('origen')
+        ->with('origen:id,nombre,descripcion,estado,pago_inicial,tipo_cancelacion')
         ->get();
        
         if (count($conveniosAplicables) != 0) {
