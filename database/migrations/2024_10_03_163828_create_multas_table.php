@@ -17,12 +17,12 @@ return new class extends Migration
             $table->unsignedBigInteger('id_catalogo_multa');
             $table->unsignedBigInteger('id_operador')->nullable();
             $table->unsignedBigInteger('id_revisor')->nullable();
-            $table->enum('modelo_multado', ['toma' , 'usuario'])->nullable();
+            $table->enum('modelo_multado', ['toma', 'usuario'])->nullable();
             $table->string('motivo');
             $table->date('fecha_solicitud')->nullable();
             $table->date('fecha_revision')->nullable();
             $table->integer('monto')->nullable();
-            $table->enum('estado', ['activo' , 'rechazado' , 'pendiente' , 'cancelado'])->nullable();
+            $table->enum('estado', ['activo', 'rechazado', 'pendiente', 'cancelado', 'saldado'])->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
