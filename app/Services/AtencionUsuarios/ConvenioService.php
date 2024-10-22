@@ -355,76 +355,7 @@ class ConvenioService
     }
   }
   
-  public function CancelarConvenioService(Request $data) //agregar recargos
-  {
-    try {
-      $motivoCancelacion = $data['motivo_cancelacion'];
-      $convenio = Convenio::findOrFail($data['id_convenio']);
-      DB::beginTransaction();
-      if ($convenio->estado == "activo") {
-
-        //Cargos originales asociados al convenio
-        $cargos = Cargo::select('id')
-          ->where('id_convenio', $convenio->id)
-          ->get();
-        //Letras del convenio
-        $letras = Letra::select('id')
-          ->where('id_convenio', $convenio->id)
-          ->get();
-
-        $arregloCargo = $cargos->toArray();
-        $arregloLetra = $letras->toArray();
-
-        //Aqui
-        $cargosLetrasIds = Cargo::select('id')
-          ->where('id_origen', $arregloLetra)
-          ->where('modelo_origen', 'letra')
-          ->get();
-
-        $arregloCargosLetrasIds =  $cargosLetrasIds->toArray();
-
-        $pagosIds = Abono::select('id_origen')
-          ->where('modelo_origen', "pago")
-          ->where('id_cargo', $arregloCargosLetrasIds)
-          ->get();
-
-        $arregloPagosIds = $pagosIds->toArray();
-
-        //Cargos asociados a las letras del convenio, actualiza su estado
-        $cargosLetrados = Cargo::whereIn('id_origen', $arregloLetra)
-          ->where('modelo_origen', 'letra')
-          ->update(['estado' => 'cancelado']);
-
-        $convenioUpdt = [
-          "estado" => "cancelado",
-          "motivo_cancelacion" => $motivoCancelacion
-        ];
-
-        //Actualiza el estado del convenio, cargos originales y las letras del convenio
-        $convenio->update($convenioUpdt);
-        Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
-        Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
-
-        Pago::whereIn('id', $arregloPagosIds)->update(['estado' => 'pendiente']);
-        //to do falta arreglar el metodo de pagos 
-        $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
-        DB::commit();
-        return response()->json([
-          'El convenio se ha cancelado correctamente.'
-        ]);
-      } else {
-        DB::rollBack();
-        return response()->json([
-          'error' => 'No se encontro convenio seleccionado.'
-        ], 400);
-      }
-    } catch (Exception $ex) {
-      DB::rollBack();
-      return response()->json([
-        'Ocurio un error durante la cancelación del convenio: ' . $ex
-      ], 400);
-    }
-  }
+  
 
   public function ConsultarListaConvenioService()
   {
@@ -506,7 +437,7 @@ class ConvenioService
           if ($cargosFacturacion->count() > 3 || $pagoIniResp == 'pendiente') { //Alan si entra a este if se cancela el convenio
             
             //Llama al metodo de cancelacion automatica
-            $this->cancelacionAutomatica($convenio->id);
+            $this->CancelarConvenioDinamicoService($convenio->id, "Incumplimiento de pago", "automatica");
             //Termina el proceso
             return;
           }
@@ -569,76 +500,7 @@ class ConvenioService
     }
   }
 
-  public function cancelacionAutomatica($id_convenio)
-  {
-    try {
-      $motivoCancelacion = "Incumplimiento de los acuerdos del convenio";
-      $convenio = Convenio::findOrFail($id_convenio);
-      DB::beginTransaction();
-      if ($convenio->estado == "activo") {
-
-        //Cargos originales asociados al convenio
-        $cargos = Cargo::select('id')
-          ->where('id_convenio', $convenio->id)
-          ->get();
-        //Letras del convenio
-        $letras = Letra::select('id')
-          ->where('id_convenio', $convenio->id)
-          ->get();
-
-        $arregloCargo = $cargos->toArray();
-        $arregloLetra = $letras->toArray();
-
-        //Obtiene los cargos asociados a las letras
-        $cargosLetrasIds = Cargo::select('id')
-          ->where('id_origen', $arregloLetra)
-          ->where('modelo_origen', 'letra')
-          ->get();
-
-          //Crea un arreglo con los ids de los cargos de las letras
-        $arregloCargosLetrasIds =  $cargosLetrasIds->toArray();
-
-        //Obtiene los ids de los pagos asociados a los cargos
-        $pagosIds = Abono::select('id_origen')
-          ->where('modelo_origen', "pago")
-          ->where('id_cargo', $arregloCargosLetrasIds)
-          ->get();
-
-          //Crea un arreglo con los ids de los pagos
-        $arregloPagosIds = $pagosIds->toArray();
-
-        //Cargos asociados a las letras del convenio, actualiza su estado
-        $cargosLetrados = Cargo::whereIn('id_origen', $arregloLetra)
-          ->where('modelo_origen', 'letra')
-          ->update(['estado' => 'cancelado']);
-
-        $convenioUpdt = [
-          "estado" => "incumplido",
-          "motivo_cancelacion" => $motivoCancelacion
-        ];
-
-        //Actualiza el estado del convenio, cargos originales y las letras del convenio
-        $convenio->update($convenioUpdt);
-        Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
-        Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
-
-        Pago::whereIn('id', $arregloPagosIds)->update(['estado' => 'pendiente']);
-        //to do falta arreglar el metodo de pagos 
-        //$estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen); //Alan mira esta linea, se tiene que mover si es cancelacion automatica
-        DB::commit();
-      } else {
-        DB::rollBack();
-        return response()->json([
-          'error' => 'No se encontro convenio seleccionado.'
-        ], 400);
-      }
-    } catch (Exception $ex) {
-      DB::rollBack();
-      return response()->json([
-        'Ocurio un error durante la cancelación del convenio: ' . $ex
-      ], 400);
-    }
-  }
+  
 
   //Mike
   public function pagoLetraService(int $id_Cargo)
@@ -661,6 +523,82 @@ class ConvenioService
       return response()->json([
 
         'Ocurio un error durante el pago de la letra' . $ex
+      ], 400);
+    }
+  }
+
+
+
+  public function CancelarConvenioDinamicoService(int $id_convenio, string $motivo_cancelacion, string $tipo_cancelacion) //agregar recargos
+  {
+    try {
+      $motivoCancelacion = $motivo_cancelacion;
+      $convenio = Convenio::findOrFail($id_convenio);
+      DB::beginTransaction();
+      if ($convenio->estado == "activo") {
+
+        //Cargos originales asociados al convenio
+        $cargos = Cargo::select('id')
+          ->where('id_convenio', $convenio->id)
+          ->get();
+        //Letras del convenio
+        $letras = Letra::select('id')
+          ->where('id_convenio', $convenio->id)
+          ->get();
+
+        $arregloCargo = $cargos->toArray();
+        $arregloLetra = $letras->toArray();
+
+        //Aqui
+        $cargosLetrasIds = Cargo::select('id')
+          ->where('id_origen', $arregloLetra)
+          ->where('modelo_origen', 'letra')
+          ->get();
+
+        $arregloCargosLetrasIds =  $cargosLetrasIds->toArray();
+
+        $pagosIds = Abono::select('id_origen')
+          ->where('modelo_origen', "pago")
+          ->where('id_cargo', $arregloCargosLetrasIds)
+          ->get();
+
+        $arregloPagosIds = $pagosIds->toArray();
+
+        //Cargos asociados a las letras del convenio, actualiza su estado
+        $cargosLetrados = Cargo::whereIn('id_origen', $arregloLetra)
+          ->where('modelo_origen', 'letra')
+          ->update(['estado' => 'cancelado']);
+
+        $convenioUpdt = [
+          "estado" => "cancelado",
+          "motivo_cancelacion" => $motivoCancelacion
+        ];
+
+        //Actualiza el estado del convenio, cargos originales y las letras del convenio
+        $convenio->update($convenioUpdt);
+        Cargo::whereIn('id', $arregloCargo)->update(['estado' => 'pendiente']);
+        Letra::whereIn('id', $arregloLetra)->update(['estado' => 'cancelado']);
+
+        Pago::whereIn('id', $arregloPagosIds)->update(['estado' => 'pendiente']);
+
+        if ($tipo_cancelacion == "manual") {
+          $estatus = (new PagoService())->pagoAutomatico($convenio->id_modelo, $convenio->modelo_origen);
+        }
+        
+        DB::commit();
+        return response()->json([
+          'El convenio se ha cancelado correctamente.'
+        ]);
+      } else {
+        DB::rollBack();
+        return response()->json([
+          'error' => 'No se encontro convenio seleccionado.'
+        ], 400);
+      }
+    } catch (Exception $ex) {
+      DB::rollBack();
+      return response()->json([
+        'Ocurio un error durante la cancelación del convenio: ' . $ex
       ], 400);
     }
   }
