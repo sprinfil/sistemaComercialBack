@@ -49,21 +49,21 @@ class TomaFactory extends Factory
                 'baja temporal',
                 'en proceso'
             ]),
-            'calle' => $this->faker->numberBetween(1,100),
-            'entre_calle_1' =>$this->faker->optional()->numberBetween(1,100),
-            'entre_calle_2' => $this->faker->optional()->numberBetween(1,100),
-            'colonia' => $this->faker->numberBetween(1,10),
+            'calle' => $this->faker->numberBetween(1, 100),
+            'entre_calle_1' => $this->faker->optional()->numberBetween(1, 100),
+            'entre_calle_2' => $this->faker->optional()->numberBetween(1, 100),
+            'colonia' => $this->faker->numberBetween(1, 10),
             'codigo_postal' => $this->faker->postcode,
             'numero_casa' => $this->faker->numerify('####'),
-            'localidad' => $this->faker->randomElement(['La Paz','Todos santos','Chametla','El Centenario','El Pescadero','Colonia Calafia','El Sargento','El Carrizal','Agua Amarga','Los Barriles','Buena Vista','San Bartolo','San Pedro','San Juan de los Planes','La Matanza','Puerto Chale']),
-            'diametro_toma' => $this->faker->randomElement([' 1/2 pulgada','1/4 pulgada','1 pulgada','2 pulgadas','1/8 pulgada']),
-            'direccion_notificacion' => $this->faker->numberBetween(1,100),
+            'localidad' => $this->faker->randomElement(['La Paz', 'Todos santos', 'Chametla', 'El Centenario', 'El Pescadero', 'Colonia Calafia', 'El Sargento', 'El Carrizal', 'Agua Amarga', 'Los Barriles', 'Buena Vista', 'San Bartolo', 'San Pedro', 'San Juan de los Planes', 'La Matanza', 'Puerto Chale']),
+            'diametro_toma' => $this->faker->randomElement([' 1/2 pulgada', '1/4 pulgada', '1 pulgada', '2 pulgadas', '1/8 pulgada']),
+            'direccion_notificacion' => $this->faker->numberBetween(1, 100),
             'tipo_servicio' => $this->faker->randomElement(['promedio', 'lectura']),
             'c_agua' => null,
             'c_alc' => null,
             'c_san' => null,
             'tipo_contratacion' => $this->faker->randomElement(['normal']), //, 'condicionado', 'pre-contrato '
-            'posicion' => $this->faker->optional()->latitude . ', ' . $this->faker->optional()->longitude ,  // Este valor será sobrescrito al usar create en el LibroFactory
+            'posicion' => $this->faker->optional()->latitude . ', ' . $this->faker->optional()->longitude,  // Este valor será sobrescrito al usar create en el LibroFactory
             'deleted_at' => null,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -77,8 +77,7 @@ class TomaFactory extends Factory
      */
     public function configure()
     {
-        return $this->afterCreating(function (Toma $toma) 
-        {
+        return $this->afterCreating(function (Toma $toma) {
             Medidor::factory()->create([
                 'id_toma' => $toma->id
             ]);
@@ -104,10 +103,9 @@ class TomaFactory extends Factory
             ]);
 
             $toma_actualizada = Toma::find($toma->id);
-            if($servicio == 'agua'){
+            if ($servicio == 'agua') {
                 $toma_actualizada->c_agua = $contrato->id;
-            } 
-            else if($servicio == 'alcantarillado y saneamiento'){
+            } else if ($servicio == 'alcantarillado y saneamiento') {
                 $toma_actualizada->c_agua = $contrato->id;
                 $toma_actualizada->c_alc = $contrato->id;
                 $toma_actualizada->c_san = $contrato->id;
