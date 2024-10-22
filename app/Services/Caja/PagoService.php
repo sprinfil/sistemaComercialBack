@@ -115,12 +115,11 @@ class PagoService
             $pago_final->save();
 
             $datos_fiscales = null;
-            try{
+            try {
                 $datos_fiscales = $dueno->datos_fiscales;
-            }catch(Exception $ex){
-                
+            } catch (Exception $ex) {
             }
-            
+
             if ($datos_fiscales != null) {
                 $cfdi_data = [];
                 $cfdi_data['folio'] = $pago_final->folio;
@@ -400,6 +399,15 @@ class PagoService
                         if ($diferencia < 1) {
                             // si la diferencia es menor a 1
                             $cargo_modificado = Cargo::findOrFail($cargo->id);
+
+                            $origen = $cargo->origen;
+                            // Verifica si el modelo implementa la interfaz
+                            if ($origen instanceof \App\Contracts\SaldableInterface) {
+                                $origen->saldar(); // TODO implementar la interfaz en los origenes
+                            } else {
+                                //throw new \Exception('El modelo origen no soporta la operación de saldado.');
+                            }
+
                             $cargo_modificado->update([
                                 'estado' => 'pagado'
                             ]);

@@ -82,7 +82,10 @@ class PeriodoFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Periodo $periodo) {
-            $tomas = Toma::whereNotNull('c_agua')->get();
+            $id_ruta = $periodo->id_ruta;
+            $tomas = Toma::with("libro")->whereHas("libro", function ($q) use ($id_ruta) {
+                $q->where('id_ruta', $id_ruta);
+            })->whereNotNull('c_agua')->get();
             /* Cambiado por consumo
             foreach ($tomas as $toma) {
                 Factura::factory()->create([
