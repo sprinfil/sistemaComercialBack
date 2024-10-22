@@ -88,17 +88,10 @@ class FacturaController extends Controller
             $toma=Toma::find($id_toma);
             $facturas = (new FacturaService())->facturaracionPorToma($toma);
             
-            $convenio=(new ConvenioService())->crearCargoLetraService($toma['id']);
 
-            $descuento=(new DescuentoAsociadoService())->facturarCndescuento($toma['id'], $facturas[0]['id']);
 
-            $estatus = (new PagoService())->pagoAutomatico($toma['id'], "toma");
-
-            ///TO DO Recargos
-            $recargos=(new FacturaService())->Recargos($toma);
-
-            DB::rollBack(); ///probar
-            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1],"Recargos"=>$recargos,"Convenios"=>$convenio,"Descuentos"=>$descuento,"Pagos"=>$estatus],200);
+            DB::commit(); ///probar
+            return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1],"Recargos"=>$facturas[2]],200);
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();
@@ -128,7 +121,7 @@ class FacturaController extends Controller
             DB::rollBack();
             $clase= get_class($ex);
             if ($clase=="ErrorException"){
-                return response()->json(["error"=>"Error de peticion. ".$ex],400);
+                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
             }
             else{
                 return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
@@ -189,15 +182,19 @@ class FacturaController extends Controller
         try {
             DB::beginTransaction();
             $tomas=$request->all()['tomas'];
-            $factura = (new FacturaService())->Refacturacion($tomas[0]);   
-            return $factura;
-            DB::rollBack();      
-            return response(new FacturaResource($factura), 200);
+            $facturas = (new FacturaService())->Refacturacion($tomas[0]);   
+            
+            DB::commit();      
+            return response()->json(["facturas"=>new FacturaResource($facturas[0]),"cargos"=>$facturas[1],"Recargos"=>$facturas[2],"cargos_viejos"=>$facturas[3]],200);
          } catch (Exception $ex) {
              DB::rollBack();
-             return response()->json([
-                 'error' => 'No se encontraron facturas activas'
-             ], 500);
+             $clase= get_class($ex);
+             if ($clase=="ErrorException"){
+                 return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+             }
+             else{
+                 return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);
+             }
          }
     }
 
