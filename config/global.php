@@ -2,7 +2,7 @@
 return [
     'zona_horaria' => 'GMT-7',
     'valor_uma' => env('VALOR_UMA', 100),
-    'concepto_contrato' => env('CONCEPTO_CONTRATO', 1),
+    'concepto_contrato' => env('CONCEPTO_CONTRATO', 152),
     'concepto_servicio_agua' => env('CONCEPTO_SERVICIO_AGUA', 2),
     'concepto_servicio_alc'  => env('CONCEPTO_SERVICIO_ALC', 3),
     'concepto_servicio_san'  => env('CONCEPTO_SERVICIO_SAN', 4),

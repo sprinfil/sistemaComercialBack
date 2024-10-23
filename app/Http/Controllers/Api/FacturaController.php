@@ -109,8 +109,8 @@ class FacturaController extends Controller
         try{
             DB::beginTransaction();
             $data=$request['periodos'];
-           // $facturas = (new FacturaService())->storeFacturaPeriodo($data);
-           dispatch(new PeriodoFacturacionJob($data))->onQueue('facturaPeriodos');//colas
+          // $facturas = (new FacturaService())->storeFacturaPeriodo($data);
+            $facturaToma=dispatch(new PeriodoFacturacionJob($data))->onQueue('facturaPeriodos');//colas
             DB::commit();
             //return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1],"Recargos"=>$facturas[2]],200);
             return response()->json(["message"=>"Facturacion iniciada"],200); // con colas

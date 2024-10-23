@@ -3,6 +3,7 @@ namespace App\Services\Facturacion;
 
 use App\Http\Resources\FacturaResource;
 use App\Jobs\FacturacionTomaJob;
+use App\Jobs\PeriodoFacturacionJob;
 use App\Models\Cargo;
 use App\Models\ConceptoCatalogo;
 use App\Models\Consumo;
@@ -98,12 +99,12 @@ class FacturaService{
                         $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
                        
                   
-                        $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
-                        $recargos=(new FacturaService())->Recargos($toma);
-
+                       $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+                       //$facturaToma=dispatch(new PeriodoFacturacionJob($toma,$tarifaToma,$periodo,$consumo))->onQueue('facturaPeriodos');//colas
                         $periodosFactura->push($facturaToma[0]);
                         $facturaCargos->push($facturaToma[1]);
-                        $RecargosCollection->push($recargos);
+                        $RecargosCollection->push($facturaToma[2]);
+                       
                  
                         
                     }
@@ -193,7 +194,7 @@ class FacturaService{
             $concepto=ConceptoCatalogo::find(1); //fijo
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
-                "nombre"=>"facturacion servicio agua ".$mes,
+                "nombre"=>"facturacion".$concepto['nombre']." ".$mes,
                 "id_origen"=>$factura['id'],
                 "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
@@ -211,7 +212,7 @@ class FacturaService{
             $costo_alc_iva=helperCalcularIVA($costo_alc);
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
-                "nombre"=>"facturacion servicio alcantarillado ".$mes,
+                "nombre"=>"facturacion".$concepto['nombre']." ".$mes,
                 "id_origen"=>$factura['id'],
                 "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
@@ -230,7 +231,7 @@ class FacturaService{
             $costo_san_iva=helperCalcularIVA($costo_san);
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
-                "nombre"=>"facturacion servicio saneamiento ".$mes,
+                "nombre"=>"facturacion".$concepto['nombre']." ".$mes,
                 "id_origen"=>$factura['id'],
                 "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
@@ -243,6 +244,22 @@ class FacturaService{
             $cargo=Cargo::create($cargoInsert);
             $cargos->push($cargo);
         }
+        $concepto=ConceptoCatalogo::find(154); //fijo
+        $bomberos=1;
+        $cargoInsert=[
+            "id_concepto"=>$concepto['id'],
+            "nombre"=>$concepto['nombre']." ".$mes,
+            "id_origen"=>$factura['id'],
+            "modelo_origen"=>"facturas",
+            "id_dueno"=>$toma['id'],
+            "modelo_dueno"=>"toma",
+            "monto"=>$bomberos,
+            "iva"=>0,
+            "estado"=>"pendiente",
+            "fecha_cargo"=>$fecha,
+        ];
+        $cargo=Cargo::create($cargoInsert);
+        $cargos->push($cargo);
         return $cargos;
     }
 
@@ -364,7 +381,7 @@ class FacturaService{
     public function facturaPorTomaService(string $idToma)
     {      //obtiene la factura mas reciente de la toma
         //$factura = Factura::with('consumo.lecturaAnterior','consumo.lecturaActual','periodo','tarifaServicio','toma.cargos','toma.abonos')->where('id_toma',$idToma)->latest()->get();   
-        $toma=Toma::with('factura','cargos.abonos')->where('id',$idToma)->get();
+        $toma=Toma::with('cargos.abonos')->where('id',$idToma)->get();
         $saldo=$toma[0]->saldoToma();
         return [$toma,$saldo];
     }

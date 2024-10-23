@@ -57,9 +57,11 @@ class PeriodoFactory extends Factory
         return $this->state(function (array $attributes) use ($mes, $ano) {
             // Usar mes y ano para generar datos, pero no almacenarlos directamente
             $periodo = Carbon::createFromDate($ano, $mes, 1);
+            $month=substr($periodo->monthName,0,3);
+            $year=$periodo->year;
 
             return [
-                'nombre' => $periodo->translatedFormat('F Y'),
+                'nombre' =>  $month.$year,
                 'periodo' => $periodo->format('Y-m-d'),
                 'facturacion_fecha_inicio' => $periodo->startOfMonth(),
                 'facturacion_fecha_final' => $periodo->endOfMonth(),

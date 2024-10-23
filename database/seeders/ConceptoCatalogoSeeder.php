@@ -1736,6 +1736,18 @@ class ConceptoCatalogoSeeder extends Seeder
                 "tarifa_fija" => 1,
             ]
             ////////
+            ,
+            [
+                "nombre" => "APORTACIÓN BOMBEROS",
+                "descripcion" => "Aportacion a bomberos.",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ]
             // Agrega más elementos aquí según sea necesario
         ];
 
