@@ -363,8 +363,10 @@ class FacturaService{
 
     public function facturaPorTomaService(string $idToma)
     {      //obtiene la factura mas reciente de la toma
-        $factura = Factura::with('consumo.lecturaAnterior','consumo.lecturaActual','periodo','tarifaServicio')->where('id_toma',$idToma)->latest()->get();         
-        return $factura;
+        //$factura = Factura::with('consumo.lecturaAnterior','consumo.lecturaActual','periodo','tarifaServicio','toma.cargos','toma.abonos')->where('id_toma',$idToma)->latest()->get();   
+        $toma=Toma::with('factura','cargos.abonos')->where('id',$idToma)->get();
+        $saldo=$toma[0]->saldoToma();
+        return [$toma,$saldo];
     }
 
 
