@@ -37,7 +37,7 @@ class PeriodoFactory extends Factory
         $periodo = Carbon::createFromDate($ano, $mes, 1);
 
         return [
-            'id_ruta' => Ruta::all()->random()->id,
+            'id_ruta' => 35, // Ruta::all()->random()->id,
             'id_tarifa' => Tarifa::all()->random()->id,
             'nombre' => $periodo->translatedFormat('F Y'),  // Nombre en formato "Mes Ano"
             'periodo' => $periodo->format('m-Y'),  // Periodo en formato "MM-YYYY"
