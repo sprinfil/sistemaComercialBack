@@ -21,11 +21,14 @@ class ValidacionService{
                     //si el libro tiene tomas
                     if ($libro->tomas && $libro->tomas->isNotEmpty()) {
                         foreach ($libro->tomas as $toma) {
-
+                            
                             $toma->nombre_ruta = $ruta->nombre;
                             $toma->nombre_libro = $libro->nombre;
+                            $toma->direccion_completa = $toma->getDireccionCompleta();
                             $toma->usuario = $toma->usuario;
+                            $toma->makeHidden(['calle1', 'colonia1' , 'entre_calle1' , 'entre_calle2']);
                             //Obtenemos los consumos asociados a la toma
+                            /*
                             $consumos = $periodo->consumos()->where('id_toma', $toma->id)->get();
                             $anomalias = [];
                             foreach ($consumos as $consumo) {
@@ -34,10 +37,11 @@ class ValidacionService{
                                     $anomalias[] = $lecturaactual->anomalia->nombre;
                                 }
                             }
+                            */
                             //Agregamos la toma con sus consumos a la colección
                             $tomasConConsumos->push([
                                 'toma' => $toma,
-                                'consumos' => $consumos,
+                                //'consumos' => $consumos,
                             ]);
                         }
                     }
@@ -100,12 +104,16 @@ class ValidacionService{
        //Obtener consumos anteriores de la toma en periodos anteriores al actual
        $consumosAnteriores = Consumo::where('id_toma', $id_toma)
            ->whereHas('periodo', function($query) use ($periodoActual) {
-               $query->where('validacion_inicio', '<', $periodoActual->validacion_final);
+               $query->where('validacion_inicio', '<',
+               $periodoActual->validacion_final);
            })
            ->pluck('consumo');  // Obtener sólo los valores de consumo
 
        $valorMinimo = 17;
-
+       if ($consumosAnteriores->isNotEmpty()) {
+            $count = $consumosAnteriores->count();
+            return $count;
+       }
        $promedioConsumo = $consumosAnteriores->isEmpty() 
            ? $valorMinimo  //Si no tiene consumos, se usa el valor minimo
            : $consumosAnteriores->avg(); //calcula el promedio
@@ -117,7 +125,7 @@ class ValidacionService{
        ]);
 
        return response()->json([
-           'message' => 'Consumo registrado exitosamente.',
+           'message' => 'Promedio generado.',
            'promedio' => $promedioConsumo,
            'consumo_registrado' => $nuevoConsumo
        ], 200);
