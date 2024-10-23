@@ -13,6 +13,9 @@ use App\Models\Ruta;
 use App\Models\Tarifa;
 use App\Models\TarifaServiciosDetalle;
 use App\Models\Toma;
+use App\Services\AtencionUsuarios\ConvenioService;
+use App\Services\AtencionUsuarios\DescuentoAsociadoService;
+use App\Services\Caja\PagoService;
 use Carbon\Carbon;
 use COM;
 use Database\Seeders\LibroSeeder;
@@ -161,9 +164,17 @@ class FacturaService{
               ///Cambiar create  por insert
               $cargoFactura=null;
         }
-       
+       //////
 
-      return [$factura,$cargoFactura];
+        $convenio=(new ConvenioService())->crearCargoLetraService($toma['id']);
+
+        $descuento=(new DescuentoAsociadoService())->facturarCndescuento($toma['id'], $factura['id']);
+
+        $estatus = (new PagoService())->pagoAutomatico($toma['id'], "toma");
+        $recargos=(new FacturaService())->Recargos($toma);
+        //////////
+
+      return [$factura,$cargoFactura,$recargos];
     }
     public function CargoFactura($factura,$toma,$costo_agua,$costo_alc,$costo_san,$periodo){
         //$cargos=[];
@@ -172,13 +183,19 @@ class FacturaService{
         $fecha=Carbon::parse(helperFechaAhora(),'GMT-7')->format('Y-m-d');
         $mes=$periodo['nombre'];//Carbon::parse(helperFechaAhora(),'GMT-7')->translatedFormat('F Y'); //QUÉEEEEEEEEEEEEEEEEEEEEEEEE
         if ($costo_agua!=0){
-            $costo_Agua_iva=helperCalcularIVA($costo_agua);
+            if ($toma->esDomestica()){
+                $costo_Agua_iva=0;
+            }
+            else{
+                $costo_Agua_iva=helperCalcularIVA($costo_agua);
+            }
+     
             $concepto=ConceptoCatalogo::find(1); //fijo
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
                 "nombre"=>"facturacion servicio agua ".$mes,
                 "id_origen"=>$factura['id'],
-                "modelo_origen"=>"facturacion",
+                "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
                 "modelo_dueno"=>"toma",
                 "monto"=>$costo_agua,
@@ -196,7 +213,7 @@ class FacturaService{
                 "id_concepto"=>$concepto['id'],
                 "nombre"=>"facturacion servicio alcantarillado ".$mes,
                 "id_origen"=>$factura['id'],
-                "modelo_origen"=>"facturacion",
+                "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
                 "modelo_dueno"=>"toma",
                 "monto"=>$costo_alc,
@@ -215,7 +232,7 @@ class FacturaService{
                 "id_concepto"=>$concepto['id'],
                 "nombre"=>"facturacion servicio saneamiento ".$mes,
                 "id_origen"=>$factura['id'],
-                "modelo_origen"=>"facturacion",
+                "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
                 "modelo_dueno"=>"toma",
                 "monto"=>$costo_san,
@@ -249,12 +266,6 @@ class FacturaService{
         //dispatch(new FacturacionTomaJob($toma));
         $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
         $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
-
-       
-            //metodo para aplicar descuentos
-
-            //Aplicar convenios
-
         return $facturaToma;
     }
     public function Refacturacion($tomas){ /// pendiente
@@ -263,20 +274,22 @@ class FacturaService{
         $id_facturacion=$tomas['id_facturacion']; 
         $toma=Toma::find($id_toma);
         $facturaExistente=Factura::find($id_facturacion);
-        return $toma;
-        /*
-        $facturacion_arreglo=[];
-        $cargos_facturacion_arreglo=[];
-        foreach ($tomas as $toma){
-            
-                   
+
+        if ($facturaExistente){
+            $tarifa=TarifaServiciosDetalle::find($facturaExistente->id_tarifa_servicio);
+            $periodo=Periodo::find($facturaExistente->id_periodo);
             $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
-            //dispatch(new FacturacionTomaJob($toma));
-            $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
-            $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+            (new DescuentoAsociadoService())->cancelarDecuento($toma['id'],$facturaExistente['id']);
+            Cargo::where('id_origen',$facturaExistente->id)->where('modelo_origen',"facturas")->update(['estado' => "cancelado"]); 
+            $cargosExistentes=Cargo::where('id_origen',$facturaExistente->id)->where('modelo_origen',"facturas")->get();
+            
+            $factura=$this->facturar($toma, $tarifa,$periodo,$consumo);
+            $factura[]=$cargosExistentes;
+            return $factura;
         }
-        */
-        
+        else{
+            throw new ErrorException("No existe facturacion para refacturar");
+        }
         
     }
     public function updateFacturaService(array $data, string $id)
@@ -295,6 +308,7 @@ class FacturaService{
 
         ///Checar facturaciones pasadas a presente
         ///importe recargos id=10
+        ///Checar fecha de facturación para recargar con huecos en facturacion
         $facturas=$toma->CargosFacturasVigentes->groupBy('id_origen')->skip(1);
         $cargos=[];
         $concepto_recargos=ConceptoCatalogo::getRecargos();

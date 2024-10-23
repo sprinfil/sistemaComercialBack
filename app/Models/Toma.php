@@ -236,6 +236,7 @@ class Toma extends Model
         return $this->hasMany(Secuencia_orden::class, 'id_toma');
     }
 
+
     public function saldoToma()
     {
         $total_final = 0;
@@ -292,6 +293,14 @@ class Toma extends Model
     public function descuentoAsociado(): HasOne
     {
         return $this->hasOne(DescuentoAsociado::class, 'id_modelo','id');
+    }
+    public function esDomestica():bool{
+        if ($this->id_tipo_toma==1){ //Domestica
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
 }

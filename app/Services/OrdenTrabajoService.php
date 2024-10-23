@@ -309,7 +309,7 @@ class OrdenTrabajoService{
 
                 }
                 else{
-                    $dato=$modelos['toma'];
+                    $dato=[$Accion['campo']=>$Accion['valor']];
                 }
                 $OTModelo->update($dato);
                 $OTModelo->save();
