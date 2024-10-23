@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\SaldableInterface;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Point;
 
-class Contrato extends Model
+class Contrato extends Model implements SaldableInterface
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
@@ -179,7 +180,10 @@ class Contrato extends Model
         $data = Contrato::with('usuario', 'toma')->where('folio_solicitud', 'like', '%' . $folio . '%/' . $ano)->get();
         return $data;
     }
-
+    public function saldar(){
+        $this->estado = 'pagado';
+        $this->save();
+    }
     // Borrados y restores en cascada
     protected static function boot() //borrado en cascada
     {

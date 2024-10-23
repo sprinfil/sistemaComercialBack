@@ -412,7 +412,10 @@ class ConvenioService
       //Busca el registro de la toma con el id recibido
       $toma = Toma::where('id', $id_toma)->first();
       //Obtiene el registro de convenio activo de asociado a la toma
-      $convenio = $toma->convenios->where('estado','activo')->first();
+      $convenio = $toma->convenios->where('estado','activo')->first() ?? null;
+      if (!$convenio){
+        return null;
+      }
       //Registra si la toma es de cancelacion automatica o manual
       $tipo_cancelacion = ConvenioCatalogo::select('tipo_cancelacion')->where('id',$convenio->id_convenio_catalogo)->first();
       //Obtiene el registro del pago inicial

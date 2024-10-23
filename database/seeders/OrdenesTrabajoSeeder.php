@@ -88,7 +88,11 @@ class OrdenesTrabajoSeeder extends Seeder
             // ["nombre" => "Recuperacion de medidor", "descripcion" => "Recuperacion de medidor", "vigencias" => 72.00, "genera_masiva" => 0],
             // ["nombre" => "Activar contratos de baja", "descripcion" => "Contratos de baja", "vigencias" => 24.00, "genera_masiva" => 0],
         ];
-
+        $ordenesAccionInstalacion=[
+        ["id_orden_trabajo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_agua","valor"=>"activa"],
+        ["id_orden_trabajo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_alcantarillado","valor"=>"activa"],
+        ["id_orden_trabajo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_saneamiento","valor"=>"activa"]
+        ];
         foreach ($ordenes as $orden) {
             OrdenTrabajoCatalogo::factory()->create([
                 'nombre' => ucfirst(strtolower($orden['nombre'])),
@@ -104,7 +108,7 @@ class OrdenesTrabajoSeeder extends Seeder
                 'limite_ordenes' => $orden['limite_ordenes']  // Si es un número, no hace falta modificar
             ]);
         }
-        
+        OrdenTrabajoAccion::insert($ordenesAccionInstalacion);
 
         /*OrdenesTrabajoCargo::factory()->count(10)->create();
         OrdenesTrabajoEncadenada::factory()->count(10)->create();
