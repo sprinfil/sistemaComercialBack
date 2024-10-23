@@ -73,6 +73,16 @@ class ValidacionController extends Controller
             ], 500);
         }
     }
+
+    public function modificarconsumo ()
+    {
+
+    }
+
+    public function modificarlectura ($id_periodo)
+    {
+
+    }
     /**
      * Display a listing of the resource.
      */

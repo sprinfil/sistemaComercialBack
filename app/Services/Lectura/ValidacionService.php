@@ -22,8 +22,9 @@ class ValidacionService{
                     if ($libro->tomas && $libro->tomas->isNotEmpty()) {
                         foreach ($libro->tomas as $toma) {
 
-                            $toma->nombre_ruta = $ruta->nombre;
+                            //$toma->nombre_ruta = $ruta->nombre;
                             $toma->nombre_libro = $libro->nombre;
+                            $toma->usuario = $toma->usuario;
                             //Obtenemos los consumos asociados a la toma
                             $consumos = $periodo->consumos()->where('id_toma', $toma->id)->get();
                             $anomalias = [];
