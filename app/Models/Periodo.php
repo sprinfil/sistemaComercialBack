@@ -50,4 +50,8 @@ class Periodo extends Model
     public function consumos():HasMany{
         return $this->hasMany(Consumo::class , "id_periodo");
     }
+
+    public function letras() : HasMany {
+        return $this->hasMany(Letra::class , "periodo","nombre");
+    }
 }

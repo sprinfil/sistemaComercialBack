@@ -19,7 +19,8 @@ class Letra extends Model
         'monto',
         'vigencia',
         'numero_letra',
-        'tipo_letra'
+        'tipo_letra',
+        'periodo'
     ];
 
     public function Convenio(): BelongsTo
@@ -36,4 +37,9 @@ class Letra extends Model
     {
         return $this->morphMany(Cargo::class, 'origen', 'modelo_origen', 'id_origen')->where('estado', 'pendiente');
     }
+
+    public function periodos() : BelongsTo {
+        return $this->belongsTo(Periodo::class , 'periodo','nombre');
+    }
+
 }

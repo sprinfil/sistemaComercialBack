@@ -25,6 +25,7 @@ class LetraResource  extends JsonResource
             'vigencia' => $this->vigencia,
             'numero_letra' => $this->numero_letra,
             'tipo_letra' => $this->tipo_letra,
+            'periodo' => $this->periodo,
             'origen' => $this->whenLoaded('origen'), // Puedes usar un recurso específico si es necesario.
             'cargos_vigentes' => CargoResource::collection($this->whenLoaded('cargosVigentes')),
             'created_at' => $this->created_at->toDateTimeString(),

@@ -91,6 +91,7 @@ class ConvenioService
       $montoLetraSuma = 0;
       //El porcentaje que se convenio de los cargos
       //La informacion del registro convenio, el resto se calcula durante el proceso
+
       $convenio = [
         "id_convenio_catalogo" => $data['id_convenio_catalogo'],
         "id_modelo" => $data['id_modelo'],
@@ -107,28 +108,17 @@ class ConvenioService
       //Registra el porcentaje de pago inicial
       $porcentajePagoInicialAutorizado = ConvenioCatalogo::where('id',$data['id_convenio_catalogo'])
       ->first();
+
       if ($porcentajePagoInicialAutorizado->pago_inicial != null && $porcentajePagoInicialAutorizado->pago_inicial != 0) {
-
-        if ($data['pago_inicial'] != null) {
-
-          if ($data['pago_inicial'] < $porcentajePagoInicialAutorizado->pago_inicial) {
-
-            return response()->json([
-              'error' => 'El porcentaje del pago inicial seleccionado es menor al porcentaje de pago inicial autorizado.'
-            ], 400);
-  
-          }        
-        }else{
-          return response()->json([
-            'error' => 'El porcentaje de pago inicial es requerido para este convenio.'
-          ], 400);
-        }      
+        
       }
-      if ($data['pago_inicial'] >= 100) {
+      else{
         return response()->json([
-          'error' => 'El porcentaje del pago inicial seleccionado no debe alcanzar o superar el 100%.'
+          'error' => 'El porcentaje de pago inicial es requerido para este convenio.'
         ], 400);
-      }
+      }  
+
+  
       $pagoInicial = $data['pago_inicial'];
 
       //La lista de cargos que se desean conveniar
@@ -184,8 +174,8 @@ class ConvenioService
       foreach ($cargos as $cargo) {
         $cargoTemp = $cargosTemp[$cargo['id']]; // Obtener el cargo desde el array existente
         $montoOriginalPendiente = $cargoTemp->montoPendiente(); // Monto original pendiente
-        $montoConveniado = ($cargo['porcentaje_conveniado'] * $montoOriginalPendiente) / 100; // Monto del convenio
-        $montoFinalPendiente = $montoOriginalPendiente - $montoConveniado; // Monto final pendiente
+        $montoFinalPendiente = $montoOriginalPendiente - $cargo['monto_conveniado']; // Monto final pendiente
+        $porcentajeConveniado = ($cargo['monto_conveniado'] * 100) / $montoOriginalPendiente; //Equivalente en porcentaje del monto conveniado enviado
 
         // Actualiza el estado del cargo
         $cargoTemp->update($cargoUpdt);
@@ -196,13 +186,13 @@ class ConvenioService
             "id_convenio" => $convenio->id,
             "monto_original_pendiente" => round($montoOriginalPendiente, 2),
             "monto_final_pendiente" => round($montoFinalPendiente, 2),
-            "porcentaje_conveniado" => $cargo['porcentaje_conveniado'],
-            "monto_conveniado" => round($montoConveniado, 2),
+            "porcentaje_conveniado" =>round($porcentajeConveniado,2), 
+            "monto_conveniado" => round($cargo['monto_conveniado'], 2),
             "created_at" => now(), 
             "updated_at" => now(),
          ];
 
-        $montoConveniadoTotal += round($montoConveniado, 2);
+        $montoConveniadoTotal += round($cargo['monto_conveniado'], 2);
         $montoFinalPendienteTotal += round($montoFinalPendiente, 2);
        }
 
@@ -210,7 +200,7 @@ class ConvenioService
      CargosConveniado::insert($cargosConveniados);
 
       //Actualizar el registro de convenio con los montos
-      $pagoInicial = round(($montoFinalPendienteTotal * $pagoInicial)/100,2);
+      //$pagoInicial = round(($montoFinalPendienteTotal * $pagoInicial)/100,2);
       $convenioMontos = [
         "monto_conveniado" => $montoConveniadoTotal,
         "monto_total" => $montoFinalPendienteTotal,//esta es la de el cambio a letras aqui estoy
@@ -225,6 +215,7 @@ class ConvenioService
       $mensualidad = new DateInterval('P1M');  //Sumar meses o años: Puedes usar P1M para un mes o P1Y para un año en lugar de días.
       $letrasCargo = [];
 
+      $periodo = $this->obtenerPeriodo($fechaCobro);
       if ($convenio->pago_inicial > 0) {
 
         $letrasArray = [
@@ -234,6 +225,7 @@ class ConvenioService
           "vigencia" => $fechaCobro,
           "numero_letra" => 0,
           "tipo_letra" => "pago_inicial",
+          "periodo" => $periodo,
         ];
         $letra = Letra::create($letrasArray);
         $letrasCargo =  $letra;
@@ -265,6 +257,8 @@ class ConvenioService
       }
 
       
+      $fechaCobro = Carbon::parse($fechaCobro);
+      $fechaCobro->add($mensualidad);
 
       for ($i = 0; $i < $data['cantidad_letras']; $i++) {
 
@@ -274,6 +268,8 @@ class ConvenioService
           $montoPorLetra = round($convenio->monto_total- $pagoInicial  - $montoLetraSuma, 2);
         }
 
+        $periodo = $this->obtenerPeriodo($fechaCobro);
+
         $letrasArray = [
           "id_convenio" => $convenio->id, //crear el numero de la letra
           "estado" => "pendiente",
@@ -281,6 +277,7 @@ class ConvenioService
           "vigencia" => $fechaCobro,
           "numero_letra" => $i + 1,
           "tipo_letra" => "letra",
+          "periodo" => $periodo,
         ];
 
         $montoLetraSuma += $montoPorLetra;
@@ -602,5 +599,64 @@ class ConvenioService
       ], 400);
     }
   }
+
+  private function obtenerPeriodo($fecha)
+  {
+    try {
+      $fechaPeriodo = Carbon::parse($fecha);
+      $mes = $fechaPeriodo->month;
+      $año = $fechaPeriodo->year; 
+      $nombrePeriodo = "";
+      switch ($mes) {
+        case 1: 
+            $nombrePeriodo = "ENE" . $año;
+            break;
+        case 2:
+            $nombrePeriodo = "FEB" . $año;
+            break;
+        case 3:
+            $nombrePeriodo = "MAR" . $año;
+            break;
+        case 4:
+            $nombrePeriodo = "ABR" . $año;
+            break;
+        case 5:
+            $nombrePeriodo = "MAY" . $año;
+            break;
+        case 6:
+            $nombrePeriodo = "JUN" . $año;
+            break;
+        case 7:
+            $nombrePeriodo = "JUL" . $año;
+            break;
+        case 8:
+            $nombrePeriodo = "AGO" . $año;
+            break;
+        case 9:
+            $nombrePeriodo = "SEP" . $año;
+            break;
+        case 10:
+            $nombrePeriodo = "OCT" . $año;
+            break;
+        case 11:
+            $nombrePeriodo = "NOV" . $año;
+            break;
+        case 12:
+            $nombrePeriodo = "DIC" . $año;
+            break;
+        default:
+            
+            $nombrePeriodo = "Mes no válido";
+            break;
+      }
+      return $nombrePeriodo;
+    } catch (Exception $ex) {
+      return response()->json([
+        'Ocurio un error durante asigacion del periodo' . $ex
+      ]);
+    }
+  }
+
+ 
 
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('vigencia');//campo numero [1,2,3 etc] sera un int
             $table->integer('numero_letra');
             $table->enum('tipo_letra',['pago_inicial','letra']);
+            $table->string('periodo');
             $table->softDeletes();
             $table->timestamps();
             
