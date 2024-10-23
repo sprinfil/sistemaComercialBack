@@ -8,6 +8,7 @@ use App\Services\Lectura\ValidacionService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Svg\Tag\Rect;
 
 class ValidacionController extends Controller
 {
@@ -52,6 +53,23 @@ class ValidacionController extends Controller
             DB::rollBack();
             return response()->json([
                 'error' => 'Ocurrio un error registrar el consumo ' .$ex->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function promediar (Request $request)
+    {
+        try {
+            $id_toma = $request->input('id_toma');
+            $id_periodo = $request->input('id_periodo');
+            DB::beginTransaction();
+            $promediar = $this->validacion->promediar($id_toma, $id_periodo);
+            DB::commit();
+            return $promediar;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Ocurrio un error generar el promedio ' .$ex->getMessage()
             ], 500);
         }
     }
