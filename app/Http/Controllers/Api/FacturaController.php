@@ -7,6 +7,7 @@ use App\Models\Factura;
 use App\Http\Requests\StoreFacturaRequest;
 use App\Http\Requests\UpdateFacturaRequest;
 use App\Http\Resources\FacturaResource;
+use App\Jobs\PeriodoFacturacionJob;
 use App\Models\Toma;
 use App\Services\AtencionUsuarios\ConvenioService;
 use App\Services\AtencionUsuarios\DescuentoAsociadoService;
@@ -108,14 +109,11 @@ class FacturaController extends Controller
         try{
             DB::beginTransaction();
             $data=$request['periodos'];
-            $facturas = (new FacturaService())->storeFacturaPeriodo($data);
-            //return $facturas;
-            ///TO DO Recargos
-
-            ///TO DO Cargar Letras
-
+           // $facturas = (new FacturaService())->storeFacturaPeriodo($data);
+           dispatch(new PeriodoFacturacionJob($data))->onQueue('facturaPeriodos');//colas
             DB::commit();
-            return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1],"Recargos"=>$facturas[2]],200);
+            //return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1],"Recargos"=>$facturas[2]],200);
+            return response()->json(["message"=>"Facturacion iniciada"],200); // con colas
         }
         catch(Exception | ErrorException $ex){
             DB::rollBack();

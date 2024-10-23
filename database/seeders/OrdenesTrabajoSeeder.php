@@ -89,9 +89,9 @@ class OrdenesTrabajoSeeder extends Seeder
             // ["nombre" => "Activar contratos de baja", "descripcion" => "Contratos de baja", "vigencias" => 24.00, "genera_masiva" => 0],
         ];
         $ordenesAccionInstalacion=[
-        ["id_orden_traabjo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_agua","valor"=>"activa"],
-        ["id_orden_traabjo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_alcantarillado","valor"=>"activa"],
-        ["id_orden_traabjo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_saneamiento","valor"=>"activa"]
+        ["id_orden_trabajo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_agua","valor"=>"activa"],
+        ["id_orden_trabajo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_alcantarillado","valor"=>"activa"],
+        ["id_orden_trabajo_catalogo"=>4,"accion"=>"modificar","modelo"=>"toma","campo"=>"contrato_saneamiento","valor"=>"activa"]
         ];
         foreach ($ordenes as $orden) {
             OrdenTrabajoCatalogo::factory()->create([
