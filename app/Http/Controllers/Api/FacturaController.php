@@ -166,13 +166,12 @@ class FacturaController extends Controller
         try {
            DB::beginTransaction();
            $factura = (new FacturaService())->facturaPorTomaService($idToma);   
-           return $factura;
            DB::commit();      
-           return response(new FacturaResource($factura), 200);
+           return response()->json(["toma"=>$factura[0],"saldo"=>$factura[1]],200);
         } catch (Exception $ex) {
             DB::rollBack();
             return response()->json([
-                'error' => 'No se encontraron facturas activas'
+                'error' => 'No se encontraron facturas activas '. $ex
             ], 500);
         }
     }
