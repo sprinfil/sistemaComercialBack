@@ -135,8 +135,12 @@ class DescuentoAsociadoService
             $toma = Toma::where('id',$id_toma)->first();
 
             if ($toma) {
+                $descuentoAsociado=$toma->descuentoAsociado  ?? null;
+                if  (!$descuentoAsociado){
+                    return null;
+                }
+                $descuentoAsociado->where('estatus','vigente')->first();
 
-                $descuentoAsociado = $toma->descuentoAsociado->where('estatus','vigente')->first();
                 $descuentoCatalogo = $descuentoAsociado->descuento_catalogo;
                 $cargos = Cargo::where('modelo_origen','facturacion')
                 ->where('id_origen',$id_facturacion)
@@ -144,10 +148,11 @@ class DescuentoAsociadoService
                 ->where('modelo_dueno','toma')
                 ->where('id_dueno',$id_toma)
                 ->get();
-
+         
                 foreach ($cargos as $cargo) {
 
                     $conceptoAplicable = $descuentoCatalogo->conceptosAplicables->where('id_concepto_catalogo',$cargo->id_concepto)->first();
+            
                     $conceptoAplicable->rango_maximo;
                     if ($conceptoAplicable) {
                         $descuentoMonto = round((($cargo->monto + $cargo->iva) * $conceptoAplicable->rango_maximo)/100 , 2);

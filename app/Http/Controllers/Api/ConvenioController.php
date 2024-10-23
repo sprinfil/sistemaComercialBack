@@ -203,8 +203,10 @@ class ConvenioController extends Controller
     {
        
         try {
+            $id_convenio = $request->input('id_convenio');
+            $motivo_cancelacion = $request->input('motivo_cancelacion');
             DB::beginTransaction();
-            $convenio = (new ConvenioService())->CancelarConvenioService($request);
+            $convenio = (new ConvenioService())->CancelarConvenioDinamicoService( $id_convenio, $motivo_cancelacion, "manual");
             DB::commit();
             return $convenio;
         } catch (Exception $ex) {
