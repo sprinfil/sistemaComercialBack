@@ -181,7 +181,7 @@ class Contrato extends Model implements SaldableInterface
         return $data;
     }
     public function saldar(){
-        $this->estado = 'pagado';
+        $this->estatus = 'pagado';
         $this->save();
     }
     // Borrados y restores en cascada
