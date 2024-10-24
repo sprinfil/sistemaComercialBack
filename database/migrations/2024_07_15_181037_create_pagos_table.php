@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('folio');
             $table->unsignedInteger('id_caja');
-            $table->unsignedBigInteger('id_dueno'); 
+            $table->unsignedBigInteger('id_dueno');
             $table->string('modelo_dueno');
             //$table->unsignedInteger('id_corte_caja');
             $table->decimal('total_pagado');
@@ -27,12 +27,17 @@ return new class extends Migration
             $table->decimal('recibido')->nullable();
             $table->decimal('cambio')->nullable();
             //
-            $table->enum("forma_pago",['efectivo','tarjeta_credito','tarjeta_debito','cheque','transferencia','documento'])->default('efectivo');
+            $table->enum("forma_pago", ['efectivo', 'tarjeta_credito', 'tarjeta_debito', 'cheque', 'transferencia', 'documento'])->default('efectivo');
             $table->date('fecha_pago');
-            $table->enum("estado",['abonado','pendiente','cancelado'])->default('pendiente');
+            $table->enum("estado", ['abonado', 'pendiente', 'cancelado'])->default('pendiente');
             $table->string('referencia')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('folio');
+            $table->index('id_caja');
+            $table->index('id_dueno');
+            $table->index('modelo_dueno');
         });
     }
 

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->enum('estado', ['activo', 'inactivo'])->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('estado');
         });
     }
 

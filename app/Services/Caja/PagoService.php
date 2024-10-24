@@ -126,7 +126,7 @@ class PagoService
                 $cfdi_data['id_timbro'] = $caja->id_operador;
                 $cfdi_data['metodo'] = 'directo';
 
-                $estado_timbrado = (new CfdiService())->timbrarPago($cfdi_data); // TODO que deberia pasar si un timbrado falla?
+                //$estado_timbrado = (new CfdiService())->timbrarPago($cfdi_data); // TODO que deberia pasar si un timbrado falla?
             }
 
             DB::commit();

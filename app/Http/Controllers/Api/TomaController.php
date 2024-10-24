@@ -32,9 +32,9 @@ class TomaController extends Controller
      */
     public function index()
     {
-        return response( TomaResource::collection(
+        return response(TomaResource::collection(
             Toma::all()
-        ),200);
+        ), 200);
         //
     }
 
@@ -43,17 +43,16 @@ class TomaController extends Controller
      */
     public function store(StoreTomaRequest $request)
     {
-        try{
+        try {
             //VALIDA EL STORE
-             $data = $request->validated();
-             $toma = Toma::create($data);
-        return response(new TomaResource ($toma), 201);
-        } catch(Exception $e) {
+            $data = $request->validated();
+            $toma = Toma::create($data);
+            return response(new TomaResource($toma), 201);
+        } catch (Exception $e) {
             return response()->json([
-                'error' => 'No se pudo guardar la toma'.$e
+                'error' => 'No se pudo guardar la toma' . $e
             ], 500);
         }
-         
     }
 
     /**
@@ -98,7 +97,7 @@ class TomaController extends Controller
         try {
             $toma = Toma::findOrFail($id);
             $toma->delete();
-            return response("Toma eliminada con exito",200);
+            return response("Toma eliminada con exito", 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo eliminar la toma'
@@ -112,7 +111,7 @@ class TomaController extends Controller
     public function buscarCodigoToma($codigo)
     {
         try {
-            $toma = Toma::where('codigo_toma', $codigo)->with("usuario",'calle1','entre_calle2','entre_calle1','colonia1')->first();
+            $toma = Toma::where('codigo_toma', $codigo)->with("usuario", 'calle1', 'entre_calle2', 'entre_calle1', 'colonia1')->first();
             return response(new TomaResource($toma), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -122,8 +121,8 @@ class TomaController extends Controller
     }
 
     /**
-    * Display the specified resource.
-    */
+     * Display the specified resource.
+     */
     public function buscarCodigoTomas($codigo)
     {
         try {
@@ -145,7 +144,7 @@ class TomaController extends Controller
         try {
             $toma = Toma::where("codigo_toma", $codigo_toma)->first();
             // Ordena los cargos por el atributo 'prioridad' del concepto asociado
-            $cargosOrdenados = $toma->cargos()->with('concepto')->get()->sortBy(function($cargo) {
+            $cargosOrdenados = $toma->cargos()->with('concepto')->get()->sortBy(function ($cargo) {
                 return $cargo->concepto->prioridad_abono;
             });
             return CargoResource::collection($cargosOrdenados);
@@ -165,14 +164,14 @@ class TomaController extends Controller
         try {
             // Buscar la toma por su código
             $toma = Toma::where("codigo_toma", $id)->first();
-            
+
             // Verificar si la toma existe
-            if($toma) {
+            if ($toma) {
                 // Cargar los pagos con los abonos relacionados
                 $pagos = $toma->pagos()->with('abonosConCargos')->get();
 
                 // Verificar si existen pagos
-                if($pagos->isNotEmpty()) {
+                if ($pagos->isNotEmpty()) {
                     // Retornar los pagos utilizando el PagoResource para transformar los datos
                     return PagoResource::collection($pagos);
                 } else {
@@ -195,25 +194,26 @@ class TomaController extends Controller
      * guardar posicion
      */
 
-     public function save_position(Request $request, $toma_id){
+    public function save_position(Request $request, $toma_id)
+    {
         $data = $request["data"];
         $point = new Point($data["latitud"], $data["longitud"]);
         $toma = Toma::find($toma_id);
         $toma->posicion = $point;
         $toma->save();
     }
-    
+
     /**
-    * Display the specified resource.
-    */
+     * Display the specified resource.
+     */
     public function ordenesToma($id)
     {
         try {
-            $toma = Toma::where('codigo_toma',$id)->first();
+            $toma = Toma::where('codigo_toma', $id)->first();
             //$ordenes=$toma->ordenesTrabajo;
             //return OrdenTrabajoResource::collection($ordenes);
-            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.calle1','toma.entre_calle2','toma.entre_calle1','toma.colonia1','toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->orderBy('created_at','desc')->paginate(20);
-            return OrdenTrabajoResource::collection($ordenes); 
+            $ordenes = OrdenTrabajo::where('id_toma', $toma['id'])->with(['toma.calle1', 'toma.entre_calle2', 'toma.entre_calle1', 'toma.colonia1', 'toma.tipoToma', 'toma.ruta', 'toma.libro', 'ordenTrabajoCatalogo.ordenTrabajoAccion', 'empleadoGenero', 'empleadoAsigno', 'empleadoEncargado', 'cargos'])->orderBy('created_at', 'desc')->paginate(20);
+            return OrdenTrabajoResource::collection($ordenes);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Error al consultar las ordenes de trabajo'
@@ -222,17 +222,17 @@ class TomaController extends Controller
     }
 
     /**
-    * Display the specified resource.
-    */
+     * Display the specified resource.
+     */
     public function ordenesTomaSinAsignadas($id)
     {
         try {
-            $toma = Toma::where('codigo_toma',$id)->first();
-            $hoy=Carbon::now('America/Denver')->startOfDay();
+            $toma = Toma::where('codigo_toma', $id)->first();
+            $hoy = Carbon::now('America/Denver')->startOfDay();
             $hoyFormateado = $hoy->format('Y-m-d H:i:s'); ///VOLVERLO UNIVERSAL
-            $hoyFormateadofinal= $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
-            $ordenes=OrdenTrabajo::where('id_toma', $toma['id'])->with(['usuario','toma.tipoToma','toma.ruta','toma.libro','ordenTrabajoCatalogo.ordenTrabajoAccion','empleadoGenero','empleadoAsigno','empleadoEncargado','cargos'])->where('estado','!=' ,'En proceso')->whereBetween('created_at',[$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at','desc')->paginate(20);
-           return OrdenTrabajoResource::collection($ordenes); 
+            $hoyFormateadofinal = $hoy->setTimezone('America/Denver')->endOfDay()->format('Y-m-d H:i:s');
+            $ordenes = OrdenTrabajo::where('id_toma', $toma['id'])->with(['usuario', 'toma.tipoToma', 'toma.ruta', 'toma.libro', 'ordenTrabajoCatalogo.ordenTrabajoAccion', 'empleadoGenero', 'empleadoAsigno', 'empleadoEncargado', 'cargos'])->where('estado', '!=', 'En proceso')->whereBetween('created_at', [$hoyFormateado, $hoyFormateadofinal])->orderBy('created_at', 'desc')->paginate(20);
+            return OrdenTrabajoResource::collection($ordenes);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'Error al consultar las ordenes de trabajo'
@@ -241,8 +241,8 @@ class TomaController extends Controller
     }
 
     /**
-    * Display the specified resource.
-    */
+     * Display the specified resource.
+     */
     public function general($id)
     {
         try {
@@ -256,16 +256,17 @@ class TomaController extends Controller
     }
 
     /**
-    * Display the specified resource.
-    */
-    public function registrarNuevoMedidor(StoreMedidorRequest $request){
-        
+     * Display the specified resource.
+     */
+    public function registrarNuevoMedidor(StoreMedidorRequest $request)
+    {
+
         try {
             $data = $request->validated();
             //Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
             //$data['estatus'] = 'activo';
             $medidorActivo = Toma::findOrFail($data['id_toma'])->medidorActivo;
-            if($medidorActivo && $data['estatus']=='activo'){
+            if ($medidorActivo && $data['estatus'] == 'activo') {
                 Toma::findOrFail($data['id_toma'])->desactivarMedidoresActivos();
             }
             $data['fecha_instalacion'] = Carbon::now();
@@ -279,8 +280,8 @@ class TomaController extends Controller
     }
 
     /**
-    * Display the specified resource.
-    */
+     * Display the specified resource.
+     */
     public function medidorActivoPorToma($id)
     {
         try {
@@ -288,14 +289,14 @@ class TomaController extends Controller
             return response(new MedidorResource($medidor), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'error' => 'No se pudo encontrar el medidor para la toma '.$id
+                'error' => 'No se pudo encontrar el medidor para la toma ' . $id
             ], 500);
         }
     }
 
     /**
-    * Display the specified resource.
-    */
+     * Display the specified resource.
+     */
     public function medidoresPorToma($id)
     {
         try {
@@ -304,39 +305,36 @@ class TomaController extends Controller
                 ->orderByRaw("CASE WHEN estatus = 'activo' THEN 0 ELSE 1 END")
                 ->orderBy('created_at', 'desc')
                 ->get();
-        
+
             return response(MedidorResource::collection($medidores), 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 'No se pudo encontrar los medidores ' . $id
             ], 500);
         }
-            
     }
 
-    public function filtradoTomas(Request $request){
-        try{
+    public function filtradoTomas(Request $request)
+    {
+        try {
             DB::beginTransaction();
             //$filtros=$request->validated();
-            $filtros=$request->all();
-            $data=(new TomaService())->tomaTipos($filtros);
+            $filtros = $request->all();
+            $data = (new TomaService())->tomaTipos($filtros);
             //return $data;
             // return $data;
-            if (!$data){
-                return response()->json(["message"=>"No ha seleccionado un filtro para tomas, por favor especifique algún parametro"],500);
-            }
-            else
-            {
+            if (!$data) {
+                return response()->json(["message" => "No ha seleccionado un filtro para tomas, por favor especifique algún parametro"], 500);
+            } else {
                 DB::commit();
-                return response()->json(['tomas'=>TomaResource::collection($data)]);
+                return response()->json(['tomas' => TomaResource::collection($data)]);
                 //return response()->json(['tomas'=>$data]);
                 //return response()->json(["Orden de trabajo"=>new OrdenTrabajoResource($data[0]),"Cargos"=>CargoResource::collection($data[1])],200);
             }
-           }
-           catch(Exception $ex){
+        } catch (Exception $ex) {
             DB::rollBack();
-            return response()->json(["error"=>"No se pudo consultar tomas ".$ex],500);
-           }
+            return response()->json(["error" => "No se pudo consultar tomas " . $ex], 500);
+        }
     }
 
     /**
@@ -345,13 +343,100 @@ class TomaController extends Controller
     public function factibilidades($codigo)
     {
         $toma = Toma::where('codigo_toma', $codigo)->first();
-    
+
         if (!$toma) {
             return response()->json(['message' => 'Toma no encontrada'], 404);
         }
-    
+
         $factibilidades = $toma->factibilidades()->with('toma', 'archivos')->get();
-    
+
         return response(FactibilidadResource::collection($factibilidades), 200);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function consultarDetalleSaldoToma(Request $request, $id)
+    {
+        try {
+            // Obtener la toma por su ID
+            $toma = Toma::where('id', $id)
+                ->with(['cargos.abonos.origen', 'cargos.origen', 'cargos.concepto'])
+                ->firstOrFail();
+
+            // Consulta base para los cargos asociados a la toma
+            $queryCargos = $toma->cargos()->with('abonos');
+
+            // Filtros parametrizados para los cargos
+            if ($request->has('estado_cargo')) {
+                $queryCargos->where('estado', $request->input('estado_cargo'));
+            }
+
+            // Filtro para rango de fechas en los cargos
+            if ($request->has('fecha_inicio_cargo') && $request->has('fecha_fin_cargo')) {
+                $queryCargos->whereBetween('created_at', [
+                    $request->input('fecha_inicio_cargo'),
+                    $request->input('fecha_fin_cargo')
+                ]);
+            }
+
+            // Filtro por origen de los cargos (contratos, convenios, facturaciones, etc.)
+            if ($request->has('origen_cargo')) {
+                $queryCargos->where('modelo_origen', $request->input('origen_cargo'));
+            }
+
+            // Filtros parametrizados para los abonos
+            if ($request->has('estado_abono')) {
+                $queryCargos->whereHas('abonos.origen', function ($q) use ($request) {
+                    $q->where('estado', $request->input('estado_abono'));
+                });
+            }
+
+            // Filtro para rango de fechas en los abonos
+            if ($request->has('fecha_inicio_abono') && $request->has('fecha_fin_abono')) {
+                $queryCargos->whereHas('abonos', function ($q) use ($request) {
+                    $q->whereBetween('created_at', [
+                        $request->input('fecha_inicio_abono'),
+                        $request->input('fecha_fin_abono')
+                    ]);
+                });
+            }
+
+            // Filtro por origen de los abonos
+            if ($request->has('origen_abono')) {
+                $queryCargos->whereHas('abonos', function ($q) use ($request) {
+                    $q->where('modelo_origen', $request->input('origen_abono'));
+                });
+            }
+
+            // Ejecutar la consulta de cargos y cargar los abonos relacionados
+            $cargos = $queryCargos->get();
+
+            // Mapear los resultados para devolver los cargos y sus abonos asociados
+            $resultado = $cargos->map(function ($cargo) {
+                return [
+                    'tipo' => 'cargo',
+                    'origen' => $cargo->origen ? $cargo->modelo_origen : 'N/A',
+                    'estado' => $cargo->estado,
+                    'monto' => number_format($cargo->montoPendiente(), 2, '.', ''),
+                    'fecha' => $cargo->created_at->format('Y-m-d'),
+                    'abonos' => $cargo->abonos->map(function ($abono) {
+                        return [
+                            'tipo' => 'abono',
+                            'origen' => $abono->origen ? $abono->modelo_origen : 'N/A',
+                            'estado' => $abono->cargo->estado,
+                            'monto' => number_format($abono->total_abonado, 2, '.', ''),
+                            'fecha' => $abono->created_at->format('Y-m-d')
+                        ];
+                    })
+                ];
+            });
+
+            return response()->json($resultado);
+        } catch (Exception $ex) {
+            return response()->json([
+                'error' => 'Ocurrió un error durante la consulta del detalle del saldo de la toma: ' . $ex->getMessage()
+            ], 500);
+        }
     }
 }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('datos_fiscales', function (Blueprint $table) {
-            
+
             $table->id();
             $table->unsignedBigInteger('id_modelo')->default('1');
             $table->string('modelo');
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('correo');
             $table->string('razon_social');
-            $table->string('telefono',10);
+            $table->string('telefono', 10);
             $table->string('pais');
             $table->string('estado');
             $table->string('municipio');
@@ -34,6 +34,8 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
+            $table->index('id_modelo');
+            $table->index('modelo');
         });
     }
 

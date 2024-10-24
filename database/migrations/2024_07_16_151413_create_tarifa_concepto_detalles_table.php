@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_tipo_toma');
             $table->unsignedBigInteger('id_concepto');
-            $table->decimal('monto', total:9, places:2);
+            $table->decimal('monto', total: 9, places: 2);
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_tipo_toma');
+            $table->index('id_concepto');
         });
     }
 

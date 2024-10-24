@@ -98,19 +98,61 @@ class ConceptoCatalogoSeeder extends Seeder
         ]);
 
         $tipo_tomas = TipoToma::all();
-        $tipo_tomas->each(function ($tipo_toma) {
-            $rango = 17;
-            for ($i = 1; $i <= 10; $i++) {
-                TarifaServiciosDetalle::factory()->create([
-                    'id_tarifa' => 1,
-                    'id_tipo_toma' => $tipo_toma->id,
-                    'rango' => $rango * $i,
-                    'agua' => 10 * 17,
-                    'alcantarillado' => 2 * 17,
-                    'saneamiento' => 2 * 17
-                ]);
+        $tarifas = [
+            'Domestica' => [
+                ['rango' => 17, 'agua' => 157.43, 'alcantarillado' => 18.26, 'saneamiento' => 18.26],
+                ['rango' => 24, 'agua' => 9.46, 'alcantarillado' => 2.20, 'saneamiento' => 2.20],
+                ['rango' => 35, 'agua' => 12.98, 'alcantarillado' => 4.53, 'saneamiento' => 4.53],
+                ['rango' => 50, 'agua' => 13.02, 'alcantarillado' => 4.53, 'saneamiento' => 4.53],
+                ['rango' => 80, 'agua' => 18.94, 'alcantarillado' => 6.59, 'saneamiento' => 6.59],
+                ['rango' => 100, 'agua' => 25.76, 'alcantarillado' => 8.96, 'saneamiento' => 8.96],
+                ['rango' => 125, 'agua' => 31.51, 'alcantarillado' => 10.96, 'saneamiento' => 10.96],
+                ['rango' => 150, 'agua' => 52.51, 'alcantarillado' => 18.28, 'saneamiento' => 18.28],
+                ['rango' => 250, 'agua' => 57.38, 'alcantarillado' => 19.97, 'saneamiento' => 19.97],
+                ['rango' => 500, 'agua' => 70.23, 'alcantarillado' => 24.44, 'saneamiento' => 24.44],
+                ['rango' => 501, 'agua' => 75.75, 'alcantarillado' => 26.36, 'saneamiento' => 26.36],
+            ],
+            'Comercial' => [
+                ['rango' => 17, 'agua' => 404.28, 'alcantarillado' => 121.28, 'saneamiento' => 121.28],
+                ['rango' => 24, 'agua' => 29.29, 'alcantarillado' => 8.79, 'saneamiento' => 8.79],
+                ['rango' => 50, 'agua' => 30.93, 'alcantarillado' => 9.28, 'saneamiento' => 9.28],
+                ['rango' => 80, 'agua' => 39.98, 'alcantarillado' => 12.00, 'saneamiento' => 12.00],
+                ['rango' => 100, 'agua' => 46.92, 'alcantarillado' => 14.08, 'saneamiento' => 14.08],
+                ['rango' => 125, 'agua' => 53.99, 'alcantarillado' => 16.19, 'saneamiento' => 16.19],
+                ['rango' => 150, 'agua' => 69.11, 'alcantarillado' => 20.73, 'saneamiento' => 20.73],
+                ['rango' => 151, 'agua' => 79.44, 'alcantarillado' => 23.83, 'saneamiento' => 23.83],
+            ],
+            'Industrial' => [
+                ['rango' => 17, 'agua' => 878.48, 'alcantarillado' => 263.54, 'saneamiento' => 263.54],
+                ['rango' => 50, 'agua' => 36.90, 'alcantarillado' => 11.08, 'saneamiento' => 11.08],
+                ['rango' => 100, 'agua' => 43.23, 'alcantarillado' => 12.97, 'saneamiento' => 12.97],
+                ['rango' => 125, 'agua' => 49.90, 'alcantarillado' => 14.96, 'saneamiento' => 14.96],
+                ['rango' => 150, 'agua' => 74.29, 'alcantarillado' => 22.28, 'saneamiento' => 22.28],
+                ['rango' => 151, 'agua' => 82.94, 'alcantarillado' => 24.88, 'saneamiento' => 24.88],
+            ],
+            'Especial' => [
+                ['rango' => 0, 'agua' => 30.93, 'alcantarillado' => 9.28, 'saneamiento' => 9.28],
+            ],
+            'Sin Contrato' => [
+                ['rango' => 0, 'agua' => 0, 'alcantarillado' => 0, 'saneamiento' => 0],
+            ],
+        ];
+
+        $tipo_tomas->each(function ($tipo_toma) use ($tarifas) {
+            if (isset($tarifas[$tipo_toma->nombre])) {
+                foreach ($tarifas[$tipo_toma->nombre] as $tarifa) {
+                    TarifaServiciosDetalle::factory()->create([
+                        'id_tarifa' => 1,
+                        'id_tipo_toma' => $tipo_toma->id,
+                        'rango' => $tarifa['rango'], // Rango especificado
+                        'agua' => $tarifa['agua'], // Precio agua
+                        'alcantarillado' => $tarifa['alcantarillado'], // Precio alcantarillado
+                        'saneamiento' => $tarifa['saneamiento'], // Precio saneamiento
+                    ]);
+                }
             }
         });
+
 
         //ConceptoCatalogo::factory()->count(10)->create();
         $conceptos = [
@@ -148,7 +190,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "abonable" => 1,
                 "tarifa_fija" => 1,
             ],
-          
+
             [
                 "nombre" => "REZ. SERVICIO DE AGUA POTABLE",
                 "descripcion" => "Rezago en el servicio de agua potable.",
@@ -1711,7 +1753,7 @@ class ConceptoCatalogoSeeder extends Seeder
                 "genera_iva" => 0,
                 "abonable" => 0,
                 "tarifa_fija" => 0,
-            ],///Concepto contratos
+            ], ///Concepto contratos
             [
                 "nombre" => "CONTRATO DE AGUA POTABLE",
                 "descripcion" => "Servicio de suministro de agua potable.",
@@ -1736,6 +1778,18 @@ class ConceptoCatalogoSeeder extends Seeder
                 "tarifa_fija" => 1,
             ]
             ////////
+            ,
+            [
+                "nombre" => "APORTACIÓN BOMBEROS",
+                "descripcion" => "Aportacion a bomberos.",
+                "estado" => "activo",
+                "categoria" => 'todas',
+                "prioridad_abono" => 2,
+                "cargo_directo" => 1,
+                "genera_iva" => 0,
+                "abonable" => 1,
+                "tarifa_fija" => 1,
+            ]
             // Agrega más elementos aquí según sea necesario
         ];
 

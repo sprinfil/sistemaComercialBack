@@ -29,16 +29,19 @@ class PeriodoService{
             throw new ErrorException("Ya existe periodo vigente para las siguentes rutas: " . $mensaje, 400);
         } else {
             //$periodo=Periodo::insert($insercion);
-            $fecha = Carbon::now();
             $tarifa = (new TarifaService())->TarifaVigente()->id;
-            $fecha = Carbon::parse(helperFechaAhora(), 'GMT-7');
-            $insercion = array_map(function ($item) use ($tarifa, $fecha) {
+    
+   
+            $insercion = array_map(function ($item) use ($tarifa) {
+                $fecha = Carbon::parse($item['periodo'], 'GMT-7');
+                $date=Carbon::now();
+                $month=strtoupper(substr($fecha->monthName,0,3));
                 $item['estatus'] = 'activo';
-                $item['nombre'] = $fecha->monthName . " " . $fecha->year; //mes y año
+                $item['nombre'] =   $month.$fecha->year; //mes y año
                 $item['periodo'] = $fecha->startOfMonth()->format('Y-m-d'); //mes y año
                 $item['id_tarifa'] = $tarifa;
-                $item['created_at'] =   $fecha;
-                $item['updated_at'] =   $fecha;
+                $item['created_at'] =   $date;
+                $item['updated_at'] =  $date;
                 unset($item['tipo_periodo']);
                 return $item;
             }, $per);

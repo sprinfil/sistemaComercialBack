@@ -311,7 +311,7 @@ class ContratoFactory extends Factory
                     'id_concepto' => $concepto->id ?? 1,
                     'nombre' => $concepto->nombre ?? "",
                     'id_origen' => $contrato->id,
-                    'modelo_origen' => 'contrato',
+                    'modelo_origen' => 'contratos',
                     'id_dueno' => $contrato->id_toma,
                     'modelo_dueno' => 'toma',
                     'monto' => $this->faker->randomFloat(2, 0, 9999),
