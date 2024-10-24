@@ -236,7 +236,7 @@ class FacturaService{
             $costo_san_iva=helperCalcularIVA($costo_san);
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
-                "nombre"=>"facturacion".$concepto['nombre']." ".$mes,
+                "nombre"=>"facturacion ".$concepto['nombre']." ".$mes,
                 "id_origen"=>$factura['id'],
                 "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
