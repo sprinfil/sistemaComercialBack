@@ -89,8 +89,6 @@ class FacturaController extends Controller
             $toma=Toma::find($id_toma);
             $facturas = (new FacturaService())->facturaracionPorToma($toma);
             
-
-
             DB::commit(); ///probar
             return response()->json(["facturas"=>$facturas[0],"cargos"=>$facturas[1],"Recargos"=>$facturas[2]],200);
         }
@@ -109,8 +107,8 @@ class FacturaController extends Controller
         try{
             DB::beginTransaction();
             $data=$request['periodos'];
-          // $facturas = (new FacturaService())->storeFacturaPeriodo($data);
-            $facturaToma=dispatch(new PeriodoFacturacionJob($data))->onQueue('facturaPeriodos');//colas
+            (new FacturaService())->storeFacturaPeriodo($data);
+            //$facturaToma=dispatch(new PeriodoFacturacionJob($data))->onQueue('facturaPeriodos');//colas
             DB::commit();
             //return response()->json(["facturas"=>$facturas[0], "cargos"=>$facturas[1],"Recargos"=>$facturas[2]],200);
             return response()->json(["message"=>"Facturacion iniciada"],200); // con colas
@@ -119,7 +117,7 @@ class FacturaController extends Controller
             DB::rollBack();
             $clase= get_class($ex);
             if ($clase=="ErrorException"){
-                return response()->json(["error"=>"Error de peticion. ".$ex->getMessage()],400);
+                return response()->json(["error"=>"Error de peticion. ".$ex],400);
             }
             else{
                 return response()->json(["error"=>"Error de servidor: ".$ex->getMessage()],500);

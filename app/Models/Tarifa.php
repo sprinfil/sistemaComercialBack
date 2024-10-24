@@ -27,6 +27,10 @@ class Tarifa extends Model
         return TarifaConceptoDetalle::all();
     }
     public static function servicioToma($id_tarifa, $tipo_toma,$rango){
-        return TarifaServiciosDetalle::where('id_tarifa',$id_tarifa)->where('id_tipo_toma',$tipo_toma)->where('rango','>=',$rango)->first();
+        $tarifa_servicio=TarifaServiciosDetalle::where('id_tarifa',$id_tarifa)->where('id_tipo_toma',$tipo_toma)->where('rango','>=',$rango)->orderBy('rango','asc')->get() ?? null;
+        if (count($tarifa_servicio)==0){
+            $tarifa_servicio=TarifaServiciosDetalle::where('id_tarifa',$id_tarifa)->where('id_tipo_toma',$tipo_toma)->where('rango','<=',$rango)->orderBy('rango','asc')->get(); 
+        }
+        return $tarifa_servicio;
     }
 }

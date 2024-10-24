@@ -12,13 +12,23 @@ use Illuminate\Queue\SerializesModels;
 class PeriodoFacturacionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    protected $periodos;
+    //protected $periodos;
+    protected $periodo;
+    protected $toma;
+    protected $tarifaToma;
+    protected $consumo;
+
     /**
      * Create a new job instance.
      */
-    public function __construct($periodos)
+    public function __construct($toma,$tarifaToma,$periodo,$consumo) //$periodos
     {
-        $this->periodos = $periodos;
+        //$this->periodos = $periodos;
+        $this->periodo = $periodo;
+        $this->toma = $toma;
+        $this->tarifaToma = $tarifaToma;
+        $this->consumo = $consumo;
+  
     }
 
     /**
@@ -26,6 +36,7 @@ class PeriodoFacturacionJob implements ShouldQueue
      */
     public function handle(FacturaService $factura): void
     {
-        $factura->storeFacturaPeriodo($this->periodos);
+        $factura->facturar($this->toma,$this->tarifaToma,$this->periodo,$this->consumo);  //$this->periodos
     }
+
 }
