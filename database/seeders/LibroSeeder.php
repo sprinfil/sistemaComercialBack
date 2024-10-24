@@ -334,7 +334,7 @@ class LibroSeeder extends Seeder
 
         ");
 
-		$libro = Libro::find(326);
+		/*$libro = Libro::find(326);
 		$tomas = 0;
 		Usuario::factory()->count(10)->create()->each(function ($usuario) use ($libro, &$tomas) {
 			for ($i = 0; $i < 1; $i++) {
@@ -391,5 +391,69 @@ class LibroSeeder extends Seeder
 			}
 		}
 		$Secuencia_orden = (new SecuenciaService())->SecuenciaOrdenStore($secuencia, $orden);
+	}*/
+		$libros = Libro::all();  // Obtener todos los libros
+		foreach ($libros as $libro) {
+			$tomas = 0;
+			Usuario::factory()->count(10)->create()->each(function ($usuario) use ($libro, &$tomas) {
+				for ($i = 0; $i < 1; $i++) {
+					$tomas++;
+					// Generar latitud y longitud
+					$latitud = '-110.3' . (string)rand(0, 3) . str_pad(rand(0, 99), 2, '0', STR_PAD_LEFT);
+					$longitud = '24.1' . (string)rand(237, 455);
+
+					// Obtener nombre del libro y la ruta
+					$nombre_libro = $libro->nombre;
+					$ruta_sel = $libro->tieneRuta;
+					$nombre_ruta = $ruta_sel->nombre;
+
+					// Usar una expresión regular para encontrar los números
+					preg_match('/\d+/', $nombre_libro, $coincidencias_libro);
+					preg_match('/\d+/', $nombre_ruta, $coincidencias_ruta);
+
+					$numero_libro = isset($coincidencias_libro[0]) ? (int)$coincidencias_libro[0] : null;
+					$numero_ruta = isset($coincidencias_ruta[0]) ? (int)$coincidencias_ruta[0] : null;
+
+					// Generar el folio
+					$folio = strtoupper(
+						'' . str_pad($tomas, 4, '0', STR_PAD_LEFT)  . '' . str_pad($libro->id, 3, '0', STR_PAD_LEFT)
+					);
+
+					// Crear la toma con los datos adicionales
+					$toma = Toma::factory()
+						->create([
+							'id_libro' => $libro->id,
+							'id_usuario' => $usuario->id,
+							'codigo_toma' => $folio,
+							'posicion' => new Point($longitud, $latitud),
+						]);
+				}
+			});
+
+			// Crear la secuencia para el libro
+			$secuencia_input = [
+				"tipo_secuencia" => "padre",
+				"id_libro" => $libro->id,
+			];
+			$secuencia = (new SecuenciaService())->store($secuencia_input, null);
+			$orden = [];
+			$i = 1;
+
+			// Obtener todas las tomas dentro del polígono del libro
+			$tomasDentroDelPoligono = Toma::whereWithin('posicion', $libro->polygon)->get();
+			foreach ($tomasDentroDelPoligono as $toma) {
+				$toma->id_libro = $libro->id;
+				$toma->save();
+				if ($toma->estatus != "baja definitiva" && $toma->c_agua != null && $toma->c_agua != 0) {
+					$orden[] = [
+						"id_toma" => $toma->id,
+						"numero_secuencia" => $i++,
+					];
+				}
+			}
+
+			// Guardar la secuencia y su orden
+			$Secuencia_orden = (new SecuenciaService())->SecuenciaOrdenStore($secuencia, $orden);
+		}
 	}
 }
