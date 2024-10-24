@@ -8,6 +8,7 @@ return [
     'concepto_servicio_san'  => env('CONCEPTO_SERVICIO_SAN', 4),
     'concepto_rezago'  => env('CONCEPTO_REZAGO', 5),
     'concepto_recargo'  => env('CONCEPTO_RECARGO', 6),
+    'concepto_letra'  => env('CONCEPTO_LETRA', 149),
 
     /*
         TODO agregar al .env

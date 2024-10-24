@@ -230,7 +230,7 @@ class ConvenioService
         $letra = Letra::create($letrasArray);
         $letrasCargo =  $letra;
 
-        $concepto = ConceptoCatalogo::find(149); //to do arreglar consulta
+        $concepto = ConceptoCatalogo::find(config('global.concepto_letra')); //to do arreglar consulta
         $fecha = helperFechaAhora();
         $fecha = Carbon::parse($fecha)->format('Y-m-d');
 
