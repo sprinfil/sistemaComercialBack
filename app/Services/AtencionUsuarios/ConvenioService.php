@@ -82,7 +82,7 @@ class ConvenioService
     }
   }
 
-  public function RegistrarConvenioService(array $data)
+  /*public function RegistrarConvenioService(array $data)
   {
     try {
       //Nota el front debe regresar los conceptos conveniables al usuario, este metodo convenia todos los cargos enviados asumiendo que son correctos
@@ -265,6 +265,206 @@ class ConvenioService
       }
 
       
+
+      for ($i = 0; $i < $data['cantidad_letras']; $i++) {
+
+        $fechaCobro = Carbon::parse($fechaCobro)->format('Y-m-d');
+
+        if ($i == ($data['cantidad_letras'] - 1)) {
+          $montoPorLetra = round($convenio->monto_total- $pagoInicial  - $montoLetraSuma, 2);
+        }
+
+        $letrasArray = [
+          "id_convenio" => $convenio->id, //crear el numero de la letra
+          "estado" => "pendiente",
+          "monto" => $montoPorLetra,
+          "vigencia" => $fechaCobro,
+          "numero_letra" => $i + 1,
+          "tipo_letra" => "letra",
+        ];
+
+        $montoLetraSuma += $montoPorLetra;
+
+        $letra = Letra::create($letrasArray);
+        if ($i == 0 && $letrasCargo == null ) {
+          $letrasCargo =  $letra;
+        }
+        $ArregloLetras[$i] = $letra;
+
+        $fechaCobro = Carbon::parse($fechaCobro);
+
+        $fechaCobro->add($mensualidad);
+      }
+
+      return json_encode($ArregloLetras);
+    } catch (Exception $ex) {
+      return response()->json([
+        'Ocurio un error durante la realización del convenio.' . $ex
+      ]);
+    }
+  }*/
+  public function RegistrarConvenioService(array $data)
+  {
+    try {
+      //Nota el front debe regresar los conceptos conveniables al usuario, este metodo convenia todos los cargos enviados asumiendo que son correctos
+      $fecha = helperFechaAhora();
+      $fechaCobro = Carbon::parse($fecha)->format('Y-m-d');
+      $montoLetraSuma = 0;
+      //El porcentaje que se convenio de los cargos
+      //La informacion del registro convenio, el resto se calcula durante el proceso
+      $convenio = [
+        "id_convenio_catalogo" => $data['id_convenio_catalogo'],
+        "id_modelo" => $data['id_modelo'],
+        "modelo_origen" => $data['modelo_origen'],
+        "monto_conveniado" => null, //Este elemento es calculado posteriormente
+        "monto_total" => null, //Este elemento es calculado posteriormente
+        "periodicidad" => "mensual",
+        "cantidad_letras" => $data['cantidad_letras'],
+        "estado" => "activo",
+        "comentario" => $data['comentario'],
+        "pago_inicial" => $data['pago_inicial']
+      ];
+      
+      //Registra el porcentaje de pago inicial
+      $porcentajePagoInicialAutorizado = ConvenioCatalogo::where('id',$data['id_convenio_catalogo'])
+      ->first();
+      if ($porcentajePagoInicialAutorizado->pago_inicial != null && $porcentajePagoInicialAutorizado->pago_inicial != 0) {
+
+        if ($data['pago_inicial'] != null) {
+
+          if ($data['pago_inicial'] < $porcentajePagoInicialAutorizado->pago_inicial) {
+
+            return response()->json([
+              'error' => 'El porcentaje del pago inicial seleccionado es menor al porcentaje de pago inicial autorizado.'
+            ], 400);
+  
+          }        
+        }else{
+          return response()->json([
+            'error' => 'El porcentaje de pago inicial es requerido para este convenio.'
+          ], 400);
+        }      
+      }
+      if ($data['pago_inicial'] >= 100) {
+        return response()->json([
+          'error' => 'El porcentaje del pago inicial seleccionado no debe alcanzar o superar el 100%.'
+        ], 400);
+      }
+      $pagoInicial = $data['pago_inicial'];
+      //La lista de cargos que se desean conveniar
+      $cargoTemp = "";
+      $cargos = $data['cargos_conveniados'];
+      $cargosConveniados = [];
+
+      foreach ($cargos as $cargo) //pendiente eliminar consultas en ciclos
+      {
+        $cargoTemp = Cargo::find($cargo['id']);
+
+        $temp = ConceptoAplicable::where('id_concepto_catalogo', $cargoTemp->id_concepto)
+          ->where('modelo', 'convenio_catalogo')
+          ->where('id_modelo', $data['id_convenio_catalogo'])
+          ->get();
+
+        if (count($temp) == 0) {
+          return response()->json([
+            'error' => 'El convenio seleccionado no es compatible con los cargos seleccionados.'
+          ], 400);
+        }
+        if ($cargoTemp->estado == "conveniado") {
+          return response()->json([
+            'error' => 'Un cargo no puede pertenecer a varios convenios.'
+          ], 400);
+        }
+      }
+
+      $convenio = Convenio::create($convenio); //Crea el registro de convenio
+
+      $montoConveniadoTotal = 0;
+      $montoFinalPendienteTotal = 0;
+
+      //Registro para actualizar los cargos
+      $cargoUpdt = [
+        "estado" => "conveniado",
+        "id_convenio" => $convenio->id //Este elemento es calculado posteriormente
+      ];
+
+      foreach ($cargos as $cargo) {
+        $cargoTemp = Cargo::find($cargo['id']); //obtengo los datos del cargo
+        $montoOriginalPendiente = $cargoTemp->montoPendiente(); //este es el monto original pendiente
+        $montoConveniado = ($cargo['porcentaje_conveniado'] * $montoOriginalPendiente) / 100; //monto del convenio aplicando el porcentaje conveniado
+        $montoFinalPendiente = $montoOriginalPendiente - $montoConveniado; // Es el monto original restandole el convenio aplicado
+        //Actualiza los cargos
+        $cargoTemp->update($cargoUpdt);
+
+        //Registro de cargos conveniados
+        $cargosConveniados = [
+          "id_cargo" => $cargo['id'],
+          "id_convenio" => $convenio->id,
+          "monto_original_pendiente" =>  round($montoOriginalPendiente, 2),
+          "monto_final_pendiente" =>  round($montoFinalPendiente, 2),
+          "porcentaje_conveniado" => $cargo['porcentaje_conveniado'],
+          "monto_conveniado" => round($montoConveniado, 2),
+        ];
+
+        CargosConveniado::create($cargosConveniados);
+
+        $montoConveniadoTotal += round($montoConveniado, 2);
+        $montoFinalPendienteTotal += round($montoFinalPendiente, 2);
+      }
+      //Actualizar el registro de convenio con los montos
+      $pagoInicial = round(($montoFinalPendienteTotal * $pagoInicial)/100,2);
+      $convenioMontos = [
+        "monto_conveniado" => $montoConveniadoTotal,
+        "monto_total" => $montoFinalPendienteTotal,//esta es la de el cambio a letras aqui estoy
+      ];
+
+      $convenio->update($convenioMontos);  //redondea las variables desde aqui
+      $convenio->save();
+
+      //Registra las letras
+      $montoPorLetra = round(($convenio->monto_total-$pagoInicial) / $convenio->cantidad_letras, 2);
+
+      $mensualidad = new DateInterval('P1M');  //Sumar meses o años: Puedes usar P1M para un mes o P1Y para un año en lugar de días.
+      $letrasCargo = [];
+
+      if ($convenio->pago_inicial > 0) {
+
+        $letrasArray = [
+          "id_convenio" => $convenio->id, //crear el numero de la letra
+          "estado" => "pendiente",
+          "monto" => $pagoInicial,
+          "vigencia" => $fechaCobro,
+          "numero_letra" => 0,
+          "tipo_letra" => "pago_inicial",
+        ];
+        $letra = Letra::create($letrasArray);
+        $letrasCargo =  $letra;
+
+        $concepto = ConceptoCatalogo::find(149); //to do arreglar consulta
+        $fecha = helperFechaAhora();
+        $fecha = Carbon::parse($fecha)->format('Y-m-d');
+
+        $RegistroCargo = [
+          "id_concepto" => $concepto->id,
+          "nombre" => $concepto->nombre,
+
+          "id_origen" => $letrasCargo['id'],
+          "modelo_origen" => 'letra',
+
+          "id_dueno" => $data['id_modelo'],
+          "modelo_dueno" => $data['modelo_origen'],
+
+          "monto" => $letrasCargo['monto'],
+          "iva" => 0,
+          "estado" => 'pendiente',
+          "id_convenio" => null,
+
+          "fecha_cargo" => $fecha,
+          "fecha_liquidacion" => null,
+
+       ];
+      $cargo = Cargo::create($RegistroCargo);
+      }
 
       for ($i = 0; $i < $data['cantidad_letras']; $i++) {
 
