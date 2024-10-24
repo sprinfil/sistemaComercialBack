@@ -55,34 +55,32 @@ class CargoFactory extends Factory
                 $origen_abono = $this->faker->randomElement(['pago']);
                 $total_abonado = 0;
                 $dueno = null;
-                if($cargo->modelo_dueno == 'toma'){
+                if ($cargo->modelo_dueno == 'toma') {
                     $dueno = Toma::find($cargo->id_dueno);
                 }
-                if($cargo->modelo_dueno == 'usuario')
-                {
+                if ($cargo->modelo_dueno == 'usuario') {
                     $dueno = Usuario::find($cargo->id_dueno);
                 }
-                if($origen_abono == 'pago')
-                {
-                    $total_abonado = $cargo->monto;
+                if ($origen_abono == 'pago') {
+                    $total_abonado = $cargo->monto + $cargo->iva;
                     $pago = Pago::factory()->create([
                         'id_dueno' => $cargo->id_dueno,
                         'modelo_dueno' => $cargo->modelo_dueno,
-                        'total_pagado'=>$total_abonado,
-                        'saldo_anterior'=>$dueno->saldoPendiente(),
+                        'total_pagado' => $total_abonado,
+                        'saldo_anterior' => $dueno->saldoPendiente(),
                         //'forma_pago'=> $this->faker->randomElement(['tarjeta', 'efectivo', 'cheque']),
                         //'fecha_pago'=>$this->faker->randomFloat(2, 0, 9999),
-                        'estado'=> 'abonado',
-                    ]);  
+                        'estado' => 'abonado',
+                    ]);
                     $id_origen = $pago->id;
                 }
 
                 Abono::factory()->create([
-                    'id_cargo'=> $cargo->id,
-                    'id_origen'=> $id_origen,
-                    'modelo_origen'=> $origen_abono,
-                    'total_abonado'=>$total_abonado,
-                ]); 
+                    'id_cargo' => $cargo->id,
+                    'id_origen' => $id_origen,
+                    'modelo_origen' => $origen_abono,
+                    'total_abonado' => $total_abonado,
+                ]);
             }
         });
     }
