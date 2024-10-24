@@ -26,7 +26,7 @@ class AjusteResource extends JsonResource
             'monto_ajustado' => $this->monto_ajustado,
             'monto_total' => $this->monto_total,
             'comentario' => $this->comentario ?? 'ninguno',
-            'motivo_cancelacion' => $this->motivo_cancelacion ?? 'ninguno',
+            'motivo_cancelacion' => $this->motivo_cancelacion  ?? 'ninguno',
             'fecha_solicitud' => $this->created_at->format('Y-m-d H:i'),
             'fecha_actualizacion' => $this->updated_at->format('Y-m-d H:i'),
         ];

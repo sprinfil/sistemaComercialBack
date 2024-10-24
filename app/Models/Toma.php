@@ -138,7 +138,7 @@ class Toma extends Model
     //Toma asociada a una factibilidad
     public function factibilidad(): HasOne
     {
-        return $this->hasOne(Factibilidad::class,'id_toma')->latestOfMany();
+        return $this->hasOne(Factibilidad::class, 'id_toma')->latestOfMany();
     }
 
     public function factibilidades(): HasMany
@@ -187,8 +187,9 @@ class Toma extends Model
     }
 
 
-    public function dueno_multa() : MorphMany {
-        return $this->morphMany(Multa::class, 'origen' , 'modelo_multado' , 'id_multado');
+    public function dueno_multa(): MorphMany
+    {
+        return $this->morphMany(Multa::class, 'origen', 'modelo_multado', 'id_multado');
     }
 
 
@@ -197,9 +198,10 @@ class Toma extends Model
     {
         return $this->hasMany(Factura::class, 'id_toma');
     }
-    
-    public function CargosFacturasVigentes():MorphMany{
-        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente')->where('modelo_origen','facturacion')->where('id_concepto','!=',10)->orderBy('created_at', 'desc'); //->where('id_concepto','!=','10')
+
+    public function CargosFacturasVigentes(): MorphMany
+    {
+        return $this->MorphMany(Cargo::class, 'dueno', 'modelo_dueno', 'id_dueno')->where('estado', 'pendiente')->where('modelo_origen', 'facturacion')->where('id_concepto', '!=', 10)->orderBy('created_at', 'desc'); //->where('id_concepto','!=','10')
     }
     public function TarifaContrato()
     {
@@ -230,9 +232,10 @@ class Toma extends Model
 
     public function conveniosActivos(): MorphMany
     {
-        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado','activo');
+        return $this->morphMany(Convenio::class, 'origen', 'modelo_origen', 'id_modelo')->where('estado', 'activo');
     }
-    public function secuenciaOrdenes():HasMany{
+    public function secuenciaOrdenes(): HasMany
+    {
         return $this->hasMany(Secuencia_orden::class, 'id_toma');
     }
 
@@ -292,15 +295,14 @@ class Toma extends Model
 
     public function descuentoAsociado(): HasOne
     {
-        return $this->hasOne(DescuentoAsociado::class, 'id_modelo','id');
+        return $this->hasOne(DescuentoAsociado::class, 'id_modelo', 'id');
     }
-    public function esDomestica():bool{
-        if ($this->id_tipo_toma==1){ //Domestica
+    public function esDomestica(): bool
+    {
+        if ($this->id_tipo_toma == 1) { //Domestica
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
-
 }

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->polygon('polygon')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_ruta');
         });
     }
 

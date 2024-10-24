@@ -16,11 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger('id_tarifa');
             $table->unsignedBigInteger('id_tipo_toma');
             $table->integer("rango");
-            $table->decimal("agua", total:9, places:2);
-            $table->decimal("alcantarillado", total:9, places:2);
-            $table->decimal("saneamiento", total:9, places:2);
+            $table->decimal("agua", total: 9, places: 2);
+            $table->decimal("alcantarillado", total: 9, places: 2);
+            $table->decimal("saneamiento", total: 9, places: 2);
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_tarifa');
+            $table->index('id_tipo_toma');
         });
     }
 

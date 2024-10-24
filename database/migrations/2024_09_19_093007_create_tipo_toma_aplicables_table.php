@@ -18,6 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_tipo_toma');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_modelo');
+            $table->index('modelo_origen');
         });
     }
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->unsignedBigInteger('id_origen');
             $table->string('modelo_origen');
-            $table->unsignedBigInteger('id_dueno'); 
+            $table->unsignedBigInteger('id_dueno');
             $table->string('modelo_dueno');
             $table->decimal('monto', 8, 2);
             $table->decimal('iva', 8, 2);
@@ -27,6 +27,10 @@ return new class extends Migration
             $table->date('fecha_liquidacion')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_origen');
+            $table->index('modelo_origen');
+            $table->index('estado');
         });
     }
 

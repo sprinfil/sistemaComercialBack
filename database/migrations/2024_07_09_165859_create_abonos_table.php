@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('abonos', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('id_cargo')->unsigned()->default('1');
-            $table->bigInteger('id_origen')->unsigned()->default('1'); 
+            $table->bigInteger('id_origen')->unsigned()->default('1');
             $table->string('modelo_origen');
             $table->decimal('total_abonado', 8, 2);
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_cargo');
         });
     }
 

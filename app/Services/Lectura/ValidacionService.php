@@ -22,7 +22,7 @@ class ValidacionService{
                     if ($libro->tomas && $libro->tomas->isNotEmpty()) {
                         foreach ($libro->tomas as $toma) {
 
-                            //$toma->nombre_ruta = $ruta->nombre;
+                            $toma->nombre_ruta = $ruta->nombre;
                             $toma->nombre_libro = $libro->nombre;
                             $toma->usuario = $toma->usuario;
                             //Obtenemos los consumos asociados a la toma
@@ -38,7 +38,6 @@ class ValidacionService{
                             $tomasConConsumos->push([
                                 'toma' => $toma,
                                 'consumos' => $consumos,
-                                //'anomalias' => $anomalias
                             ]);
                         }
                     }
@@ -95,20 +94,9 @@ class ValidacionService{
        // Buscar el periodo y la toma
        $periodoActual = Periodo::findOrFail($id_periodo);
        $toma = Toma::find($id_toma);
-
        if (!$toma) {
            return response()->json(['message' => 'No se encontró la toma.'], 404);
-       } 
-       /* 
-       $consumoExistente = Consumo::where('id_toma', $id_toma)
-       ->where('id_periodo', $id_periodo)
-       ->first();
-       if ($consumoExistente) {
-        return response()->json([
-            'message' => 'Ya existe un consumo registrado para esta toma en este periodo.'
-        ], 400);
-       } 
-        */
+       }
        //Obtener consumos anteriores de la toma en periodos anteriores al actual
        $consumosAnteriores = Consumo::where('id_toma', $id_toma)
            ->whereHas('periodo', function($query) use ($periodoActual) {

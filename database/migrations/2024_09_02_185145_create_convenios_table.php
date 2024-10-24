@@ -20,12 +20,16 @@ return new class extends Migration
             $table->decimal('monto_total')->nullable();
             $table->enum('periodicidad', ['mensual', 'quincenal']);
             $table->integer('cantidad_letras');
-            $table->enum('estado', ['activo', 'cancelado', 'incumplido','cargado','concluido']);
+            $table->enum('estado', ['activo', 'cancelado', 'incumplido', 'cargado', 'concluido']);
             $table->string('comentario')->nullable();
             $table->string('motivo_cancelacion')->nullable();
             $table->decimal('pago_inicial')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_modelo');
+            $table->index('modelo_origen');
+            $table->index('estado');
         });
     }
 
