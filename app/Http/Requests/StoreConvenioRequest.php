@@ -33,7 +33,7 @@ class StoreConvenioRequest extends FormRequest
           
             "cargos_conveniados"=>"required|array",
             "cargos_conveniados.*.id"=>"required|integer|gt:0",
-            "cargos_conveniados.*.porcentaje_conveniado"=>"required|numeric|gt:0"
+            "cargos_conveniados.*.monto_conveniado"=>"required|numeric|gt:0"
         ];
     }
 }
