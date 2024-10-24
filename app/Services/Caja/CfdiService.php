@@ -26,7 +26,7 @@ class CfdiService
       if (!$datos_fiscales) {
         $datos_fiscales = $pago->duenoUsuario->datos_fiscales;
       }
-      $res = DatoFiscal::findOrFail($datos_fiscales->id ?? 0);
+      $res = DatoFiscal::findOrFail($datos_fiscales->id);
       $data['id_datos_fiscales'] = $datos_fiscales->id;
 
       // Instanciar Faker para generar la imagen
