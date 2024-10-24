@@ -27,6 +27,9 @@ return new class extends Migration
             $table->string('comentario')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_contrato');
+            $table->index('id_toma');
         });
     }
 

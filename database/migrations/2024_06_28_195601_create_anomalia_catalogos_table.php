@@ -19,6 +19,10 @@ return new class extends Migration
             $table->boolean('facturable')->default(1);
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('nombre');
+            $table->index('estado');
+            $table->unique('nombre');
         });
     }
 

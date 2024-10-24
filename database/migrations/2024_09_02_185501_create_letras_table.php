@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('letras', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_convenio');
-            $table->enum('estado',['pendiente','saldado','cancelado']);
+            $table->enum('estado', ['pendiente', 'saldado', 'cancelado']);
             $table->decimal('monto');
-            $table->date('vigencia');//campo numero [1,2,3 etc] sera un int
+            $table->date('vigencia'); //campo numero [1,2,3 etc] sera un int
             $table->integer('numero_letra');
-            $table->enum('tipo_letra',['pago_inicial','letra']);
+            $table->enum('tipo_letra', ['pago_inicial', 'letra']);
             $table->softDeletes();
             $table->timestamps();
-            
+
+            $table->index('id_convenio');
         });
     }
 

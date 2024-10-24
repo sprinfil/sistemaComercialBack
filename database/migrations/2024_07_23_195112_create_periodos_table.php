@@ -19,17 +19,19 @@ return new class extends Migration
             $table->date('periodo'); //Solo importa mes y año
             $table->date('facturacion_fecha_inicio'); ///un mes
             $table->date('facturacion_fecha_final');
-            $table->date('lectura_inicio');///menos del mes
+            $table->date('lectura_inicio'); ///menos del mes
             $table->date('lectura_final');
-            $table->date('validacion_inicio');///menos del mes
+            $table->date('validacion_inicio'); ///menos del mes
             $table->date('validacion_final');
-            $table->date('recibo_inicio')->nullable();///menos del mes
+            $table->date('recibo_inicio')->nullable(); ///menos del mes
             $table->date('recibo_final')->nullable();
             $table->date('vigencia_recibo');
-            $table->enum('estatus',['activo','cerrado','cancelado']);
+            $table->enum('estatus', ['activo', 'cerrado', 'cancelado']);
             $table->softDeletes();
             $table->timestamps();
             //Si el mes se acaba automaticamente proceso para facturar tomas del mes pasado que no se hayan facturado.
+
+            $table->index('estatus');
         });
     }
 

@@ -21,6 +21,9 @@ return new class extends Migration
             $table->date('fecha');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_toma');
+            $table->index('id_periodo');
         });
     }
 

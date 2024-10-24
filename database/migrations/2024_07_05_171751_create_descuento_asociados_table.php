@@ -15,14 +15,18 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_descuento')->nullable();
             $table->unsignedBigInteger('id_modelo')->nullable();
-            $table->enum('modelo_dueno', ['toma' , 'usuario'])->nullable();
+            $table->enum('modelo_dueno', ['toma', 'usuario'])->nullable();
             $table->string('curp')->nullable();
             $table->unsignedBigInteger('id_registra')->nullable();
             $table->dateTime('vigencia')->nullable();
-            $table->enum('estatus' , ['vigente' , 'no_vigente'])->nullable();
+            $table->enum('estatus', ['vigente', 'no_vigente'])->nullable();
             $table->string('folio')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_modelo');
+            $table->index('modelo_dueno');
+            $table->index('estatus');
         });
     }
 

@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('folio');
             $table->unsignedBigInteger('id_timbro');
-            $table->enum('metodo', ['pendiente','masivo', 'directo'])->default('pendiente');
+            $table->enum('metodo', ['pendiente', 'masivo', 'directo'])->default('pendiente');
             $table->enum('estado', ['pendiente', 'fallido', 'realizado', 'cancelado'])->default('pendiente');
             $table->unsignedBigInteger('id_datos_fiscales');
             $table->string('documento')->nullable();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('folio');
         });
     }
 

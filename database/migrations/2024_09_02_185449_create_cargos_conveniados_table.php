@@ -21,6 +21,8 @@ return new class extends Migration
             $table->decimal('monto_conveniado');
             $table->softDeletes();
             $table->timestamps();
+
+            $table->index('id_convenio');
         });
     }
 
