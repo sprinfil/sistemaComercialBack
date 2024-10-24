@@ -94,16 +94,16 @@ class FacturaService{
                     }
                     $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
 
-                    //dispatch(new FacturacionTomaJob($toma));
+          
                     if ($consumo){
                         $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
                        
                   
-                       $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
-                       //$facturaToma=dispatch(new PeriodoFacturacionJob($toma,$tarifaToma,$periodo,$consumo))->onQueue('facturaPeriodos');//colas
-                        $periodosFactura->push($facturaToma[0]);
-                        $facturaCargos->push($facturaToma[1]);
-                        $RecargosCollection->push($facturaToma[2]);
+                       //$facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
+                        $facturaToma=dispatch(new PeriodoFacturacionJob($toma,$tarifaToma,$periodo,$consumo))->onQueue('facturaPeriodos');//colas
+                        //$periodosFactura->push($facturaToma[0]);
+                        //$facturaCargos->push($facturaToma[1]);
+                        //$RecargosCollection->push($facturaToma[2]);
                        
                  
                         
@@ -112,29 +112,34 @@ class FacturaService{
                 }
             }
         }
-        return [$periodosFactura, $facturaCargos,$RecargosCollection ];             
+        //return [$periodosFactura, $facturaCargos,$RecargosCollection ];
+        //return [$periodosFactura, $facturaCargos,$RecargosCollection ];               
     }
 
     public function facturar($toma,$tarifaToma,$periodo,$consumo){
-      
+        $tarifa=$tarifaToma[0];
         if ($toma['estatus']=="activa" || $toma['estatus']=="limitado"){
             $costo_Agua=0;  
             $costo_alc=0;  
             $costo_san=0;  
             $consumo_agua=$consumo['consumo'];
-            if  ($consumo_agua<17){
-                $consumo_agua=17;
-            }
+            $tarifa_num=TarifaServiciosDetalle::where('id_tipo_toma',$toma->id_tipo_toma)->get()->count();
           if ($toma['c_agua']!==null){
-            $costo_Agua=$tarifaToma['agua']*$consumo_agua;
+           
+            if (count($tarifaToma)==$tarifa_num){
+                $costo_Agua=$tarifa['agua'];
+            }
+            else{
+                $costo_Agua=$tarifa['agua']*$consumo_agua;
+            }
         
           }
           if ($toma['c_alc']!==null){
-            $costo_alc=$tarifaToma['alcantarillado']*$consumo['consumo'];
+            $costo_alc=$tarifa['alcantarillado']*$consumo['consumo'];
       
           }
           if ($toma['c_san']!==null){
-            $costo_san=$tarifaToma['saneamiento']*$consumo['consumo'];
+            $costo_san=$tarifa['saneamiento']*$consumo['consumo'];
     
           }
           $total_facturacion=$costo_Agua+$costo_alc+$costo_san;
@@ -143,7 +148,7 @@ class FacturaService{
             "id_periodo"=>$periodo['id'],
             "id_toma"=>$toma['id'],
             "id_consumo"=>$consumo['id'],
-            "id_tarifa_servicio"=>$tarifaToma['id'],
+            "id_tarifa_servicio"=>$tarifa['id'],
             "monto"=>$total_facturacion,
             "fecha"=>Carbon::parse(helperFechaAhora(),'GMT-7')->format('Y-m-d'),
           ];
@@ -157,7 +162,7 @@ class FacturaService{
                 "id_periodo"=>$periodo['id'],
                 "id_toma"=>$toma['id'],
                 "id_consumo"=>$consumo['id'],
-                "id_tarifa_servicio"=>$tarifaToma['id'],
+                "id_tarifa_servicio"=>$tarifa['id'],
                 "monto"=>$total_facturacion,
                 "fecha"=>Carbon::parse(helperFechaAhora(),'GMT-7')->format('Y-m-d'),
               ];
@@ -194,7 +199,7 @@ class FacturaService{
             $concepto=ConceptoCatalogo::find(1); //fijo
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
-                "nombre"=>"facturacion".$concepto['nombre']." ".$mes,
+                "nombre"=>"facturacion ".$concepto['nombre']." ".$mes,
                 "id_origen"=>$factura['id'],
                 "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
@@ -212,7 +217,7 @@ class FacturaService{
             $costo_alc_iva=helperCalcularIVA($costo_alc);
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
-                "nombre"=>"facturacion".$concepto['nombre']." ".$mes,
+                "nombre"=>"facturacion ".$concepto['nombre']." ".$mes,
                 "id_origen"=>$factura['id'],
                 "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
@@ -231,7 +236,7 @@ class FacturaService{
             $costo_san_iva=helperCalcularIVA($costo_san);
             $cargoInsert=[
                 "id_concepto"=>$concepto['id'],
-                "nombre"=>"facturacion".$concepto['nombre']." ".$mes,
+                "nombre"=>"facturacion ".$concepto['nombre']." ".$mes,
                 "id_origen"=>$factura['id'],
                 "modelo_origen"=>"facturas",
                 "id_dueno"=>$toma['id'],
@@ -280,8 +285,9 @@ class FacturaService{
         }
         
         $consumo=Consumo::where('id_periodo',$periodo->id)->where('id_toma',$toma->id)->where('estado','activo')->first();
-        //dispatch(new FacturacionTomaJob($toma));
+
         $tarifaToma=Tarifa::servicioToma($tarifa->id,$toma->id_tipo_toma,$consumo->consumo);
+                //dispatch(new FacturacionTomaJob($toma));
         $facturaToma=($this->facturar($toma,$tarifaToma,$periodo,$consumo));
         return $facturaToma;
     }

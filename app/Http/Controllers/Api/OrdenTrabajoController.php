@@ -354,7 +354,7 @@ class OrdenTrabajoController extends Controller
        }
        catch(Exception $ex){
         DB::rollBack();
-        return response()->json(["error"=>"No se pudo generar la Orden de trabajo".$ex],501);
+        return response()->json(["error"=>"No se pudo cerrar la Orden de trabajo".$ex],501);
        }
     }
     public function DeleteOrdenMasiva(Request $request)
