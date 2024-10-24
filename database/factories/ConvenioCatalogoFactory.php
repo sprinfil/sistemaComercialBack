@@ -26,6 +26,7 @@ class ConvenioCatalogoFactory extends Factory
             'nombre' => '',
             'descripcion' => '',
             'estado' => '',
+            'pago_inicial' => 10
         ];
     }
 
