@@ -26,7 +26,7 @@ return new class extends Migration
             $table->date('recibo_inicio')->nullable();///menos del mes
             $table->date('recibo_final')->nullable();
             $table->date('vigencia_recibo');
-            $table->enum('estatus',['activo','cerrado']);
+            $table->enum('estatus',['activo','cerrado','cancelado']);
             $table->softDeletes();
             $table->timestamps();
             //Si el mes se acaba automaticamente proceso para facturar tomas del mes pasado que no se hayan facturado.
